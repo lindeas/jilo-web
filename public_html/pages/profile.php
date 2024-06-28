@@ -1,0 +1,3 @@
+<?php ?>
+
+profile of <?= $user ?>

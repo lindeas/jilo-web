@@ -1,0 +1,38 @@
+.menu-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 10px;
+    background-color: #777;
+}
+
+.menu-left, .menu-right {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-left li, .menu-right li {
+    margin: 0 10px;
+}
+
+.menu-left a, .menu-right a {
+    text-decoration: none;
+    color: white;
+}
+
+.menu-left li a, .menu-right li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.menu-left li a:hover, .menu-right li a:hover {
+    background-color: #111;
+}
