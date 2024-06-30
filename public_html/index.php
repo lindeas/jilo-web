@@ -22,7 +22,7 @@ if ( isset($_SESSION['username']) ) {
 }
 
 if (isset($error)) {
-    echo "<p style='color: red;'>Error: $error</p>";
+    echo "<div class=\"error\">Error: $error</div>";
 }
 
 $allowed_urls = [

@@ -36,3 +36,21 @@
 .menu-left li a:hover, .menu-right li a:hover {
     background-color: #111;
 }
+
+.error {
+    color: red;
+    margin: 15px 0px 15px 0px;
+    padding: 5px;
+    background-color: #eee;
+    border: 1px solid #333;
+    font-weight: bold;
+}
+
+.notice {
+    color: green;
+    margin: 15px 0px 15px 0px;
+    padding: 5px;
+    background-color: #eee;
+    border: 1px solid #333;
+    font-weight: bold;
+}
