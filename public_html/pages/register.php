@@ -5,17 +5,23 @@ require 'classes/user.php';
 unset($error);
 
 try {
-    $db = new Database('./jilo-web.db');
+    $db = new Database($config['database']);
     $user = new User($db);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         $username = $_POST['username'];
         $password = $_POST['password'];
 
+        // redirect to login
         if ( $user->register($username, $password) ) {
-            echo "Registration successful.";
+            $_SESSION['notice'] = "Registration successful.<br />You can log in now.";
+            header('Location: index.php');
+            exit();
+        // registration fail, redirect to login
         } else {
-            echo "Registration failed.";
+            $_SESSION['error'] = "Registration failed.";
+            header('Location: index.php');
+            exit();
         }
     }
 } catch (Exception $e) {

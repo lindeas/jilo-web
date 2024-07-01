@@ -1,12 +1,6 @@
 
 <h2>Login</h2>
 
-<?php if (isset($error)) { ?>
-<div class="error">
-    <?php echo $error; ?>
-</div>
-<?php } ?>
-
 <div class="login-form">
     <form method="POST" action="?page=login">
         <input type="text" name="username" placeholder="Username" required />

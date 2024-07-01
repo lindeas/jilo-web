@@ -2,10 +2,12 @@
 
 require_once 'classes/database.php';
 require 'classes/user.php';
+
+// clear the global error var before login
 unset($error);
 
 try {
-    $db = new Database('./jilo-web.db');
+    $db = new Database($config['database']);
     $user = new User($db);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
@@ -34,16 +36,19 @@ try {
                 'samesite' => 'Strict',
                 'httponly' => true,
                 'secure' => isset($_SERVER['HTTPS']),
-                'domain' => $domain,
-                'path' => '/jilo-web/'
+                'domain' => $config['domain'],
+                'path' => $config['folder']
             ]);
             // redirect to index
+            $_SESSION['notice'] = "Login successful";
             header('Location: index.php');
             exit();
 
         // login failed
         } else {
-            $error = "Login failed.";
+            $_SESSION['error'] = "Login failed.";
+            header('Location: index.php');
+            exit();
         }
     }
 } catch (Exception $e) {
