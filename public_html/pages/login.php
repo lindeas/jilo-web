@@ -31,19 +31,18 @@ try {
             }
 
             // set session lifetime and cookies
-            ini_set('session.gc_maxlifetime', $gc_maxlifetime);
-            session_set_cookie_params([
-                'lifetime' => $setcookie_lifetime,
-                'samesite' => 'Strict',
-                'httponly' => true,
-                'secure' => isset($_SERVER['HTTPS']),
-                'domain' => $config['domain'],
-                'path' => $config['folder']
-            ]);
-            session_name($username);
-            session_start();
-
-            // FIXME it doesn't set a cookie with session_set_cookie_params only
+// FIXME: need to set this before session start (otherwise we need the separate cookie)
+//            ini_set('session.gc_maxlifetime', $gc_maxlifetime);
+//            session_set_cookie_params([
+//                'lifetime' => $setcookie_lifetime,
+//                'samesite' => 'Strict',
+//                'httponly' => true,
+//                'secure' => isset($_SERVER['HTTPS']),
+//                'domain' => $config['domain'],
+//                'path' => $config['folder']
+//            ]);
+//            session_start();
+// FIXME we use separate cookie, because the above won't work
             setcookie('username', $username, [
                 'expires'	=> $setcookie_lifetime,
                 'path'		=> $config['folder'],
