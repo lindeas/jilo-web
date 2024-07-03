@@ -40,8 +40,11 @@ if (isset($_GET['page'])) {
     $page = 'front';
 }
 
-// logged in username
-if ( isset($_SESSION['username']) ) {
+// check if logged in
+if (isset($_COOKIE['username'])) {
+    if ( !isset($_SESSION['username']) ) {
+        $_SESSION['username'] = $_COOKIE['username'];
+    }
     $user = htmlspecialchars($_SESSION['username']);
 }
 
@@ -67,6 +70,7 @@ if (in_array($page, $allowed_urls)) {
         // clean up session
         session_unset();
         session_destroy();
+        setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
         $notice = "You were logged out.<br />You can log in again.";
         include 'templates/header.php';

@@ -20,25 +20,38 @@ try {
             if (isset($_POST['remember_me'])) {
                 // 30*24*60*60 = 30 days
                 $cookie_lifetime = 30 * 24 * 60 * 60;
+                $setcookie_lifetime = time() + 30 * 24 * 60 * 60;
                 $gc_maxlifetime = 30 * 24 * 60 * 60;
             } else {
                 // 0 - session end on browser close
                 // 1440 - 24 minutes (default)
                 $cookie_lifetime = 0;
+                $setcookie_lifetime = 0;
                 $gc_maxlifetime = 1440;
             }
 
-            // set session lifetime
+            // set session lifetime and cookies
             ini_set('session.gc_maxlifetime', $gc_maxlifetime);
             session_set_cookie_params([
-                'lifetime' => $cookie_lifetime,
+                'lifetime' => $setcookie_lifetime,
                 'samesite' => 'Strict',
                 'httponly' => true,
                 'secure' => isset($_SERVER['HTTPS']),
                 'domain' => $config['domain'],
                 'path' => $config['folder']
             ]);
+            session_name($username);
             session_start();
+
+            // FIXME it doesn't set a cookie with session_set_cookie_params only
+            setcookie('username', $username, [
+                'expires'	=> $setcookie_lifetime,
+                'path'		=> $config['folder'],
+                'domain'	=> $config['domain'],
+                'secure'	=> isset($_SERVER['HTTPS']),
+                'httponly'	=> true,
+                'samesite'	=> 'Strict'
+            ]);
 
             // redirect to index
             $_SESSION['notice'] = "Login successful";

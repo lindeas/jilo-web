@@ -1,5 +1,7 @@
 # Jilo Web
 
+This is still not operational. Goals for v.0.1 - browsing of basic info about Jilo config and about Jitsi Meet conferences.
+
 ## requirements
 
 - web server (deb: apache | nginx)
