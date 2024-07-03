@@ -2,13 +2,13 @@
 <div class="menu-container">
     <ul class="menu-left">
         <li><a href="index.php">home</a></li>
-<?php if ( isset($_SESSION['user_id']) ) { ?>
+<?php if ( isset($_SESSION['username']) ) { ?>
         <li><a href="?page=config">config</a></li>
 <?php } ?>
     </ul>
 
     <ul class="menu-right">
-<?php if ( isset($_SESSION['user_id']) ) { ?>
+<?php if ( isset($_SESSION['username']) ) { ?>
         <li><a href="?page=profile"><?= $user ?></a></li>
         <li><a href="?page=logout">logout</a></li>
 <?php } else { ?>

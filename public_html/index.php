@@ -49,7 +49,7 @@ if (isset($_COOKIE['username'])) {
 }
 
 // redirect to login
-if ( !isset($_SESSION['user_id']) && ($page !== 'login' && $page !== 'register') ) {
+if ( !isset($_COOKIE['username']) && ($page !== 'login' && $page !== 'register') ) {
     header('Location: index.php?page=login');
     exit();
 }
