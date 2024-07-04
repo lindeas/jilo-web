@@ -62,7 +62,7 @@
 }
 
 #footer {
-    position: absolute;
+    position: fixed;
     left: 0px;
     bottom: 0px;
     height: 30px;
@@ -76,4 +76,20 @@
 
 #footer a {
     color: white;
+}
+
+#results table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+#results table, th, td {
+    border: 1px solid #ddd;
+}
+#results th, td {
+    padding: 8px;
+    text-align: left;
+}
+#results th {
+    background-color: #f2f2f2;
 }
