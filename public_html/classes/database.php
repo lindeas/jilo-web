@@ -4,9 +4,15 @@ class Database {
     private $pdo;
 
     public function __construct($dbFile) {
+
         // pdo and pdo_sqlite needed
         if ( !extension_loaded('pdo_sqlite') ) {
             throw new Exception('PDO extension for SQLite not loaded.');
+        }
+
+        // database file check
+        if (empty($dbFile) || !file_exists($dbFile)) {
+            throw new Exception('Database file is not found.');
         }
 
         // connect to database

@@ -2,7 +2,7 @@
 
 class Conference {
     private $db;
-    private $table_name = 'conferences';
+    private $queries;
 
     public $jitsi_component;
     public $start;

@@ -7,11 +7,18 @@ require 'classes/conference.php';
 $from_time = '0000-01-01';
 $until_time = '9999-12-31';
 
-// list of all conferences
+// connect to database
 try {
     $db = new Database($config['jilo_database']);
-    $conference = new Conference($db);
+} catch (Exception $e) {
+    $error = 'Error: ' . $e->getMessage();
+    include 'templates/message.php';
+    exit();
+}
 
+// list of all conferences
+try {
+    $conference = new Conference($db);
     $search = $conference->conferencesAllFormatted($from_time,$until_time);
 
     if (!empty($search)) {
@@ -27,7 +34,6 @@ try {
                 'end'			=> $end,
                 'conference_id'		=> $conference_id,
                 'conference_name'	=> $conference_name,
-//                'participants'		=> $participants,
                 'participants'		=> $participants,
                 'name_count'		=> $name_count,
                 'conference_host'	=> $conference_host
@@ -38,7 +44,9 @@ try {
     }
 
 } catch (Exception $e) {
-    $error = $e->getMessage();
+    $error = 'Error: ' . $e->getMessage();
+    include 'templates/message.php';
+    exit();
 }
 
 echo "Conferences for the time period $from_time - $until_time";
@@ -58,7 +66,8 @@ if (!empty($conferences['records'])) {
     foreach ($conferences['records'] as $row) {
         echo "\t\t<tr>";
         foreach ($row as $column) {
-            echo "\t\t\t<td>" . htmlspecialchars($column) . "</td>";
+            // sometimes $column is empty, we make it '' then
+            echo "\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>";
         }
         echo "\t\t</tr>";
     }

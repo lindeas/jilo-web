@@ -11,6 +11,11 @@
  * Version: 0.1
  */
 
+// error reporting, comment out in production
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // list of available pages
 // edit accordingly, add 'pages/PAGE.php'
 $allowed_urls = [

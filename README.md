@@ -9,3 +9,11 @@ This is still not operational. Goals for v.0.1 - browsing of basic info about Ji
 - php support in the web server (deb: php-fpm | libapache2-mod-php)
 
 - pdo and pdo_sqlite support in php (deb: php-db, php-sqlite3) uncomment in php.ini: ;extension=pdo_sqlite
+
+## config
+
+- edit jilo-web.conf.php and set all the variables correctly
+
+- "database" is the sqlite db file for jilo-web itself, create it with `cat jilo-web.schema | sqlite3 jilo-web.db`
+
+- "jilo_database" is the sqlite db file for jilo, with data from the Jitsi logs
