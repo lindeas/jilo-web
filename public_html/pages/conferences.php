@@ -27,6 +27,7 @@ try {
                 'end'			=> $end,
                 'conference_id'		=> $conference_id,
                 'conference_name'	=> $conference_name,
+//                'participants'		=> $participants,
                 'participants'		=> $participants,
                 'name_count'		=> $name_count,
                 'conference_host'	=> $conference_host
