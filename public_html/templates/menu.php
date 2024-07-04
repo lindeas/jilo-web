@@ -4,6 +4,7 @@
         <li><a href="index.php">home</a></li>
 <?php if ( isset($_SESSION['username']) ) { ?>
         <li><a href="?page=config">config</a></li>
+        <li><a href="?page=conferences">conferences</a></li>
 <?php } ?>
     </ul>
 

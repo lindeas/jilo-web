@@ -20,6 +20,7 @@ $allowed_urls = [
     'register',
     'profile',
     'config',
+    'conferences',
 ];
 
 // cnfig file
