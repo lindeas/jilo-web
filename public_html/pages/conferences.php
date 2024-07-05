@@ -98,7 +98,7 @@ if (isset($conference_id)) {
             echo "\t\t<tr>";
             // sometimes $column is empty, we make it '' then
             foreach ($row as $key => $column) {
-                if ($column === $conference_id) {
+                if ($key === 'conference ID' && $column === $conference_id) {
                     echo "\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>";
                 } elseif ($key === 'conference name') {
                     echo "\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>";
@@ -175,7 +175,7 @@ if (isset($conference_id)) {
             echo "\t\t<tr>";
             // sometimes $column is empty, we make it '' then
             foreach ($row as $key => $column) {
-                if ($column === $conference_name) {
+                if ($key === 'conference name' && $column === $conference_name) {
                     echo "\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>";
                 } elseif ($key === 'conference ID') {
                     echo "\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>";
