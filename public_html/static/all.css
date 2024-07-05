@@ -78,19 +78,22 @@
     color: white;
 }
 
-#results table {
+.results {
+    padding-bottom: 30px;
+}
+
+.results table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    padding-bottom: 30px;
 }
-#results table, th, td {
+.results table, th, td {
     border: 1px solid #ddd;
 }
-#results th, td {
+.results th, td {
     padding: 8px;
     text-align: left;
 }
-#results th {
+.results th {
     background-color: #f2f2f2;
 }
