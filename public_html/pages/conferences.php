@@ -116,7 +116,84 @@ if (isset($conference_id)) {
     }
 
 
-// list of all conferences
+// search and list specific conference ID
+} elseif (isset($conference_name)) {
+
+    try {
+        $conference = new Conference($db);
+
+        // prepare the result
+        $search = $conference->conferenceByName($conference_name, $from_time, $until_time);
+
+        if (!empty($search)) {
+            $conferences = array();
+            $conferences['records'] = array();
+
+            foreach ($search as $item) {
+                extract($item);
+                $conference_record = array(
+                    // assign title to the field in the array record
+                    'time'		=> $time,
+                    'conference ID'	=> $conference_id,
+                    'conference name'	=> $conference_name,
+                    'conference host'	=> $conference_host,
+                    'loglevel'		=> $loglevel,
+                    'participant ID'	=> $participant_id,
+                    'event'		=> $event_type,
+                    'parameter'		=> $event_param
+                );
+                // populate the result array
+                array_push($conferences['records'], $conference_record);
+            }
+        }
+
+    } catch (Exception $e) {
+        $error = 'Error: ' . $e->getMessage();
+        include 'templates/message.php';
+        exit();
+    }
+
+    // display the result
+    echo "Conferences with name matching \"<strong>$conference_name</strong>\"";
+    if ($time_range_specified) {
+        echo " for the time period <strong>$from_time - $until_time</strong>";
+    }
+
+    if (!empty($conferences['records'])) {
+
+        echo "\t<table id=\"results\">";
+        echo "\t\t<tr>";
+
+        // table headers
+        foreach (array_keys($conferences['records'][0]) as $header) {
+            echo "\t\t\t<th>" . htmlspecialchars($header) . "</th>";
+        }
+        echo "\t\t</tr>";
+
+        //table rows
+        foreach ($conferences['records'] as $row) {
+            echo "\t\t<tr>";
+            // sometimes $column is empty, we make it '' then
+            foreach ($row as $key => $column) {
+                if ($column === $conference_name) {
+                    echo "\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>";
+                } elseif ($key === 'conference ID') {
+                    echo "\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>";
+                } else {
+                    echo "\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>";
+                }
+            }
+            echo "\t\t</tr>";
+        }
+
+        echo "\t</table>";
+
+    } else {
+        echo '<p>No matching conferences found.</p>';
+    }
+
+
+// list of all conferences (default)
 } else {
     try {
         $conference = new Conference($db);

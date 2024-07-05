@@ -94,7 +94,53 @@ WHERE
 AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 
 ORDER BY
-    pe.time;"
+    pe.time;",
+
+
+    // search for a conference by its name for a time period (if given)
+    'conference_by_name' => "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    c.conference_name = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    c.conference_name = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time;",
 
 
 ];
