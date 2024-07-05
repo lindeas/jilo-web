@@ -36,6 +36,8 @@ if (file_exists($config_file)) {
     die('Config file not found');
 }
 
+$app_root = $config['folder'];
+
 session_start();
 
 if (isset($_GET['page'])) {

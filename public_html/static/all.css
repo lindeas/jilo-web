@@ -82,6 +82,7 @@
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
+    padding-bottom: 30px;
 }
 #results table, th, td {
     border: 1px solid #ddd;
