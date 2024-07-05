@@ -3,20 +3,29 @@
 require_once 'classes/database.php';
 require 'classes/conference.php';
 
-// FIXME add dropdown menus for selecting from-until
-$from_time = '0000-01-01';
-$until_time = '9999-12-31';
-
 // FIXME move thi sto a special function
-$time_range_specified = true;
+$time_range_specified = false;
+if (!isset($_REQUEST['from_time']) || (isset($_REQUEST['from_time']) && $_REQUEST['from_time'] == '')) {
+    $from_time = '0000-01-01';
+} else {
+    $from_time = $_REQUEST['from_time'];
+    $time_range_specified = true;
+}
+if (!isset($_REQUEST['until_time']) || (isset($_REQUEST['until_time']) && $_REQUEST['until_time'] == '')) {
+    $until_time = '9999-12-31';
+} else {
+    $until_time = $_REQUEST['until_time'];
+    $time_range_specified = true;
+}
 
 // conference id/name are specified when searching specific conference(s)
-// either id or name, id has precedence
+// either id OR name, id has precedence
 // we use $_REQUEST, so that both links and forms work
-if (isset($_REQUEST['id'])) {
+if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
     $conference_id = $_REQUEST['id'];
+    unset($_REQUEST['name']);
     unset($conference_name);
-} elseif (isset($_REQUEST['name'])) {
+} elseif (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
     unset($conference_id);
     $conference_name = $_REQUEST['name'];
 } else {
@@ -77,12 +86,20 @@ if (isset($conference_id)) {
     }
 
     // display the result
-    echo "<div class=\"results\">\n";
-    echo "Conferences with ID matching \"<strong>$conference_id</strong>\"";
+    echo "<div class=\"results-header\">\n";
+    echo "<div class=\"results-message\">Conferences with ID matching \"<strong>$conference_id</strong>\"";
     if ($time_range_specified) {
-        echo " for the time period <strong>$from_time - $until_time</strong>";
+        echo "<br />for the time period <strong>$from_time - $until_time</strong>";
     }
-    echo "\n\n";
+    echo "</div>\n\n";
+
+    // filters - time selection and sorting dropdowns
+    include 'templates/results-filter.php';
+
+    echo "</div>\n\n";
+
+    // results table
+    echo "<div class=\"results\">\n";
 
     if (!empty($conferences['records'])) {
 
@@ -157,12 +174,20 @@ if (isset($conference_id)) {
     }
 
     // display the result
-    echo "<div class=\"results\">\n";
-    echo "Conferences with name matching \"<strong>$conference_name</strong>\"";
+    echo "<div class=\"results-header\">\n";
+    echo "<div class=\"results-message\">Conferences with name matching \"<strong>$conference_name</strong>\"";
     if ($time_range_specified) {
-        echo " for the time period <strong>$from_time - $until_time</strong>";
+        echo "<br />for the time period <strong>$from_time - $until_time</strong>";
     }
-    echo "\n\n";
+    echo "</div>\n\n";
+
+    // filters - time selection and sorting dropdowns
+    include 'templates/results-filter.php';
+
+    echo "</div>\n\n";
+
+    // results table
+    echo "<div class=\"results\">\n";
 
     if (!empty($conferences['records'])) {
 
@@ -236,12 +261,20 @@ if (isset($conference_id)) {
     }
 
     // display the result
-    echo "<div class=\"results\">\n";
-    echo "All conferences";
+    echo "<div class=\"results-header\">\n";
+    echo "<div class=\"results-message\">All conferences";
     if ($time_range_specified) {
-        echo " for the time period <strong>$from_time - $until_time</strong>";
+        echo "<br />for the time period <strong>$from_time - $until_time</strong>";
     }
-    echo "\n\n";
+    echo "</div>\n\n";
+
+    // filters - time selection and sorting dropdowns
+    include 'templates/results-filter.php';
+
+    echo "</div>\n\n";
+
+    // results table
+    echo "<div class=\"results\">\n";
 
     if (!empty($conferences['records'])) {
 

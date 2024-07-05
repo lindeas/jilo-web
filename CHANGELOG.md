@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Added session persistence and cookies
 - Added config page with configuration details
 - Added conferences page with listing of conferences from the jilo database
+- Added search filter for conferences with time, ID and name
 
 ### Changed
 

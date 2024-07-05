@@ -97,3 +97,17 @@
 .results th {
     background-color: #f2f2f2;
 }
+
+
+.results-header {
+    display: flex;
+}
+
+.results-message, .results-filter {
+    width: 50%;
+    padding: 20px;
+}
+
+.results-filter {
+    text-align: right;
+}
