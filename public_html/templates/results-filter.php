@@ -1,7 +1,7 @@
 
 <div class="results-filter">
 
-    <form method="POST" action="?page=<?= $page ?>">
+    <form method="POST" id="filter_form" action="?page=<?= $page ?>">
 
         <label for="from_time">from</label>
         <input type="date" id="from_time" name="from_time"<?php if (isset($_REQUEST['from_time'])) echo " value=\"" . $_REQUEST['from_time'] . "\"" ?> />
@@ -13,8 +13,22 @@
 
         <input type="text" name="name" placeholder="name"<?php if (isset($_REQUEST['name'])) echo " value=\"" . $_REQUEST['name'] . "\"" ?> />
 
+        <button type="button" onclick="clearFilter()">clear</button>
+
         <input type="submit" value="search" />
 
     </form>
+
+    <script>
+        function clearFilter() {
+            document.getElementById("filter_form").reset();
+            const filterFields = document.querySelectorAll("#filter_form input");
+            filterFields.forEach(input => {
+                if (input.type === 'text' ||input.type === 'date') {
+                    input.value = '';
+                }
+            });
+        }
+    </script>
 
 </div>

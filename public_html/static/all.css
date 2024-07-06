@@ -79,7 +79,7 @@
 }
 
 .results {
-    padding-bottom: 30px;
+    margin-bottom: 50px;
 }
 
 .results table {
@@ -97,6 +97,9 @@
 .results th {
     background-color: #f2f2f2;
 }
+.results p {
+    text-align: center;
+}
 
 
 .results-header {
@@ -110,4 +113,8 @@
 
 .results-filter {
     text-align: right;
+}
+
+.widget {
+    border: 1px solid gray;
 }
