@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Added conferences page with listing of conferences from the jilo database
 - Added search filter for conferences with time, ID and name
 - Added front page widgets
+- Added demo installation on https://work.lindeas.com/jilo-web-demo/
 
 ### Changed
 

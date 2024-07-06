@@ -2,6 +2,10 @@
 
 This is still not operational. Goals for v.0.1 - browsing of basic info about Jilo config and about Jitsi Meet conferences.
 
+## demo
+
+To see a demo install, go to https://work.lindeas.com/jilo-web-demo/
+
 ## requirements
 
 - web server (deb: apache | nginx)
