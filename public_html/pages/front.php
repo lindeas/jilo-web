@@ -193,8 +193,8 @@ if (!empty($conferences['records'])) {
         echo "\t\t<tr>\n";
         // sometimes $column is empty, we make it '' then
         foreach ($row as $key => $column) {
-            if ($key === 'conference ID' && $column === $conference_id) {
-                echo "\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>\n";
+            if ($key === 'conference ID') {
+                echo "\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
             } elseif ($key === 'conference name') {
                 echo "\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
             } else {
