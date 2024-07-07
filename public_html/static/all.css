@@ -104,16 +104,17 @@
 
 .results-header {
     display: flex;
+    justify-content: space-between;
+}
+
+.results-message {
+    width: 25%;
 }
 
 .results-message, .results-filter {
-    width: 50%;
-    padding: 20px;
+    padding: 10px 10px 10px 10px;
 }
 
-.results-filter {
-    text-align: right;
-}
 
 .widget {
     border: 1px solid gray;

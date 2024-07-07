@@ -13,6 +13,10 @@
 
         <input type="text" name="name" placeholder="name"<?php if (isset($_REQUEST['name'])) echo " value=\"" . $_REQUEST['name'] . "\"" ?> />
 
+<?php if ($page == 'participants') { ?>
+        <input type="text" name="ip" placeholder="ip address"<?php if (isset($_REQUEST['ip'])) echo " value=\"" . $_REQUEST['ip'] . "\"" ?> maxlength="15" size="15" />
+<?php } ?>
+
         <button type="button" onclick="clearFilter()">clear</button>
 
         <input type="submit" value="search" />

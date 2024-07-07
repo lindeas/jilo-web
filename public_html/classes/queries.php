@@ -143,6 +143,157 @@ ORDER BY
     pe.time;",
 
 
+    // list all participants
+    'participants_all' => "
+SELECT DISTINCT
+    p.jitsi_component, p.endpoint_id, p.conference_id
+FROM
+    participants p
+JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59'
+ORDER BY p.id;",
+
+
+    // list conferences where participant ID (endpoint_id) is found
+    'conference_by_participant_id' => "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    p.endpoint_id = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    participant_id = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time;",
+
+
+    // list conferences where participant name (stats_id) is found
+    'participant_by_stats_id' => "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    pe.event_type = 'stats_id' AND pe.event_param LIKE '%%%s%%'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    event_type = 'stats_id' AND event_param LIKE '%%%s%%'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time;",
+
+
+    // list conferences where participant IP is found
+    'participant_by_ip' => "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    pe.event_type = 'pair selected' AND pe.event_param = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    event_type = 'pair selected' AND event_param = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time;",
+
+
 ];
 
 ?>

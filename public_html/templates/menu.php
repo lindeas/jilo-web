@@ -5,6 +5,7 @@
 <?php if ( isset($_SESSION['username']) ) { ?>
         <li><a href="?page=config">config</a></li>
         <li><a href="?page=conferences">conferences</a></li>
+        <li><a href="?page=participants">participants</a></li>
 <?php } ?>
     </ul>
 
