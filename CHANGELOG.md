@@ -7,10 +7,26 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 #### Links
-- upstream: https://code.lindeas.com/lindeas/jilo-web
-- codeberg: https://codeberg.org/lindeas/jilo-web
-- github: https://github.com/lindeas/jilo-web
-- gitlab: https://gitlab.com/lindeas/jilo-web
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.1...HEAD
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.1...HEAD
+- github: https://github.com/lindeas/jilo-web/compare/v0.1...HEAD
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.1...HEAD
+
+### Added
+
+### Changed
+
+### Fixed
+
+---
+
+## 0.1 - 2024-07-08
+
+#### Links
+- upstream: https://code.lindeas.com/lindeas/jilo-web/releases/tag/v0.1
+- codeberg: https://codeberg.org/lindeas/jilo-web/releases/tag/v0.1
+- github: https://github.com/lindeas/jilo-web/releases/tag/v0.1
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/releases/v0.1
 
 ### Added
 - Initial version
@@ -23,9 +39,3 @@ All notable changes to this project will be documented in this file.
 - Added demo installation on https://work.lindeas.com/jilo-web-demo/
 - Added participant search page
 - Added component events search page
-
-### Changed
-
-### Fixed
-
----
