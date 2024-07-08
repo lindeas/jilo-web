@@ -4,15 +4,6 @@ class Participant {
     private $db;
     private $queries;
 
-//    public $jitsi_component;
-//    public $start;
-//    public $end;
-//    public $participant_id;
-//    public $conference_name;
-//    public $participants;
-//    public $name_count;
-//    public $conference_host;
-
     public function __construct($database) {
         $this->db = $database->getConnection();
         $this->queries = include('queries.php');
