@@ -6,6 +6,7 @@
         <li><a href="?page=config">config</a></li>
         <li><a href="?page=conferences">conferences</a></li>
         <li><a href="?page=participants">participants</a></li>
+        <li><a href="?page=components">components</a></li>
 <?php } ?>
     </ul>
 

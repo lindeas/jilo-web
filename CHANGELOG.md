@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - Added front page widgets
 - Added demo installation on https://work.lindeas.com/jilo-web-demo/
 - Added participant search page
+- Added component events search page
 
 ### Changed
 

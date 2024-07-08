@@ -294,6 +294,21 @@ ORDER BY
     pe.time;",
 
 
+    // list of jitsi component events
+    'jitsi_components' => "
+SELECT jitsi_component, loglevel, time, component_id, event_type, event_param
+FROM
+    jitsi_components
+WHERE
+    jitsi_component = %s
+AND
+    component_id = %s
+AND
+    (time >= '%s 00:00:00' AND time <= '%s 23:59:59')
+ORDER BY
+    time;",
+
+
 ];
 
 ?>

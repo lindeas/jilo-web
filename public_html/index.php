@@ -27,6 +27,7 @@ $allowed_urls = [
     'config',
     'conferences',
     'participants',
+    'components',
 ];
 
 // cnfig file
