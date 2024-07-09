@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+db_input medium jilo-web/domain || true
+db_input medium jilo-web/folder || true
+db_go
+
+exit 0

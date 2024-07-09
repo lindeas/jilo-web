@@ -1,0 +1,9 @@
+Template: jilo-web/domain
+Type: string
+Default: localhost
+Description: Please enter the domain name for the Jilo-web app.
+
+Template: jilo-web/folder
+Type: string
+Default: jilo-web
+Description: Please enter the web folder for Jilo-web.
