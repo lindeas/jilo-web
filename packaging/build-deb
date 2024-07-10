@@ -22,6 +22,8 @@ cp ../../CHANGELOG.md "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 cp ../../LICENSE "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 cp ../../README.md "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 cp ../../TODO.md "jilo-web-$VERSION/usr/share/doc/jilo-web/"
+cp ../../config.apache "jilo-web-$VERSION/usr/share/doc/jilo-web/"
+cp ../../config.nginx "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 
 mkdir -p "jilo-web-$VERSION/usr/share/man/man8"
 cp ../man-jilo-web.8 "jilo-web-$VERSION/usr/share/man/man8/jilo-web.8"

@@ -33,60 +33,23 @@ case "$1" in
 
         # we need a webserver, check for Apache and Nginx
         WEB_SERVER=""
+
+        # install and enable apache vhost
         if dpkg-query -W -f='${status}' apache2 2>/dev/null | grep -q "ok installed"; then
             WEB_SERVER="apache2"
-        elif
-            WEB_SERVER="nginx"
-        else
-            echo "Nginx or Apache is needed, please install one of them first."
-            exit 1
-        fi
-
-        # finish configuration depending on web server
-        if [ "$WEB_SERVER" = "apache2" ]; then
-
-            # vhost file
-            VHOST_APACHE="/etc/apache2/sites-available/jilo-web.conf"
-            cat <<EOF > "$VHOST_APACHE"
-<VirtualHost *:80>
-    ServerName $DOMAIN
-    DocumentRoot $INSTALL_DIR
-
-    CustomLog \${APACHE_LOG_DIR}/jilo-web_access.log combined
-    ErrorLog \${APACHE_LOG_DIR}/jilo-web_error.log
-</VirtualHost>
-EOF
-
-            # enable vhost and reload
+            cp "${INSTALL_DIR}/config.apache" /etc/apache2/sites-available/jilo-web.conf
             a2ensite jilo-web.conf
             /etc/init.d/apache2 reload
 
-        elif [ "$WEB_SERVER" = "nginx" ]; then
-
-            # vhost file
-            VHOST_NGINX="/etc/nginx/sites-available/jilo-web"
-            cat <<EOF > "$VHOST_NGINX"
-server {
-    listen 80;
-    server_name $DOMAIN;
-
-    root $INSTALL_DIR;
-    index index.php;
-
-    location / {
-        try_files \$uri \$uri/ /index.php?\$args;
-    }
-
-    location ~ /\.ht {
-        deny all;
-    }
-}
-EOF
-
-            # enable vhost and reload
+        # install and enable nginx vhost
+        elif dpkg-query -W -f='${status}' nginx 2>/dev/null | grep -q "ok installed"; then
+            WEB_SERVER="nginx"
+            cp "${INSTALL_DIR}/config.nginx" /etc/nginx/sites-available/jilo-web
             ln -s /etc/nginx/sites-available/jilo-web /etc/nginx/sites-enabled/
             /etc/init.d/nginx reload
-
+        else
+            echo "Nginx or Apache is needed, please install one of them first."
+            exit 1
         fi
 
         # permissions for web folder
