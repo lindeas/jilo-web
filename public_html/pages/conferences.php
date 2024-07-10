@@ -256,11 +256,19 @@ if (isset($conference_id)) {
 
             foreach ($search as $item) {
                 extract($item);
+
+                // we don't have duration field, so we calculate it
+                if (!empty($start) && !empty($end)) {
+                    $duration = gmdate("H:i:s", abs(strtotime($end) - strtotime($start)));
+                } else {
+                    $duration = '';
+                }
                 $conference_record = array(
                     // assign title to the field in the array record
                     'component'		=> $jitsi_component,
                     'start'		=> $start,
                     'end'		=> $end,
+                    'duration'		=> $duration,
                     'conference ID'	=> $conference_id,
                     'conference name'	=> $conference_name,
                     'participants'	=> $participants,

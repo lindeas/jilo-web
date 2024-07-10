@@ -14,14 +14,14 @@ SELECT DISTINCT
         WHERE
             ce.conference_id = c.conference_id
             AND
-            ce.conference_event = 'conference expired')
+            ce.conference_event = 'conference created')
     AS start,
     (SELECT ce.time
         FROM conference_events ce
         WHERE
             ce.conference_id = c.conference_id
             AND
-            ce.conference_event = 'conference created')
+            ce.conference_event = 'conference expired')
     AS end,
     c.conference_id,
     c.conference_name,
