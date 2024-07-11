@@ -8,6 +8,7 @@ cd deb-package
 mkdir -p "jilo-web-$VERSION/DEBIAN"
 cp ../deb-control "jilo-web-$VERSION/DEBIAN/control"
 cp ../deb-postinst "jilo-web-$VERSION/DEBIAN/postinst"
+cp ../deb-postrm "jilo-web-$VERSION/DEBIAN/postrm"
 cp ../deb-templates "jilo-web-$VERSION/DEBIAN/templates"
 
 mkdir -p "jilo-web-$VERSION/etc/jilo-web"
@@ -15,9 +16,10 @@ cp ../../jilo-web.conf.php "jilo-web-$VERSION/etc/jilo-web/jilo-web.conf.php"
 cp ../../jilo-web.schema "jilo-web-$VERSION/etc/jilo-web/jilo-web.schema"
 
 mkdir -p "jilo-web-$VERSION/usr/share/jilo-web"
-cp -r ../../public_html "jilo-web-$VERSION/usr/share/jilo-web"
+cp -r ../../public_html/* "jilo-web-$VERSION/usr/share/jilo-web"
 
 mkdir -p "jilo-web-$VERSION/usr/share/doc/jilo-web"
+cp ../deb-README.debian "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 cp ../../CHANGELOG.md "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 cp ../../LICENSE "jilo-web-$VERSION/usr/share/doc/jilo-web/"
 cp ../../README.md "jilo-web-$VERSION/usr/share/doc/jilo-web/"

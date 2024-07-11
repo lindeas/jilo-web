@@ -8,7 +8,7 @@ To have a working installation, in addition to the code here you need a jilo dat
 
 The webpage for this project is https://lindeas.com/jilo. There you will find information about both Jilo and Jilo Web.
 
-The main git repo of Jilo Web is:
+The main git repo of **Jilo Web** is:
 - https://code.lindeas.com/lindeas/jilo-web
 
 It is mirrored at:

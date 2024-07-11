@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.1...HEAD
 
 ### Added
+- Added duration calculation in conferences listing
 
 ### Changed
 

@@ -26,6 +26,7 @@ case "$1" in
         WEB_DIR="$RET"
 
         INSTALL_DIR="/usr/share/jilo-web"
+        DOC_DIR="/usr/share/doc/jilo-web"
 
         # store the info for later reconfiguration
         db_set jilo-web/domain $DOMAIN
@@ -37,14 +38,20 @@ case "$1" in
         # install and enable apache vhost
         if dpkg-query -W -f='${status}' apache2 2>/dev/null | grep -q "ok installed"; then
             WEB_SERVER="apache2"
-            cp "${INSTALL_DIR}/config.apache" /etc/apache2/sites-available/jilo-web.conf
+            cp "${DOC_DIR}/config.apache" /etc/apache2/sites-available/jilo-web.conf
+            sed -i -e "s/\$DOMAIN/$DOMAIN/g" /etc/apache2/sites-available/jilo-web.conf
+            # there is '/' in INSTALL_DIR, we use '%'
+            sed -i -e "s%\$INSTALL_DIR%$INSTALL_DIR%g" /etc/apache2/sites-available/jilo-web.conf
             a2ensite jilo-web.conf
             /etc/init.d/apache2 reload
 
         # install and enable nginx vhost
         elif dpkg-query -W -f='${status}' nginx 2>/dev/null | grep -q "ok installed"; then
             WEB_SERVER="nginx"
-            cp "${INSTALL_DIR}/config.nginx" /etc/nginx/sites-available/jilo-web
+            cp "${DOC_DIR}/config.nginx" /etc/nginx/sites-available/jilo-web
+            sed -i -e "s/\$DOMAIN/$DOMAIN/g" /etc/nginx/sites-available/jilo-web
+            # there is '/' in INSTALL_DIR, we use '%'
+            sed -i -e "s%\$INSTALL_DIR%$INSTALL_DIR%g" /etc/nginx/sites-available/jilo-web
             ln -s /etc/nginx/sites-available/jilo-web /etc/nginx/sites-enabled/
             /etc/init.d/nginx reload
         else

@@ -1,0 +1,11 @@
+#!/bin/bash
+# postrm script for jilo-web
+#
+# see: dh_installdeb(1)
+
+set -e
+
+rm /etc/nginx/sites-enabled/jilo-web
+rm /etc/nginx/sites-available/jilo-web
+
+exit 0
