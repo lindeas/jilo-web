@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+VERSION=$1
+RELEASE=1
+
+mkdir -p rpm-package/SOURCES rpm-package/SPECS
+cd rpm-package
+
+PACKAGE_DIR="jilo-web-$VERSION"
+
+mkdir -p "$PACKAGE_DIR"
+
+cp ../rpm-jilo-web.spec SPECS/jilo-web.spec
+cp ../../jilo-web.conf.php "$PACKAGE_DIR/"
+cp ../../jilo-web.schema "$PACKAGE_DIR/"
+cp -r ../../public_html/* "$PACKAGE_DIR/public_html/"
+cp ../../CHANGELOG.md "$PACKAGE_DIR/"
+cp ../../LICENSE "$PACKAGE_DIR/"
+cp ../../README.md "$PACKAGE_DIR/"
+cp ../../TODO.md "$PACKAGE_DIR/"
+cp ../../config.apache "$PACKAGE_DIR/"
+cp ../../config.nginx "$PACKAGE_DIR/"
+cp ../man-jilo-web.8 "$PACKAGE_DIR/"
+
+tar -czf "jilo-web-$VERSION.tar.gz" "$PACKAGE_DIR"
+mv "jilo-web-$VERSION.tar.gz" SOURCES/
+
+rpmbuild --define "_topdir $(pwd)" --define "VERSION $VERSION" --define "RELEASE $RELEASE" -ba SPECS/jilo-web.spec
+
+rm -rf "$PACKAGE_DIR"
