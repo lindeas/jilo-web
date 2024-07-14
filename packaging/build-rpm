@@ -9,6 +9,7 @@ cd rpm-package
 PACKAGE_DIR="jilo-web-$VERSION"
 
 mkdir -p "$PACKAGE_DIR"
+mkdir -p "$PACKAGE_DIR/public_html"
 
 cp ../rpm-jilo-web.spec SPECS/jilo-web.spec
 cp ../../jilo-web.conf.php "$PACKAGE_DIR/"
