@@ -23,7 +23,13 @@ case "$1" in
 
 # FIXME use this for subfolder install, if given
         db_get jilo-web/folder
-        WEB_DIR="$RET"
+        if [ -z "$RET" ] ; then
+            db_get jilo-web/folder "jilo-web"
+            db_input critical jilo-web/folder || true
+            db_go
+            db_get jilo-web/folder
+        fi
+        WEB_DIR=$(echo "$RET" | xargs echo -n)
 
         INSTALL_DIR="/usr/share/jilo-web"
         DOC_DIR="/usr/share/doc/jilo-web"
