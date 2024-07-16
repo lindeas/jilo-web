@@ -8,4 +8,6 @@ set -e
 rm /etc/nginx/sites-enabled/jilo-web
 rm /etc/nginx/sites-available/jilo-web
 
+echo PURGE | debconf-communicate jilo-web
+
 exit 0
