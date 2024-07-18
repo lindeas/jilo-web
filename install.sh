@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-echo 'Jilo-Web install script'
+echo "Jilo-Web install script"
 
-# FIXME
-#enter domain
-DOMAIN="localhost"
+# enter domain
+read -p "Domain name for the web service [localhost]: " DOMAIN
+DOMAIN=${DOMAIN:-localhost}
 
-#enter folder
-WEB_DIR="jilo-web"
+# enter folder
+read -p "Web subfolder [jilo-web]: " WEB_DIR
+WEB_DIR=${WEB_DIR:-jilo-web}
 
 INSTALL_DIR="/opt/jilo-web/public_html"
 DOC_DIR="/opt/jilo-web/doc"
