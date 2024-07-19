@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+VERSION="0.1"
+
 echo "Jilo-Web deployment script"
 
+# main install function
 function install() {
 
     # enter domain
@@ -81,6 +84,7 @@ version="Jilo-Web deployment script
     version $VERSION"
 
 
+# called with an option
 if [[ $1 ]]; then
     case $1 in
         -i | --install)
@@ -93,6 +97,31 @@ if [[ $1 ]]; then
             echo -e "$version"
             exit 0
             ;;
+        *)
+            echo "Invalid option: $1" >&2
+            echo -e "$help"
+            exit 1
+            ;;
+    esac
+
+# called without any options, ask how to proceed
+else
+    read -p "Choose an option, blank for \"install\" [install | help | version]: " OPTION
+    OPTION=${OPTION:-install}
+
+    case $OPTION in
+        install)
+            echo 'install..'
+            ;;
+        help)
+            echo -e "$help"
+            exit 0
+            ;;
+        version)
+            echo -e "$version"
+            exit 0
+            ;;
+        # just in cae
         *)
             echo "Invalid option: $1" >&2
             echo -e "$help"
