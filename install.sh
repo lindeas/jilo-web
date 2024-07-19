@@ -2,8 +2,6 @@
 
 VERSION="0.1"
 
-echo "Jilo-Web deployment script"
-
 # main install function
 function install() {
 
@@ -73,15 +71,15 @@ function install() {
 }
 
 
-help="Usage:
+help="Jilo-Web deployment script
+Usage:
     $0 [OPTION]
     Options:
         --install|-i - install Jilo-Web
         --help|-h - show this help message
         --version|-v - show version"
 
-version="Jilo-Web deployment script
-    version $VERSION"
+version="version $VERSION"
 
 
 # called with an option
@@ -121,7 +119,6 @@ else
             echo -e "$version"
             exit 0
             ;;
-        # just in cae
         *)
             echo "Invalid option: $1" >&2
             echo -e "$help"
