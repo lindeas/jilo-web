@@ -86,6 +86,8 @@ version="version $VERSION"
 if [[ $1 ]]; then
     case $1 in
         -i | --install)
+            install
+            exit 0
             ;;
         -h | --help)
             echo -e "$help"
@@ -109,7 +111,8 @@ else
 
     case $OPTION in
         install)
-            echo 'install..'
+            install
+            exit 0
             ;;
         help)
             echo -e "$help"
