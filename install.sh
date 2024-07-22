@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="0.1"
+VERSION=`grep version jilo-web.conf.php | cut -d "'" -f 4`
 
 # main install function
 function install() {
