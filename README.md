@@ -28,6 +28,12 @@ To see a demo install, go to https://work.lindeas.com/jilo-web-demo/
 
 Current version: **0.1** released on **2024-07-08**
 
+## license
+
+This project is licensed under the GNU General Public License version 2 (GPL-2.0). See LICENSE file.
+
+Bootstrap is used in this project and is licensed under the MIT License. See bootstrap-license file
+
 ## requirements
 
 - web server (deb: apache | nginx)

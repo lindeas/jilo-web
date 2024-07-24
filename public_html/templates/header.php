@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="static/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static/all.css">
     <title>Jilo Web</title>
 </head>
 
 <body>
 
-<div id="main">
+    <script src="static/bootstrap.min.js"></script>
+
+    <div class="container">

@@ -1,17 +1,17 @@
 
-<h2>Login</h2>
+    <h2>Login</h2>
 
-<div class="login-form">
-    <form method="POST" action="?page=login">
-        <input type="text" name="username" placeholder="Username" required />
-        <br />
-        <input type="password" name="password" placeholder="Password" required />
-        <br />
-        <label for="remember_me">
-            <input type="checkbox" id="remember_me" name="remember_me" />
-            remember me
-        </label>
-        <br />
-        <input type="submit" value="Login" />
-    </form>
-</div>
+    <div class="login-form">
+        <form method="POST" action="?page=login">
+            <input type="text" name="username" placeholder="Username" required />
+            <br />
+            <input type="password" name="password" placeholder="Password" required />
+            <br />
+            <label for="remember_me">
+                <input type="checkbox" id="remember_me" name="remember_me" />
+                remember me
+            </label>
+            <br />
+            <input type="submit" value="Login" />
+        </form>
+    </div>
