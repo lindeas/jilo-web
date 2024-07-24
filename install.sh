@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# first we check the privileges, we need root or sudo
+if [ "$EUID" -ne 0 ] && [ -z "$SUDO_USER" ]; then
+    echo "This script needs administrative privileges. Either run as root or with sudo."
+    exit 1
+fi
+
 VERSION=`grep version jilo-web.conf.php | cut -d "'" -f 4`
 
 # main install function
@@ -67,7 +73,7 @@ function install() {
     chown -R www-data:www-data "$INSTALL_DIR"
     chmod -R ug+rw "$INSTALL_DIR"
 
-    # etc configs
+    # etc configs (we use % because the variables contain paths with "/")
     sed -i -e "s%\('domain'[[:space:]]*=>[[:space:]]*'\)[^']*\('.*\)%\1$DOMAIN\2%g" "$ETC_DIR/jilo-web.conf.php"
     sed -i -e "s%\('folder'[[:space:]]*=>[[:space:]]*'\)[^']*\('.*\)%\1$WEB_DIR\2%g" "$ETC_DIR/jilo-web.conf.php"
     sed -i -e "s%\('database'[[:space:]]*=>[[:space:]]*'\)[^']*\('.*\)%\1$ETC_DIR\/jilo-web.db\2%g" "$ETC_DIR/jilo-web.conf.php"
