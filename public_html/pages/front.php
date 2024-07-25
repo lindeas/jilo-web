@@ -65,19 +65,17 @@ try {
 }
 
 // display the result
-echo "<div class=\"widget\">";
+echo "<a style=\"text-decoration: none;\" data-toggle=\"collapse\" href=\"#collapseLastDays\" role=\"button\" aria-expanded=\"true\" aria-controls=\"collapseLastDays\">";
+echo "<div class=\"card bg-light card-body\">Conferences for the last 2 days</div></a>";
 
-echo "<div class=\"results-header\">\n";
-echo "<div class=\"results-message\">Conferences for the last 2 days";
+echo "<div class=\"collapse show\" id=\"collapseLastDays\">";
+
 if ($time_range_specified) {
-    echo "<br />for the time period <strong>$from_time - $until_time</strong>";
+    echo "<p class=\"m-3\">time period: <strong>$from_time - $until_time</strong></p>";
 }
-echo "</div>\n\n";
 
 //// filters - time selection and sorting dropdowns
 //include 'templates/results-filter.php';
-
-echo "</div>\n\n";
 
 // results table
 echo "<div class=\"mb-5\">\n";
@@ -124,7 +122,7 @@ echo "\n</div>\n";
 
 echo "</div>";
 
-
+echo "<br />";
 
 // last 10 conferences
 try {
@@ -182,19 +180,17 @@ try {
 }
 
 // display the result
-echo "<div class=\"widget\">";
+echo "<a style=\"text-decoration: none;\" data-toggle=\"collapse\" href=\"#collapseLastConferences\" role=\"button\" aria-expanded=\"true\" aria-controls=\"collapseLastConferences\">";
+echo "<div class=\"card bg-light card-body\">The last $conference_number conferences</div></a>";
 
-echo "<div class=\"results-header\">\n";
-echo "<div class=\"results-message\">The last $conference_number conferences";
+echo "<div class=\"collapse show\" id=\"collapseLastConferences\">";
+
 if ($time_range_specified) {
     echo "<br />for the time period <strong>$from_time - $until_time</strong>";
 }
-echo "</div>\n\n";
 
 //// filters - time selection and sorting dropdowns
 //include 'templates/results-filter.php';
-
-echo "</div>\n\n";
 
 // results table
 echo "<div class=\"mb-5\">\n";
