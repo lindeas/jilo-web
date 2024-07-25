@@ -103,35 +103,41 @@ try {
     echo "</div>\n\n";
 
     // results table
-    echo "<div class=\"results\">\n";
+    echo "<div class=\"mb-5\">\n";
 
     if (!empty($components['records'])) {
 
-        echo "\t<table>\n";
-        echo "\t\t<tr>\n";
+        echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
+
+        echo "\t\t<thead class=\"thead-dark\">\n";
+        echo "\t\t\t<tr>\n";
 
         // table headers
         foreach (array_keys($components['records'][0]) as $header) {
-            echo "\t\t\t<th>" . htmlspecialchars($header) . "</th>\n";
+            echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
         }
-        echo "\t\t</tr>\n";
+        echo "\t\t\t</tr>\n";
+        echo "\t\t</thead>\n";
+
+        echo "\t\t<tbody>\n";
 
         //table rows
         foreach ($components['records'] as $row) {
-            echo "\t\t<tr>\n";
+            echo "\t\t\t<tr>\n";
             // sometimes $column is empty, we make it '' then
             foreach ($row as $key => $column) {
                 if ($key === 'component ID') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=components&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=components&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($key === 'component') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=components&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=components&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } else {
-                    echo "\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
+                    echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
                 }
             }
-            echo "\t\t</tr>\n";
+            echo "\t\t\t</tr>\n";
         }
 
+        echo "\t\t</tbody>\n";
         echo "\t</table>\n";
 
     } else {
