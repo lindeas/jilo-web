@@ -8,7 +8,7 @@
  * License: GPLv2
  * Project URL: https://lindeas.com/jilo
  * Year: 2024
- * Version: 0.1
+ * Version: 0.1.1
  */
 
 // error reporting, comment out in production

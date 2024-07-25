@@ -8,7 +8,7 @@
 
 - major refactoring after v0.1
 
-- - add bootstrap template
+- - ~~add bootstrap template~~
 
 - - clean up the code to follow model-view--controller style
 
