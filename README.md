@@ -47,6 +47,11 @@ JQuery is used in this project and is licensed under the MIT License. See licens
 You can install it in the following ways:
 
 - download the latest release from the **"Releases"** section here
+```bash
+tar -xzf jilo-web_*.tgz
+cd jilo-web
+./install.sh
+```
 - clone the **git repo**:
 ```bash
 git clone https://github.com/lindeas/jilo-web.git
