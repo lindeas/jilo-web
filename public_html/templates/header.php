@@ -11,4 +11,4 @@
 
     <script src="static/bootstrap.min.js"></script>
 
-    <div class="container">
+    <div class="container-fluid">

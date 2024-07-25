@@ -17,9 +17,15 @@
             <input type="text" name="ip" placeholder="ip address"<?php if (isset($_REQUEST['ip'])) echo " value=\"" . $_REQUEST['ip'] . "\"" ?> maxlength="15" size="15" />
 <?php } ?>
 
-            <button type="button" onclick="clearFilter()">clear</button>
+            <br />
 
-            <input type="submit" value="search" />
+            <div class="float-end pt-3">
+
+                <input type="button" onclick="clearFilter()" value="clear" />
+
+                <input type="submit" value="search" />
+
+            </div>
 
         </form>
 
