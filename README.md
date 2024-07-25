@@ -32,7 +32,9 @@ Current version: **0.1.1** released on **2024-07-25**
 
 This project is licensed under the GNU General Public License version 2 (GPL-2.0). See LICENSE file.
 
-Bootstrap is used in this project and is licensed under the MIT License. See bootstrap-license file
+Bootstrap is used in this project and is licensed under the MIT License. See license-bootstrap file.
+
+JQuery is used in this project and is licensed under the MIT License. See license-jquery file.
 
 ## requirements
 
