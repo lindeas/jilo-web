@@ -50,9 +50,10 @@ You can install it in the following ways:
 - clone the **git repo**:
 ```bash
 git clone https://github.com/lindeas/jilo-web.git
-cd jilo
+cd jilo-web
+./install.sh
 ```
-- DEB and RPM packages are planned, but still unavailable
+- DEB and RPM packages are planned, but not yet available. There are experimental build scripts in "packaging" folder.
 
 ## config
 
@@ -63,4 +64,4 @@ cd jilo
 
 ## database
 
-The database is an SQLite file. You also need the sqlite db from jilo (mysql/mariadb support is planned, but still unavailable).
+The database is an SQLite file. You also need the sqlite db from jilo (mysql/mariadb support is planned, but not yet available).
