@@ -109,7 +109,7 @@ try {
 
         echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
 
-        echo "\t\t<thead class=\"thead-dark\">\n";
+        echo "\t\t<thead class=\"table-secondary\">\n";
         echo "\t\t\t<tr>\n";
 
         // table headers
@@ -141,7 +141,7 @@ try {
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching Jitsi component events found.</p>';
+        echo '<p class="m-3">No matching Jitsi component events found.</p>';
     }
     echo "\n</div>\n";
 

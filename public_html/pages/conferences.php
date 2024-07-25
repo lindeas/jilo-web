@@ -99,22 +99,27 @@ if (isset($conference_id)) {
     echo "</div>\n\n";
 
     // results table
-    echo "<div class=\"results\">\n";
+    echo "<div class=\"mb-5\">\n";
 
     if (!empty($conferences['records'])) {
 
-        echo "\t<table>\n";
-        echo "\t\t<tr>\n";
+        echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
+
+        echo "\t\t<thead class=\"table-secondary\">\n";
+        echo "\t\t\t<tr>\n";
 
         // table headers
         foreach (array_keys($conferences['records'][0]) as $header) {
-            echo "\t\t\t<th>" . htmlspecialchars($header) . "</th>\n";
+            echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
         }
-        echo "\t\t</tr>\n";
+        echo "\t\t\t</tr>\n";
+        echo "\t\t</thead>\n";
+
+        echo "\t\t<tbody>\n";
 
         //table rows
         foreach ($conferences['records'] as $row) {
-            echo "\t\t<tr>\n";
+            echo "\t\t\t<tr>\n";
             $stats_id = false;
             $participant_ip = false;
             if ($row['event'] === 'stats_id') $stats_id = true;
@@ -122,24 +127,25 @@ if (isset($conference_id)) {
             // sometimes $column is empty, we make it '' then
             foreach ($row as $key => $column) {
                 if ($key === 'conference ID' && $column === $conference_id) {
-                    echo "\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>\n";
+                    echo "\t\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>\n";
                 } elseif ($key === 'conference name') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($stats_id && $key === 'parameter') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=participants&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=participants&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($participant_ip && $key === 'parameter') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=participants&ip=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=participants&ip=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } else {
-                    echo "\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
+                    echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
                 }
             }
-            echo "\t\t</tr>\n";
+            echo "\t\t\t</tr>\n";
         }
 
+        echo "\t\t</tbody>\n";
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching conferences found.</p>';
+        echo '<p class="m-3">No matching conferences found.</p>';
     }
     echo "\n</div>\n";
 
@@ -195,22 +201,27 @@ if (isset($conference_id)) {
     echo "</div>\n\n";
 
     // results table
-    echo "<div class=\"results\">\n";
+    echo "<div class=\"mb-5\">\n";
 
     if (!empty($conferences['records'])) {
 
-        echo "\t<table>\n";
-        echo "\t\t<tr>\n";
+        echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
+
+        echo "\t\t<thead class=\"table-secondary\">\n";
+        echo "\t\t\t<tr>\n";
 
         // table headers
         foreach (array_keys($conferences['records'][0]) as $header) {
-            echo "\t\t\t<th>" . htmlspecialchars($header) . "</th>\n";
+            echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
         }
-        echo "\t\t</tr>\n";
+        echo "\t\t\t</tr>\n";
+        echo "\t\t</thead>\n";
+
+        echo "\t\t<tbody>\n";
 
         //table rows
         foreach ($conferences['records'] as $row) {
-            echo "\t\t<tr>\n";
+            echo "\t\t\t<tr>\n";
             $stats_id = false;
             $participant_ip = false;
             if ($row['event'] === 'stats_id') $stats_id = true;
@@ -218,26 +229,27 @@ if (isset($conference_id)) {
             // sometimes $column is empty, we make it '' then
             foreach ($row as $key => $column) {
                 if ($key === 'conference name' && $column === $conference_name) {
-                    echo "\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>\n";
+                    echo "\t\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>\n";
                 } elseif ($key === 'conference ID') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($key === 'participant ID') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=participants&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=participants&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($stats_id && $key === 'parameter') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=participants&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=participants&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($participant_ip && $key === 'parameter') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=participants&ip=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=participants&ip=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } else {
-                    echo "\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
+                    echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
                 }
             }
-            echo "\t\t</tr>\n";
+            echo "\t\t\t</tr>\n";
         }
 
+        echo "\t\t</tbody>\n";
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching conferences found.</p>';
+        echo '<p class="m-3">No matching conferences found.</p>';
     }
     echo "\n</div>\n";
 
@@ -300,39 +312,45 @@ if (isset($conference_id)) {
     echo "</div>\n\n";
 
     // results table
-    echo "<div class=\"results\">\n";
+    echo "<div class=\"mb-5\">\n";
 
     if (!empty($conferences['records'])) {
 
-        echo "\t<table>\n";
-        echo "\t\t<tr>\n";
+        echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
+
+        echo "\t\t<thead class=\"table-secondary\">\n";
+        echo "\t\t\t<tr>\n";
 
         // table headers
         foreach (array_keys($conferences['records'][0]) as $header) {
-            echo "\t\t\t<th>" . htmlspecialchars($header) . "</th>\n";
+            echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
         }
-        echo "\t\t</tr>\n";
+        echo "\t\t\t</tr>\n";
+        echo "\t\t</thead>\n";
+
+        echo "\t\t<tbody>\n";
 
         //table rows
         foreach ($conferences['records'] as $row) {
-            echo "\t\t<tr>\n";
+            echo "\t\t\t<tr>\n";
             // sometimes $column is empty, we make it '' then
             foreach ($row as $key => $column) {
                 if ($key === 'conference ID') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } elseif ($key === 'conference name') {
-                    echo "\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
+                    echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
                 } else {
-                    echo "\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
+                    echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
                 }
             }
-            echo "\t\t</tr>\n";
+            echo "\t\t\t</tr>\n";
         }
 
+        echo "\t\t</tbody>\n";
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching conferences found.</p>';
+        echo '<p class="m-3">No matching conferences found.</p>';
     }
     echo "\n</div>\n";
 

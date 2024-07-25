@@ -203,7 +203,7 @@ if (!empty($conferences['records'])) {
 
     echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
 
-    echo "\t\t<thead class=\"thead-dark\">\n";
+    echo "\t\t<thead class=\"table-secondary\">\n";
     echo "\t\t\t<tr>\n";
 
     // table headers

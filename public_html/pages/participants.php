@@ -109,7 +109,7 @@ if (isset($participant_id)) {
 
         echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
 
-        echo "\t\t<thead class=\"thead-dark\">\n";
+        echo "\t\t<thead class=\"table-secondary\">\n";
         echo "\t\t\t<tr>\n";
 
         // table headers
@@ -151,7 +151,7 @@ if (isset($participant_id)) {
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching conferences found.</p>';
+        echo '<p class="m-3">No matching conferences found.</p>';
     }
     echo "\n</div>\n";
 
@@ -213,7 +213,7 @@ if (isset($participant_id)) {
 
         echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
 
-        echo "\t\t<thead class=\"thead-dark\">\n";
+        echo "\t\t<thead class=\"table-secondary\">\n";
         echo "\t\t\t<tr>\n";
 
         // table headers
@@ -249,7 +249,7 @@ if (isset($participant_id)) {
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching conferences found.</p>';
+        echo '<p class="m-3">No matching conferences found.</p>';
     }
     echo "\n</div>\n";
 
@@ -311,7 +311,7 @@ if (isset($participant_id)) {
 
         echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
 
-        echo "\t\t<thead class=\"thead-dark\">\n";
+        echo "\t\t<thead class=\"table-secondary\">\n";
         echo "\t\t\t<tr>\n";
 
         // table headers
@@ -347,7 +347,7 @@ if (isset($participant_id)) {
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching conferences found.</p>';
+        echo '<p class="m-3">No matching conferences found.</p>';
     }
     echo "\n</div>\n";
 
@@ -403,7 +403,7 @@ if (isset($participant_id)) {
 
         echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
 
-        echo "\t\t<thead class=\"thead-dark\">\n";
+        echo "\t\t<thead class=\"table-secondary\">\n";
         echo "\t\t\t<tr>\n";
 
         // table headers
@@ -435,7 +435,7 @@ if (isset($participant_id)) {
         echo "\t</table>\n";
 
     } else {
-        echo '<p>No matching participants found.</p>';
+        echo '<p class="m-3">No matching participants found.</p>';
     }
     echo "\n</div>\n";
 
