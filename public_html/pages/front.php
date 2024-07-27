@@ -65,19 +65,13 @@ try {
 }
 
 // prepare the widget
+$widget['full'] = false;
 $widget['name'] = 'LastDays';
 $widget['title'] = 'Conferences for the last 2 days';
-if ($time_range_specified) {
-    $widget['time_period'] = "<p class=\"m-3\">time period: <strong>$from_time - $until_time</strong></p>";
-} else {
-    $widget['time_period'] = '';
-}
 if (!empty($conferences['records'])) {
     $widget['full'] = true;
     $widget['table_headers'] = array_keys($conferences['records'][0]);
     $widget['table_records'] = $conferences['records'];
-} else {
-    $widget['full'] = false;
 }
 
 // display the widget
@@ -141,19 +135,13 @@ try {
 }
 
 // prepare the widget
+$widget['full'] = false;
 $widget['name'] = 'LastConferences';
-$widget['title'] = "The last $conference_number conferences";
-if ($time_range_specified) {
-    $widget['time_period'] = "<p class=\"m-3\">time period: <strong>$from_time - $until_time</strong></p>";
-} else {
-    $widget['time_period'] = '';
-}
+$widget['title'] = 'The last ' . $conference_number . ' conferences';
 if (!empty($conferences['records'])) {
     $widget['full'] = true;
     $widget['table_headers'] = array_keys($conferences['records'][0]);
     $widget['table_records'] = $conferences['records'];
-} else {
-    $widget['full'] = false;
 }
 
 // display the widget

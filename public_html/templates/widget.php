@@ -3,7 +3,9 @@
 <div class="card bg-light card-body"><?= $widget['title'] ?></div></a>
 
 <div class="collapse show" id="collapse<?= $widget['name'] ?>">
-    <?= $widget['time_period'] ?>
+<?php if ($time_range_specified) { ?>
+    <p class="m-3">time period: <strong><?= $from_time ?> - <?= $until_time ?></strong></p>
+<?php } ?>
     <div class="mb-5">
 <?php if ($widget['full'] == true) { ?>
         <table class="table table-striped table-hover table-bordered">
