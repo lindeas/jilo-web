@@ -64,63 +64,24 @@ try {
     exit();
 }
 
-// display the result
-echo "<a style=\"text-decoration: none;\" data-toggle=\"collapse\" href=\"#collapseLastDays\" role=\"button\" aria-expanded=\"true\" aria-controls=\"collapseLastDays\">";
-echo "<div class=\"card bg-light card-body\">Conferences for the last 2 days</div></a>";
-
-echo "<div class=\"collapse show\" id=\"collapseLastDays\">";
-
+// prepare the widget
+$widget['name'] = 'LastDays';
+$widget['title'] = 'Conferences for the last 2 days';
 if ($time_range_specified) {
-    echo "<p class=\"m-3\">time period: <strong>$from_time - $until_time</strong></p>";
-}
-
-//// filters - time selection and sorting dropdowns
-//include 'templates/results-filter.php';
-
-// results table
-echo "<div class=\"mb-5\">\n";
-
-if (!empty($conferences['records'])) {
-
-    echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
-
-    echo "\t\t<thead class=\"thead-dark\">\n";
-    echo "\t\t\t<tr>\n";
-
-    // table headers
-    foreach (array_keys($conferences['records'][0]) as $header) {
-        echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
-    }
-    echo "\t\t\t</tr>\n";
-    echo "\t\t</thead>\n";
-
-    echo "\t\t<tbody>\n";
-
-    //table rows
-    foreach ($conferences['records'] as $row) {
-        echo "\t\t\t<tr>\n";
-        // sometimes $column is empty, we make it '' then
-        foreach ($row as $key => $column) {
-            if ($key === 'conference ID' && $column === $conference_id) {
-                echo "\t\t\t\t<td><strong>" . htmlspecialchars($column ?? '') . "</strong></td>\n";
-            } elseif ($key === 'conference name') {
-                echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
-            } else {
-                echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
-            }
-        }
-        echo "\t\t\t</tr>\n";
-    }
-
-    echo "\t\t</tbody>\n";
-    echo "\t</table>\n";
-
+    $widget['time_period'] = "<p class=\"m-3\">time period: <strong>$from_time - $until_time</strong></p>";
 } else {
-    echo '<p class="m-3">No matching conferences found.</p>';
+    $widget['time_period'] = '';
 }
-echo "\n</div>\n";
+if (!empty($conferences['records'])) {
+    $widget['full'] = true;
+    $widget['table_headers'] = array_keys($conferences['records'][0]);
+    $widget['table_records'] = $conferences['records'];
+} else {
+    $widget['full'] = false;
+}
 
-echo "</div>";
+// display the widget
+include('templates/widget.php');
 
 echo "<br />";
 
@@ -179,63 +140,23 @@ try {
     exit();
 }
 
-// display the result
-echo "<a style=\"text-decoration: none;\" data-toggle=\"collapse\" href=\"#collapseLastConferences\" role=\"button\" aria-expanded=\"true\" aria-controls=\"collapseLastConferences\">";
-echo "<div class=\"card bg-light card-body\">The last $conference_number conferences</div></a>";
-
-echo "<div class=\"collapse show\" id=\"collapseLastConferences\">";
-
+// prepare the widget
+$widget['name'] = 'LastConferences';
+$widget['title'] = "The last $conference_number conferences";
 if ($time_range_specified) {
-    echo "<br />for the time period <strong>$from_time - $until_time</strong>";
-}
-
-//// filters - time selection and sorting dropdowns
-//include 'templates/results-filter.php';
-
-// results table
-echo "<div class=\"mb-5\">\n";
-
-if (!empty($conferences['records'])) {
-
-    echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
-
-    echo "\t\t<thead class=\"table-secondary\">\n";
-    echo "\t\t\t<tr>\n";
-
-    // table headers
-    foreach (array_keys($conferences['records'][0]) as $header) {
-        echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
-    }
-    echo "\t\t\t</tr>\n";
-    echo "\t\t</thead>\n";
-
-    echo "\t\t<tbody>\n";
-
-    //table rows
-    foreach ($conferences['records'] as $row) {
-        echo "\t\t\t<tr>\n";
-        // sometimes $column is empty, we make it '' then
-        foreach ($row as $key => $column) {
-            if ($key === 'conference ID') {
-                echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
-            } elseif ($key === 'conference name') {
-                echo "\t\t\t\t<td><a href=\"$app_root?page=conferences&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
-            } else {
-                echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
-            }
-        }
-        echo "\t\t\t</tr>\n";
-    }
-
-    echo "\t\t</tbody>\n";
-    echo "\t</table>\n";
-
+    $widget['time_period'] = "<p class=\"m-3\">time period: <strong>$from_time - $until_time</strong></p>";
 } else {
-    echo '<p class="m-3">No matching conferences found.</p>';
+    $widget['time_period'] = '';
 }
-echo "\n</div>\n";
+if (!empty($conferences['records'])) {
+    $widget['full'] = true;
+    $widget['table_headers'] = array_keys($conferences['records'][0]);
+    $widget['table_records'] = $conferences['records'];
+} else {
+    $widget['full'] = false;
+}
 
-echo "</div>";
-
+// display the widget
+include('templates/widget.php');
 
 ?>
