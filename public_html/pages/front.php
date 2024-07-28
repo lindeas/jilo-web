@@ -68,6 +68,9 @@ try {
 $widget['full'] = false;
 $widget['name'] = 'LastDays';
 $widget['title'] = 'Conferences for the last 2 days';
+$widget['collapsible'] = true;
+$widget['collapsed'] = false;
+$widget['filter'] = false;
 if (!empty($conferences['records'])) {
     $widget['full'] = true;
     $widget['table_headers'] = array_keys($conferences['records'][0]);
@@ -138,6 +141,10 @@ try {
 $widget['full'] = false;
 $widget['name'] = 'LastConferences';
 $widget['title'] = 'The last ' . $conference_number . ' conferences';
+$widget['collapsible'] = true;
+$widget['collapsed'] = false;
+$widget['filter'] = false;
+
 if (!empty($conferences['records'])) {
     $widget['full'] = true;
     $widget['table_headers'] = array_keys($conferences['records'][0]);

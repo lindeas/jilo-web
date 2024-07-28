@@ -48,103 +48,54 @@ try {
 
 
 // list of all component events (default)
-//if ($jitsi_component) {
-    try {
-        $component = new Component($db);
+$component = new Component($db);
 
-        // prepare the result
-        $search = $component->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
+// prepare the result
+$search = $component->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
 
-        if (!empty($search)) {
-            $components = array();
-            $components['records'] = array();
+if (!empty($search)) {
+    $components = array();
+    $components['records'] = array();
 
-            foreach ($search as $item) {
-                extract($item);
-                $component_record = array(
-                    // assign title to the field in the array record
-                    'component'		=> $jitsi_component,
-                    'loglevel'		=> $loglevel,
-                    'time'		=> $time,
-                    'component ID'	=> $component_id,
-                    'event'		=> $event_type,
-                    'param'		=> $event_param,
-                );
-                // populate the result array
-                array_push($components['records'], $component_record);
-            }
-        }
-
-    } catch (Exception $e) {
-        $error = 'Error: ' . $e->getMessage();
-        include 'templates/message.php';
-        exit();
+    foreach ($search as $item) {
+        extract($item);
+        $component_record = array(
+            // assign title to the field in the array record
+            'component'		=> $jitsi_component,
+            'loglevel'		=> $loglevel,
+            'time'		=> $time,
+            'component ID'	=> $component_id,
+            'event'		=> $event_type,
+            'param'		=> $event_param,
+        );
+        // populate the result array
+        array_push($components['records'], $component_record);
     }
+}
 
-    // display the result
+// prepare the widget
+$widget['full'] = false;
+$widget['name'] = 'AllComponents';
+$widget['collapsible'] = false;
+$widget['collapsed'] = false;
+$widget['filter'] = true;
 
-    // format the header message
-    echo "<div class=\"results-header\">\n";
-    if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-        echo "<div class=\"results-message\">Jitsi events for component <strong>" . $_REQUEST['name'] . "</strong>";
-    } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-        echo "<div class=\"results-message\">Jitsi events for component ID <br /><strong>" . $_REQUEST['id'] . "</strong>";
-    } else {
-        echo "<div class=\"results-message\">Jitsi events for <strong>all components</strong>";
-    }
-    if ($time_range_specified) {
-        echo "<br />for the time period <strong>$from_time - $until_time</strong>";
-    }
-    echo "</div>\n\n";
+// widget title
+if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
+    $widget['title'] = 'Jitsi events for component <strong>' . $_REQUEST['name'] . '</strong>';
+} elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
+    $widget['title'] = 'Jitsi events for component ID <br /><strong>' . $_REQUEST['id'] . '</strong>';
+} else {
+    $widget['title'] = 'Jitsi events for <strong>all components</strong>';
+}
+// widget records
+if (!empty($components['records'])) {
+    $widget['full'] = true;
+    $widget['table_headers'] = array_keys($components['records'][0]);
+    $widget['table_records'] = $components['records'];
+}
 
-    // filters - time selection and sorting dropdowns
-    include 'templates/results-filter.php';
-
-    echo "</div>\n\n";
-
-    // results table
-    echo "<div class=\"mb-5\">\n";
-
-    if (!empty($components['records'])) {
-
-        echo "\t<table class=\"table table-striped table-hover table-bordered\">\n";
-
-        echo "\t\t<thead class=\"table-secondary\">\n";
-        echo "\t\t\t<tr>\n";
-
-        // table headers
-        foreach (array_keys($components['records'][0]) as $header) {
-            echo "\t\t\t\t<th scope=\"col\">" . htmlspecialchars($header) . "</th>\n";
-        }
-        echo "\t\t\t</tr>\n";
-        echo "\t\t</thead>\n";
-
-        echo "\t\t<tbody>\n";
-
-        //table rows
-        foreach ($components['records'] as $row) {
-            echo "\t\t\t<tr>\n";
-            // sometimes $column is empty, we make it '' then
-            foreach ($row as $key => $column) {
-                if ($key === 'component ID') {
-                    echo "\t\t\t\t<td><a href=\"$app_root?page=components&id=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
-                } elseif ($key === 'component') {
-                    echo "\t\t\t\t<td><a href=\"$app_root?page=components&name=" . htmlspecialchars($column ?? '') . "\">" . htmlspecialchars($column ?? '') . "</a></td>\n";
-                } else {
-                    echo "\t\t\t\t<td>" . htmlspecialchars($column ?? '') . "</td>\n";
-                }
-            }
-            echo "\t\t\t</tr>\n";
-        }
-
-        echo "\t\t</tbody>\n";
-        echo "\t</table>\n";
-
-    } else {
-        echo '<p class="m-3">No matching Jitsi component events found.</p>';
-    }
-    echo "\n</div>\n";
-
-//}
+// display the widget
+include('templates/widget.php');
 
 ?>

@@ -1,5 +1,5 @@
 
-    <div class="results-filter">
+    <div class="card w-auto bg-light card-body text-right">
 
         <form method="POST" id="filter_form" action="?page=<?= $page ?>">
 
@@ -17,15 +17,9 @@
             <input type="text" name="ip" placeholder="ip address"<?php if (isset($_REQUEST['ip'])) echo " value=\"" . $_REQUEST['ip'] . "\"" ?> maxlength="15" size="15" />
 <?php } ?>
 
-            <br />
+            <input type="button" onclick="clearFilter()" value="clear" />
 
-            <div class="float-end pt-3">
-
-                <input type="button" onclick="clearFilter()" value="clear" />
-
-                <input type="submit" value="search" />
-
-            </div>
+            <input type="submit" value="search" />
 
         </form>
 
