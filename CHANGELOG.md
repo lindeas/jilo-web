@@ -13,9 +13,11 @@ All notable changes to this project will be documented in this file.
 - gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.1.1...HEAD
 
 ### Added
-- Added front page widgets
+- Added collapsible front page widgets
+- Added widgets to conferences, participants and components pages
 
 ### Changed
+- MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
 
 ### Fixed
 

@@ -10,13 +10,13 @@
 
 - - ~~add bootstrap template~~
 
-- - clean up the code to follow model-view--controller style
+- - ~~clean up the code to follow model-view--controller style~~
 
-- - no HTML inside PHP code
+- - ~~no HTML inside PHP code~~
 
 - - put all additional functions in files in a separate folder
 
-- - reduce try/catch usage, use it only for critical errors
+- - ~~reduce try/catch usage, use it only for critical errors~~
 
 - - move all SQL code in the model classes, one query per method
 

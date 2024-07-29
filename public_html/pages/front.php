@@ -80,7 +80,6 @@ if (!empty($conferences['records'])) {
 // display the widget
 include('templates/widget.php');
 
-echo "<br />";
 
 // last 10 conferences
 try {

@@ -1,11 +1,5 @@
-<?php ?>
+<?php
 
-<div>
+include('templates/widget-profile.php');
 
-<p>Profile of <?= $user ?></p>
-
-<ul>
-    <li>username: <?= $_SESSION['username'] ?></li>
-</ul>
-
-</div>
+?>
