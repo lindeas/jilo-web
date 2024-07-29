@@ -1,5 +1,5 @@
 
-    <div class="card w-auto bg-light card-body text-right">
+    <div class="card w-auto bg-light border-light card-body text-right" style="text-align: right;">
 
         <form method="POST" id="filter_form" action="?page=<?= $page ?>">
 

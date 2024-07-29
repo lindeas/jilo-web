@@ -3,8 +3,10 @@
 
 <?php if ($widget['collapsible'] === true) { ?>
     <a style="text-decoration: none;" data-toggle="collapse" href="#collapse<?= $widget['name'] ?>" role="button" aria-expanded="true" aria-controls="collapse<?= $widget['name'] ?>">
+    <div class="card w-auto bg-light card-body"  style="flex-direction: row;"><?= $widget['title'] ?></div>
+<?php } else { ?>
+    <div class="card w-auto bg-light border-light card-body"  style="flex-direction: row;"><?= $widget['title'] ?></div>
 <?php } ?>
-    <div class="card w-auto bg-light card-body"><?= $widget['title'] ?></div>
 <?php if ($widget['filter'] === true) {
     include('templates/results-filter.php');
 } ?>

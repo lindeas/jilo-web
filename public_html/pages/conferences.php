@@ -133,9 +133,9 @@ $widget['filter'] = true;
 if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
     $widget['title'] = 'Conferences with name matching "<strong>' . $_REQUEST['name'] . '"</strong>';
 } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-    $widget['title'] = 'Conferences with ID matching "<strong>' . $_REQUEST['id'] . '"</strong>';
+    $widget['title'] = 'Conference with ID "<strong>' . $_REQUEST['id'] . '"</strong>';
 } else {
-    $widget['title'] = 'Jitsi events for <strong>all components</strong>';
+    $widget['title'] = 'All conferences';
 }
 // widget records
 if (!empty($conferences['records'])) {

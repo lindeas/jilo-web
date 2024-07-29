@@ -82,11 +82,11 @@ $widget['filter'] = true;
 
 // widget title
 if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-    $widget['title'] = 'Jitsi events for component <strong>' . $_REQUEST['name'] . '</strong>';
+    $widget['title'] = 'Jitsi events for component&nbsp;<strong>' . $_REQUEST['name'] . '</strong>';
 } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-    $widget['title'] = 'Jitsi events for component ID <br /><strong>' . $_REQUEST['id'] . '</strong>';
+    $widget['title'] = 'Jitsi events for component ID&nbsp;<strong>' . $_REQUEST['id'] . '</strong>';
 } else {
-    $widget['title'] = 'Jitsi events for <strong>all components</strong>';
+    $widget['title'] = 'Jitsi events for&nbsp;<strong>all components</strong>';
 }
 // widget records
 if (!empty($components['records'])) {
