@@ -46,10 +46,18 @@
                     <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
 <?php               } elseif ($key === 'conference name') { ?>
                     <td><a href="<?= $app_root ?>?page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php               } elseif ($key === 'participant ID' && isset($participantId) && $participantId === $column) { ?>
+                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+<?php               } elseif ($key === 'participant ID') { ?>
+                    <td><a href="<?= $app_root ?>?page=participants&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
 <?php               } elseif ($key === 'component ID') { ?>
                     <td><a href="<?= $app_root ?>?page=components&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php               } elseif ($stats_id && $key === 'parameter' && isset($participantName) && $participantName === $column) { ?>
+                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
 <?php               } elseif ($stats_id && $key === 'parameter') { ?>
                     <td><a href="<?= $app_root ?>?page=participants&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php               } elseif ($participant_ip && $key === 'parameter' && isset($participantIp) && $participantIp === $column) { ?>
+                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
 <?php               } elseif ($participant_ip && $key === 'parameter') { ?>
                     <td><a href="<?= $app_root ?>?page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
 <?php               } elseif ($key === 'component') { ?>

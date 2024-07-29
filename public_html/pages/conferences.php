@@ -124,7 +124,7 @@ if (!empty($search)) {
 
 // prepare the widget
 $widget['full'] = false;
-$widget['name'] = 'ConferenceId';
+$widget['name'] = 'Conferences';
 $widget['collapsible'] = false;
 $widget['collapsed'] = false;
 $widget['filter'] = true;
