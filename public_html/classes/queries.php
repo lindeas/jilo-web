@@ -4,6 +4,64 @@
 
 return [
 
+    // number of conferences for time period (if given)
+    'conferences_number' => "
+SELECT COUNT(c.conference_id) as conferences
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')",
+
+
+    // search for a conference by its ID for a time period (if given)
+    'conference_by_id' => "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    c.conference_id = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    c.conference_id = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time;",
+
+
+
+
     // list of conferences for time period (if given)
     // fields: component, duration, conference ID, conference name, number of participants, name count (the conf name is found), conference host
     'conferences_all_formatted' => "

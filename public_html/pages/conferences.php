@@ -38,7 +38,7 @@ try {
     $db = new Database($config['jilo_database']);
 } catch (Exception $e) {
     $error = 'Error: ' . $e->getMessage();
-    include 'templates/message.php';
+    include 'templates/block-message.php';
     exit();
 }
 

@@ -83,27 +83,27 @@ if (in_array($page, $allowed_urls)) {
         setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
         $notice = "You were logged out.<br />You can log in again.";
-        include 'templates/header.php';
-        include 'templates/menu.php';
-        include 'templates/message.php';
+        include 'templates/page-header.php';
+        include 'templates/page-menu.php';
+        include 'templates/block-message.php';
         include 'pages/login.php';
 
     // all other normal pages
     } else {
-        include 'templates/header.php';
-        include 'templates/menu.php';
-        include 'templates/message.php';
+        include 'templates/page-header.php';
+        include 'templates/page-menu.php';
+        include 'templates/block-message.php';
         include "pages/{$page}.php";
     }
 
 // the page is not in allowed urls, loading front page
 } else {
-    include 'templates/header.php';
-    include 'templates/menu.php';
-    include 'templates/message.php';
+    include 'templates/page-header.php';
+    include 'templates/page-menu.php';
+    include 'templates/block-message.php';
     include 'pages/front.php';
 }
-include 'templates/footer.php';
+include 'templates/page-footer.php';
 
 // clear errors and notices before next page just in case
 unset($_SESSION['error']);

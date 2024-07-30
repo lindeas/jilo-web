@@ -28,7 +28,7 @@ try {
     $error = $e->getMessage();
 }
 
-include 'templates/message.php';
+include 'templates/block-message.php';
 include 'templates/form-register.php';
 
 ?>
