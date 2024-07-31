@@ -11,7 +11,9 @@ FROM
     conferences c
 LEFT JOIN
     conference_events ce ON c.conference_id = ce.conference_id
-WHERE (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')",
+WHERE
+    (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')
+AND ce.conference_event = 'conference created'",
 
 
     // search for a conference by its ID for a time period (if given)
@@ -58,8 +60,6 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 
 ORDER BY
     pe.time;",
-
-
 
 
     // list of conferences for time period (if given)
