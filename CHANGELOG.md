@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added collapsible front page widgets
 - Added widgets to conferences, participants and components pages
-- Added front page widget for monthly conferences number
+- Added front page widget for monthly conferences and participants number
 
 ### Changed
 - MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
