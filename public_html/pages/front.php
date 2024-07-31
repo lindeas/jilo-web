@@ -2,6 +2,7 @@
 
 require_once 'classes/database.php';
 require 'classes/conference.php';
+require 'classes/participant.php';
 
 // connect to database
 try {
@@ -20,6 +21,7 @@ try {
 ////
 // monthly usage
 $conference = new Conference($db);
+$participant = new Participant($db);
 
 // monthly conferences for the last year
 $fromMonth = (new DateTime())->sub(new DateInterval('P1Y'));
@@ -29,7 +31,8 @@ $from_time = $fromMonth->format('Y-m-d');
 $until_time = $thisMonth->format('Y-m-d');
 
 $widget['table_headers'] = array();
-$widget['table_records'] = array();
+$widget['table_records_conferences'] = array();
+$widget['table_records_participants'] = array();
 
 // loop 1 year in the past
 while ($fromMonth < $thisMonth) {
@@ -37,17 +40,23 @@ while ($fromMonth < $thisMonth) {
     $untilMonth = clone $fromMonth;
     $untilMonth->modify('last day of this month');
 
-    $search = $conference->conferencesNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
+    $searchConferenceNumber = $conference->conferenceNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
+    $searchParticipantNumber = $participant->participantNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
 
     // pretty format for displaying the month in the widget
     $month = $fromMonth->format('F Y');
 
     // populate the table
     array_push($widget['table_headers'], $month);
-    if (isset($search[0]['conferences'])) {
-        array_push($widget['table_records'], $search[0]['conferences']);
+    if (isset($searchConferenceNumber[0]['conferences'])) {
+        array_push($widget['table_records_conferences'], $searchConferenceNumber[0]['conferences']);
     } else {
-        array_push($widget['table_records'], '0');
+        array_push($widget['table_records_conferences'], '0');
+    }
+    if (isset($searchParticipantNumber[0]['participants'])) {
+        array_push($widget['table_records_participants'], $searchParticipantNumber[0]['participants']);
+    } else {
+        array_push($widget['table_records_participants'], '0');
     }
 
     // move everything one month in future
@@ -60,11 +69,11 @@ $time_range_specified = true;
 // prepare the widget
 $widget['full'] = false;
 $widget['name'] = 'LastYearMonths';
-$widget['title'] = 'Conferences monthly number for the last year';
+$widget['title'] = 'Conferences monthly stats for the last year';
 $widget['collapsible'] = true;
 $widget['collapsed'] = false;
 $widget['filter'] = false;
-if (!empty($search)) {
+if (!empty($searchConferenceNumber) && !empty($searchParticipantNumber)) {
     $widget['full'] = true;
 }
 

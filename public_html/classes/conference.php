@@ -85,7 +85,7 @@ class Conference {
     }
 
     // number of conferences
-    public function conferencesNumber($from_time, $until_time) {
+    public function conferenceNumber($from_time, $until_time) {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -99,7 +99,7 @@ class Conference {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['conferences_number'];
+        $sql = $this->queries['conference_number'];
         $sql = sprintf($sql, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);

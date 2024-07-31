@@ -24,6 +24,7 @@
         <table class="table table-striped table-hover table-bordered">
             <thead class="thead-dark">
                 <tr>
+                    <th scope="col"></th>
 <?php     foreach ($widget['table_headers'] as $header) { ?>
                     <th scope="col"><?= htmlspecialchars($header) ?></th>
 <?php     } ?>
@@ -31,7 +32,14 @@
             </thead>
             <tbody>
                 <tr>
-<?php     foreach ($widget['table_records'] as $row) { ?>
+                    <td>conferences</td>
+<?php     foreach ($widget['table_records_conferences'] as $row) { ?>
+                    <td><?= htmlspecialchars($row ?? '') ?></td>
+<?php     } ?>
+                </tr>
+                <tr>
+                    <td>participants</td>
+<?php     foreach ($widget['table_records_participants'] as $row) { ?>
                     <td><?= htmlspecialchars($row ?? '') ?></td>
 <?php     } ?>
                 </tr>

@@ -5,7 +5,7 @@
 return [
 
     // number of conferences for time period (if given)
-    'conferences_number' => "
+    'conference_number' => "
 SELECT COUNT(c.conference_id) as conferences
 FROM
     conferences c
@@ -199,6 +199,18 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 
 ORDER BY
     pe.time;",
+
+
+    // number of participants for time period (if given)
+    'participant_number' => "
+SELECT COUNT(p.endpoint_id) as participants
+FROM
+    participants p
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+AND pe.event_type = 'pair selected'",
 
 
     // list all participants
