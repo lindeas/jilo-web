@@ -1,34 +1,43 @@
 <?php
 
-require_once 'classes/database.php';
-require 'classes/user.php';
-unset($error);
+// registration is allowed, go on
+if ($config['registration_enabled'] === true) {
 
-try {
-    $db = new Database($config['database']);
-    $user = new User($db);
+    require_once 'classes/database.php';
+    require 'classes/user.php';
+    unset($error);
 
-    if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+    try {
+        $db = new Database($config['database']);
+        $user = new User($db);
 
-        // redirect to login
-        if ( $user->register($username, $password) ) {
-            $_SESSION['notice'] = "Registration successful.<br />You can log in now.";
-            header('Location: index.php');
-            exit();
-        // registration fail, redirect to login
-        } else {
-            $_SESSION['error'] = "Registration failed.";
-            header('Location: index.php');
-            exit();
+        if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+
+            // redirect to login
+            if ( $user->register($username, $password) ) {
+                $_SESSION['notice'] = "Registration successful.<br />You can log in now.";
+                header('Location: index.php');
+                exit();
+            // registration fail, redirect to login
+            } else {
+                $_SESSION['error'] = "Registration failed.";
+                header('Location: index.php');
+                exit();
+            }
         }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
-} catch (Exception $e) {
-    $error = $e->getMessage();
-}
 
-include 'templates/block-message.php';
-include 'templates/form-register.php';
+    include 'templates/block-message.php';
+    include 'templates/form-register.php';
+
+// registration disabled
+} else {
+    $notice = 'Registration is disabled';
+    include 'templates/block-message.php';
+}
 
 ?>

@@ -68,6 +68,11 @@ try {
     $error = $e->getMessage();
 }
 
+if (!empty($config['login_message'])) {
+    $notice = $config['login_message'];
+    include 'templates/block-message.php';
+}
+
 include 'templates/form-login.php';
 
 ?>
