@@ -203,14 +203,14 @@ ORDER BY
 
     // number of participants for time period (if given)
     'participant_number' => "
-SELECT COUNT(p.endpoint_id) as participants
+SELECT COUNT(DISTINCT p.endpoint_id) as participants
 FROM
     participants p
 LEFT JOIN
     participant_events pe ON p.endpoint_id = pe.participant_id
 WHERE
     (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
-AND pe.event_type = 'pair selected'",
+AND pe.event_type = 'participant joining'",
 
 
     // list all participants
