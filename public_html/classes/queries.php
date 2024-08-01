@@ -67,19 +67,43 @@ ORDER BY
     'conferences_all_formatted' => "
 SELECT DISTINCT
     c.jitsi_component,
-    (SELECT ce.time
-        FROM conference_events ce
-        WHERE
-            ce.conference_id = c.conference_id
-            AND
-            ce.conference_event = 'conference created')
+    (SELECT COALESCE
+        (
+            (SELECT ce.time
+                FROM conference_events ce
+                WHERE
+                    ce.conference_id = c.conference_id
+                    AND
+                    ce.conference_event = 'conference created'
+            ),
+            (SELECT ce.time
+                FROM conference_events ce
+                WHERE
+                    ce.conference_id = c.conference_id
+                    AND
+                    ce.conference_event = 'bridge selected'
+            )
+        )
+    )
     AS start,
-    (SELECT ce.time
-        FROM conference_events ce
-        WHERE
-            ce.conference_id = c.conference_id
-            AND
-            ce.conference_event = 'conference expired')
+    (SELECT COALESCE
+        (
+            (SELECT ce.time
+                FROM conference_events ce
+                WHERE
+                    ce.conference_id = c.conference_id
+                    AND
+                    (ce.conference_event = 'conference expired' OR ce.conference_event = 'conference stopped')
+            ),
+            (SELECT pe.time
+                FROM participant_events pe
+                WHERE
+                    pe.event_param = c.conference_id
+                ORDER BY pe.time DESC
+                LIMIT 1
+            )
+        )
+    )
     AS end,
     c.conference_id,
     c.conference_name,
