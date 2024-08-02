@@ -107,6 +107,7 @@ if (in_array($page, $allowed_urls)) {
         include 'templates/page-header.php';
         include 'templates/page-menu.php';
         include 'templates/block-message.php';
+        include 'templates/page-sidebar.php';
         include "pages/{$page}.php";
     }
 
