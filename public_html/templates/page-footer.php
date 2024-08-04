@@ -8,6 +8,12 @@
 
     </div>
 
+<script>
+    document.getElementById('toggleSidebarButton').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+</script>
+
 </body>
 
 </html>

@@ -2,7 +2,7 @@
         <!-- Menu -->
         <div class="menu-container">
             <ul class="menu-left">
-                <button class="btn btn-primary mb-3" type="button" data-toggle="collapse" data-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
+                <button class="btn btn-primary mb-3" type="button" id="toggleSidebarButton">
                     sidebar
                 </button>
 
