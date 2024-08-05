@@ -2,9 +2,6 @@
         <!-- Menu -->
         <div class="menu-container">
             <ul class="menu-left">
-                <button class="btn btn-primary mb-3" type="button" id="toggleSidebarButton">
-                    sidebar
-                </button>
                 <li><a href="index.php">home</a></li>
 <?php if ( isset($_SESSION['username']) ) { ?>
                 <li><a href="?page=config">config</a></li>

@@ -129,7 +129,7 @@
     overflow-x: hidden;
 }
 .sidebar-wrapper.collapsed {
-    width: 2em;
+    width: 3em;
 }
 .sidebar-content {
     width: 250px;
