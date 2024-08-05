@@ -5,8 +5,8 @@
                 <!--button class="btn btn-secondary" type="button" id="toggleSidebarButton">
                     sidebar
                 </button-->
-                <div class="sidebar-content card card-body">
-                    <ul class="list-group">
+                <div class="sidebar-content card ml-3 mt-3">
+                    <ul class="list-group list-group-flush">
                         <li class="list-group-item"><a href="#">stats</a></li>
                         <li class="list-group-item"><a href="#">config</a></li>
                         <li class="list-group-item"><a href="#">logs</a></li>
