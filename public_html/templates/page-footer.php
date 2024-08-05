@@ -9,9 +9,11 @@
     </div>
 
 <script>
+    // slide the sidebar to the left instead of default up
     document.getElementById('toggleSidebarButton').addEventListener('click', function () {
         document.getElementById('sidebar').classList.toggle('collapsed');
     });
+
 </script>
 
 </body>

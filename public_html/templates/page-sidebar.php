@@ -13,6 +13,6 @@
 
             <!-- /Sidebar -->
 
-        <div class="col-md-9">
+        <div class="col-md-9" id="main-content">
 
             <!-- Main content -->

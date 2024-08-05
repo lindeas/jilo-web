@@ -121,15 +121,16 @@
     border: 1px solid gray;
 }
 
+
+/* collapsing sidebar */
 .sidebar-wrapper {
-    width: 250px; /* Default width of the sidebar */
-    transition: width 0.3s; /* Smooth transition for collapsing */
-    overflow-x: hidden; /* Hide horizontal scrollbar */
+    width: 250px;
+    transition: width 0.5s ease;
+    overflow-x: hidden;
 }
 .sidebar-wrapper.collapsed {
-    width: 0; /* Collapsed width */
+    width: 2em;
 }
 .sidebar-content {
-    width: 250px; /* Keep content width for centering */
+    width: 250px;
 }
-
