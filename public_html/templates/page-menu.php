@@ -2,9 +2,12 @@
         <!-- Menu -->
         <div class="menu-container">
             <ul class="menu-left">
-<button class="btn btn-secondary" type="button" id="toggleSidebarButton">
-                    sidebar
-                </button>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4"><img src="" />JILO</div>
+                        <div class="col-4"><button class="btn btn-secondary" type="button" id="toggleSidebarButton" value=">>"></button></div>
+                    </div>
+                </div>
 
                 <li><a href="index.php">home</a></li>
 <?php if ( isset($_SESSION['username']) ) { ?>

@@ -14,9 +14,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function applySavedState() {
         var savedState = localStorage.getItem('sidebarState');
         if (savedState === 'collapsed') {
+            toggleButton.value = ">>";
+            toggleButton.textContent = ">>";
             sidebar.classList.add('collapsed');
             mainContent.classList.add('expanded');
         } else {
+            toggleButton.value = "<<";
+            toggleButton.textContent = "<<";
             sidebar.classList.remove('collapsed');
             mainContent.classList.remove('expanded');
         }
@@ -29,6 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // toggle sidebar and main content
         sidebar.classList.toggle('collapsed');
         mainContent.classList.toggle('expanded');
+        // Toggle the value between ">>" and "<<"
+        if (toggleButton.value === ">>") {
+          toggleButton.value = "<<";
+          toggleButton.textContent = "<<";
+        } else {
+          toggleButton.value = ">>";
+          toggleButton.textContent = ">>";
+        }
 
         // Update with the new state
         updateStorage();
