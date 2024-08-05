@@ -134,3 +134,9 @@
 .sidebar-content {
     width: 250px;
 }
+
+.main-content {
+    transition: width: 0.5s ease;
+}
+.main-content.expanded {
+}

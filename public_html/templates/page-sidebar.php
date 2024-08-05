@@ -2,9 +2,9 @@
 
             <!-- Sidebar -->
             <div class="col-md-3 sidebar-wrapper bg-light" id="sidebar">
-                <button class="btn btn-secondary" type="button" id="toggleSidebarButton">
+                <!--button class="btn btn-secondary" type="button" id="toggleSidebarButton">
                     sidebar
-                </button>
+                </button-->
                 <div class="sidebar-content card card-body">
                     <ul class="list-group">
                         <li class="list-group-item"><a href="#">stats</a></li>
@@ -16,6 +16,6 @@
 
             <!-- /Sidebar -->
 
-        <div class="col-md-9" id="main-content">
+        <div class="col-md-9 main-content" id="mainContent">
 
             <!-- Main content -->
