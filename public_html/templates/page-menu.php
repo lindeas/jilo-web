@@ -4,7 +4,7 @@
             <ul class="menu-left">
                 <div class="container">
                     <div class="row">
-                        <div class="col-4"><img src="" alt="JILO"/></div>
+                        <div class="col-4"><img class="logo" src="static/jilo-logo.png" alt="JILO"/></div>
                         <div class="col-4"><button class="btn btn-sm btn-info" style="position: absolute; top: 55px; left: 11px; z-index: 100;" type="button" id="toggleSidebarButton" value=">>"></button></div>
                     </div>
                 </div>
