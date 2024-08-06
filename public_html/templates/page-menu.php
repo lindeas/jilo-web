@@ -4,12 +4,12 @@
             <ul class="menu-left">
                 <div class="container">
                     <div class="row">
-                        <div class="col-4"><img class="logo" src="static/jilo-logo.png" alt="JILO"/></div>
+                        <a href="index.php" class="logo-link"><div class="col-4"><img class="logo" src="static/jilo-logo.png" alt="JILO"/></div></a>
                         <div class="col-4"><button class="btn btn-sm btn-info" style="position: absolute; top: 55px; left: 11px; z-index: 100;" type="button" id="toggleSidebarButton" value=">>"></button></div>
                     </div>
                 </div>
 
-                <li><a href="index.php">home</a></li>
+                <!--li><a href="index.php">home</a></li-->
 <?php if ( isset($_SESSION['username']) ) { ?>
                 <li><a href="?page=config">config</a></li>
                 <li><a href="?page=conferences">conferences</a></li>

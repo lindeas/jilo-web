@@ -124,7 +124,7 @@
 
 /* collapsing sidebar */
 .sidebar-wrapper {
-    width: 250px;
+    width: 275px;
     transition: width 0.5s ease;
     overflow-x: hidden;
 }
@@ -144,4 +144,11 @@
 .logo {
     height: 35px;
     margin-top: 10px;
+}
+
+.logo-link {
+    border: 1px solid white;
+    margin-top: 2px;
+    margin-left: 2px;
+    background-color: lightseagreen;
 }
