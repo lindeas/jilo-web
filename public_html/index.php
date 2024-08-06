@@ -65,6 +65,7 @@ if (isset($_GET['page'])) {
 }
 
 // check if logged in
+unset($user);
 if (isset($_COOKIE['username'])) {
     if ( !isset($_SESSION['username']) ) {
         $_SESSION['username'] = $_COOKIE['username'];
@@ -107,15 +108,21 @@ if (in_array($page, $allowed_urls)) {
         include 'templates/page-header.php';
         include 'templates/page-menu.php';
         include 'templates/block-message.php';
-        include 'templates/page-sidebar.php';
+        if (isset($user)) {
+            include 'templates/page-sidebar.php';
+        }
         include "pages/{$page}.php";
     }
 
 // the page is not in allowed urls, loading front page
 } else {
+    $error = 'The page "' . $page . '" is not found';
     include 'templates/page-header.php';
     include 'templates/page-menu.php';
     include 'templates/block-message.php';
+    if (isset($user)) {
+        include 'templates/page-sidebar.php';
+    }
     include 'pages/front.php';
 }
 include 'templates/page-footer.php';

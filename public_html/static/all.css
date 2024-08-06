@@ -123,7 +123,19 @@
 
 
 /* collapsing sidebar */
+.toggle-sidebar-button {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    z-index: 100;
+    margin: 10px;
+    height: 22px;
+    width: 22px;
+    padding-left: 2px;
+    padding-top: 0px;
+}
 .sidebar-wrapper {
+    position: relative;
     width: 275px;
     transition: width 0.5s ease;
     overflow-x: hidden;
