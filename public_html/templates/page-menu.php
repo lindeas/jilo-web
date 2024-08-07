@@ -16,7 +16,7 @@
                 <li><a href="?page=participants">participants</a></li>
                 <li><a href="?page=components">components</a></li-->
 
-                <li><a href="?page=participants">meet.example.com</a></li>
+                <li><a style="background-color: #111;" href="#">meet.example.com</a></li>
 
 <?php } ?>
             </ul>
