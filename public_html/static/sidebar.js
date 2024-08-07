@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleButton.addEventListener('click', function () {
         // toggle sidebar and main content
         sidebar.classList.toggle('collapsed');
+        document.documentElement.classList.toggle('sidebar-collapsed');
         mainContent.classList.toggle('expanded');
         // Toggle the value between ">>" and "<<"
         if (toggleButton.value === ">>") {
