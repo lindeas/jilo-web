@@ -145,12 +145,15 @@
 }
 .sidebar-content {
     width: 250px;
+    border: none;
 }
 
 .main-content {
     transition: width: 0.5s ease;
+    width: 80%; /* 75% */
 }
 .main-content.expanded {
+    width: 95%; /* none */
 }
 
 .logo {
@@ -163,4 +166,8 @@
     margin-top: 2px;
     margin-left: 2px;
     background-color: lightseagreen;
+}
+
+.sidebar-content a {
+    text-decoration: none;
 }

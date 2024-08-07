@@ -8,11 +8,16 @@
                     </div>
                 </div>
 
+<li class="font-weight-light text-uppercase" style="font-size: 0.5em; color: whitesmoke; margin-right: 70px; align-content: center;">version&nbsp;<?php echo $config['version']; ?></li>
+
 <?php if ( isset($_SESSION['username']) ) { ?>
-                <li><a href="?page=config">config</a></li>
+                <!--li><a href="?page=config">config</a></li>
                 <li><a href="?page=conferences">conferences</a></li>
                 <li><a href="?page=participants">participants</a></li>
-                <li><a href="?page=components">components</a></li>
+                <li><a href="?page=components">components</a></li-->
+
+                <li><a href="?page=participants">meet.example.com</a></li>
+
 <?php } ?>
             </ul>
 
