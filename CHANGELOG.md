@@ -18,12 +18,16 @@ All notable changes to this project will be documented in this file.
 - Added front page widget for monthly conferences and participants number
 - Added login/registration control and messages
 - Added default config file locations
+- Added left collapsible sidebar
+- Added logo
 
 ### Changed
 - MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
+- Changed menus - categories on sidebar menu, jitsi platforms on top menu
 
 ### Fixed
 - Fixed SQL when conferences start and end time are not explicitly clear
+- Web design fixes
 
 ---
 
