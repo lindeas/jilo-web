@@ -30,34 +30,56 @@ $thisMonth = new DateTime();
 $from_time = $fromMonth->format('Y-m-d');
 $until_time = $thisMonth->format('Y-m-d');
 
-$widget['table_headers'] = array();
-$widget['table_records_conferences'] = array();
-$widget['table_records_participants'] = array();
+$widget['records'] = array();
+//$widget['table_headers'] = array();
+//$widget['table_records_conferences'] = array();
+//$widget['table_records_participants'] = array();
 
 // loop 1 year in the past
+$i = 0;
 while ($fromMonth < $thisMonth) {
 
     $untilMonth = clone $fromMonth;
     $untilMonth->modify('last day of this month');
 
-    $searchConferenceNumber = $conference->conferenceNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
-    $searchParticipantNumber = $participant->participantNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
+    $from_time = $fromMonth->format('Y-m-d');
+    $until_time = $untilMonth->format('Y-m-d');
+
+//    $searchConferenceNumber = $conference->conferenceNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
+//    $searchParticipantNumber = $participant->participantNumber($fromMonth->format('Y-m-d'), $untilMonth->format('Y-m-d'));
+    $searchConferenceNumber = $conference->conferenceNumber($from_time, $until_time);
+    $searchParticipantNumber = $participant->participantNumber($from_time, $until_time);
 
     // pretty format for displaying the month in the widget
     $month = $fromMonth->format('F Y');
 
+    $widget['records'][$i] = array(
+//        'fromMonth'	=> $fromMonth,
+//        'untilMonth'	=> $untilMonth,
+        'from_time'	=> $from_time,
+        'until_time'	=> $until_time,
+        'table_headers'	=> $month,
+        'conferences'	=> $searchConferenceNumber[0]['conferences'],
+        'participants'	=> $searchParticipantNumber[0]['participants'],
+    );
+
+//    $widget['records'][$i]['fromMonth'] = $fromMonth;
+//    $widget['records'][$i]['untilMonth'] = $untilMonth;
+
     // populate the table
-    array_push($widget['table_headers'], $month);
-    if (isset($searchConferenceNumber[0]['conferences'])) {
-        array_push($widget['table_records_conferences'], $searchConferenceNumber[0]['conferences']);
-    } else {
-        array_push($widget['table_records_conferences'], '0');
-    }
-    if (isset($searchParticipantNumber[0]['participants'])) {
-        array_push($widget['table_records_participants'], $searchParticipantNumber[0]['participants']);
-    } else {
-        array_push($widget['table_records_participants'], '0');
-    }
+//    array_push($widget['records'][$i]['table_headers'], $month);
+//    if (isset($searchConferenceNumber[0]['conferences'])) {
+//        array_push($widget['records'][$i]['table_records_conferences'], $searchConferenceNumber[0]['conferences']);
+//    } else {
+//        array_push($widget['records'][$i]['table_records_conferences'], '0');
+//    }
+//    if (isset($searchParticipantNumber[0]['participants'])) {
+//        array_push($widget['records'][$i]['table_records_participants'], $searchParticipantNumber[0]['participants']);
+//    } else {
+//        array_push($widget['records'][$i]['table_records_participants'], '0');
+//    }
+
+    $i++;
 
     // move everything one month in future
     $untilMonth->add(new DateInterval('P1M'));

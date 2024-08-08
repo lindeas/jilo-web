@@ -26,22 +26,32 @@
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col"></th>
-<?php     foreach ($widget['table_headers'] as $header) { ?>
-                                    <th scope="col"><?= htmlspecialchars($header) ?></th>
+<?php     foreach ($widget['records'] as $record) { ?>
+                                    <th scope="col"><?= htmlspecialchars($record['table_headers']) ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>conferences</td>
-<?php     foreach ($widget['table_records_conferences'] as $row) { ?>
-                                    <td><?= htmlspecialchars($row ?? '') ?></td>
+<?php     foreach ($widget['records'] as $record) {
+print_r($record);
+//            $from_time = $record['fromMonth']->format('Y-m-d');
+//            $until_time = $record['untilMonth']->format('Y-m-d');
+?>
+                                    <td><?php if (!empty($record['conferences'])) { ?>
+                                        <a href="?page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['conferences']) ?></a> <?php } else { ?>
+                                        0<?php } ?>
+                                    </td>
 <?php     } ?>
                                 </tr>
                                 <tr>
                                     <td>participants</td>
-<?php     foreach ($widget['table_records_participants'] as $row) { ?>
-                                    <td><?= htmlspecialchars($row ?? '') ?></td>
+<?php     foreach ($widget['records'] as $record) {
+//            $from_time = $record['fromMonth']->format('Y-m-d');
+//            $until_time = $record['untilMonth']->format('Y-m-d');
+?>
+                                    <td><?= !empty($record['participants']) ? '<a href="?page=participants&from_time=$from_time&until_time=$until_time">' . htmlspecialchars($record['participants']) . '</a>' : '0'; ?></td>
 <?php     } ?>
                                 </tr>
                             </tbody>
