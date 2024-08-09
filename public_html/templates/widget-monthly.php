@@ -34,11 +34,7 @@
                             <tbody>
                                 <tr>
                                     <td>conferences</td>
-<?php     foreach ($widget['records'] as $record) {
-print_r($record);
-//            $from_time = $record['fromMonth']->format('Y-m-d');
-//            $until_time = $record['untilMonth']->format('Y-m-d');
-?>
+<?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['conferences'])) { ?>
                                         <a href="?page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['conferences']) ?></a> <?php } else { ?>
                                         0<?php } ?>
@@ -47,11 +43,11 @@ print_r($record);
                                 </tr>
                                 <tr>
                                     <td>participants</td>
-<?php     foreach ($widget['records'] as $record) {
-//            $from_time = $record['fromMonth']->format('Y-m-d');
-//            $until_time = $record['untilMonth']->format('Y-m-d');
-?>
-                                    <td><?= !empty($record['participants']) ? '<a href="?page=participants&from_time=$from_time&until_time=$until_time">' . htmlspecialchars($record['participants']) . '</a>' : '0'; ?></td>
+<?php     foreach ($widget['records'] as $record) { ?>
+                                    <td><?php if (!empty($record['participants'])) { ?>
+                                        <a href="?page=participants&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['participants']) ?></a> <?php } else { ?>
+                                        0<?php } ?>
+                                    </td>
 <?php     } ?>
                                 </tr>
                             </tbody>
