@@ -7,7 +7,11 @@ require 'classes/user.php';
 unset($error);
 
 try {
-    $db = new Database($config['database']);
+
+    // connect to database
+    require 'helpers/database.php';
+    $db = connectDB($config);
+
     $user = new User($db);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {

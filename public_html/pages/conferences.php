@@ -3,6 +3,10 @@
 require_once 'classes/database.php';
 require 'classes/conference.php';
 
+// connect to database
+require 'helpers/database.php';
+$db = connectDB($config);
+
 // FIXME move thi sto a special function
 $time_range_specified = false;
 if (!isset($_REQUEST['from_time']) || (isset($_REQUEST['from_time']) && $_REQUEST['from_time'] == '')) {
@@ -31,15 +35,6 @@ if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
 } else {
     unset($conferenceId);
     unset($conferenceName);
-}
-
-// connect to database
-try {
-    $db = new Database($config['jilo_database']);
-} catch (Exception $e) {
-    $error = 'Error: ' . $e->getMessage();
-    include 'templates/block-message.php';
-    exit();
 }
 
 

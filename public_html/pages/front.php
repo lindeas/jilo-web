@@ -5,13 +5,9 @@ require 'classes/conference.php';
 require 'classes/participant.php';
 
 // connect to database
-try {
-    $db = new Database($config['jilo_database']);
-} catch (Exception $e) {
-    $error = 'Error: ' . $e->getMessage();
-    include 'templates/block-message.php';
-    exit();
-}
+require 'helpers/database.php';
+$db = connectDB($config);
+
 
 //
 // dashboard widget listings

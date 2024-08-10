@@ -3,25 +3,68 @@
 class Database {
     private $pdo;
 
-    public function __construct($dbFile) {
+    public function __construct($options) {
+        // pdo needed
+        if ( !extension_loaded('pdo') ) {
+            throw new Exception('PDO extension not loaded.');
+        }
 
-        // pdo and pdo_sqlite needed
-        if ( !extension_loaded('pdo_sqlite') ) {
+        // options check
+        if (empty($options['type'])) {
+            throw new Exception('Database type is not set.');
+        }
+
+        // database type
+        switch ($options['type']) {
+            case 'sqlite':
+                $this->connectSqlite($options);
+                break;
+            case 'mysql' || 'mariadb':
+                $this->connectMysql($options);
+                break;
+            default:
+                throw newException("Database type \"{$options['type']}\" is not supported.");
+        }
+    }
+
+    private function connectSqlite($options) {
+        // pdo_sqlite extension is needed
+        if (!extension_loaded('pdo_sqlite')) {
             throw new Exception('PDO extension for SQLite not loaded.');
         }
 
-        // database file check
-        if (empty($dbFile) || !file_exists($dbFile)) {
-            throw new Exception('Database file is not found.');
+        // SQLite options
+        if (empty($options['dbFile']) || !file_exists($options['dbFile'])) {
+            throw new Exception('SQLite database file not found.');
         }
 
-        // connect to database
-        // FIXME: add mysql/mariadb option
+        // connect to SQLite
         try {
-            $this->pdo = new PDO("sqlite:" . $dbFile);
+            $this->pdo = new PDO("sqlite:" . $options['dbFile']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new Exception('DB connection failed: ' . $e->getMessage());
+            throw new Exception('SQLite connection failed: ' . $e->getMessage());
+        }
+    }
+
+    private function connectMysql($options) {
+        // pdo_mysql extension is needed
+        if (!extension_loaded('pdo_mysql')) {
+            throw new Exception('PDO extension for MySQL not loaded.');
+        }
+
+        // MySQL options
+        if (empty($options['host']) || empty($options['dbname']) || empty($options['user'])) {
+            throw new Exception('MySQL connection data is missing.');
+        }
+
+        // Connect to MySQL
+        try {
+            $dsn = "mysql:host={$options['host']};port={$options['port']};dbname={$options['dbname']};charset=utf8";
+            $this->pdo = new PDO($dsn, $options['user'], $options['password'] ?? '');
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            throw new Exception('MySQL connection failed: ' . $e->getMessage());
         }
     }
 

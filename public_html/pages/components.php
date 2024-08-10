@@ -3,6 +3,10 @@
 require_once 'classes/database.php';
 require 'classes/component.php';
 
+// connect to database
+require 'helpers/database.php';
+$db = connectDB($config);
+
 // FIXME move thi sto a special function
 $time_range_specified = false;
 if (!isset($_REQUEST['from_time']) || (isset($_REQUEST['from_time']) && $_REQUEST['from_time'] == '')) {
@@ -30,15 +34,6 @@ if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
     // we need the variables to use them later in sql for columnname = columnname
     $jitsi_component = 'jitsi_component';
     $component_id = 'component_id';
-}
-
-// connect to database
-try {
-    $db = new Database($config['jilo_database']);
-} catch (Exception $e) {
-    $error = 'Error: ' . $e->getMessage();
-    include 'templates/block-message.php';
-    exit();
 }
 
 
