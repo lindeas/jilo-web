@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - Added default config file locations
 - Added left collapsible sidebar
 - Added logo
+- Added database helper functions
 
 ### Changed
 - MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
