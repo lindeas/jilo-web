@@ -5,7 +5,7 @@ require 'classes/conference.php';
 
 // connect to database
 require 'helpers/database.php';
-$db = connectDB($config);
+$db = connectDB($config, 'jilo');
 
 // FIXME move thi sto a special function
 $time_range_specified = false;

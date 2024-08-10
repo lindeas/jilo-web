@@ -6,7 +6,7 @@ require 'classes/participant.php';
 
 // connect to database
 require 'helpers/database.php';
-$db = connectDB($config);
+$db = connectDB($config, 'jilo');
 
 
 //
