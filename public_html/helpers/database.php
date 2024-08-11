@@ -1,7 +1,7 @@
 <?php
 
 // connect to database
-function connectDB($config,$database) {
+function connectDB($config, $database = '') {
 
     if ($database === 'jilo') {
         try {
