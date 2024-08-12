@@ -8,7 +8,7 @@
                     <div class="card w-auto bg-light border-light card-body"  style="flex-direction: row;"><?= $widget['title'] ?></div>
 <?php } ?>
 <?php if ($widget['filter'] === true) {
-    include('templates/block-results-filter.php'); } ?>
+    include('../app/templates/block-results-filter.php'); } ?>
 <?php if ($widget['collapsible'] === true) { ?>
                     </a>
 <?php } ?>

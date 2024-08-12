@@ -1,14 +1,14 @@
 <?php
 
-require_once 'classes/database.php';
-require 'classes/participant.php';
+require_once '../app/classes/database.php';
+require '../app/classes/participant.php';
 
 // connect to database
-require 'helpers/database.php';
+require '../app/helpers/database.php';
 $db = connectDB($config, 'jilo');
 
 // specify time range
-include 'helpers/time_range.php';
+include '../app/helpers/time_range.php';
 
 // participant id/name/IP are specified when searching specific participant(s)
 // participant name - this is 'stats_id' in the db
@@ -137,6 +137,6 @@ if (!empty($participants['records'])) {
 }
 
 // display the widget
-include('templates/widget.php');
+include('../app/templates/widget.php');
 
 ?>

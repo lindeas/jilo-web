@@ -11,7 +11,7 @@ function connectDB($config, $database = '') {
             ]);
         } catch (Exception $e) {
             $error = 'Error: ' . $e->getMessage();
-            include 'templates/block-message.php';
+            include '../app/templates/block-message.php';
             exit();
         }
 
@@ -27,7 +27,7 @@ function connectDB($config, $database = '') {
                 $pdo = $db->getConnection();
             } catch (Exception $e) {
                 $error = 'Error: ' . $e->getMessage();
-                include 'templates/block-message.php';
+                include '../app/templates/block-message.php';
                 exit();
             }
         // mysql/mariadb database
@@ -44,13 +44,13 @@ function connectDB($config, $database = '') {
                 $pdo = $db->getConnection();
             } catch (Exception $e) {
                 $error = 'Error: ' . $e->getMessage();
-                include 'templates/block-message.php';
+                include '../app/templates/block-message.php';
                 exit();
             }
         // unknown database
         } else {
             $error = "Error: unknow database type \"{$config['db_type']}\"";
-            include 'templates/block-message.php';
+            include '../app/templates/block-message.php';
             exit();
         }
 

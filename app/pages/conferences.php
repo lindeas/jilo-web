@@ -1,14 +1,14 @@
 <?php
 
-require_once 'classes/database.php';
-require 'classes/conference.php';
+require_once '../app/classes/database.php';
+require '../app/classes/conference.php';
 
 // connect to database
-require 'helpers/database.php';
+require '../app/helpers/database.php';
 $db = connectDB($config, 'jilo');
 
 // specify time range
-include 'helpers/time_range.php';
+include '../app/helpers/time_range.php';
 
 // conference id/name are specified when searching specific conference(s)
 // either id OR name, id has precedence
@@ -128,6 +128,6 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include('templates/widget.php');
+include('../app/templates/widget.php');
 
 ?>

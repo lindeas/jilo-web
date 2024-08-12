@@ -7,7 +7,7 @@ $config = [
 
     'db_type'			=> 'sqlite',
 
-    'sqlite_file'		=> '../jilo-web.db',
+    'sqlite_file'		=> '../app/jilo-web.db',
 
     'registration_enabled'	=> true,
     'login_message'		=> '',

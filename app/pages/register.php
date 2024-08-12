@@ -3,14 +3,14 @@
 // registration is allowed, go on
 if ($config['registration_enabled'] === true) {
 
-    require_once 'classes/database.php';
-    require 'classes/user.php';
+    require_once '../app/classes/database.php';
+    require '../app/classes/user.php';
     unset($error);
 
     try {
 
         // connect to database
-        require 'helpers/database.php';
+        require '../app/helpers/database.php';
         $db = connectDB($config);
 
         $user = new User($db);
@@ -35,13 +35,13 @@ if ($config['registration_enabled'] === true) {
         $error = $e->getMessage();
     }
 
-    include 'templates/block-message.php';
-    include 'templates/form-register.php';
+    include '../app/templates/block-message.php';
+    include '../app/templates/form-register.php';
 
 // registration disabled
 } else {
     $notice = 'Registration is disabled';
-    include 'templates/block-message.php';
+    include '../app/templates/block-message.php';
 }
 
 ?>

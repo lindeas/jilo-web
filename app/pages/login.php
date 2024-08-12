@@ -1,7 +1,7 @@
 <?php
 
-require_once 'classes/database.php';
-require 'classes/user.php';
+require_once '../app/classes/database.php';
+require '../app/classes/user.php';
 
 // clear the global error var before login
 unset($error);
@@ -9,7 +9,7 @@ unset($error);
 try {
 
     // connect to database
-    require 'helpers/database.php';
+    require '../app/helpers/database.php';
     $db = connectDB($config);
 
     $user = new User($db);
@@ -62,9 +62,9 @@ try {
 
 if (!empty($config['login_message'])) {
     $notice = $config['login_message'];
-    include 'templates/block-message.php';
+    include '../app/templates/block-message.php';
 }
 
-include 'templates/form-login.php';
+include '../app/templates/form-login.php';
 
 ?>

@@ -33,6 +33,7 @@ $allowed_urls = [
 // cnfig file
 // possible locations, in order of preference
 $config_file_locations = [
+    __DIR__ . '/../app/config/jilo-web.conf.php',
     __DIR__ . '/../jilo-web.conf.php',
     '/srv/jilo-web/jilo-web.conf.php',
     '/opt/jilo-web/jilo-web.conf.php'
@@ -99,34 +100,34 @@ if (in_array($page, $allowed_urls)) {
         setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
         $notice = "You were logged out.<br />You can log in again.";
-        include 'templates/page-header.php';
-        include 'templates/page-menu.php';
-        include 'templates/block-message.php';
-        include 'pages/login.php';
+        include '../app/templates/page-header.php';
+        include '../app/templates/page-menu.php';
+        include '../app/templates/block-message.php';
+        include '../app/pages/login.php';
 
     // all other normal pages
     } else {
-        include 'templates/page-header.php';
-        include 'templates/page-menu.php';
-        include 'templates/block-message.php';
+        include '../app/templates/page-header.php';
+        include '../app/templates/page-menu.php';
+        include '../app/templates/block-message.php';
         if (isset($user)) {
-            include 'templates/page-sidebar.php';
+            include '../app/templates/page-sidebar.php';
         }
-        include "pages/{$page}.php";
+        include "../app/pages/{$page}.php";
     }
 
 // the page is not in allowed urls, loading front page
 } else {
     $error = 'The page "' . $page . '" is not found';
-    include 'templates/page-header.php';
-    include 'templates/page-menu.php';
-    include 'templates/block-message.php';
+    include '../app/templates/page-header.php';
+    include '../app/templates/page-menu.php';
+    include '../app/templates/block-message.php';
     if (isset($user)) {
-        include 'templates/page-sidebar.php';
+        include '../app/templates/page-sidebar.php';
     }
-    include 'pages/front.php';
+    include '../app/pages/front.php';
 }
-include 'templates/page-footer.php';
+include '../app/templates/page-footer.php';
 
 // clear errors and notices before next page just in case
 unset($_SESSION['error']);

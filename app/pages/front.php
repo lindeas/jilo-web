@@ -1,11 +1,11 @@
 <?php
 
-require_once 'classes/database.php';
-require 'classes/conference.php';
-require 'classes/participant.php';
+require_once '../app/classes/database.php';
+require '../app/classes/conference.php';
+require '../app/classes/participant.php';
 
 // connect to database
-require 'helpers/database.php';
+require '../app/helpers/database.php';
 $db = connectDB($config, 'jilo');
 
 
@@ -73,7 +73,7 @@ if (!empty($searchConferenceNumber) && !empty($searchParticipantNumber)) {
 }
 
 // display the widget
-include('templates/widget-monthly.php');
+include('../app/templates/widget-monthly.php');
 
 
 ////
@@ -132,7 +132,7 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include('templates/widget.php');
+include('../app/templates/widget.php');
 
 
 ////
@@ -199,6 +199,6 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include('templates/widget.php');
+include('../app/templates/widget.php');
 
 ?>

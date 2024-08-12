@@ -1,14 +1,14 @@
 <?php
 
-require_once 'classes/database.php';
-require 'classes/component.php';
+require_once '../app/classes/database.php';
+require '../app/classes/component.php';
 
 // connect to database
-require 'helpers/database.php';
+require '../app/helpers/database.php';
 $db = connectDB($config, 'jilo');
 
 // specify time range
-include 'helpers/time_range.php';
+include '../app/helpers/time_range.php';
 
 // jitsi component events list
 // we use $_REQUEST, so that both links and forms work
@@ -79,6 +79,6 @@ if (!empty($components['records'])) {
 }
 
 // display the widget
-include('templates/widget.php');
+include('../app/templates/widget.php');
 
 ?>
