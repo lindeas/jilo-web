@@ -64,7 +64,11 @@ cd jilo-web
 
 - edit index.php and set the system path to the jilo-web.conf.php
 - edit jilo-web.conf.php and set all the variables correctly
-- "database" is the sqlite db file for jilo-web itself, create it with `cat jilo-web.schema | sqlite3 jilo-web.db`
+- "database" is the sqlite db file for jilo-web itself, it goes to `app/jilo-web.db`, create it with
+```bash
+cd app
+cat doc/jilo-web.schema | sqlite3 jilo-web.db
+```
 - "jilo_database" is the sqlite db file for jilo, with data from the Jitsi logs
 
 ## database
