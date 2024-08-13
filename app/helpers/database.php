@@ -18,11 +18,11 @@ function connectDB($config, $database = '') {
     } else {
 
         // sqlite database file
-        if ($config['db_type'] === 'sqlite') {
+        if ($config['db']['db_type'] === 'sqlite') {
             try {
                 $db = new Database([
-                    'type'	=> $config['db_type'],
-                    'dbFile'	=> $config['sqlite_file'],
+                    'type'	=> $config['db']['db_type'],
+                    'dbFile'	=> $config['db']['sqlite_file'],
                 ]);
                 $pdo = $db->getConnection();
             } catch (Exception $e) {
@@ -31,15 +31,15 @@ function connectDB($config, $database = '') {
                 exit();
             }
         // mysql/mariadb database
-        } elseif ($config['db_type'] === 'mysql' || $config['db_type'] === 'mariadb') {
+        } elseif ($config['db']['db_type'] === 'mysql' || $config['db']['db_type'] === 'mariadb') {
             try {
                 $db = new Database([
-                    'type'	=> $config['db_type'],
-                    'host'	=> $config['sql_host'] ?? 'localhost',
-                    'port'	=> $config['sql_port'] ?? '3306',
-                    'dbname'	=> $config['sql_database'],
-                    'user'	=> $config['sql_username'],
-                    'password'	=> $config['sql_password'],
+                    'type'	=> $config['db']['db_type'],
+                    'host'	=> $config['db']['sql_host'] ?? 'localhost',
+                    'port'	=> $config['db']['sql_port'] ?? '3306',
+                    'dbname'	=> $config['db']['sql_database'],
+                    'user'	=> $config['db']['sql_username'],
+                    'password'	=> $config['db']['sql_password'],
                 ]);
                 $pdo = $db->getConnection();
             } catch (Exception $e) {
@@ -49,7 +49,7 @@ function connectDB($config, $database = '') {
             }
         // unknown database
         } else {
-            $error = "Error: unknow database type \"{$config['db_type']}\"";
+            $error = "Error: unknow database type \"{$config['db']['db_type']}\"";
             include '../app/templates/block-message.php';
             exit();
         }

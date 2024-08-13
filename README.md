@@ -49,7 +49,7 @@ You can install it in the following ways:
 - download the latest release from the **"Releases"** section here
 ```bash
 tar -xzf jilo-web_*.tgz
-cd jilo-web
+cd jilo-web/doc/
 ./install.sh
 ```
 - clone the **git repo**:
@@ -66,7 +66,7 @@ cd jilo-web
 - "sqlite_file" is the sqlite db file for jilo-web itself, it goes to `app/jilo-web.db`, create it with
 ```bash
 cd app
-cat doc/jilo-web.schema | sqlite3 jilo-web.db
+cat ../doc/jilo-web.schema | sqlite3 jilo-web.db
 ```
 - "jilo_database" is the sqlite db file for jilo, with data from the Jitsi logs
 
