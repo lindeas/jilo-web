@@ -25,6 +25,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
 - Changed menus - categories on sidebar menu, jitsi platforms on top menu
+- Moved all the app code outside of the public web folder
+- Config file now can have nested arrays
 
 ### Fixed
 - Fixed SQL when conferences start and end time are not explicitly clear
