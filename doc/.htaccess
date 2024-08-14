@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# limit access to .htaccess
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# don't rewrite CSS, JS, etc.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# all other go to index.php
+RewriteRule ^(.*)$ index.php?page=$1 [L,QSA]

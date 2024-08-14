@@ -4,4 +4,9 @@
 
     CustomLog \${APACHE_LOG_DIR}/jilo-web_access.log combined
     ErrorLog \${APACHE_LOG_DIR}/jilo-web_error.log
+
+    <Directory $INSTALL_DIR>
+        AllowOverride All
+    </Directory>
+
 </VirtualHost>
