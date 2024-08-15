@@ -3,7 +3,7 @@
             <h2 class="card-header">Login</h2>
             <div class="card-body">
                 <p class="card-text"><strong>Welcome to JILO!</strong><br />Please enter login credentials:</p>
-                <form method="POST" action="?page=login">
+                <form method="POST" action="<?= $app_root ?>?page=login">
                     <input type="text" name="username" placeholder="Username" required />
                     <br />
                     <input type="password" name="password" placeholder="Password" required />

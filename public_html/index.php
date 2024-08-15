@@ -58,10 +58,8 @@ $app_root = $config['folder'];
 session_name('jilo');
 session_start();
 
-if (isset($_GET['page'])) {
-    $page = $_GET['page'];
-} elseif (isset($_POST['page'])) {
-    $page = $_POST['page'];
+if (isset($_REQUEST['page'])) {
+    $page = $_REQUEST['page'];
 } else {
     $page = 'front';
 }

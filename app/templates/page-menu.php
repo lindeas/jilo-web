@@ -4,7 +4,7 @@
             <ul class="menu-left">
                 <div class="container">
                     <div class="row">
-                        <a href="index.php" class="logo-link"><div class="col-4"><img class="logo" src="static/jilo-logo.png" alt="JILO"/></div></a>
+                        <a href="<?= $app_root ?>" class="logo-link"><div class="col-4"><img class="logo" src="<?= $app_root ?>static/jilo-logo.png" alt="JILO"/></div></a>
                     </div>
                 </div>
 
@@ -23,11 +23,11 @@
 
             <ul class="menu-right">
 <?php if ( isset($_SESSION['username']) ) { ?>
-                <li><a href="?page=profile"><?= $user ?></a></li>
-                <li><a href="?page=logout">logout</a></li>
+                <li><a href="<?= $app_root ?>?page=profile"><?= $user ?></a></li>
+                <li><a href="<?= $app_root ?>?page=logout">logout</a></li>
 <?php } else { ?>
-                <li><a href="?page=login">login</a></li>
-                <li><a href="?page=register">register</a></li>
+                <li><a href="<?= $app_root ?>?page=login">login</a></li>
+                <li><a href="<?= $app_root ?>?page=register">register</a></li>
 <?php } ?>
             </ul>
         </div>

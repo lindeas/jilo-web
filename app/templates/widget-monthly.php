@@ -36,7 +36,7 @@
                                     <td>conferences</td>
 <?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['conferences'])) { ?>
-                                        <a href="?page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['conferences']) ?></a> <?php } else { ?>
+                                        <a href="<?= $app_root ?>?page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['conferences']) ?></a> <?php } else { ?>
                                         0<?php } ?>
                                     </td>
 <?php     } ?>
@@ -45,7 +45,7 @@
                                     <td>participants</td>
 <?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['participants'])) { ?>
-                                        <a href="?page=participants&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['participants']) ?></a> <?php } else { ?>
+                                        <a href="<?= $app_root ?>?page=participants&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['participants']) ?></a> <?php } else { ?>
                                         0<?php } ?>
                                     </td>
 <?php     } ?>
