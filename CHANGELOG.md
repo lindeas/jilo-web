@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed SQL when conferences start and end time are not explicitly clear
 - Web design fixes
+- Fixed install script
 
 ---
 

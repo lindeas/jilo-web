@@ -6,7 +6,7 @@ if [ "$EUID" -ne 0 ] && [ -z "$SUDO_USER" ]; then
     exit 1
 fi
 
-VERSION=`grep version jilo-web.conf.php | cut -d "'" -f 4`
+VERSION=`grep version ../app/config/jilo-web.conf.php | cut -d "'" -f 4`
 
 # main install function
 function install() {
@@ -20,23 +20,24 @@ function install() {
     WEB_DIR=${WEB_DIR:-jilo-web}
 
     INSTALL_DIR="/opt/jilo-web/public_html"
+    APP_DIR="/opt/jilo-web/app"
     DOC_DIR="/opt/jilo-web/doc"
     ETC_DIR="/opt/jilo-web/etc"
 
     mkdir -p $INSTALL_DIR
-    cp -r ./public_html/* $INSTALL_DIR
+    cp -r ../public_html/* $INSTALL_DIR
 
     mkdir -p $DOC_DIR
-    cp CHANGELOG.md $DOC_DIR
-    cp LICENSE $DOC_DIR
-    cp README.md $DOC_DIR
-    cp TODO.md $DOC_DIR
-    cp config.apache $DOC_DIR
-    cp config.nginx $DOC_DIR
+    cp ../CHANGELOG.md $DOC_DIR
+    cp ../LICENSE $DOC_DIR
+    cp ../README.md $DOC_DIR
+    cp ../TODO.md $DOC_DIR
+    cp ../license-bootstrap $DOC_DIR
+    cp ../license-jquery $DOC_DIR
+    cp -r ../doc/ $DOC_DIR
 
     mkdir -p $ETC_DIR
-    cp jilo-web.conf.php $ETC_DIR
-    cp jilo-web.schema $ETC_DIR
+    cp ../app/config/jilo-web.conf.php $ETC_DIR
 
     #FIXME
     #mkdir -p "jilo-web-$VERSION/usr/share/man/man8"
