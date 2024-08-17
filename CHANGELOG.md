@@ -21,6 +21,8 @@ All notable changes to this project will be documented in this file.
 - Added left collapsible sidebar
 - Added logo
 - Added database helper functions
+- Added support for multiple Jitsi platforms
+- Added app environments "production" and "development"
 
 ### Changed
 - MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
