@@ -1,20 +1,30 @@
 <?php
 
 // connect to database
-function connectDB($config, $database = '') {
+function connectDB($config, $database = '', $platform_id = '') {
 
+    // connecting ti a jilo sqlite database
     if ($database === 'jilo') {
         try {
+            $dbFile = $config['platforms'][$platform_id]['jilo_database'] ?? null;
+            if (!$dbFile) {
+                throw new Exception("Invalid platform ID \"$platform_id\", database file not found.");
+            }
             $db = new Database([
                 'type'		=> 'sqlite',
-                'dbFile'	=> $config['jilo_database'],
+                'dbFile'	=> $dbFile,
             ]);
         } catch (Exception $e) {
-            $error = 'Error: ' . $e->getMessage();
+            if ($config['environment'] === 'production') {
+                $error = 'There was an unexpected error. Please try again.';
+            } else {
+                $error = 'Error: ' . $e->getMessage();
+            }
             include '../app/templates/block-message.php';
             exit();
         }
 
+    // connecting to a jilo-web database of the web app
     } else {
 
         // sqlite database file
