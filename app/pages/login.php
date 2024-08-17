@@ -57,7 +57,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    $error = $e->getMessage();
+    $error = getError('There was an unexpected error. Please try again.', $e->getMessage());
 }
 
 if (!empty($config['login_message'])) {

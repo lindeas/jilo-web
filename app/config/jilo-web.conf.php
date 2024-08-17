@@ -29,7 +29,7 @@ return [
     // system info
     'version'			=> '0.1.1',
     // development has verbose error messages, production has not
-    'environment'		=> 'production',
+    'environment'		=> 'production1',
 
     // *************************************
     // Maintained by the app, edit with care

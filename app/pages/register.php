@@ -32,7 +32,7 @@ if ($config['registration_enabled'] === true) {
             }
         }
     } catch (Exception $e) {
-        $error = $e->getMessage();
+        $error = getError('There was an unexpected error. Please try again.', $e->getMessage());
     }
 
     include '../app/templates/block-message.php';

@@ -7,19 +7,15 @@ function connectDB($config, $database = '', $platform_id = '') {
     if ($database === 'jilo') {
         try {
             $dbFile = $config['platforms'][$platform_id]['jilo_database'] ?? null;
-            if (!$dbFile) {
-                throw new Exception("Invalid platform ID \"$platform_id\", database file not found.");
+            if (!$dbFile || !file_exists($dbFile)) {
+                throw new Exception(getError("Invalid platform ID \"{$platform_id}\", database file \"{$dbFile}\"not found."));
             }
             $db = new Database([
                 'type'		=> 'sqlite',
                 'dbFile'	=> $dbFile,
             ]);
         } catch (Exception $e) {
-            if ($config['environment'] === 'production') {
-                $error = 'There was an unexpected error. Please try again.';
-            } else {
-                $error = 'Error: ' . $e->getMessage();
-            }
+            $error = getError('Error connecting to DB.', $e->getMessage());
             include '../app/templates/block-message.php';
             exit();
         }
@@ -36,7 +32,7 @@ function connectDB($config, $database = '', $platform_id = '') {
                 ]);
                 $pdo = $db->getConnection();
             } catch (Exception $e) {
-                $error = 'Error: ' . $e->getMessage();
+                $error = getError('Error connecting to DB.', $e->getMessage());
                 include '../app/templates/block-message.php';
                 exit();
             }
@@ -53,7 +49,7 @@ function connectDB($config, $database = '', $platform_id = '') {
                 ]);
                 $pdo = $db->getConnection();
             } catch (Exception $e) {
-                $error = 'Error: ' . $e->getMessage();
+                $error = getError('Error connecting to DB.', $e->getMessage());
                 include '../app/templates/block-message.php';
                 exit();
             }

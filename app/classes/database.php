@@ -1,17 +1,19 @@
 <?php
 
+require '../app/helpers/errors.php';
+
 class Database {
     private $pdo;
 
     public function __construct($options) {
         // pdo needed
         if ( !extension_loaded('pdo') ) {
-            throw new Exception('PDO extension not loaded.');
+            $error = getError('PDO extension not loaded.');
         }
 
         // options check
         if (empty($options['type'])) {
-            throw new Exception('Database type is not set.');
+            $error = getError('Database type is not set.');
         }
 
         // database type
@@ -23,19 +25,19 @@ class Database {
                 $this->connectMysql($options);
                 break;
             default:
-                throw newException("Database type \"{$options['type']}\" is not supported.");
+                $error = getError("Database type \"{$options['type']}\" is not supported.");
         }
     }
 
     private function connectSqlite($options) {
         // pdo_sqlite extension is needed
         if (!extension_loaded('pdo_sqlite')) {
-            throw new Exception('PDO extension for SQLite not loaded.');
+            $error = getError('PDO extension for SQLite not loaded.');
         }
 
         // SQLite options
         if (empty($options['dbFile']) || !file_exists($options['dbFile'])) {
-            throw new Exception('SQLite database file not found.');
+            $error = getError("SQLite database file \"{$dbFile}\" not found.");
         }
 
         // connect to SQLite
@@ -43,19 +45,19 @@ class Database {
             $this->pdo = new PDO("sqlite:" . $options['dbFile']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new Exception('SQLite connection failed: ' . $e->getMessage());
+            $error = getError('SQLite connection failed: ', $e->getMessage());
         }
     }
 
     private function connectMysql($options) {
         // pdo_mysql extension is needed
         if (!extension_loaded('pdo_mysql')) {
-            throw new Exception('PDO extension for MySQL not loaded.');
+            $error = getError('PDO extension for MySQL not loaded.');
         }
 
         // MySQL options
         if (empty($options['host']) || empty($options['dbname']) || empty($options['user'])) {
-            throw new Exception('MySQL connection data is missing.');
+            $error = getError('MySQL connection data is missing.');
         }
 
         // Connect to MySQL
@@ -64,7 +66,7 @@ class Database {
             $this->pdo = new PDO($dsn, $options['user'], $options['password'] ?? '');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new Exception('MySQL connection failed: ' . $e->getMessage());
+            $error = getError('MySQL connection failed: ', $config['environment'], $e->getMessage());
         }
     }
 

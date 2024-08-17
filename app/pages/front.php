@@ -4,9 +4,6 @@ require_once '../app/classes/database.php';
 require '../app/classes/conference.php';
 require '../app/classes/participant.php';
 
-// by default we connect ot the first configured platform
-$platform_id = $_REQUEST['platform'] ?? '0';
-
 // connect to database
 require '../app/helpers/database.php';
 $db = connectDB($config, 'jilo', $platform_id);

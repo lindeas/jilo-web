@@ -87,6 +87,9 @@ if (isset($_SESSION['error'])) {
     $error = $_SESSION['error'];
 }
 
+// by default we connect ot the first configured platform
+$platform_id = $_REQUEST['platform'] ?? '0';
+
 // page building
 if (in_array($page, $allowed_urls)) {
     // logout is a special case, as we can't use session vars for notices
