@@ -16,7 +16,12 @@
                 <li><a href="?page=participants">participants</a></li>
                 <li><a href="?page=components">components</a></li-->
 
-                <li><a style="background-color: #111;" href="#">meet.example.com</a></li>
+                <li style="margin-right: 0px;"><a style="background-color: #111;" href="?platform=0&page=front">meet.example.com</a></li>
+                <li style="margin: 0px; padding: 0px;">
+                    <a style="background-color: #555; padding-left: 3px; padding-right: 3px;" href="?platform=0&page=config&action=edit">
+                        <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>
+                    </a>
+                </li>
 
 <?php } ?>
             </ul>
