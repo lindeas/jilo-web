@@ -11,6 +11,10 @@
  * Version: 0.1.1
  */
 
+// we start output buffering and.
+// flush it later only when there is no redirect
+ob_start();
+
 // error reporting, comment out in production
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -129,6 +133,9 @@ if (in_array($page, $allowed_urls)) {
     include '../app/pages/front.php';
 }
 include '../app/templates/page-footer.php';
+
+// flush the output buffer and show the page
+ob_end_flush();
 
 // clear errors and notices before next page just in case
 unset($_SESSION['error']);
