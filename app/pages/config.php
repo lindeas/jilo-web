@@ -1,6 +1,7 @@
 <?php
 
 $action = $_REQUEST['action'] ?? '';
+require '../app/helpers/errors.php';
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -20,13 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $updatedContent = preg_replace($oldValue, $newValue, $updatedContent);
     }
 
+    // check if file is writable
+    if (!is_writable($config_file)) {
+        $_SESSION['error'] = getError('Configuration file is not writable.');
+        header("Location: $app_root?platform=$platform_id&page=config");
+        exit();
+    }
+
+    // try to update the config file
     if (file_put_contents($config_file, $updatedContent) !== false) {
         // update successful
         $_SESSION['notice'] = "Configuration for {$_POST['name']} is updated.";
     } else {
         // unsuccessful
-        $_SESSION['error'] = 'Error updating the config';
+        $error = error_get_last();
+        $_SESSION['error'] = getError('Error updating the config: ' . ($error['message'] ?? 'unknown error'));
     }
+
 // FIXME the new file is not loaded on first page load
     unset($config);
     header("Location: $app_root?platform=$platform_id&page=config");
