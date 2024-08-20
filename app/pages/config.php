@@ -11,14 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $updatedContent = $content;
 
     foreach ($_POST as $key => $value) {
-
-        $config['platforms'][$platform_id][$key] = $value;
-        // search pattern for the old value
-        $oldValue = "/('$platform_id'\s*=>\s*\[\s*'$key'\s*=>\s*)'[^']*'/";
-        // new value
-        $newValue = "$1'$value'";
-
-        $updatedContent = preg_replace($oldValue, $newValue, $updatedContent);
+        // Create a regex pattern to match the key-value pair for the specified platform ID
+        $pattern = "/((?:'[^']+'\s*=>\s*'[^']+'\s*,?\s*)*)('{$key}'\s*=>\s*)'[^']*'/s";
+        // Replace using a callback to handle the match and replacement
+        $updatedContent = preg_replace_callback($pattern, function($matches) use ($value) {
+                return $matches[1] . $matches[2] . "'{$value}'";
+            }, $updatedContent
+        );
     }
 
     // check if file is writable
