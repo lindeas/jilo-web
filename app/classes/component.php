@@ -6,7 +6,7 @@ class Component {
 
     public function __construct($database) {
         $this->db = $database->getConnection();
-        $this->queries = include('queries.php');
+//        $this->queries = include('queries.php');
     }
 
 
@@ -25,25 +25,21 @@ class Component {
         $until_time = htmlspecialchars(strip_tags($until_time));
 
         // list of jitsi component events
-        $sql = 'SELECT jitsi_component, loglevel, time, component_id, event_type, event_param
+        $sql = "SELECT jitsi_component, loglevel, time, component_id, event_type, event_param
                 FROM
                     jitsi_components
                 WHERE
-                    jitsi_component = :jitsi_component
+                    jitsi_component = %s
                 AND
-                    component_id = :component_id
+                    component_id = %s
                 AND
-                    (time >= :from_time AND time <= :until_time)
+                    (time >= '%s 00:00:00' AND time <= '%s 23:59:59')
                 ORDER BY
-                    time';
+                    time";
+        $sql = sprintf($sql, $jitsi_component, $component_id, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
-        $query->execute([
-            ':jitsi_component'		=> $jitsi_component,
-            ':component_id'		=> $component_id,
-            ':from_time'		=> $from_time . ' 00:00:00',
-            ':until_time'		=> $until_time . ' 23:59:59',
-        ]);
+        $query->execute();
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
