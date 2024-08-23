@@ -2,11 +2,9 @@
 
 class Participant {
     private $db;
-    private $queries;
 
     public function __construct($database) {
         $this->db = $database->getConnection();
-        $this->queries = include('queries.php');
     }
 
 
@@ -25,7 +23,52 @@ class Participant {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['conference_by_participant_id'];
+
+        // list conferences where participant ID (endpoint_id) is found
+        $sql = "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    p.endpoint_id = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    participant_id = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time";
+
         $sql = sprintf($sql, $participant_id, $from_time, $until_time, $participant_id, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -50,7 +93,52 @@ class Participant {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['participant_by_stats_id'];
+
+        // list conferences where participant name (stats_id) is found
+        $sql = "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    pe.event_type = 'stats_id' AND pe.event_param LIKE '%%%s%%'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    event_type = 'stats_id' AND event_param LIKE '%%%s%%'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time";
+
         $sql = sprintf($sql, $participant_name, $from_time, $until_time, $participant_name, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -75,7 +163,52 @@ class Participant {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['participant_by_ip'];
+
+        // list conferences where participant IP is found
+        $sql = "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    pe.event_type = 'pair selected' AND pe.event_param = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    event_type = 'pair selected' AND event_param = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time";
+
         $sql = sprintf($sql, $participant_ip, $from_time, $until_time, $participant_ip, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -85,7 +218,7 @@ class Participant {
     }
 
 
-    // list of all conferences
+    // list of all participants
     public function participantsAll($from_time, $until_time) {
 
         // time period drill-down
@@ -100,7 +233,19 @@ class Participant {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['participants_all'];
+
+        // list all participants
+        $sql = "
+SELECT DISTINCT
+    p.jitsi_component, p.endpoint_id, p.conference_id
+FROM
+    participants p
+JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59'
+ORDER BY p.id";
+
         $sql = sprintf($sql, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -109,7 +254,7 @@ class Participant {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // number of conferences
+    // number of participants
     public function participantNumber($from_time, $until_time) {
 
         // time period drill-down
@@ -124,7 +269,18 @@ class Participant {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['participant_number'];
+
+        // number of participants for time period (if given)
+        $sql = "
+SELECT COUNT(DISTINCT p.endpoint_id) as participants
+FROM
+    participants p
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+AND pe.event_type = 'participant joining'";
+
         $sql = sprintf($sql, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);

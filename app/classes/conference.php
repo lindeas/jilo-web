@@ -2,11 +2,9 @@
 
 class Conference {
     private $db;
-    private $queries;
 
     public function __construct($database) {
         $this->db = $database->getConnection();
-        $this->queries = include('queries.php');
     }
 
 
@@ -25,7 +23,52 @@ class Conference {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['conference_by_id'];
+
+        // search for a conference by its ID for a time period (if given)
+        $sql = "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    c.conference_id = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    c.conference_id = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time";
+
         $sql = sprintf($sql, $conference_id, $from_time, $until_time, $conference_id, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -50,7 +93,52 @@ class Conference {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['conference_by_name'];
+
+        // search for a conference by its name for a time period (if given)
+        $sql = "
+SELECT
+    pe.time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    pe.loglevel,
+    pe.event_type,
+    p.endpoint_id AS participant_id,
+    pe.event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+LEFT JOIN
+    participants p ON c.conference_id = p.conference_id
+LEFT JOIN
+    participant_events pe ON p.endpoint_id = pe.participant_id
+WHERE
+    c.conference_name = '%s'
+AND (pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59')
+
+UNION
+
+SELECT
+    ce.time AS event_time,
+    c.conference_id,
+    c.conference_name,
+    c.conference_host,
+    ce.loglevel,
+    ce.conference_event AS event_type,
+    NULL AS participant_id,
+    ce.conference_param AS event_param
+FROM
+    conferences c
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    c.conference_name = '%s'
+AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
+
+ORDER BY
+    pe.time";
+
         $sql = sprintf($sql, $conference_name, $from_time, $until_time, $conference_name, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -75,7 +163,77 @@ class Conference {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['conferences_all_formatted'];
+
+        // list of conferences for time period (if given)
+        // fields: component, duration, conference ID, conference name, number of participants, name count (the conf name is found), conference host
+        $sql = "
+SELECT DISTINCT
+    c.jitsi_component,
+    (SELECT COALESCE
+        (
+            (SELECT ce.time
+                FROM conference_events ce
+                WHERE
+                    ce.conference_id = c.conference_id
+                    AND
+                    ce.conference_event = 'conference created'
+            ),
+            (SELECT ce.time
+                FROM conference_events ce
+                WHERE
+                    ce.conference_id = c.conference_id
+                    AND
+                    ce.conference_event = 'bridge selected'
+            )
+        )
+    )
+    AS start,
+    (SELECT COALESCE
+        (
+            (SELECT ce.time
+                FROM conference_events ce
+                WHERE
+                    ce.conference_id = c.conference_id
+                    AND
+                    (ce.conference_event = 'conference expired' OR ce.conference_event = 'conference stopped')
+            ),
+            (SELECT pe.time
+                FROM participant_events pe
+                WHERE
+                    pe.event_param = c.conference_id
+                ORDER BY pe.time DESC
+                LIMIT 1
+            )
+        )
+    )
+    AS end,
+    c.conference_id,
+    c.conference_name,
+    (SELECT COUNT(pe.participant_id)
+        FROM participant_events pe
+        WHERE
+            pe.event_type = 'participant joining'
+            AND
+            pe.event_param = c.conference_id) AS participants,
+    name_counts.name_count,
+    c.conference_host
+FROM
+    conferences c
+JOIN (
+    SELECT
+        conference_name,
+        COUNT(*) AS name_count
+    FROM
+        conferences
+    GROUP BY
+        conference_name
+) AS name_counts ON c.conference_name = name_counts.conference_name
+JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')
+ORDER BY
+    c.id";
+
         $sql = sprintf($sql, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -99,7 +257,28 @@ class Conference {
         // this is needed for compatibility with the bash version, so we use '%s' placeholders
         $from_time = htmlspecialchars(strip_tags($from_time));
         $until_time = htmlspecialchars(strip_tags($until_time));
-        $sql = $this->queries['conference_number'];
+
+        // number of conferences for time period (if given)
+        // NB we need to cross check with first occurrence of "bridge selected"
+        // as in Jicofo logs there is no way to get the time for conference ID creation
+        $sql = "
+SELECT COUNT(c.conference_id) as conferences
+FROM
+    conferences c
+LEFT JOIN (
+    SELECT ce.conference_id, MIN(ce.time) as first_event_time
+    FROM conference_events ce
+    WHERE ce.conference_event = 'bridge selected'
+    GROUP BY ce.conference_id
+) AS first_event ON c.conference_id = first_event.conference_id
+LEFT JOIN
+    conference_events ce ON c.conference_id = ce.conference_id
+WHERE
+    (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')
+AND (ce.conference_event = 'conference created'
+    OR (ce.conference_event = 'bridge selected' AND ce.time = first_event.first_event_time)
+)";
+
         $sql = sprintf($sql, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
