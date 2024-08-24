@@ -4,7 +4,7 @@
             <ul class="menu-left">
                 <div class="container">
                     <div class="row">
-                        <a href="<?= $app_root ?>" class="logo-link"><div class="col-4"><img class="logo" src="<?= $app_root ?>static/jilo-logo.png" alt="JILO"/></div></a>
+                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>" class="logo-link"><div class="col-4"><img class="logo" src="<?= $app_root ?>static/jilo-logo.png" alt="JILO"/></div></a>
                     </div>
                 </div>
 
