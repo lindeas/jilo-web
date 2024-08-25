@@ -17,6 +17,7 @@
                             </div>
 <?php } ?>
                             <br />&nbsp;<br />
+                            <a class="btn btn-secondary" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config" />Cancel</a>
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </form>
                     </div>

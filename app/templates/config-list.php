@@ -1,6 +1,6 @@
 
                 <!-- widget "config" -->
-                <div class="card text-center w-50 mx-lef">
+                <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Jilo web configuration</p>
                     <div class="card-body">
                         <p class="card-text">platform variables</p>
