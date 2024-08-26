@@ -2,6 +2,7 @@
 
 $action = $_REQUEST['action'] ?? '';
 require '../app/helpers/errors.php';
+require '../app/helpers/config.php';
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -10,15 +11,65 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $content = file_get_contents($config_file);
     $updatedContent = $content;
 
-    foreach ($_POST as $key => $value) {
-        // Create a regex pattern to match the key-value pair for the specified platform ID
-        $pattern = "/((?:'[^']+'\s*=>\s*'[^']+'\s*,?\s*)*)('{$key}'\s*=>\s*)'[^']*'/s";
-        // Replace using a callback to handle the match and replacement
-        $updatedContent = preg_replace_callback($pattern, function($matches) use ($value) {
-                return $matches[1] . $matches[2] . "'{$value}'";
-            }, $updatedContent
+    // new platform adding
+    if (isset($_POST['new']) && $_POST['new'] === 'true') {
+        $newPlatform = [
+            'name' => $_POST['name'],
+            'jilo_database' => $_POST['jilo_database'],
+        ];
+
+        // Determine the next available index for the new platform
+        $nextIndex = count($config['platforms']);
+
+        // Add the new platform to the platforms array
+        $config['platforms'][$nextIndex] = $newPlatform;
+
+        // Rebuild the PHP array syntax for the platforms
+        $platformsArray = formatArray($config['platforms']);
+
+        // Replace the platforms section in the config file
+        $updatedContent = preg_replace(
+            '/\'platforms\'\s*=>\s*\[[\s\S]+?\],/s',
+            "'platforms' => {$platformsArray}",
+            $content
         );
+        $updatedContent = preg_replace('/\s*\]\n/s', "\n", $updatedContent);
+
+    // deleting a platform
+    } elseif (isset($_POST['delete']) && $_POST['delete'] === 'true') {
+        $platform = $_POST['platform'];
+
+        $config['platforms'][$platform]['name'] = $_POST['name'];
+        $config['platforms'][$platform]['jilo_database'] = $_POST['jilo_database'];
+
+        $platformsArray = formatArray($config['platforms'][$platform], 3);
+
+        $updatedContent = preg_replace(
+            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
+            "",
+            $content
+        );
+
+
+    // an update to an existing platform
+    } else {
+
+        $platform = $_POST['platform'];
+
+        $config['platforms'][$platform]['name'] = $_POST['name'];
+        $config['platforms'][$platform]['jilo_database'] = $_POST['jilo_database'];
+
+        $platformsArray = formatArray($config['platforms'][$platform], 3);
+
+        $updatedContent = preg_replace(
+            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
+            "\n        '{$platform}' => {$platformsArray},",
+            $content
+        );
+
     }
+
+
 
     // check if file is writable
     if (!is_writable($config_file)) {
@@ -45,8 +96,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // no form submitted, show the templates
 } else {
     switch ($action) {
+        case 'add':
+            include('../app/templates/config-add-platform.php');
+            break;
         case 'edit':
             include('../app/templates/config-edit-platform.php');
+            break;
+        case 'delete':
+            include('../app/templates/config-delete-platform.php');
             break;
         default:
             include('../app/templates/config-list.php');

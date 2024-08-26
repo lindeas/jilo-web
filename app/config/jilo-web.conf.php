@@ -37,9 +37,8 @@ return [
 
     'platforms' => [
         '0' => [
-            'name'			=> 'meet.example.com',
-            // database with logs from Jilo
-            'jilo_database'		=> '../../jilo/jilo.db',
+            'name' => 'meet.example.com',
+            'jilo_database' => '../../jilo/jilo.db',
         ],
     ],
 ];

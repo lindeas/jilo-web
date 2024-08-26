@@ -1,28 +1,36 @@
 
                 <!-- widget "config" -->
                 <div class="card text-center w-50 mx-auto">
-                    <p class="h4 card-header">Jilo web configuration for Jitsi platform "<?= htmlspecialchars($platform_id) ?>"</p>
+                    <p class="h4 card-header">Add new Jitsi platform</p>
                     <div class="card-body">
-                        <p class="card-text">edit the platform details:</p>
+                        <!--p class="card-text">add new platform:</p-->
                         <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
-<?php foreach ($config['platforms'][$platform_id] as $config_item => $config_value) { ?>
+
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">
-                                    <label for="<?= htmlspecialchars($config_item) ?>" class="form-label"><?= htmlspecialchars($config_item) ?></label>
+                                    <label for="name" class="form-label">name</label>
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? '')?>" required />
-<?php if ($config_item === 'name') { ?>
+                                    <input class="form-control" type="text" name="name" value="" required />
                                     <p class="text-start"><small>descriptive name for the platform</small></p>
-<?php } elseif ($config_item === 'jilo_database') { ?>
-                                    <p class="text-start"><small>path to the database file (relative to the app root)</small></p>
-<?php } ?>
                                 </div>
                             </div>
-<?php } ?>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-end">
+                                    <label for="name" class="form-label">jilo_database</label>
+                                    <span class="text-danger" style="margin-right: -12px;">*</span>
+                                </div>
+                                <div class="col-md-8">
+                                    <input class="form-control" type="text" name="jilo_database" value="" required />
+                                    <p class="text-start"><small>path to the database file (relative to the app root)</small></p>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="new" value="true" />
+
                             <br />
-                            <input type="hidden" name="platform" value="<?= htmlspecialchars($platform_id) ?>" />
                             <a class="btn btn-secondary" href="<?= $app_root ?>?page=config" />Cancel</a>
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </form>
