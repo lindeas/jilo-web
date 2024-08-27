@@ -19,7 +19,18 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">
-                                    <label for="name" class="form-label">jilo_database</label>
+                                    <label for="jitsi_url" class="form-label">Jitsi URL</label>
+                                    <span class="text-danger" style="margin-right: -12px;">*</span>
+                                </div>
+                                <div class="col-md-8">
+                                    <input class="form-control" type="text" name="jitsi_url" value="https://" required />
+                                    <p class="text-start"><small>URL of the Jitsi Meet (used for checks and for loading config.js)</small></p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-end">
+                                    <label for="jilo_database" class="form-label">jilo_database</label>
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">

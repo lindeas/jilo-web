@@ -15,6 +15,8 @@
                                     <input class="form-control" type="text" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? '')?>" required />
 <?php if ($config_item === 'name') { ?>
                                     <p class="text-start"><small>descriptive name for the platform</small></p>
+<?php } elseif ($config_item === 'jitsi_url') { ?>
+                                    <p class="text-start"><small>URL of the Jitsi Meet (used for checks and for loading config.js)</small></p>
 <?php } elseif ($config_item === 'jilo_database') { ?>
                                     <p class="text-start"><small>path to the database file (relative to the app root)</small></p>
 <?php } ?>

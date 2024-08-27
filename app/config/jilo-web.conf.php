@@ -29,7 +29,7 @@ return [
     // system info
     'version'			=> '0.1.1',
     // development has verbose error messages, production has not
-    'environment'		=> 'production',
+    'environment'		=> 'development',
 
     // *************************************
     // Maintained by the app, edit with care
@@ -37,8 +37,19 @@ return [
 
     'platforms' => [
         '0' => [
-            'name' => 'meet.example.com',
+            'name' => 'meet1',
+            'jitsi_url' => 'https://meet.example.com',
             'jilo_database' => '../../jilo/jilo.db',
+        ],
+        '1' => [
+            'name' => 'meet2.example.com',
+            'jitsi_url' => 'https://test2.example.com',
+            'jilo_database' => '../../jilo/jilo2.db',
+        ],
+        '2' => [
+            'name' => 'test3',
+            'jitsi_url' => 'https://test3.example.com',
+            'jilo_database' => '../../jilo/jilo2.db',
         ],
     ],
 ];

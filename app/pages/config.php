@@ -14,8 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // new platform adding
     if (isset($_POST['new']) && $_POST['new'] === 'true') {
         $newPlatform = [
-            'name' => $_POST['name'],
-            'jilo_database' => $_POST['jilo_database'],
+            'name'		=> $_POST['name'],
+            'jitsi_url'		=> $_POST['jitsi_url'],
+            'jilo_database'	=> $_POST['jilo_database'],
         ];
 
         // Determine the next available index for the new platform
@@ -40,12 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $platform = $_POST['platform'];
 
         $config['platforms'][$platform]['name'] = $_POST['name'];
+        $config['platforms'][$platform]['jitsi_url'] = $_POST['jitsi_url'];
         $config['platforms'][$platform]['jilo_database'] = $_POST['jilo_database'];
 
         $platformsArray = formatArray($config['platforms'][$platform], 3);
 
         $updatedContent = preg_replace(
-            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
+            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jitsi_url'\s*=>\s*'[^']*,\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
             "",
             $content
         );
@@ -57,12 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $platform = $_POST['platform'];
 
         $config['platforms'][$platform]['name'] = $_POST['name'];
+        $config['platforms'][$platform]['jitsi_url'] = $_POST['jitsi_url'];
         $config['platforms'][$platform]['jilo_database'] = $_POST['jilo_database'];
 
         $platformsArray = formatArray($config['platforms'][$platform], 3);
 
         $updatedContent = preg_replace(
-            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
+            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jitsi_url'\s*=>\s*'[^']*',\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
             "\n        '{$platform}' => {$platformsArray},",
             $content
         );
