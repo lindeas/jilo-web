@@ -38,7 +38,7 @@ return [
     'platforms' => [
         '0' => [
             'name' => 'meet1',
-            'jitsi_url' => 'https://meet.example.com',
+            'jitsi_url' => 'https://meet.lindeas.com',
             'jilo_database' => '../../jilo/jilo.db',
         ],
         '1' => [

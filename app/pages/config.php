@@ -1,8 +1,11 @@
 <?php
 
 $action = $_REQUEST['action'] ?? '';
+require_once '../app/classes/config.php';
 require '../app/helpers/errors.php';
 require '../app/helpers/config.php';
+
+$configure = new Config();
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -98,18 +101,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // no form submitted, show the templates
 } else {
-    switch ($action) {
-        case 'add':
-            include('../app/templates/config-add-platform.php');
+    switch ($item) {
+        case 'configjs':
+            $platformDetails = $configure->getPlatformDetails($config, $platform_id);
+            $platformConfigjs = $configure->getPlatformConfigjs($platformDetails);
+            include('../app/templates/config-list-configjs.php');
             break;
-        case 'edit':
-            include('../app/templates/config-edit-platform.php');
+        case 'interfaceconfigjs':
+            $platformDetails = $configure->getPlatformDetails($config, $platform_id);
+            $platformInterfaceConfigjs = $configure->getPlatformInterfaceConfigjs($platformDetails);
+            include('../app/templates/config-list-interfaceconfigjs.php');
             break;
-        case 'delete':
-            include('../app/templates/config-delete-platform.php');
-            break;
+
         default:
-            include('../app/templates/config-list.php');
+            switch ($action) {
+                case 'add':
+                    include('../app/templates/config-add-platform.php');
+                    break;
+                case 'edit':
+                    include('../app/templates/config-edit-platform.php');
+                    break;
+                case 'delete':
+                    include('../app/templates/config-delete-platform.php');
+                    break;
+                default:
+                    include('../app/templates/config-list.php');
+            }
     }
 }
 

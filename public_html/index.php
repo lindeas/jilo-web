@@ -67,6 +67,12 @@ if (isset($_REQUEST['page'])) {
 } else {
     $page = 'front';
 }
+if (isset($_REQUEST['item'])) {
+    $item = $_REQUEST['item'];
+} else {
+    $item = '';
+}
+
 
 // check if logged in
 unset($user);
