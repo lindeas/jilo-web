@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - Added database helper functions
 - Added support for multiple Jitsi platforms
 - Added app environments "production" and "development"
+- Added visualisation of config.js and interface_config.js per Jitsi platform
 
 ### Changed
 - MVC design - models(classes folder), views(templates folder) and controllers(pages folder)
