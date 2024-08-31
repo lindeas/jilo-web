@@ -7,10 +7,20 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 #### Links
-- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.1.1...HEAD
-- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.1.1...HEAD
-- github: https://github.com/lindeas/jilo-web/compare/v0.1.1...HEAD
-- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.1.1...HEAD
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2...HEAD
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2...HEAD
+- github: https://github.com/lindeas/jilo-web/compare/v0.2...HEAD
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2...HEAD
+
+---
+
+## 0.2 - 2024-08-31
+
+#### Links
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.1.1...v0.2
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.1.1...v0.2
+- github: https://github.com/lindeas/jilo-web/compare/v0.1.1...v0.2
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.1.1...v0.2
 
 ### Added
 - Added collapsible front page widgets

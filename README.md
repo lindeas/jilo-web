@@ -26,7 +26,7 @@ To see a demo install, go to https://work.lindeas.com/jilo-web-demo/
 
 ## version
 
-Current version: **0.1.1** released on **2024-07-25**
+Current version: **0.2** released on **2024-08-31**
 
 ## license
 

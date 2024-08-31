@@ -27,7 +27,7 @@ return [
         'sqlite_file'		=> '../app/jilo-web.db',
     ],
     // system info
-    'version'			=> '0.1.1',
+    'version'			=> '0.2',
     // development has verbose error messages, production has not
     'environment'		=> 'development',
 
@@ -37,14 +37,14 @@ return [
 
     'platforms' => [
         '0' => [
-            'name' => 'meet1',
+            'name' => 'lindeas',
             'jitsi_url' => 'https://meet.lindeas.com',
-            'jilo_database' => '../../jilo/jilo.db',
+            'jilo_database' => '../../jilo/jilo-meet.lindeas.db',
         ],
         '1' => [
-            'name' => 'meet2.example.com',
-            'jitsi_url' => 'https://test2.example.com',
-            'jilo_database' => '../../jilo/jilo2.db',
+            'name' => 'meet.example.com',
+            'jitsi_url' => 'https://meet.example.com',
+            'jilo_database' => '../../jilo/jilo.db',
         ],
         '2' => [
             'name' => 'test3',
