@@ -73,7 +73,6 @@ if (isset($_REQUEST['item'])) {
     $item = '';
 }
 
-
 // check if logged in
 unset($user);
 if (isset($_COOKIE['username'])) {

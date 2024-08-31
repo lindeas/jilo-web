@@ -8,7 +8,7 @@ class Config {
     }
 
     // loading the config.js
-    public function getPlatformConfigjs($platformDetails) {
+    public function getPlatformConfigjs($platformDetails, $raw = false) {
         // constructing the URL
         $configjsFile = $platformDetails['jitsi_url'] . '/config.js';
 
@@ -28,12 +28,20 @@ class Config {
         $fileContent = @file_get_contents($configjsFile, false, $context);
 
         if ($fileContent !== false) {
-            // remove block comments
-            $platformConfigjs = preg_replace('!/\*.*?\*/!s', '', $fileContent);
-            // remove single-line comments
-            $platformConfigjs = preg_replace('/\/\/[^\n]*/', '', $platformConfigjs);
-            // remove empty lines
-            $platformConfigjs = preg_replace('/^\s*[\r\n]/m', '', $platformConfigjs);
+
+            // when we need only uncommented values
+            if ($raw === false) {
+                // remove block comments
+                $platformConfigjs = preg_replace('!/\*.*?\*/!s', '', $fileContent);
+                // remove single-line comments
+                $platformConfigjs = preg_replace('/\/\/[^\n]*/', '', $platformConfigjs);
+                // remove empty lines
+                $platformConfigjs = preg_replace('/^\s*[\r\n]/m', '', $platformConfigjs);
+
+            // when we need the full file as it is
+            } else {
+                $platformConfigjs = $fileContent;
+            }
         }
 
         return $platformConfigjs;
@@ -42,7 +50,7 @@ class Config {
 
 
     // loading the interface_config.js
-    public function getPlatformInterfaceConfigjs($platformDetails) {
+    public function getPlatformInterfaceConfigjs($platformDetails, $raw = false) {
         // constructing the URL
         $interfaceConfigjsFile = $platformDetails['jitsi_url'] . '/interface_config.js';
 
@@ -62,12 +70,20 @@ class Config {
         $fileContent = @file_get_contents($interfaceConfigjsFile, false, $context);
 
         if ($fileContent !== false) {
-            // remove block comments
-            $platformInterfaceConfigjs = preg_replace('!/\*.*?\*/!s', '', $fileContent);
-            // remove single-line comments
-            $platformInterfaceConfigjs = preg_replace('/\/\/[^\n]*/', '', $platformInterfaceConfigjs);
-            // remove empty lines
-            $platformInterfaceConfigjs = preg_replace('/^\s*[\r\n]/m', '', $platformInterfaceConfigjs);
+
+            // when we need only uncommented values
+            if ($raw === false) {
+                // remove block comments
+                $platformInterfaceConfigjs = preg_replace('!/\*.*?\*/!s', '', $fileContent);
+                // remove single-line comments
+                $platformInterfaceConfigjs = preg_replace('/\/\/[^\n]*/', '', $platformInterfaceConfigjs);
+                // remove empty lines
+                $platformInterfaceConfigjs = preg_replace('/^\s*[\r\n]/m', '', $platformInterfaceConfigjs);
+
+            // when we need the full file as it is
+            } else {
+                $platformInterfaceConfigjs = $fileContent;
+            }
         }
 
         return $platformInterfaceConfigjs;

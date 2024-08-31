@@ -101,18 +101,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // no form submitted, show the templates
 } else {
+
+    // $item - config.js and interface_config.js are special case; remote loaded files
     switch ($item) {
         case 'configjs':
+            $mode = $_REQUEST['mode'] ?? '';
+            $raw = ($mode === 'raw');
             $platformDetails = $configure->getPlatformDetails($config, $platform_id);
-            $platformConfigjs = $configure->getPlatformConfigjs($platformDetails);
+            $platformConfigjs = $configure->getPlatformConfigjs($platformDetails, $raw);
             include('../app/templates/config-list-configjs.php');
             break;
         case 'interfaceconfigjs':
+            $mode = $_REQUEST['mode'] ?? '';
+            $raw = ($mode === 'raw');
             $platformDetails = $configure->getPlatformDetails($config, $platform_id);
-            $platformInterfaceConfigjs = $configure->getPlatformInterfaceConfigjs($platformDetails);
+            $platformInterfaceConfigjs = $configure->getPlatformInterfaceConfigjs($platformDetails, $raw);
             include('../app/templates/config-list-interfaceconfigjs.php');
             break;
 
+    // if there is no $item, we work on the local config file
         default:
             switch ($action) {
                 case 'add':
