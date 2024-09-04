@@ -31,6 +31,7 @@ $allowed_urls = [
     'register',
     'profile',
     'config',
+    'agents',
     'conferences',
     'participants',
     'components',

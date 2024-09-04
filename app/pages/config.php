@@ -8,9 +8,10 @@ $configure = new Config();
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // load the config file and initialize a copy
-    $content = file_get_contents($config_file);
-    $updatedContent = $content;
+// FIXME - if editing the flat file is no more needed, remove this
+//    // load the config file and initialize a copy
+//    $content = file_get_contents($config_file);
+//    $updatedContent = $content;
 
     // new platform adding
     if (isset($_POST['new']) && $_POST['new'] === 'true') {

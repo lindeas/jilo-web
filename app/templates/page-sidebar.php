@@ -46,12 +46,17 @@
 
                         <a href="<?= $app_root ?>?platform=<?= $platform_id ?>&page=config&item=configjs">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'configjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-tv" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>config.js
+                                <i class="fas fa-tv" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="config.js"></i>config.js
                             </li>
                         </a>
                         <a href="<?= $app_root ?>?platform=<?= $platform_id ?>&page=config&item=interfaceconfigjs">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'interfaceconfigjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-th" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>interface_config.js
+                                <i class="fas fa-th" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="interface_config.js"></i>interface_config.js
+                            </li>
+                        </a>
+                        <a href="<?= $app_root ?>?platform=<?= $platform_id ?>&page=agents">
+                            <li class="list-group-item<?php if ($page === 'agents') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-mask" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo agents"></i>jilo agents
                             </li>
                         </a>
                     </ul>

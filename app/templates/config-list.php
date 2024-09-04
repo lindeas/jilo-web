@@ -19,7 +19,7 @@ echo "\n";
                             <div class="border bg-light" style="padding-left: 50px; padding-bottom: 20px; padding-top: 20px;">
                                 <div class="row mb-1" style="padding-left: 0px;">
                                     <div class="col-md-4 text-end">
-                                        <?= $platform_array['id'] ?>:
+                                        platform id <?= $platform_array['id'] ?>:
                                     </div>
                                     <div class="col-md-8 text-start">
                                         <a class="btn btn-secondary" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_array['id']) ?>&page=config&action=edit">edit</a>
@@ -43,6 +43,15 @@ echo "\n";
                                         </div>
 <?php } ?>
                                     </div>
+
+                                    <div class="col-md-4 text-end">
+                                        configured jilo agents:
+                                    </div>
+                                    <div class="col-md-8 text-start">
+                                        0
+                                        <a class="btn btn-secondary" style="padding: 2px; margin-left: 10px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_array['id']) ?>&page=agents">configure</a>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

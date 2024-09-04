@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Added
+- Added support for managing Jilo Agents
+
 ### Changed
 - Jitsi platforms config moved from file to SQLite database
 

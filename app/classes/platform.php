@@ -38,7 +38,6 @@ class Platform {
                 ':jilo_database'	=> $newPlatform['jilo_database'],
             ]);
 
-            $query->execute();
             return true;
 
         } catch (Exception $e) {
@@ -64,14 +63,12 @@ class Platform {
                 ':platform_id'		=> $platform_id,
             ]);
 
-            $query->execute();
             return true;
 
         } catch (Exception $e) {
             return $e->getMessage();
         }
     }
-
 
     // delete a platform
     public function deletePlatform($platform_id) {
