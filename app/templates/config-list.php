@@ -11,7 +11,7 @@ echo "\n";
 ?>
 
 <hr />
-                        <p class="card-text">platforms configuration &nbsp;<a class="btn btn-secondary" style="padding: 0px;" href="/jilo-web/?page=config&action=add">add</a></p>
+                        <p class="card-text">platforms configuration &nbsp;<a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&action=add">add</a></p>
 
 <?php foreach ($platformsAll as $platform_array) { ?>
 
@@ -22,11 +22,11 @@ echo "\n";
                                         <?= $platform_array['id'] ?>:
                                     </div>
                                     <div class="col-md-8 text-start">
-                                        <a class="btn btn-secondary" style="padding: 2px;" href="/jilo-web/?platform=<?= htmlspecialchars($platform_array['id']) ?>&page=config&action=edit">edit</a>
+                                        <a class="btn btn-secondary" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_array['id']) ?>&page=config&action=edit">edit</a>
 <?php if (count($platformsAll) <= 1) { ?>
                                         <span class="btn btn-light" style="padding: 2px;" href="#" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="can't delete the last platform">delete</span>
 <?php } else { ?>
-                                        <a class="btn btn-danger" style="padding: 2px;" href="/jilo-web/?platform=<?= htmlspecialchars($platform_array['id'])?>&page=config&action=delete">delete</a>
+                                        <a class="btn btn-danger" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_array['id'])?>&page=config&action=delete">delete</a>
 <?php } ?>
                                     </div>
                                     <div style="padding-left: 100px; padding-bottom: 20px;">
