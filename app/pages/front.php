@@ -1,12 +1,10 @@
 <?php
 
-require_once '../app/classes/database.php';
 require '../app/classes/conference.php';
 require '../app/classes/participant.php';
 
 // connect to database
-require '../app/helpers/database.php';
-$db = connectDB($config, 'jilo', $platform_id);
+$db = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
 
 
 //

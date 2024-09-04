@@ -1,14 +1,13 @@
 <?php
 
 // connect to database
-function connectDB($config, $database = '', $platform_id = '') {
+function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
 
     // connecting ti a jilo sqlite database
     if ($database === 'jilo') {
         try {
-            $dbFile = $config['platforms'][$platform_id]['jilo_database'] ?? null;
             if (!$dbFile || !file_exists($dbFile)) {
-                throw new Exception(getError("Invalid platform ID \"{$platform_id}\", database file \"{$dbFile}\"not found."));
+                throw new Exception(getError("Invalid platform ID \"{$platformId}\", database file \"{$dbFile}\" not found."));
             }
             $db = new Database([
                 'type'		=> 'sqlite',

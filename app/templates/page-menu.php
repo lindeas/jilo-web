@@ -12,9 +12,9 @@
 
 <?php if ( isset($_SESSION['username']) ) { ?>
 
-<?php foreach ($config['platforms'] as $index => $platform) { ?>
+<?php foreach ($platformsAll as $platform) { ?>
                 <li style="margin-right: 3px;">
-                    <a style="background-color: #111;" href="?platform=<?= htmlspecialchars($index) ?>&page=front">
+                    <a style="background-color: #111;" href="?platform=<?= htmlspecialchars($platform['id']) ?>&page=front">
                         <?= htmlspecialchars($platform['name']) ?>
                     </a>
                 </li>

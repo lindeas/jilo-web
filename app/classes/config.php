@@ -2,15 +2,10 @@
 
 class Config {
 
-    public function getPlatformDetails($config, $platform_id) {
-        $platformDetails = $config['platforms'][$platform_id];
-        return $platformDetails;
-    }
-
     // loading the config.js
-    public function getPlatformConfigjs($platformDetails, $raw = false) {
+    public function getPlatformConfigjs($jitsiUrl, $raw = false) {
         // constructing the URL
-        $configjsFile = $platformDetails['jitsi_url'] . '/config.js';
+        $configjsFile = $jitsiUrl . '/config.js';
 
         // default content, if we can't get the file contents
         $platformConfigjs = "The file $configjsFile can't be loaded.";
@@ -50,9 +45,9 @@ class Config {
 
 
     // loading the interface_config.js
-    public function getPlatformInterfaceConfigjs($platformDetails, $raw = false) {
+    public function getPlatformInterfaceConfigjs($jitsiUrl, $raw = false) {
         // constructing the URL
-        $interfaceConfigjsFile = $platformDetails['jitsi_url'] . '/interface_config.js';
+        $interfaceConfigjsFile = $jitsiUrl . '/interface_config.js';
 
         // default content, if we can't get the file contents
         $platformInterfaceConfigjs = "The file $interfaceConfigjsFile can't be loaded.";

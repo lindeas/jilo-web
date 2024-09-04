@@ -1,9 +1,7 @@
 <?php
 
 $action = $_REQUEST['action'] ?? '';
-require_once '../app/classes/config.php';
-require '../app/helpers/errors.php';
-require '../app/helpers/config.php';
+require '../app/classes/config.php';
 
 $configure = new Config();
 
@@ -21,60 +19,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
-
-        // Determine the next available index for the new platform
-        $nextIndex = count($config['platforms']);
-
-        // Add the new platform to the platforms array
-        $config['platforms'][$nextIndex] = $newPlatform;
-
-        // Rebuild the PHP array syntax for the platforms
-        $platformsArray = formatArray($config['platforms']);
-
-        // Replace the platforms section in the config file
-        $updatedContent = preg_replace(
-            '/\'platforms\'\s*=>\s*\[[\s\S]+?\],/s',
-            "'platforms' => {$platformsArray}",
-            $content
-        );
-        $updatedContent = preg_replace('/\s*\]\n/s', "\n", $updatedContent);
+        $platformObject->addPlatform($newPlatform);
 
     // deleting a platform
     } elseif (isset($_POST['delete']) && $_POST['delete'] === 'true') {
         $platform = $_POST['platform'];
-
-        $config['platforms'][$platform]['name'] = $_POST['name'];
-        $config['platforms'][$platform]['jitsi_url'] = $_POST['jitsi_url'];
-        $config['platforms'][$platform]['jilo_database'] = $_POST['jilo_database'];
-
-        $platformsArray = formatArray($config['platforms'][$platform], 3);
-
-        $updatedContent = preg_replace(
-            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jitsi_url'\s*=>\s*'[^']*,\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
-            "",
-            $content
-        );
-
+        $platformObject->deletePlatform($platform);
 
     // an update to an existing platform
     } else {
-
         $platform = $_POST['platform'];
-
-        $config['platforms'][$platform]['name'] = $_POST['name'];
-        $config['platforms'][$platform]['jitsi_url'] = $_POST['jitsi_url'];
-        $config['platforms'][$platform]['jilo_database'] = $_POST['jilo_database'];
-
-        $platformsArray = formatArray($config['platforms'][$platform], 3);
-
-        $updatedContent = preg_replace(
-            "/\s*'$platform'\s*=>\s*\[\s*'name'\s*=>\s*'[^']*',\s*'jitsi_url'\s*=>\s*'[^']*',\s*'jilo_database'\s*=>\s*'[^']*',\s*\],/s",
-            "\n        '{$platform}' => {$platformsArray},",
-            $content
-        );
+        $updatedPlatform = [
+            'name'		=> $_POST['name'],
+            'jitsi_url'		=> $_POST['jitsi_url'],
+            'jilo_database'	=> $_POST['jilo_database'],
+        ];
+        $platformObject->editPlatform($platform, $updatedPlatform);
 
     }
-
 
 
     // check if file is writable
@@ -107,15 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         case 'configjs':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
-            $platformDetails = $configure->getPlatformDetails($config, $platform_id);
-            $platformConfigjs = $configure->getPlatformConfigjs($platformDetails, $raw);
+            $platformConfigjs = $configure->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include('../app/templates/config-list-configjs.php');
             break;
         case 'interfaceconfigjs':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
-            $platformDetails = $configure->getPlatformDetails($config, $platform_id);
-            $platformInterfaceConfigjs = $configure->getPlatformInterfaceConfigjs($platformDetails, $raw);
+            $platformInterfaceConfigjs = $configure->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include('../app/templates/config-list-interfaceconfigjs.php');
             break;
 

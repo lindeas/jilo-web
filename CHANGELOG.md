@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Changed
+- Jitsi platforms config moved from file to SQLite database
+
 #### Links
 - upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2...HEAD
 - codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2...HEAD

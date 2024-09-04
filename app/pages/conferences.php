@@ -1,11 +1,9 @@
 <?php
 
-require_once '../app/classes/database.php';
 require '../app/classes/conference.php';
 
 // connect to database
-require '../app/helpers/database.php';
-$db = connectDB($config, 'jilo', $platform_id);
+$db = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
 
 // specify time range
 include '../app/helpers/time_range.php';

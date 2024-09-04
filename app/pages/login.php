@@ -1,6 +1,5 @@
 <?php
 
-require_once '../app/classes/database.php';
 require '../app/classes/user.php';
 
 // clear the global error var before login
@@ -9,10 +8,9 @@ unset($error);
 try {
 
     // connect to database
-    require '../app/helpers/database.php';
-    $db = connectDB($config);
+    $dbWeb = connectDB($config);
 
-    $user = new User($db);
+    $user = new User($dbWeb);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         $username = $_POST['username'];

@@ -1,18 +1,21 @@
 
                 <!-- widget "config" -->
                 <div class="card text-center w-50 mx-auto">
-                    <p class="h4 card-header">Jilo web configuration for Jitsi platform "<?= htmlspecialchars($platform_id) ?>"</p>
+                    <p class="h4 card-header">Jilo web configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong></p>
                     <div class="card-body">
                         <p class="card-text">delete a platform:</p>
                         <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
-<?php foreach ($config['platforms'][$platform_id] as $config_item => $config_value) { ?>
+<?php
+foreach ($platformDetails[0] as $key => $value) {
+    if ($key === 'id') continue;
+?>
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">
-                                    <label for="<?= htmlspecialchars($config_item) ?>" class="form-label"><?= htmlspecialchars($config_item) ?>:</label>
+                                    <label for="<?= htmlspecialchars($key) ?>" class="form-label"><?= htmlspecialchars($key) ?>:</label>
                                 </div>
                                 <div class="col-md-8">
-                                    <div class="text-start"><?= htmlspecialchars($config_value ?? '')?></div>
-                                    <input type="hidden" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? '')?>" />
+                                    <div class="text-start"><?= htmlspecialchars($value ?? '')?></div>
+                                    <input type="hidden" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value ?? '')?>" />
                                 </div>
                             </div>
 <?php } ?>

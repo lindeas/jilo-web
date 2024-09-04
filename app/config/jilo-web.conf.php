@@ -31,27 +31,6 @@ return [
     // development has verbose error messages, production has not
     'environment'		=> 'development',
 
-    // *************************************
-    // Maintained by the app, edit with care
-    // *************************************
-
-    'platforms' => [
-        '0' => [
-            'name' => 'lindeas',
-            'jitsi_url' => 'https://meet.lindeas.com',
-            'jilo_database' => '../../jilo/jilo-meet.lindeas.db',
-        ],
-        '1' => [
-            'name' => 'meet.example.com',
-            'jitsi_url' => 'https://meet.example.com',
-            'jilo_database' => '../../jilo/jilo.db',
-        ],
-        '2' => [
-            'name' => 'test3',
-            'jitsi_url' => 'https://test3.example.com',
-            'jilo_database' => '../../jilo/jilo2.db',
-        ],
-    ],
 ];
 
 ?>

@@ -15,6 +15,8 @@
 // flush it later only when there is no redirect
 ob_start();
 
+require '../app/helpers/errors.php';
+
 // error reporting, comment out in production
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -96,8 +98,20 @@ if (isset($_SESSION['error'])) {
     $error = $_SESSION['error'];
 }
 
+// connect to db of Jilo Web
+require '../app/classes/database.php';
+require '../app/helpers/database.php';
+$dbWeb = connectDB($config);
+
+// get platforms details
+require '../app/classes/platform.php';
+$platformObject = new Platform($dbWeb);
+$platformsAll = $platformObject->getPlatformDetails();
+
 // by default we connect ot the first configured platform
-$platform_id = $_REQUEST['platform'] ?? '0';
+$firstPlatform = $platformsAll[0]['id'];
+$platform_id = $_REQUEST['platform'] ?? $firstPlatform;
+$platformDetails = $platformObject->getPlatformDetails($platform_id);
 
 // page building
 if (in_array($page, $allowed_urls)) {

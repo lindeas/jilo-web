@@ -1,7 +1,5 @@
 <?php
 
-require '../app/helpers/errors.php';
-
 class Database {
     private $pdo;
 
