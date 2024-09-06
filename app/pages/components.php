@@ -29,10 +29,10 @@ if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
 
 
 // list of all component events (default)
-$component = new Component($db);
+$componentObject = new Component($db);
 
 // prepare the result
-$search = $component->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
+$search = $componentObject->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
 
 if (!empty($search)) {
     $components = array();
@@ -77,6 +77,6 @@ if (!empty($components['records'])) {
 }
 
 // display the widget
-include('../app/templates/widget.php');
+include '../app/templates/widget.php';
 
 ?>

@@ -14,8 +14,8 @@ $db = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform
 
 ////
 // monthly usage
-$conference = new Conference($db);
-$participant = new Participant($db);
+$conferenceObject = new Conference($db);
+$participantObject = new Participant($db);
 
 // monthly conferences for the last year
 $fromMonth = (new DateTime())->sub(new DateInterval('P1Y'));
@@ -36,8 +36,8 @@ while ($fromMonth < $thisMonth) {
     $from_time = $fromMonth->format('Y-m-d');
     $until_time = $untilMonth->format('Y-m-d');
 
-    $searchConferenceNumber = $conference->conferenceNumber($from_time, $until_time);
-    $searchParticipantNumber = $participant->participantNumber($from_time, $until_time);
+    $searchConferenceNumber = $conferenceObject->conferenceNumber($from_time, $until_time);
+    $searchParticipantNumber = $participantObject->participantNumber($from_time, $until_time);
 
     // pretty format for displaying the month in the widget
     $month = $fromMonth->format('F Y');
@@ -71,12 +71,11 @@ if (!empty($searchConferenceNumber) && !empty($searchParticipantNumber)) {
 }
 
 // display the widget
-include('../app/templates/widget-monthly.php');
+include '../app/templates/widget-monthly.php';
 
 
 ////
 // conferences in last 2 days
-$conference = new Conference($db);
 
 // time range limit
 $from_time = date('Y-m-d', time() - 60 * 60 * 24 * 2);
@@ -84,7 +83,7 @@ $until_time = date('Y-m-d', time());
 $time_range_specified = true;
 
 // prepare the result
-$search = $conference->conferencesAllFormatted($from_time, $until_time);
+$search = $conferenceObject->conferencesAllFormatted($from_time, $until_time);
 
 if (!empty($search)) {
     $conferences = array();
@@ -130,12 +129,11 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include('../app/templates/widget.php');
+include '../app/templates/widget.php';
 
 
 ////
 // last 10 conferences
-$conference = new Conference($db);
 
 // all time
 $from_time = '0000-01-01';
@@ -145,7 +143,7 @@ $time_range_specified = false;
 $conference_number = 10;
 
 // prepare the result
-$search = $conference->conferencesAllFormatted($from_time, $until_time);
+$search = $conferenceObject->conferencesAllFormatted($from_time, $until_time);
 
 if (!empty($search)) {
     $conferences = array();
@@ -197,6 +195,6 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include('../app/templates/widget.php');
+include '../app/templates/widget.php';
 
 ?>

@@ -57,19 +57,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     switch ($action) {
         case 'add':
-            include('../app/templates/agent-add.php');
+            include '../app/templates/agent-add.php';
             break;
         case 'edit':
             $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-            include('../app/templates/agent-edit.php');
+            include '../app/templates/agent-edit.php';
             break;
         case 'delete':
             $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-            include('../app/templates/agent-delete.php');
+            include '../app/templates/agent-delete.php';
             break;
         default:
             $agentDetails = $agentObject->getAgentDetails($platform_id);
-            include('../app/templates/agent-list.php');
+            include '../app/templates/agent-list.php';
     }
 }
 

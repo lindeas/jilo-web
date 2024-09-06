@@ -11,14 +11,14 @@ if ($config['registration_enabled'] === true) {
         // connect to database
         $dbWeb = connectDB($config);
 
-        $user = new User($dbWeb);
+        $userObject = new User($dbWeb);
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
             $username = $_POST['username'];
             $password = $_POST['password'];
 
             // redirect to login
-            if ( $user->register($username, $password) ) {
+            if ( $userObject->register($username, $password) ) {
                 $_SESSION['notice'] = "Registration successful.<br />You can log in now.";
                 header('Location: index.php');
                 exit();

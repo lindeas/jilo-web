@@ -3,7 +3,7 @@
 $action = $_REQUEST['action'] ?? '';
 require '../app/classes/config.php';
 
-$configure = new Config();
+$configObject = new Config();
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -70,30 +70,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         case 'configjs':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
-            $platformConfigjs = $configure->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
-            include('../app/templates/config-list-configjs.php');
+            $platformConfigjs = $configObject->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
+            include '../app/templates/config-list-configjs.php';
             break;
         case 'interfaceconfigjs':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
-            $platformInterfaceConfigjs = $configure->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
-            include('../app/templates/config-list-interfaceconfigjs.php');
+            $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
+            include '../app/templates/config-list-interfaceconfigjs.php';
             break;
 
     // if there is no $item, we work on the local config file
         default:
             switch ($action) {
                 case 'add':
-                    include('../app/templates/config-add-platform.php');
+                    include '../app/templates/config-add-platform.php';
                     break;
                 case 'edit':
-                    include('../app/templates/config-edit-platform.php');
+                    include '../app/templates/config-edit-platform.php';
                     break;
                 case 'delete':
-                    include('../app/templates/config-delete-platform.php');
+                    include '../app/templates/config-delete-platform.php';
                     break;
                 default:
-                    include('../app/templates/config-list.php');
+                    include '../app/templates/config-list.php';
             }
     }
 }

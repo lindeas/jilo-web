@@ -10,14 +10,14 @@ try {
     // connect to database
     $dbWeb = connectDB($config);
 
-    $user = new User($dbWeb);
+    $userObject = new User($dbWeb);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         $username = $_POST['username'];
         $password = $_POST['password'];
 
         // login successful
-        if ( $user->login($username, $password) ) {
+        if ( $userObject->login($username, $password) ) {
             // if remember_me is checked, max out the session
             if (isset($_POST['remember_me'])) {
                 // 30*24*60*60 = 30 days

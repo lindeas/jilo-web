@@ -29,17 +29,17 @@ if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
 //
 
 
-$conference = new Conference($db);
+$conferenceObject = new Conference($db);
 
 // search and list specific conference ID
 if (isset($conferenceId)) {
-    $search = $conference->conferenceById($conferenceId, $from_time, $until_time);
+    $search = $conferenceObject->conferenceById($conferenceId, $from_time, $until_time);
 // search and list specific conference name
 } elseif (isset($conferenceName)) {
-    $search = $conference->conferenceByName($conferenceName, $from_time, $until_time);
+    $search = $conferenceObject->conferenceByName($conferenceName, $from_time, $until_time);
 // list of all conferences (default)
 } else {
-    $search = $conference->conferencesAllFormatted($from_time, $until_time);
+    $search = $conferenceObject->conferencesAllFormatted($from_time, $until_time);
 }
 
 if (!empty($search)) {
@@ -126,6 +126,6 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include('../app/templates/widget.php');
+include '../app/templates/widget.php';
 
 ?>

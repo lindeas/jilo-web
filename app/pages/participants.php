@@ -32,21 +32,21 @@ if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
 // Participant listings
 //
 
-$participant = new Participant($db);
+$participantObject = new Participant($db);
 
 // search and list specific participant ID
 if (isset($participantId)) {
-    $search = $participant->conferenceByParticipantId($participantId, $from_time, $until_time, $participantId, $from_time, $until_time);
+    $search = $participantObject->conferenceByParticipantId($participantId, $from_time, $until_time, $participantId, $from_time, $until_time);
 // search and list specific participant name (stats_id)
 } elseif (isset($participantName)) {
-    $search = $participant->conferenceByParticipantName($participantName, $from_time, $until_time);
+    $search = $participantObject->conferenceByParticipantName($participantName, $from_time, $until_time);
 // search and list specific participant IP
 } elseif (isset($participantIp)) {
-    $search = $participant->conferenceByParticipantIP($participantIp, $from_time, $until_time);
+    $search = $participantObject->conferenceByParticipantIP($participantIp, $from_time, $until_time);
 // list of all participants (default)
 } else {
 // prepare the result
-    $search = $participant->participantsAll($from_time, $until_time);
+    $search = $participantObject->participantsAll($from_time, $until_time);
 }
 
 if (!empty($search)) {
@@ -135,6 +135,6 @@ if (!empty($participants['records'])) {
 }
 
 // display the widget
-include('../app/templates/widget.php');
+include '../app/templates/widget.php';
 
 ?>
