@@ -33,6 +33,33 @@ class User {
         }
     }
 
+    // get user ID from username
+    // FIXME not used now?
+    public function getUserId($username) {
+        $sql = 'SELECT id FROM users WHERE username = :username';
+        $query = $this->db->prepare($sql);
+        $query->bindParam(':username', $username);
+
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+    // get user details
+    public function getUserDetails($username) {
+        $sql = 'SELECT * FROM users_meta um
+                    LEFT JOIN users u
+                    ON um.user_id = u.id
+                    WHERE u.username = :username';
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':username'		=> $username,
+        ]);
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
 }
 
 ?>
