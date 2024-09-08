@@ -13,14 +13,14 @@
 
                             <div class="col-md-8">
 
-                                <div class="row mb-3">
+                                <!--div class="row mb-3">
                                     <div class="col-md-4 text-end">
                                         <label class="form-label"><small>username:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
                                         <?= $userDetails[0]['username'] ?>
                                     </div>
-                                </div>
+                                </div-->
 
                                 <div class="row mb-3">
                                     <div class="col-md-4 text-end">

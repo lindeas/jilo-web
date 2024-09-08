@@ -45,6 +45,7 @@ class User {
         return $query->fetchAll(PDO::FETCH_ASSOC);
 
     }
+
     // get user details
     public function getUserDetails($username) {
         $sql = 'SELECT * FROM users_meta um
@@ -57,6 +58,30 @@ class User {
         ]);
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
+    // update an existing user
+    public function editUser($user_id, $updatedUser) {
+        try {
+            $sql = 'UPDATE users_meta SET
+                        name = :name,
+                        email = :email,
+                        bio = :bio
+                    WHERE user_id = :user_id';
+            $query = $this->db->prepare($sql);
+            $query->execute([
+                ':user_id'	=> $user_id,
+                ':name'		=> $updatedUser['name'],
+                ':email'	=> $updatedUser['email'],
+                ':bio'		=> $updatedUser['bio']
+            ]);
+
+            return true;
+
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
 
     }
 
