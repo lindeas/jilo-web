@@ -26,6 +26,10 @@ return [
         // default is ../app/jilo-web.db
         'sqlite_file'		=> '../app/jilo-web.db',
     ],
+    // avatars path
+    'avatars_path'		=> 'uploads/avatars/',
+    // default avatar
+    'default_avatar'		=> 'static/default_avatar.png',
     // system info
     'version'			=> '0.2',
     // development has verbose error messages, production has not

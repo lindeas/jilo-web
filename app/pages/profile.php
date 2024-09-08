@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // no form submitted, show the templates
 } else {
     $userDetails = $userObject->getUserDetails($user);
+    $avatar = !empty($userDetails['avatar']) ? 'uploads/avatars/'.$userDetails['avatar'] : $config['default_avatar'];
 
     switch ($action) {
 

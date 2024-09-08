@@ -8,7 +8,9 @@
                         <div class="row">
 
                             <div class="col-md-4">
-                                <div class="border" style="width:200px; height: 200px;"><img src="" alt="avatar" /></div>
+                                <div class="border" style="width:200px; height: 200px;">
+                                    <img src="<?= $app_root . htmlspecialchars($avatar) ?>" width="200" height="200" alt="avatar" />
+                                </div>
                             </div>
 
                             <div class="col-md-8">
