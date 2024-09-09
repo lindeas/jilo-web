@@ -122,14 +122,27 @@ document.getElementById('avatar-upload').addEventListener('change', function(eve
     reader.readAsDataURL(event.target.files[0]);
 });
 
+const maxFileSize = 500 * 1024; // 500 KB in bytes
+const currentAvatar = '<?= $app_root . htmlspecialchars($avatar) ?>'; // current avatar
 document.getElementById('avatar-upload').addEventListener('change', function() {
-    // Enable the "Upload" button when a file is selected
     const uploadButton = document.getElementById('avatar-upload-button');
-    if (this.files.length > 0) {
-        uploadButton.disabled = false;
-        uploadButton.className = 'avatar-btn btn btn-success';
+    const file = this.files[0];
+
+    if (file) {
+        // Check file size
+        if (file.size > maxFileSize) {
+            alert('File size exceeds 500 KB. Please select a smaller file.');
+            this.value = '';  // Clear the file input
+            uploadButton.disabled = true;  // Keep the upload button disabled
+            uploadButton.className = 'avatar-btn btn btn-secondary';
+            document.querySelector('.avatar-img').src = currentAvatar;
+        } else {
+            // Enable the upload button if the file size is valid
+            uploadButton.disabled = false;
+            uploadButton.className = 'avatar-btn btn btn-success';
+        }
     } else {
-        uploadButton.disabled = true;
+        uploadButton.disabled = true;  // Disable the button if no file is selected
         uploadButton.className = 'avatar-btn btn btn-secondary';
     }
 });
