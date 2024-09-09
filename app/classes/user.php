@@ -85,6 +85,78 @@ class User {
 
     }
 
+    // remove an avatar
+    public function removeAvatar($user_id, $old_avatar = '') {
+        try {
+            // remove from database
+            $sql = 'UPDATE users_meta SET
+                        avatar = NULL
+                    WHERE user_id = :user_id';
+            $query = $this->db->prepare($sql);
+            $query->execute([
+                ':user_id'	=> $user_id,
+            ]);
+
+            // delete the old avatar file
+            if ($old_avatar && file_exists($old_avatar)) {
+                unlink($old_avatar);
+            }
+
+            return true;
+
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+
+    }
+
+    // change an avatar
+    public function changeAvatar($user_id, $avatar_file, $avatars_path) {
+        try {
+            // check if the file was uploaded
+            if (isset($avatar_file) && $avatar_file['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $avatar_file['tmp_name'];
+                $fileName = $avatar_file['name'];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                // validate file extension
+                if (in_array($fileExtension, ['jpg', 'png', 'jpeg'])) {
+                    $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+                    $dest_path = $avatars_path . $newFileName;
+
+                    // move the file to avatars folder
+                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                        try {
+                            // update user's avatar path in DB
+                            $sql = 'UPDATE users_meta SET
+                                        avatar = :avatar
+                                    WHERE user_id = :user_id';
+                            $query = $this->db->prepare($sql);
+                            $query->execute([
+                                ':avatar' => $newFileName,
+                                ':user_id' => $user_id
+                            ]);
+                            // all went OK
+                            $_SESSION['notice'] = 'Avatar updated successfully!';
+                            return true;
+                        } catch (Exception $e) {
+                            return $e->getMessage();
+                        }
+                    } else {
+                        $_SESSION['error'] = 'Error moving the uploaded file.';
+                    }
+                } else {
+                    $_SESSION['error'] = 'Invalid avatar file type.';
+                }
+            } else {
+                $_SESSION['error'] = 'Error uploading the avatar file.';
+            }
+
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
 }
 
 ?>

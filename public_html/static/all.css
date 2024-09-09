@@ -171,3 +171,18 @@
     font-family: inherit;
     font-size: 14px;
 }
+
+/* avatar */
+.avatar-container {
+    text-align: center;
+}
+.avatar-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover; /* Ensures proper cropping of image */
+    border: 3px solid #ccc;
+}
+.avatar-btn {
+    margin-top: 10px;
+}

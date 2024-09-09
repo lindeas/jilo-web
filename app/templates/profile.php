@@ -7,9 +7,9 @@
 
                         <div class="row">
 
-                            <div class="col-md-4">
-                                <div class="border" style="width:200px; height: 200px;">
-                                    <img src="<?= $app_root . htmlspecialchars($avatar) ?>" width="200" height="200" alt="avatar" />
+                            <div class="col-md-4 avatar-container">
+                                <div>
+                                    <img class="avatar-img" src="<?= $app_root . htmlspecialchars($avatar) ?>" alt="avatar" />
                                 </div>
                             </div>
 

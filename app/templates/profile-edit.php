@@ -5,18 +5,28 @@
                     <p class="h4 card-header">Profile of <?= $userDetails[0]['username'] ?></p>
                     <div class="card-body">
 
-                        <form method="POST" action="<?= $app_root ?>?page=profile">
+                        <div class="row">
+                            <p class="border rounded bg-light mb-4"><small>edit the profile fields</small></p>
 
-                            <div class="row">
-                                <p class="border rounded bg-light mb-4"><small>edit the profile fields</small></p>
+                            <div class="col-md-4 avatar-container">
+                                <div>
+                                    <img class="avatar-img" src="<?= $app_root . htmlspecialchars($avatar) ?>" alt="avatar" />
 
-                                <div class="col-md-4">
-                                    <div class="border" style="width:200px; height: 200px;">
-                                        <img src="<?= $app_root . htmlspecialchars($avatar) ?>" width="200" height="200" alt="avatar" />
-                                    </div>
+                                    <form method="POST" action="<?= $app_root ?>?page=profile&action=edit&item=avatar" enctype="multipart/form-data">
+                                        <label for="avatar-upload" class="avatar-btn btn btn-primary"><small>select avatar</small></label>
+                                        <input type="file" id="avatar-upload" name="avatar_file" accept="image/*" style="display:none;">
+                                        <input type="submit" class="avatar-btn btn btn-success" value="upload new avatar">
+                                    </form>
+
+                                    <form method="POST" action="<?= $app_root ?>?page=profile&action=remove&item=avatar">
+                                        <input type="submit" id="avatar-remove" class="avatar-btn btn btn-danger" value="remove avatar" />
+                                    </form>
                                 </div>
+                            </div>
 
-                                <div class="col-md-8">
+                            <div class="col-md-8">
+
+                                <form method="POST" action="<?= $app_root ?>?page=profile">
 
                                     <!--div class="row mb-3">
                                         <div class="col-md-4 text-end">
@@ -76,3 +86,13 @@
                     </div>
                 </div>
                 <!-- /user profile -->
+
+<script>
+document.getElementById('avatar-upload').addEventListener('change', function(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        document.querySelector('.avatar-img').src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+});
+</script>
