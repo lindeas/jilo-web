@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // no form submitted, show the templates
 } else {
     $avatar = !empty($userDetails[0]['avatar']) ? $config['avatars_path'] . $userDetails[0]['avatar'] : $config['default_avatar'];
+    $default_avatar = empty($userDetails[0]['avatar']) ? true : false;
 
     switch ($action) {
 

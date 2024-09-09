@@ -13,16 +13,42 @@
                                     <img class="avatar-img" src="<?= $app_root . htmlspecialchars($avatar) ?>" alt="avatar" />
 
                                     <form method="POST" action="<?= $app_root ?>?page=profile&action=edit&item=avatar" enctype="multipart/form-data">
-                                        <label for="avatar-upload" class="avatar-btn btn btn-primary"><small>select avatar</small></label>
+                                        <label for="avatar-upload" class="avatar-btn btn btn-primary"><small>select new</small></label>
                                         <input type="file" id="avatar-upload" name="avatar_file" accept="image/*" style="display:none;">
-                                        <input type="submit" class="avatar-btn btn btn-success" value="upload new avatar">
+                                        <input type="submit" id="avatar-upload-button" class="avatar-btn btn btn-secondary" value="upload" disabled>
                                     </form>
 
-                                    <form method="POST" action="<?= $app_root ?>?page=profile&action=remove&item=avatar">
-                                        <input type="submit" id="avatar-remove" class="avatar-btn btn btn-danger" value="remove avatar" />
+                                    <form id="remove-avatar-form" method="POST" action="<?= $app_root ?>?page=profile&action=remove&item=avatar">
+<?php if ($default_avatar) { ?>
+                                        <button type="button" class="avatar-btn btn btn-secondary" data-toggle="modal" data-target="#confirmDeleteModal" disabled>
+<?php } else { ?>
+                                        <button type="button" class="avatar-btn btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal">
+<?php } ?>
+                                            <small>remove current avatar</small>
+                                        </button>
                                     </form>
+                                    <!-- avatar removal moda confirmation -->
+                                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Avatar Deletion</h5>
+                                                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete your avatar? This action cannot be undone.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-danger" id="confirm-delete">Delete Avatar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
+
 
                             <div class="col-md-8">
 
@@ -94,5 +120,22 @@ document.getElementById('avatar-upload').addEventListener('change', function(eve
         document.querySelector('.avatar-img').src = reader.result;
     };
     reader.readAsDataURL(event.target.files[0]);
+});
+
+document.getElementById('avatar-upload').addEventListener('change', function() {
+    // Enable the "Upload" button when a file is selected
+    const uploadButton = document.getElementById('avatar-upload-button');
+    if (this.files.length > 0) {
+        uploadButton.disabled = false;
+        uploadButton.className = 'avatar-btn btn btn-success';
+    } else {
+        uploadButton.disabled = true;
+        uploadButton.className = 'avatar-btn btn btn-secondary';
+    }
+});
+
+document.getElementById('confirm-delete').addEventListener('click', function() {
+    // Submit the form when the user confirms deletion
+    document.getElementById('remove-avatar-form').submit();
 });
 </script>
