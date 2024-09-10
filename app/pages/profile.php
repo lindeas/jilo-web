@@ -14,22 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $item = $_REQUEST['item'] ?? '';
 
-    // avatar editing
-    if ($item === 'avatar') {
-        switch ($action) {
-            case 'remove':
-                $result = $userObject->removeAvatar($user_id, $config['avatars_path'].$userDetails[0]['avatar']);
-                if ($result === true) {
-                    $_SESSION['notice'] = "Avatar for user \"{$user}\" is removed.";
-                } else {
-                    $_SESSION['error'] = "Removing the avatar failed. Error: $result";
-                }
-                break;
-            case 'edit':
-                $result = $userObject->changeAvatar($user_id, $_FILES['avatar_file'], $config['avatars_path']);
-                break;
-            default:
-                $_SESSION['error'] = "Unspecified avatar editing action.";
+    // avatar removal
+    if ($item === 'avatar' && $action === 'remove') {
+        $result = $userObject->removeAvatar($user_id, $config['avatars_path'].$userDetails[0]['avatar']);
+        if ($result === true) {
+            $_SESSION['notice'] .= "Avatar for user \"{$user}\" is removed. ";
+        } else {
+            $_SESSION['error'] .= "Removing the avatar failed. Error: $result ";
         }
 
         header("Location: $app_root?page=profile");
@@ -44,9 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ];
     $result = $userObject->editUser($user_id, $updatedUser);
     if ($result === true) {
-        $_SESSION['notice'] = "User details for \"{$updatedUser['name']}\" are edited.";
+        $_SESSION['notice'] .= "User details for \"{$updatedUser['name']}\" are edited. ";
     } else {
-        $_SESSION['error'] = "Editing the user details failed. Error: $result";
+        $_SESSION['error'] .= "Editing the user details failed. Error: $result ";
+    }
+
+    // update the avatar
+    if (!empty($_FILES['avatar_file']['tmp_name'])) {
+        $result = $userObject->changeAvatar($user_id, $_FILES['avatar_file'], $config['avatars_path']);
     }
 
     header("Location: $app_root?page=profile");

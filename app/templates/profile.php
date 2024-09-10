@@ -47,7 +47,7 @@
                                         <label class="form-label"><small>bio:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <textarea class="scroll-box" rows="10"><?= $userDetails[0]['bio'] ?? '' ?></textarea>
+                                        <textarea class="scroll-box" rows="10" readonly><?= $userDetails[0]['bio'] ?? '' ?></textarea>
                                     </div>
                                 </div>
 

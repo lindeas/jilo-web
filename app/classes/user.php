@@ -137,19 +137,19 @@ class User {
                                 ':user_id' => $user_id
                             ]);
                             // all went OK
-                            $_SESSION['notice'] = 'Avatar updated successfully!';
+                            $_SESSION['notice'] .= 'Avatar updated successfully. ';
                             return true;
                         } catch (Exception $e) {
                             return $e->getMessage();
                         }
                     } else {
-                        $_SESSION['error'] = 'Error moving the uploaded file.';
+                        $_SESSION['error'] .= 'Error moving the uploaded file. ';
                     }
                 } else {
-                    $_SESSION['error'] = 'Invalid avatar file type.';
+                    $_SESSION['error'] .= 'Invalid avatar file type. ';
                 }
             } else {
-                $_SESSION['error'] = 'Error uploading the avatar file.';
+                $_SESSION['error'] .= 'Error uploading the avatar file. ';
             }
 
         } catch (Exception $e) {
