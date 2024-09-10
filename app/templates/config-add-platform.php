@@ -12,7 +12,7 @@
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="name" value="" required />
+                                    <input class="form-control" type="text" name="name" value="" required autofocus />
                                     <p class="text-start"><small>descriptive name for the platform</small></p>
                                 </div>
                             </div>

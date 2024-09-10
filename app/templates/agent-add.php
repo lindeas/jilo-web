@@ -12,7 +12,7 @@
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="type" value="" required />
+                                    <input class="form-control" type="text" name="type" value="" required autofocus />
                                     <p class="text-start"><small>type of agent (meet, jvb, jibri, all)</small></p>
                                 </div>
                             </div>

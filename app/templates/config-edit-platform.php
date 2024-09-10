@@ -15,7 +15,7 @@ foreach ($platformDetails[0] as $key => $value) {
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value ?? '')?>" required />
+                                    <input class="form-control" type="text" name="<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($value ?? '')?>" required autofocus />
 <?php if ($key === 'name') { ?>
                                     <p class="text-start"><small>descriptive name for the platform</small></p>
 <?php } elseif ($key === 'jitsi_url') { ?>

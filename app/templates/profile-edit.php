@@ -45,7 +45,7 @@
                                             <label for="name" class="form-label"><small>name:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="name" value="<?= $userDetails[0]['name'] ?>" />
+                                            <input class="form-control" type="text" name="name" value="<?= $userDetails[0]['name'] ?>" autofocus />
                                         </div>
                                     </div>
 
