@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Added support for managing Jilo Agents
+- Added more fields and avatar image to user profile
 
 ### Changed
 - Jitsi platforms config moved from file to SQLite database
