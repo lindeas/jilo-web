@@ -72,7 +72,20 @@
                                             <label for="rights" class="form-label"><small>rights:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="rights" value="<?= $userDetails[0]['rights'] ?? '' ?>" />
+<?php foreach ($allRights as $right) {
+    // Check if the current right exists in $userRights and is enabled
+    $isChecked = false;
+    foreach ($userRights as $userRight) {
+        if ($userRight['right_id'] === $right['right_id']) {
+            $isChecked = true;
+            break;
+        }
+    } ?>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="rights[]" value="<?= htmlspecialchars($right['right_id']) ?>" id="right_<?= htmlspecialchars($right['right_id']) ?>" <?= $isChecked ? 'checked' : '' ?> />
+                                                <label class="form-check-label" for="right_<?= htmlspecialchars($right['right_id']) ?>"><?= htmlspecialchars($right['right_name']) ?></label>
+                                            </div>
+<?php } ?>
                                         </div>
                                     </div>
 

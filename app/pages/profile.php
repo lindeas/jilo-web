@@ -40,6 +40,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] .= "Editing the user details failed. Error: $result ";
     }
 
+    // update the rights
+    $newRights = $_POST['rights'] ?? array();
+    // extract the new right_ids
+    $userRightsIds = array_column($userRights, 'right_id');
+    // what rights we need to add
+    $rightsToAdd = array_diff($newRights, $userRightsIds);
+    if (!empty($rightsToAdd)) {
+        foreach ($rightsToAdd as $rightId) {
+            $userObject->addUserRight($user_id, $rightId);
+        }
+    }
+    // what rights we need to remove
+    $rightsToRemove = array_diff($userRightsIds, $newRights);
+    if (!empty($rightsToRemove)) {
+        foreach ($rightsToRemove as $rightId) {
+            $userObject->removeUserRight($user_id, $rightId);
+        }
+    }
+
     // update the avatar
     if (!empty($_FILES['avatar_file']['tmp_name'])) {
         $result = $userObject->changeAvatar($user_id, $_FILES['avatar_file'], $config['avatars_path']);
@@ -56,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     switch ($action) {
 
         case 'edit':
+            $allRights = $userObject->getAllRights();
             include '../app/templates/profile-edit.php';
             break;
 

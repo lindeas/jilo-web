@@ -67,11 +67,52 @@ class User {
 
     }
 
+    // add user right
+    public function addUserRight($user_id, $right_id) {
+        $sql = 'INSERT INTO users_rights
+                    (user_id, right_id, enabled)
+                VALUES
+                    (:user_id, :right_id, 1)';
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':user_id'		=> $user_id,
+            ':right_id'		=> $right_id,
+        ]);
+    }
+
+    // remove user right
+    public function removeUserRight($user_id, $right_id) {
+        $sql = 'DELETE FROM users_rights
+                WHERE
+                    user_id = :user_id
+                AND
+                    right_id = :right_id';
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':user_id'		=> $user_id,
+            ':right_id'		=> $right_id,
+        ]);
+    }
+
+    // get all rights
+    public function getAllRights() {
+        $sql = 'SELECT
+                    id AS right_id,
+                    item AS right_name
+                FROM rights';
+        $query = $this->db->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
     // get user rights
     public function getUserRights($user_id) {
         $sql = 'SELECT
                     u.id AS user_id,
                     u.username,
+                    r.id AS right_id,
                     r.item AS right_name
                 FROM
                     users u
