@@ -1,3 +1,4 @@
+
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
@@ -9,13 +10,20 @@ CREATE TABLE users_meta (
     name TEXT,
     email TEXT,
     avatar TEXT,
-    bio TEXT
+    bio TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 CREATE TABLE users_rights (
+    user_id INTEGER,
+    right_id INTEGER,
+    enabled INTEGER NOT NULL CHECK (enabled IN (0, 1)),
+    PRIMARY KEY (user_id, right_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (right_id) REFERENCES rights(id)
+);
+CREATE TABLE rights (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    item TEXT,
-    rights TEXT
+    item TEXT NOT NULL UNIQUE
 );
 CREATE TABLE platforms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +36,8 @@ CREATE TABLE jilo_agents (
     platform_id INTEGER NOT NULL,
     type_id INTEGER NOT NULL,
     url TEXT NOT NULL,
-    secret_key TEXT
+    secret_key TEXT,
+    FOREIGN KEY (platform_id) REFERENCES platforms(id)
 );
 CREATE TABLE jilo_agent_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

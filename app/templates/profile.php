@@ -56,7 +56,10 @@
                                         <label class="form-label"><small>rights:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <?= $userDetails[0]['rights'] ?? '' ?>
+<?php foreach ($userRights as $right) { ?>
+                                        <?= $right['right_name'] ?>
+                                        <br />
+<?php } ?>
                                     </div>
                                 </div>
 

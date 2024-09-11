@@ -42,6 +42,8 @@ class Database {
         try {
             $this->pdo = new PDO("sqlite:" . $options['dbFile']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            // enable foreign key constraints (not ON by default in SQLite3)
+            $this->pdo->exec('PRAGMA foreign_keys = ON;');
         } catch (PDOException $e) {
             $error = getError('SQLite connection failed: ', $e->getMessage());
         }

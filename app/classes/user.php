@@ -47,14 +47,46 @@ class User {
     }
 
     // get user details
-    public function getUserDetails($username) {
-        $sql = 'SELECT * FROM users_meta um
+    public function getUserDetails($user_id) {
+        $sql = 'SELECT
+                    um.*,
+                    u.username
+                FROM
+                    users_meta um
                     LEFT JOIN users u
-                    ON um.user_id = u.id
-                    WHERE u.username = :username';
+                        ON um.user_id = u.id
+                WHERE
+                    u.id = :user_id';
+
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':username'		=> $username,
+            ':user_id'		=> $user_id,
+        ]);
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
+    // get user rights
+    public function getUserRights($user_id) {
+        $sql = 'SELECT
+                    u.id AS user_id,
+                    u.username,
+                    r.item AS right_name
+                FROM
+                    users u
+                    LEFT JOIN users_rights ur
+                        ON u.id = ur.user_id
+                    LEFT JOIN rights r
+                        ON ur.right_id = r.id
+                WHERE
+                    u.id = :user_id
+                    AND
+                    ur.enabled = 1';
+
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':user_id'		=> $user_id,
         ]);
 
         return $query->fetchAll(PDO::FETCH_ASSOC);

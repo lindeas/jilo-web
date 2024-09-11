@@ -5,12 +5,12 @@ require '../app/classes/user.php';
 
 $userObject = new User($dbWeb);
 
-$userDetails = $userObject->getUserDetails($user);
+$user_id = $userObject->getUserId($user)[0]['id'];
+$userDetails = $userObject->getUserDetails($user_id);
+$userRights = $userObject->getUserRights($user_id);
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    $user_id = $userObject->getUserId($user)[0]['id'];
 
     $item = $_REQUEST['item'] ?? '';
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($item === 'avatar' && $action === 'remove') {
         $result = $userObject->removeAvatar($user_id, $config['avatars_path'].$userDetails[0]['avatar']);
         if ($result === true) {
-            $_SESSION['notice'] .= "Avatar for user \"{$user}\" is removed. ";
+            $_SESSION['notice'] .= "Avatar for user \"{$userDetails[0]['username']}\" is removed. ";
         } else {
             $_SESSION['error'] .= "Removing the avatar failed. Error: $result ";
         }

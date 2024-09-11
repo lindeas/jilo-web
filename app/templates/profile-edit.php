@@ -101,7 +101,7 @@
                                                         <br />
                                                         This action cannot be undone.
                                                     </div>
-                                                      <div class="modal-footer">
+                                                    <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                         <form id="remove-avatar-form" data-action="remove-avatar" method="POST" action="<?= $app_root ?>?page=profile&action=remove&item=avatar">
                                                             <button type="button" class="btn btn-danger" id="confirm-delete">Delete Avatar</button>
