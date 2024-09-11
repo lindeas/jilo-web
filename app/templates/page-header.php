@@ -18,6 +18,7 @@
         })();
     </script>
     <title>Jilo Web</title>
+    <link rel="icon" type="image/x-icon" href="<?= $app_root ?>static/favicon.ico">
 </head>
 
 <body>
