@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
 <?php foreach ($allRights as $right) {
-    // Check if the current right exists in $userRights and is enabled
+    // Check if the current right exists in $userRights
     $isChecked = false;
     foreach ($userRights as $userRight) {
         if ($userRight['right_id'] === $right['right_id']) {

@@ -16,7 +16,6 @@ CREATE TABLE users_meta (
 CREATE TABLE users_rights (
     user_id INTEGER,
     right_id INTEGER,
-    enabled INTEGER NOT NULL CHECK (enabled IN (0, 1)),
     PRIMARY KEY (user_id, right_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (right_id) REFERENCES rights(id)

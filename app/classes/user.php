@@ -53,8 +53,8 @@ class User {
                     u.username
                 FROM
                     users_meta um
-                    LEFT JOIN users u
-                        ON um.user_id = u.id
+                LEFT JOIN users u
+                    ON um.user_id = u.id
                 WHERE
                     u.id = :user_id';
 
@@ -70,9 +70,9 @@ class User {
     // add user right
     public function addUserRight($user_id, $right_id) {
         $sql = 'INSERT INTO users_rights
-                    (user_id, right_id, enabled)
+                    (user_id, right_id)
                 VALUES
-                    (:user_id, :right_id, 1)';
+                    (:user_id, :right_id)';
         $query = $this->db->prepare($sql);
         $query->execute([
             ':user_id'		=> $user_id,
@@ -98,8 +98,9 @@ class User {
     public function getAllRights() {
         $sql = 'SELECT
                     id AS right_id,
-                    item AS right_name
-                FROM rights';
+                    name AS right_name
+                FROM rights
+                ORDER BY id ASC';
         $query = $this->db->prepare($sql);
         $query->execute();
 
@@ -113,7 +114,7 @@ class User {
                     u.id AS user_id,
                     u.username,
                     r.id AS right_id,
-                    r.item AS right_name
+                    r.name AS right_name
                 FROM
                     users u
                     LEFT JOIN users_rights ur
@@ -121,9 +122,7 @@ class User {
                     LEFT JOIN rights r
                         ON ur.right_id = r.id
                 WHERE
-                    u.id = :user_id
-                    AND
-                    ur.enabled = 1';
+                    u.id = :user_id';
 
         $query = $this->db->prepare($sql);
         $query->execute([
