@@ -112,7 +112,6 @@ class User {
     public function getUserRights($user_id) {
         $sql = 'SELECT
                     u.id AS user_id,
-                    u.username,
                     r.id AS right_id,
                     r.name AS right_name
                 FROM
@@ -129,7 +128,39 @@ class User {
             ':user_id'		=> $user_id,
         ]);
 
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        // ensure specific entries are included in the result
+        $specialEntries = [];
+
+        // user 1 is always superuser
+        if ($user_id == 1) {
+            $specialEntries = [
+                [
+                    'user_id' => 1,
+                    'right_id' => 1,
+                    'right_name' => 'superuser'
+                ]
+            ];
+
+        // user 2 is always demo
+        } elseif ($user_id == 2) {
+            $specialEntries = [
+                [
+                    'user_id' => 2,
+                    'right_id' => 100,
+                    'right_name' => 'demo user'
+                ]
+            ];
+        }
+
+        // merge the special entries with the existing results
+        $result = array_merge($specialEntries, $result);
+        // remove duplicates if necessary
+        $result = array_unique($result, SORT_REGULAR);
+
+        // return the modified result
+        return $result;
 
     }
 
