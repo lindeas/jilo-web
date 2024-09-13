@@ -25,16 +25,21 @@ error_reporting(E_ALL);
 // list of available pages
 // edit accordingly, add 'pages/PAGE.php'
 $allowed_urls = [
-    'front',
-    'login',
-    'logout',
-    'register',
-    'profile',
-    'config',
-    'agents',
+    'dashboard',
+
     'conferences',
     'participants',
     'components',
+
+    'agents',
+
+    'profile',
+    'config',
+    'logs',
+
+    'login',
+    'logout',
+    'register',
 ];
 
 // cnfig file
@@ -68,7 +73,7 @@ session_start();
 if (isset($_REQUEST['page'])) {
     $page = $_REQUEST['page'];
 } else {
-    $page = 'front';
+    $page = 'dashboard';
 }
 if (isset($_REQUEST['item'])) {
     $item = $_REQUEST['item'];
@@ -142,28 +147,18 @@ if ($page == 'logout') {
     }
 
     // page building
+    include '../app/templates/page-header.php';
+    include '../app/templates/page-menu.php';
+    include '../app/templates/block-message.php';
+    if (isset($currentUser)) {
+        include '../app/templates/page-sidebar.php';
+    }
     if (in_array($page, $allowed_urls)) {
-
         // all normal pages
-        include '../app/templates/page-header.php';
-        include '../app/templates/page-menu.php';
-        include '../app/templates/block-message.php';
-        if (isset($currentUser)) {
-            include '../app/templates/page-sidebar.php';
-        }
         include "../app/pages/{$page}.php";
-
     } else {
-
-        // the page is not in allowed urls, loading front page
-        $error = 'The page "' . $page . '" is not found';
-        include '../app/templates/page-header.php';
-        include '../app/templates/page-menu.php';
-        include '../app/templates/block-message.php';
-        if (isset($currentUser)) {
-            include '../app/templates/page-sidebar.php';
-        }
-        include '../app/pages/front.php';
+        // the page is not in allowed urls, loading "not found" page
+        include '../app/templates/error-notfound.php';
     }
 }
 // end with the footer

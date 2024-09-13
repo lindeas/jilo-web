@@ -14,7 +14,7 @@
 
 <?php foreach ($platformsAll as $platform) { ?>
                 <li style="margin-right: 3px;">
-                    <a style="background-color: #111;" href="?platform=<?= htmlspecialchars($platform['id']) ?>&page=front">
+                    <a style="background-color: #111;" href="?platform=<?= htmlspecialchars($platform['id']) ?>&page=dashboard">
                         <?= htmlspecialchars($platform['name']) ?>
                     </a>
                 </li>

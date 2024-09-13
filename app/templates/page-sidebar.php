@@ -16,8 +16,8 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>statistics</small></p></li>
 
-                        <a href="<?= $app_root ?>?platform=<?= $platform_id ?>&page=front">
-                            <li class="list-group-item<?php if ($page === 'front') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                        <a href="<?= $app_root ?>?platform=<?= $platform_id ?>&page=dashboard">
+                            <li class="list-group-item<?php if ($page === 'dashboard') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="general jitsi stats"></i>general stats
                             </li>
                         </a>
