@@ -17,20 +17,23 @@ if ($config['registration_enabled'] === true) {
             $username = $_POST['username'];
             $password = $_POST['password'];
 
+            // registering
+            $result = $userObject->register($username, $password);
+
             // redirect to login
-            if ( $userObject->register($username, $password) ) {
+            if ($result === true) {
                 $_SESSION['notice'] = "Registration successful.<br />You can log in now.";
                 header('Location: index.php');
                 exit();
             // registration fail, redirect to login
             } else {
-                $_SESSION['error'] = "Registration failed.";
+                $_SESSION['error'] = "Registration failed. $result";
                 header('Location: index.php');
                 exit();
             }
         }
     } catch (Exception $e) {
-        $error = getError('There was an unexpected error. Please try again.', $e->getMessage());
+        $error = $e->getMessage();
     }
 
     include '../app/templates/block-message.php';

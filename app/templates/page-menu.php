@@ -25,7 +25,7 @@
 
             <ul class="menu-right">
 <?php if ( isset($_SESSION['username']) ) { ?>
-                <li><a href="<?= $app_root ?>?page=profile"><?= $user ?></a></li>
+                <li><a href="<?= $app_root ?>?page=profile"><?= $currentUser ?></a></li>
                 <li><a href="<?= $app_root ?>?page=logout">logout</a></li>
 <?php } else { ?>
                 <li><a href="<?= $app_root ?>?page=login">login</a></li>

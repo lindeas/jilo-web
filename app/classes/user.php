@@ -9,12 +9,51 @@ class User {
 
     // registration
     public function register($username, $password) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $query = $this->db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
-        $query->bindParam(':username', $username);
-        $query->bindParam(':password', $hashedPassword);
+        try {
+            // we have two inserts, start a transaction
+            $this->db->beginTransaction();
 
-        return $query->execute();
+            // hash the password, don't store it plain
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            // insert into users table
+            $sql = 'INSERT
+                        INTO users (username, password)
+                        VALUES (:username, :password)';
+            $query = $this->db->prepare($sql);
+            $query->bindValue(':username', $username);
+            $query->bindValue(':password', $hashedPassword);
+
+            // execute the first query
+            if (!$query->execute()) {
+                // rollback on error
+                $this->db->rollBack();
+                return false;
+            }
+
+            // insert the last user id into users_meta table
+            $sql2 = 'INSERT
+                        INTO users_meta (user_id)
+                        VALUES (:user_id)';
+            $query2 = $this->db->prepare($sql2);
+            $query2->bindValue(':user_id', $this->db->lastInsertId());
+
+            // execute the second query
+            if (!$query2->execute()) {
+                // rollback on error
+                $this->db->rollBack();
+                return false;
+            }
+
+            // if all is OK, commit the transaction
+            $this->db->commit();
+            return true;
+
+        } catch (Exception $e) {
+            // rollback on any error
+            $this->db->rollBack();
+            return $e->getMessage();
+        }
     }
 
     // login

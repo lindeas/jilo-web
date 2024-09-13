@@ -1,7 +1,5 @@
 <?php
 
-require '../app/classes/user.php';
-
 // clear the global error var before login
 unset($error);
 
@@ -10,6 +8,7 @@ try {
     // connect to database
     $dbWeb = connectDB($config);
 
+    require '../app/classes/user.php';
     $userObject = new User($dbWeb);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {

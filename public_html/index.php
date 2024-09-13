@@ -131,14 +131,15 @@ if ($page == 'logout') {
 } else {
 
     // if user is logged in, we need user details and rights
-    require '../app/classes/user.php';
-    include '../app/helpers/profile.php';
-    $userObject = new User($dbWeb);
-    $user = $currentUser;
-    $user_id = $userObject->getUserId($user)[0]['id'];
-    $userDetails = $userObject->getUserDetails($user_id);
-    $userRights = $userObject->getUserRights($user_id);
-    $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
+    if (isset($currentUser)) {
+        require '../app/classes/user.php';
+        include '../app/helpers/profile.php';
+        $userObject = new User($dbWeb);
+        $user_id = $userObject->getUserId($currentUser)[0]['id'];
+        $userDetails = $userObject->getUserDetails($user_id);
+        $userRights = $userObject->getUserRights($user_id);
+        $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
+    }
 
     // page building
     if (in_array($page, $allowed_urls)) {
@@ -147,7 +148,7 @@ if ($page == 'logout') {
         include '../app/templates/page-header.php';
         include '../app/templates/page-menu.php';
         include '../app/templates/block-message.php';
-        if (isset($user)) {
+        if (isset($currentUser)) {
             include '../app/templates/page-sidebar.php';
         }
         include "../app/pages/{$page}.php";
@@ -159,7 +160,7 @@ if ($page == 'logout') {
         include '../app/templates/page-header.php';
         include '../app/templates/page-menu.php';
         include '../app/templates/block-message.php';
-        if (isset($user)) {
+        if (isset($currentUser)) {
             include '../app/templates/page-sidebar.php';
         }
         include '../app/pages/front.php';
