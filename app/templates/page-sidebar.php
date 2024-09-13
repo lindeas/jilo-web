@@ -2,6 +2,17 @@
 
             <!-- Sidebar -->
             <div class="col-md-3 sidebar-wrapper bg-light" id="sidebar">
+            <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
+<?php
+$userTimezone = 'Europe/Sofia';
+//$userTimezone = 'UTC';
+$timezone = isset($userTimezone) ? $userTimezone : 'UTC'; // Default to UTC if no timezone is set
+$timeNow = new DateTime('now', new DateTimeZone($timezone));
+?>
+                <!--span style="vertical-align: top; font-size: 12px;"><?= $timeNow->format('d M Y H:i'); ?> <?= $userTimezone ?></span-->
+                <span style="vertical-align: top; font-size: 12px;"><?= $timeNow->format('H:i'); ?>&nbsp;&nbsp;<?= $userTimezone ?></span>
+            </div>
+
                 <div class="col-4"><button class="btn btn-sm btn-info toggle-sidebar-button" type="button" id="toggleSidebarButton" value=">>"></button></div>
                 <div class="sidebar-content card ml-3 mt-3">
                     <ul class="list-group">
@@ -31,16 +42,20 @@
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jilo-web config</small></p></li>
 
+<?php if ($userObject->hasRight($user_id, 'view config file')) {?>
                         <a href="<?= $app_root ?>?page=config">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>config
                             </li>
                         </a>
+<?php } ?>
+<?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
                         <a href="<?= $app_root ?>?page=logs">
                             <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs
                             </li>
                         </a>
+<?php } ?>
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>current Jitsi platform</small></p></li>
 

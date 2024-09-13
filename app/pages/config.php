@@ -93,7 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     include '../app/templates/config-delete-platform.php';
                     break;
                 default:
-                    include '../app/templates/config-list.php';
+                    if ($userObject->hasRight($user_id, 'view config file')) {
+                        include '../app/templates/config-list.php';
+                    } else {
+                        include '../app/templates/unauthorized.php';
+                    }
             }
     }
 }

@@ -77,12 +77,12 @@ if (isset($_REQUEST['item'])) {
 }
 
 // check if logged in
-unset($user);
+unset($currentUser);
 if (isset($_COOKIE['username'])) {
     if ( !isset($_SESSION['username']) ) {
         $_SESSION['username'] = $_COOKIE['username'];
     }
-    $user = htmlspecialchars($_SESSION['username']);
+    $currentUser = htmlspecialchars($_SESSION['username']);
 }
 
 // redirect to login
@@ -129,6 +129,15 @@ if ($page == 'logout') {
     include '../app/pages/login.php';
 
 } else {
+
+    // if user is logged in, we need user details and rights
+    require '../app/classes/user.php';
+    include '../app/helpers/profile.php';
+    $userObject = new User($dbWeb);
+    $user = $currentUser;
+    $user_id = $userObject->getUserId($user)[0]['id'];
+    $userDetails = $userObject->getUserDetails($user_id);
+    $userRights = $userObject->getUserRights($user_id);
 
     // page building
     if (in_array($page, $allowed_urls)) {

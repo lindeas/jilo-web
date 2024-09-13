@@ -1,13 +1,13 @@
 <?php
 
 $action = $_REQUEST['action'] ?? '';
-require '../app/classes/user.php';
-
-$userObject = new User($dbWeb);
-
-$user_id = $userObject->getUserId($user)[0]['id'];
-$userDetails = $userObject->getUserDetails($user_id);
-$userRights = $userObject->getUserRights($user_id);
+//require '../app/classes/user.php';
+//
+//$userObject = new User($dbWeb);
+//
+//$user_id = $userObject->getUserId($user)[0]['id'];
+//$userDetails = $userObject->getUserDetails($user_id);
+//$userRights = $userObject->getUserRights($user_id);
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

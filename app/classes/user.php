@@ -164,6 +164,27 @@ class User {
 
     }
 
+    // check if the user has a specific right
+    function hasRight($user_id, $right_name) {
+        $userRights = $this->getUserRights($user_id);
+        $userHasRight = false;
+
+        // superuser always has all the rights
+        if ($user_id === 1) {
+            $userHasRight = true;
+        }
+
+        foreach ($userRights as $right) {
+            if ($right['right_name'] === $right_name) {
+                $userHasRight = true;
+                break;
+            }
+        }
+
+        return $userHasRight;
+
+    }
+
     // update an existing user
     public function editUser($user_id, $updatedUser) {
         try {
