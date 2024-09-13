@@ -60,6 +60,21 @@
 
                                     <div class="row mb-3">
                                         <div class="col-md-4 text-end">
+                                            <label for="timezone" class="form-label"><small>timezone:</small></label>
+                                        </div>
+                                        <div class="col-md-8 text-start bg-light">
+                                            <select class="form-control" name="timezone" id="timezone">
+<?php foreach ($allTimezones as $timezone) { ?>
+                                                <option value="<?= $timezone ?>" <?= $timezone === $userTimezone ? 'selected' : '' ?>>
+                                                    <?= $timezone ?>&nbsp;&nbsp;(<?= getUTCOffset($timezone) ?>)
+                                                </option>
+<?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-4 text-end">
                                             <label for="bio" class="form-label"><small>bio:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
@@ -159,5 +174,28 @@ document.getElementById('confirm-delete').addEventListener('click', function(eve
     event.preventDefault();  // Prevent the outer form from submitting
     document.getElementById('remove-avatar-form').submit();
 });
+
+// Function to detect user's timezone and select it in the dropdown
+function setTimezone() {
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezoneSelect = document.getElementById("timezone");
+    timezoneSelect.className = 'form-control border border-danger';
+
+    // Loop through the options to find and select the user's timezone
+    for (let i = 0; i < timezoneSelect.options.length; i++) {
+        if (timezoneSelect.options[i].value === userTimezone) {
+            timezoneSelect.selectedIndex = i;
+            break;
+        }
+    }
+}
+// Run the function on page load
+window.onload = function() {
+    const isTimezoneSet = <?php echo json_encode($isTimezoneSet); ?>; // Pass PHP flag to JavaScript
+    // If timezone is not set, run setTimezone()
+    if (!isTimezoneSet) {
+        setTimezone();
+    }
+};
 
 </script>

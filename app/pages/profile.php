@@ -1,13 +1,6 @@
 <?php
 
 $action = $_REQUEST['action'] ?? '';
-//require '../app/classes/user.php';
-//
-//$userObject = new User($dbWeb);
-//
-//$user_id = $userObject->getUserId($user)[0]['id'];
-//$userDetails = $userObject->getUserDetails($user_id);
-//$userRights = $userObject->getUserRights($user_id);
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -31,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $updatedUser = [
             'name'		=> $_POST['name'] ?? '',
             'email'		=> $_POST['email'] ?? '',
+            'timezone'		=> $_POST['timezone'] ?? '',
             'bio'		=> $_POST['bio'] ?? '',
         ];
     $result = $userObject->editUser($user_id, $updatedUser);
@@ -76,6 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         case 'edit':
             $allRights = $userObject->getAllRights();
+            $allTimezones = timezone_identifiers_list();
+            // if timezone is already set, we pass a flag for JS to not autodetect browser timezone
+            $isTimezoneSet = !empty($userDetails[0]['timezone']);
             include '../app/templates/profile-edit.php';
             break;
 

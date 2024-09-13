@@ -191,6 +191,7 @@ class User {
             $sql = 'UPDATE users_meta SET
                         name = :name,
                         email = :email,
+                        timezone = :timezone,
                         bio = :bio
                     WHERE user_id = :user_id';
             $query = $this->db->prepare($sql);
@@ -198,6 +199,7 @@ class User {
                 ':user_id'	=> $user_id,
                 ':name'		=> $updatedUser['name'],
                 ':email'	=> $updatedUser['email'],
+                ':timezone'	=> $updatedUser['timezone'],
                 ':bio'		=> $updatedUser['bio']
             ]);
 

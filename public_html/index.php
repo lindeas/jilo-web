@@ -138,6 +138,7 @@ if ($page == 'logout') {
     $user_id = $userObject->getUserId($user)[0]['id'];
     $userDetails = $userObject->getUserDetails($user_id);
     $userRights = $userObject->getUserRights($user_id);
+    $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
 
     // page building
     if (in_array($page, $allowed_urls)) {

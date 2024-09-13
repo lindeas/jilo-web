@@ -9,6 +9,7 @@ CREATE TABLE users_meta (
     user_id INTEGER NOT NULL,
     name TEXT,
     email TEXT,
+    timezone TEXT,
     avatar TEXT,
     bio TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)

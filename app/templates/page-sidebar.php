@@ -4,10 +4,7 @@
             <div class="col-md-3 sidebar-wrapper bg-light" id="sidebar">
             <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
 <?php
-$userTimezone = 'Europe/Sofia';
-//$userTimezone = 'UTC';
-$timezone = isset($userTimezone) ? $userTimezone : 'UTC'; // Default to UTC if no timezone is set
-$timeNow = new DateTime('now', new DateTimeZone($timezone));
+$timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 ?>
                 <!--span style="vertical-align: top; font-size: 12px;"><?= $timeNow->format('d M Y H:i'); ?> <?= $userTimezone ?></span-->
                 <span style="vertical-align: top; font-size: 12px;"><?= $timeNow->format('H:i'); ?>&nbsp;&nbsp;<?= $userTimezone ?></span>

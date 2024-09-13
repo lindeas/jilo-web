@@ -44,6 +44,17 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-4 text-end">
+                                        <label class="form-label"><small>timezone:</small></label>
+                                    </div>
+                                    <div class="col-md-8 text-start bg-light">
+<?php if (isset($userDetails[0]['timezone'])) { ?>
+                                        <?= $userDetails[0]['timezone'] ?>&nbsp;&nbsp;<span style="font-size: 0.66em;">(<?= getUTCOffset($userDetails[0]['timezone']) ?>)</span>
+<?php } ?>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-4 text-end">
                                         <label class="form-label"><small>bio:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
