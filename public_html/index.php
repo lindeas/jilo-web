@@ -114,24 +114,26 @@ $firstPlatform = $platformsAll[0]['id'];
 $platform_id = $_REQUEST['platform'] ?? $firstPlatform;
 $platformDetails = $platformObject->getPlatformDetails($platform_id);
 
-// page building
-if (in_array($page, $allowed_urls)) {
-    // logout is a special case, as we can't use session vars for notices
-    if ($page == 'logout') {
+// logout is a special case, as we can't use session vars for notices
+if ($page == 'logout') {
 
-        // clean up session
-        session_unset();
-        session_destroy();
-        setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
+    // clean up session
+    session_unset();
+    session_destroy();
+    setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
-        $notice = "You were logged out.<br />You can log in again.";
-        include '../app/templates/page-header.php';
-        include '../app/templates/page-menu.php';
-        include '../app/templates/block-message.php';
-        include '../app/pages/login.php';
+    $notice = "You were logged out.<br />You can log in again.";
+    include '../app/templates/page-header.php';
+    include '../app/templates/page-menu.php';
+    include '../app/templates/block-message.php';
+    include '../app/pages/login.php';
 
-    // all other normal pages
-    } else {
+} else {
+
+    // page building
+    if (in_array($page, $allowed_urls)) {
+
+        // all normal pages
         include '../app/templates/page-header.php';
         include '../app/templates/page-menu.php';
         include '../app/templates/block-message.php';
@@ -139,19 +141,21 @@ if (in_array($page, $allowed_urls)) {
             include '../app/templates/page-sidebar.php';
         }
         include "../app/pages/{$page}.php";
-    }
 
-// the page is not in allowed urls, loading front page
-} else {
-    $error = 'The page "' . $page . '" is not found';
-    include '../app/templates/page-header.php';
-    include '../app/templates/page-menu.php';
-    include '../app/templates/block-message.php';
-    if (isset($user)) {
-        include '../app/templates/page-sidebar.php';
+    } else {
+
+        // the page is not in allowed urls, loading front page
+        $error = 'The page "' . $page . '" is not found';
+        include '../app/templates/page-header.php';
+        include '../app/templates/page-menu.php';
+        include '../app/templates/block-message.php';
+        if (isset($user)) {
+            include '../app/templates/page-sidebar.php';
+        }
+        include '../app/pages/front.php';
     }
-    include '../app/pages/front.php';
 }
+// end with the footer
 include '../app/templates/page-footer.php';
 
 // flush the output buffer and show the page
