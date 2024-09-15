@@ -68,6 +68,12 @@
 <?php     } ?>
                             </tbody>
                         </table>
+<?php
+if ($widget['pagination'] && $item_count > $items_per_page) {
+    $url = "$app_root?platform=$platform_id&page=$page";
+    include '../app/helpers/pagination.php';
+}
+?>
 <?php } else { ?>
                     <p class="m-3">No matching records found.</p>
 <?php } ?>

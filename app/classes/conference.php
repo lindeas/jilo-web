@@ -9,7 +9,7 @@ class Conference {
 
 
     // search/list specific conference ID
-    public function conferenceById($conference_id, $from_time, $until_time) {
+    public function conferenceById($conference_id, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -69,6 +69,11 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 ORDER BY
     pe.time";
 
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
+
         $sql = sprintf($sql, $conference_id, $from_time, $until_time, $conference_id, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -79,7 +84,7 @@ ORDER BY
 
 
     // search/list specific conference name
-    public function conferenceByName($conference_name, $from_time, $until_time) {
+    public function conferenceByName($conference_name, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -139,6 +144,11 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 ORDER BY
     pe.time";
 
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
+
         $sql = sprintf($sql, $conference_name, $from_time, $until_time, $conference_name, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -149,7 +159,7 @@ ORDER BY
 
 
     // list of all conferences
-    public function conferencesAllFormatted($from_time, $until_time) {
+    public function conferencesAllFormatted($from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -233,6 +243,11 @@ JOIN
 WHERE (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')
 ORDER BY
     c.id";
+
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
 
         $sql = sprintf($sql, $from_time, $until_time);
 

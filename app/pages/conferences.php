@@ -31,18 +31,31 @@ if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
 
 $conferenceObject = new Conference($db);
 
+// pagination variables
+$items_per_page = 15;
+$browse_page = $_REQUEST['p'] ?? 1;
+$browse_page = (int)$browse_page;
+$offset = ($browse_page -1) * $items_per_page;
+
 // search and list specific conference ID
 if (isset($conferenceId)) {
-    $search = $conferenceObject->conferenceById($conferenceId, $from_time, $until_time);
+    $search = $conferenceObject->conferenceById($conferenceId, $from_time, $until_time, $offset, $items_per_page);
+    $search_all = $conferenceObject->conferenceById($conferenceId, $from_time, $until_time);
 // search and list specific conference name
 } elseif (isset($conferenceName)) {
-    $search = $conferenceObject->conferenceByName($conferenceName, $from_time, $until_time);
+    $search = $conferenceObject->conferenceByName($conferenceName, $from_time, $until_time, $offset, $items_per_page);
+    $search_all = $conferenceObject->conferenceByName($conferenceName, $from_time, $until_time);
 // list of all conferences (default)
 } else {
-    $search = $conferenceObject->conferencesAllFormatted($from_time, $until_time);
+    $search = $conferenceObject->conferencesAllFormatted($from_time, $until_time, $offset, $items_per_page);
+    $search_all = $conferenceObject->conferencesAllFormatted($from_time, $until_time);
 }
 
 if (!empty($search)) {
+    // we get total items and number of pages
+    $item_count = count($search_all);
+    $page_count = ceil($item_count / $items_per_page);
+
     $conferences = array();
     $conferences['records'] = array();
 
@@ -109,6 +122,7 @@ $widget['name'] = 'Conferences';
 $widget['collapsible'] = false;
 $widget['collapsed'] = false;
 $widget['filter'] = true;
+$widget['pagination'] = true;
 
 // widget title
 if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {

@@ -9,7 +9,7 @@ class Participant {
 
 
     // search/list specific participant ID
-    public function conferenceByParticipantId($participant_id, $from_time, $until_time) {
+    public function conferenceByParticipantId($participant_id, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -69,6 +69,11 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 ORDER BY
     pe.time";
 
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
+
         $sql = sprintf($sql, $participant_id, $from_time, $until_time, $participant_id, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -79,7 +84,7 @@ ORDER BY
 
 
     // search/list specific participant name (stats_id)
-    public function conferenceByParticipantName($participant_name, $from_time, $until_time) {
+    public function conferenceByParticipantName($participant_name, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -139,6 +144,11 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 ORDER BY
     pe.time";
 
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
+
         $sql = sprintf($sql, $participant_name, $from_time, $until_time, $participant_name, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -149,7 +159,7 @@ ORDER BY
 
 
     // search/list specific participant IP
-    public function conferenceByParticipantIP($participant_ip, $from_time, $until_time) {
+    public function conferenceByParticipantIP($participant_ip, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -209,6 +219,11 @@ AND (event_time >= '%s 00:00:00' AND event_time <= '%s 23:59:59')
 ORDER BY
     pe.time";
 
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
+
         $sql = sprintf($sql, $participant_ip, $from_time, $until_time, $participant_ip, $from_time, $until_time);
 
         $query = $this->db->prepare($sql);
@@ -219,7 +234,7 @@ ORDER BY
 
 
     // list of all participants
-    public function participantsAll($from_time, $until_time) {
+    public function participantsAll($from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -245,6 +260,11 @@ JOIN
 WHERE
     pe.time >= '%s 00:00:00' AND pe.time <= '%s 23:59:59'
 ORDER BY p.id";
+
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
 
         $sql = sprintf($sql, $from_time, $until_time);
 

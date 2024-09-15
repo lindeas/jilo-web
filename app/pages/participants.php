@@ -34,22 +34,36 @@ if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
 
 $participantObject = new Participant($db);
 
+// pagination variables
+$items_per_page = 15;
+$browse_page = $_REQUEST['p'] ?? 1;
+$browse_page = (int)$browse_page;
+$offset = ($browse_page -1) * $items_per_page;
+
 // search and list specific participant ID
 if (isset($participantId)) {
-    $search = $participantObject->conferenceByParticipantId($participantId, $from_time, $until_time, $participantId, $from_time, $until_time);
+    $search = $participantObject->conferenceByParticipantId($participantId, $from_time, $until_time, $offset, $items_per_page);
+    $search_all = $participantObject->conferenceByParticipantId($participantId, $from_time, $until_time);
 // search and list specific participant name (stats_id)
 } elseif (isset($participantName)) {
-    $search = $participantObject->conferenceByParticipantName($participantName, $from_time, $until_time);
+    $search = $participantObject->conferenceByParticipantName($participantName, $from_time, $until_time, $offset, $items_per_page);
+    $search_all = $participantObject->conferenceByParticipantName($participantName, $from_time, $until_time);
 // search and list specific participant IP
 } elseif (isset($participantIp)) {
-    $search = $participantObject->conferenceByParticipantIP($participantIp, $from_time, $until_time);
+    $search = $participantObject->conferenceByParticipantIP($participantIp, $from_time, $until_time, $offset, $items_per_page);
+    $search_all = $participantObject->conferenceByParticipantIP($participantIp, $from_time, $until_time);
 // list of all participants (default)
 } else {
 // prepare the result
-    $search = $participantObject->participantsAll($from_time, $until_time);
+    $search = $participantObject->participantsAll($from_time, $until_time, $offset, $items_per_page);
+    $search_all = $participantObject->participantsAll($from_time, $until_time);
 }
 
 if (!empty($search)) {
+    // we get total items and number of pages
+    $item_count = count($search_all);
+    $page_count = ceil($item_count / $items_per_page);
+
     $participants = array();
     $participants['records'] = array();
 
@@ -116,6 +130,7 @@ $widget['name'] = 'Participants';
 $widget['collapsible'] = false;
 $widget['collapsed'] = false;
 $widget['filter'] = true;
+$widget['pagination'] = true;
 
 // widget title
 if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
