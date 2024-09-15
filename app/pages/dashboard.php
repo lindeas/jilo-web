@@ -69,6 +69,8 @@ $widget['filter'] = false;
 if (!empty($searchConferenceNumber) && !empty($searchParticipantNumber)) {
     $widget['full'] = true;
 }
+$widget['pagination'] = false;
+
 
 // display the widget
 include '../app/templates/widget-monthly.php';
@@ -127,6 +129,7 @@ if (!empty($conferences['records'])) {
     $widget['table_headers'] = array_keys($conferences['records'][0]);
     $widget['table_records'] = $conferences['records'];
 }
+$widget['pagination'] = false;
 
 // display the widget
 include '../app/templates/widget.php';
@@ -187,6 +190,7 @@ $widget['title'] = 'The last ' . $conference_number . ' conferences';
 $widget['collapsible'] = true;
 $widget['collapsed'] = false;
 $widget['filter'] = false;
+$widget['pagination'] = false;
 
 if (!empty($conferences['records'])) {
     $widget['full'] = true;

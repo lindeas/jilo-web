@@ -31,10 +31,21 @@ if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
 // list of all component events (default)
 $componentObject = new Component($db);
 
+// pagination variables
+$items_per_page = 15;
+$browse_page = $_REQUEST['p'] ?? 1;
+$browse_page = (int)$browse_page;
+$offset = ($browse_page -1) * $items_per_page;
+
 // prepare the result
-$search = $componentObject->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
+$search = $componentObject->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time, $offset, $items_per_page);
+$search_all = $componentObject->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
 
 if (!empty($search)) {
+    // we get total items and number of pages
+    $item_count = count($search_all);
+    $page_count = ceil($item_count / $items_per_page);
+
     $components = array();
     $components['records'] = array();
 
@@ -60,6 +71,7 @@ $widget['name'] = 'AllComponents';
 $widget['collapsible'] = false;
 $widget['collapsed'] = false;
 $widget['filter'] = true;
+$widget['pagination'] = true;
 
 // widget title
 if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {

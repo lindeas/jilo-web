@@ -9,7 +9,7 @@ class Component {
 
 
     // list of component events
-    public function jitsiComponents($jitsi_component, $component_id, $from_time, $until_time) {
+    public function jitsiComponents($jitsi_component, $component_id, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -36,6 +36,11 @@ AND
     (time >= '%s 00:00:00' AND time <= '%s 23:59:59')
 ORDER BY
     time";
+
+        if ($items_per_page) {
+            $items_per_page = (int)$items_per_page;
+            $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+        }
 
         $sql = sprintf($sql, $jitsi_component, $component_id, $from_time, $until_time);
 
