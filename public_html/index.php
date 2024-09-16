@@ -123,15 +123,23 @@ $firstPlatform = $platformsAll[0]['id'];
 $platform_id = $_REQUEST['platform'] ?? $firstPlatform;
 $platformDetails = $platformObject->getPlatformDetails($platform_id);
 
+// init user functions
+require '../app/classes/user.php';
+include '../app/helpers/profile.php';
+$userObject = new User($dbWeb);
+
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
+
+    $notice = "You were logged out.<br />You can log in again.";
+    $user_id = $userObject->getUserId($currentUser)[0]['id'];
+    $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out.", 'user');
 
     // clean up session
     session_unset();
     session_destroy();
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
-    $notice = "You were logged out.<br />You can log in again.";
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
     include '../app/templates/block-message.php';
@@ -141,9 +149,6 @@ if ($page == 'logout') {
 
     // if user is logged in, we need user details and rights
     if (isset($currentUser)) {
-        require '../app/classes/user.php';
-        include '../app/helpers/profile.php';
-        $userObject = new User($dbWeb);
         $user_id = $userObject->getUserId($currentUser)[0]['id'];
         $userDetails = $userObject->getUserDetails($user_id);
         $userRights = $userObject->getUserRights($user_id);

@@ -3,7 +3,7 @@
 // registration is allowed, go on
 if ($config['registration_enabled'] === true) {
 
-    require '../app/classes/user.php';
+//    require '../app/classes/user.php';
     unset($error);
 
     try {
@@ -11,7 +11,7 @@ if ($config['registration_enabled'] === true) {
         // connect to database
         $dbWeb = connectDB($config);
 
-        $userObject = new User($dbWeb);
+//        $userObject = new User($dbWeb);
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
             $username = $_POST['username'];

@@ -24,7 +24,7 @@
                             <thead class="thead-dark">
                                 <tr>
 <?php     foreach ($widget['table_headers'] as $header) { ?>
-                                    <th scope="col"><?= htmlspecialchars($header) ?></th>
+                                    <th scope="col" class="th-<?= htmlspecialchars($header) ?>"><?= htmlspecialchars($header) ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>

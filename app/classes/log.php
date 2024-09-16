@@ -30,16 +30,26 @@ class Log {
     }
 
     // read logs
-    public function readLog($user_id, $scope='user') {
-        $sql = 'SELECT * FROM logs';
+    public function readLog($user_id, $scope, $offset=0, $items_per_page='') {
         if ($scope === 'user') {
-            $sql .= ' WHERE user_id = :user_id';
+            $sql = 'SELECT * FROM logs WHERE user_id = :user_id ORDER BY time DESC';
+            if ($items_per_page) {
+                $items_per_page = (int)$items_per_page;
+                $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+            }
+
             $query = $this->db->prepare($sql);
             $query->execute([
                 ':user_id'		=> $user_id,
             ]);
         }
         if ($scope === 'system') {
+            $sql = 'SELECT * FROM logs ORDER BY time DESC';
+            if ($items_per_page) {
+                $items_per_page = (int)$items_per_page;
+                $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
+            }
+
             $query = $this->db->prepare($sql);
             $query->execute();
         }

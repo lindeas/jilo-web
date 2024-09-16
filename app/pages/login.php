@@ -8,8 +8,8 @@ try {
     // connect to database
     $dbWeb = connectDB($config);
 
-    require '../app/classes/user.php';
-    $userObject = new User($dbWeb);
+//    require '../app/classes/user.php';
+//    $userObject = new User($dbWeb);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         $username = $_POST['username'];
@@ -44,7 +44,7 @@ try {
             // redirect to index
             $_SESSION['notice'] = "Login successful";
             $user_id = $userObject->getUserId($username)[0]['id'];
-            $logObject->insertLog($user_id, "User \"$username\" logged in.", 'user');
+            $logObject->insertLog($user_id, "Login: User \"$username\" logged in.", 'user');
             header('Location: index.php');
             exit();
 
@@ -52,7 +52,7 @@ try {
         } else {
             $_SESSION['error'] = "Login failed.";
             $user_id = $userObject->getUserId($username)[0]['id'];
-            $logObject->insertLog($user_id, "Failed login attempt for user \"$username\".", 'user');
+            $logObject->insertLog($user_id, "Login: Failed login attempt for user \"$username\".", 'user');
             header('Location: index.php');
             exit();
         }
