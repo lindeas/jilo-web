@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Added support for managing Jilo Agents
 - Added more fields and avatar image to user profile
 - Added pagination for the longer listings
+- Added initial support for application logs
 
 ### Changed
 - Jitsi platforms config moved from file to SQLite database
