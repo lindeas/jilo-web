@@ -109,6 +109,10 @@ require '../app/classes/database.php';
 require '../app/helpers/database.php';
 $dbWeb = connectDB($config);
 
+// start logging
+require '../app/classes/log.php';
+$logObject = new Log($dbWeb);
+
 // get platforms details
 require '../app/classes/platform.php';
 $platformObject = new Platform($dbWeb);

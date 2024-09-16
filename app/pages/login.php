@@ -43,12 +43,16 @@ try {
 
             // redirect to index
             $_SESSION['notice'] = "Login successful";
+            $user_id = $userObject->getUserId($username)[0]['id'];
+            $logObject->insertLog($user_id, "User \"$username\" logged in.", 'user');
             header('Location: index.php');
             exit();
 
         // login failed
         } else {
             $_SESSION['error'] = "Login failed.";
+            $user_id = $userObject->getUserId($username)[0]['id'];
+            $logObject->insertLog($user_id, "Failed login attempt for user \"$username\".", 'user');
             header('Location: index.php');
             exit();
         }

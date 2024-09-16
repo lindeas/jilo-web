@@ -44,3 +44,11 @@ CREATE TABLE jilo_agent_types (
     description TEXT,
     endponts TEXT
 );
+CREATE TABLE logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGET NOT NULL,
+    time TEXT DEFAULT (DATETIME('now')),
+    scope TEXT NOT NULL,
+    message TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
