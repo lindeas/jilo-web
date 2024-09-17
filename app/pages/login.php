@@ -8,9 +8,6 @@ try {
     // connect to database
     $dbWeb = connectDB($config);
 
-//    require '../app/classes/user.php';
-//    $userObject = new User($dbWeb);
-
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         $username = $_POST['username'];
         $password = $_POST['password'];
