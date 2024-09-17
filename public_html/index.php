@@ -111,7 +111,9 @@ $dbWeb = connectDB($config);
 
 // start logging
 require '../app/classes/log.php';
+include '../app/helpers/logs.php';
 $logObject = new Log($dbWeb);
+$user_IP = getUserIP();
 
 // get platforms details
 require '../app/classes/platform.php';
@@ -133,7 +135,7 @@ if ($page == 'logout') {
 
     $notice = "You were logged out.<br />You can log in again.";
     $user_id = $userObject->getUserId($currentUser)[0]['id'];
-    $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out.", 'user');
+    $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
 
     // clean up session
     session_unset();
