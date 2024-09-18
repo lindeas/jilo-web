@@ -34,10 +34,11 @@ CREATE TABLE platforms (
 CREATE TABLE jilo_agents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     platform_id INTEGER NOT NULL,
-    type_id INTEGER NOT NULL,
+    agent_type_id INTEGER NOT NULL,
     url TEXT NOT NULL,
     secret_key TEXT,
-    FOREIGN KEY (platform_id) REFERENCES platforms(id)
+    FOREIGN KEY (platform_id) REFERENCES platforms(id),
+    FOREIGN KEY (agent_type_id) REFERENCES jilo_agent_types(id)
 );
 CREATE TABLE jilo_agent_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

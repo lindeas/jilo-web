@@ -94,6 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     break;
                 default:
                     if ($userObject->hasRight($user_id, 'view config file')) {
+                        require '../app/classes/agent.php';
+                        $agentObject = new Agent($dbWeb);
                         include '../app/templates/config-list.php';
                     } else {
                         include '../app/templates/unauthorized.php';
