@@ -11,7 +11,7 @@ echo "\n";
 ?>
 
 <hr />
-                        <p class="card-text">platforms configuration &nbsp;<a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&action=add">add new</a></p>
+                        <p class="card-text">platforms configuration &nbsp;<a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&item=platform&action=add">add new</a></p>
 
 <?php foreach ($platformsAll as $platform_array) {
     $agents = $agentObject->getAgentDetails($platform_array['id']);
@@ -32,11 +32,11 @@ echo "\n";
 
                                             <div class="row mb-1">
                                                 <div class="col-md-8 text-start">
-                                                    <a class="btn btn-secondary" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_array['id']) ?>&page=config&action=edit">edit platform</a>
+                                                    <a class="btn btn-secondary" style="padding: 2px;" href="<?= $app_root ?>?page=config&platform=<?= htmlspecialchars($platform_array['id']) ?>&action=edit">edit platform</a>
 <?php if (count($platformsAll) <= 1) { ?>
                                                     <span class="btn btn-light" style="padding: 2px;" href="#" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="can't delete the last platform">delete platform</span>
 <?php } else { ?>
-                                                    <a class="btn btn-danger" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_array['id'])?>&page=config&action=delete">delete platform</a>
+                                                    <a class="btn btn-danger" style="padding: 2px;" href="<?= $app_root ?>?page=config&platform=<?= htmlspecialchars($platform_array['id'])?>&action=delete">delete platform</a>
 <?php } ?>
                                                 </div>
                                             </div>
@@ -61,7 +61,7 @@ echo "\n";
                                         <p class="card-text">jilo agents on platform <?= $platform_array['id'] ?> (<?= $platform_array['name'] ?>)
                                             <br />
                                             total <?= count($agents) ?> <?= count($agents) === 1 ? 'jilo agent' : 'jilo agents' ?>&nbsp;
-                                            <a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&platform=action=add">
+                                            <a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&platform=<?= $platform_array['id'] ?>&item=agent&action=add">
                                                 add new
                                             </a>
                                         </p>
@@ -75,8 +75,8 @@ echo "\n";
                                                         agent id <?= $agent_array['id'] ?>:
                                                     </div>
                                                     <div class="col-md-8 text-start">
-                                                        <a class="btn btn-secondary" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($agent_array['platform_id']) ?>&page=agents&agent=<?= htmlspecialchars($agent_array['id']) ?>&action=edit">edit agent</a>
-                                                        <a class="btn btn-danger" style="padding: 2px;" href="<?= $app_root ?>?platform=<?= htmlspecialchars($agent_array['platform_id'])?>&page=agents&agent=<?= htmlspecialchars($agent_array['id']) ?>&action=delete">delete agent</a>
+                                                        <a class="btn btn-secondary" style="padding: 2px;" href="<?= $app_root ?>?page=config&platform=<?= htmlspecialchars($agent_array['platform_id']) ?>&agent=<?= htmlspecialchars($agent_array['id']) ?>&action=edit">edit agent</a>
+                                                        <a class="btn btn-danger" style="padding: 2px;" href="<?= $app_root ?>?page=config&platform=<?= htmlspecialchars($agent_array['platform_id'])?>&agent=<?= htmlspecialchars($agent_array['id']) ?>&action=delete">delete agent</a>
                                                     </div>
                                                     <div style="padding-left: 100px; padding-bottom: 20px;">
 <?php foreach ($agent_array as $key => $value) {
