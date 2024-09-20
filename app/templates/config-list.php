@@ -61,7 +61,7 @@ echo "\n";
                                         <p class="card-text">jilo agents on platform <?= $platform_array['id'] ?> (<?= $platform_array['name'] ?>)
                                             <br />
                                             total <?= count($agents) ?> <?= count($agents) === 1 ? 'jilo agent' : 'jilo agents' ?>&nbsp;
-                                            <a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&platform=<?= $platform_array['id'] ?>&item=agent&action=add">
+                                            <a class="btn btn-secondary" style="padding: 0px;" href="<?= $app_root ?>?page=config&platform=<?= $platform_array['id'] ?>&action=add-agent">
                                                 add new
                                             </a>
                                         </p>

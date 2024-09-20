@@ -1,9 +1,13 @@
 <?php
 
 $action = $_REQUEST['action'] ?? '';
+$agent = $_REQUEST['agent'] ?? '';
+
 require '../app/classes/config.php';
+require '../app/classes/agent.php';
 
 $configObject = new Config();
+$agentObject = new Agent($dbWeb);
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -13,14 +17,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //    $content = file_get_contents($config_file);
 //    $updatedContent = $content;
 
+    // new agent adding
+    if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'agent') {
+        $newAgent = [
+            'type_id'		=> 1,
+            'url'		=> $_POST['url'],
+            'secret_key'	=> $_POST['secret_key'],
+        ];
+        $result = $agentObject->addAgent($platform_id, $newAgent);
+        if ($result === true) {
+            $_SESSION['notice'] = "New Jilo Agent added.";
+        } else {
+            $_SESSION['error'] = "Adding the agent failed. Error: $result";
+        }
+
     // new platform adding
-    if (isset($_POST['new']) && $_POST['new'] === 'true') {
+    } elseif (isset($_POST['new']) && $_POST['new'] === 'true') {
         $newPlatform = [
             'name'		=> $_POST['name'],
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
         $platformObject->addPlatform($newPlatform);
+
+    // deleting an agent
+    } elseif (isset($_POST['delete']) && isset($_POST['item']) && $_POST['delete'] === 'true' && $_POST['item'] === 'agent') {
+        $result = $agentObject->deleteAgent($agent);
+        if ($result === true) {
+            $_SESSION['notice'] = "Agent id \"{$_REQUEST['agent']}\" deleted.";
+        } else {
+            $_SESSION['error'] = "Deleting the agent failed. Error: $result";
+        }
 
     // deleting a platform
     } elseif (isset($_POST['delete']) && $_POST['delete'] === 'true') {
@@ -83,19 +110,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // if there is no $item, we work on the local config file
         default:
             switch ($action) {
+                case 'add-agent':
+                    include '../app/templates/config-add-agent.php';
+                    break;
                 case 'add':
                     include '../app/templates/config-add-platform.php';
                     break;
                 case 'edit':
-                    include '../app/templates/config-edit-platform.php';
+                    if (isset($_GET['agent'])) {
+                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+                        include '../app/templates/config-edit-agent.php';
+                    } else {
+                        include '../app/templates/config-edit-platform.php';
+                    }
                     break;
                 case 'delete':
                     include '../app/templates/config-delete-platform.php';
                     break;
                 default:
                     if ($userObject->hasRight($user_id, 'view config file')) {
-                        require '../app/classes/agent.php';
-                        $agentObject = new Agent($dbWeb);
+//                        require '../app/classes/agent.php';
+//                        $agentObject = new Agent($dbWeb);
                         include '../app/templates/config-list.php';
                     } else {
                         include '../app/templates/unauthorized.php';
