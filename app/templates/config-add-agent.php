@@ -42,7 +42,7 @@
                             <input type="hidden" name="new" value="true" />
 
                             <br />
-                            <a class="btn btn-secondary" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=agents" />Cancel</a>
+                            <a class="btn btn-secondary" href="<?= $app_root ?>?page=config" />Cancel</a>
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </form>
                     </div>

@@ -12,7 +12,7 @@
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="type_id" value="<?= htmlspecialchars($agentDetails[0]['type_id'])?>" required autofocus />
+                                    <input class="form-control" type="text" name="type_id" value="<?= htmlspecialchars($agentDetails[0]['agent_type_id'])?>" required autofocus />
                                     <p class="text-start"><small>type of agent (meet, jvb, jibri, all)</small></p>
                                 </div>
                             </div>
@@ -42,7 +42,7 @@
 
                             <br />
                             <input type="hidden" name="agent" value="<?= htmlspecialchars($agentDetails[0]['id']) ?>" />
-                            <a class="btn btn-secondary" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=agents" />Cancel</a>
+                            <a class="btn btn-secondary" href="<?= $app_root ?>?page=config" />Cancel</a>
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </form>
                     </div>

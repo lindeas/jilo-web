@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             include '../app/templates/config-list-interfaceconfigjs.php';
             break;
 
-    // if there is no $item, we work on the local config file
+    // if there is no $item, we work on the local config DB
         default:
             switch ($action) {
                 case 'add-agent':
@@ -125,12 +125,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
                     break;
                 case 'delete':
-                    include '../app/templates/config-delete-platform.php';
+                    if (isset($_GET['agent'])) {
+                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+                        include '../app/templates/config-delete-agent.php';
+                    } else {
+                        include '../app/templates/config-delete-platform.php';
+                    }
                     break;
                 default:
                     if ($userObject->hasRight($user_id, 'view config file')) {
-//                        require '../app/classes/agent.php';
-//                        $agentObject = new Agent($dbWeb);
                         include '../app/templates/config-list.php';
                     } else {
                         include '../app/templates/unauthorized.php';
