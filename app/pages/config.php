@@ -54,6 +54,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $platform = $_POST['platform'];
         $platformObject->deletePlatform($platform);
 
+    // an update to an existing agent
+    } elseif (isset($_POST['agent'])) {
+        $updatedAgent = [
+            'id'		=> $agent,
+            'agent_type_id'	=> 1,
+            'url'		=> $_POST['url'],
+            'secret_key'	=> $_POST['secret_key'],
+        ];
+        $result = $agentObject->editAgent($platform_id, $updatedAgent);
+        if ($result === true) {
+            $_SESSION['notice'] = "Agent id \"{$_REQUEST['agent']}\" edited.";
+        } else {
+            $_SESSION['error'] = "Editing the agent failed. Error: $result";
+        }
+
     // an update to an existing platform
     } else {
         $platform = $_POST['platform'];

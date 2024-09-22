@@ -33,21 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //        }
 
     // an update to an existing agent
-    } else {
-        $updatedAgent = [
-            'id'		=> $agent,
-            'type_id'		=> 1,
-            'url'		=> $_POST['url'],
-            'secret_key'	=> $_POST['secret_key'],
-        ];
-        $result = $agentObject->editAgent($platform_id, $updatedAgent);
-        if ($result === true) {
-            $_SESSION['notice'] = "Agent id \"{$_REQUEST['agent']}\" edited.";
-        } else {
-            $_SESSION['error'] = "Editing the agent failed. Error: $result";
-        }
-
-    }
+//    } else {
+//        $updatedAgent = [
+//            'id'		=> $agent,
+//            'type_id'		=> 1,
+//            'url'		=> $_POST['url'],
+//            'secret_key'	=> $_POST['secret_key'],
+//        ];
+//        $result = $agentObject->editAgent($platform_id, $updatedAgent);
+//        if ($result === true) {
+//            $_SESSION['notice'] = "Agent id \"{$_REQUEST['agent']}\" edited.";
+//        } else {
+//            $_SESSION['error'] = "Editing the agent failed. Error: $result";
+//        }
+//
+//    }
 
     header("Location: $app_root?platform=$platform_id&page=agents");
     exit();
