@@ -17,6 +17,7 @@ echo "\n";
     $agents = $agentObject->getAgentDetails($platform_array['id']);
 ?>
 
+                        <a name="platform<?= $platform_array['id'] ?>"></a>
                         <div class="row mb-3" style="padding-left: 0px;">
                             <div class="border bg-light" style="padding-left: 50px; padding-bottom: 0px; padding-top: 0px;">
                                 <a style="text-decoration: none;" data-toggle="collapse" href="#collapsePlatform<?= $platform_array['id'] ?>" role="button" aria-expanded="true" aria-controls="collapsePlatform<?= $platform_array['id'] ?>">
@@ -68,6 +69,7 @@ echo "\n";
 
 <?php foreach ($agents as $agent_array) { ?>
 
+                                        <a name="platform<?= $platform_array['id'] ?>agent<?= $agent_array['id'] ?>"></a>
                                         <div class="row mb-3" style="padding-left: 0px;">
                                             <div class="border rounded bg-light" style="padding-left: 50px; padding-bottom: 20px; padding-top: 20px;">
                                                 <div class="row mb-1" style="padding-left: 0px;">

@@ -24,7 +24,7 @@ foreach ($agentDetails[0] as $key => $value) {
                             <input type="hidden" name="delete" value="true" />
                             <p class="h5 text-danger">Are you sure you want to delete this agent?</p>
                             <br />
-                            <a class="btn btn-secondary" href="<?= $app_root ?>?page=config" />Cancel</a>
+                            <a class="btn btn-secondary" href="<?= $app_root ?>?page=config#platform<?= htmlspecialchars($platform_id) ?>agent<?= htmlspecialchars($agentDetails[0]['id']) ?>" />Cancel</a>
                             <input type="submit" class="btn btn-danger" value="Delete" />
                         </form>
                     </div>
