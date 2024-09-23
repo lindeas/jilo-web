@@ -4,7 +4,7 @@
                     <p class="h4 card-header">Jilo Agent configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong></p>
                     <div class="card-body">
                         <p class="card-text">delete an agent:</p>
-                        <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=agents">
+                        <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
 <?php
 foreach ($agentDetails[0] as $key => $value) {
 //    if ($key === 'id') continue;

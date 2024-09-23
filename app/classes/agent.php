@@ -33,14 +33,14 @@ class Agent {
     public function addAgent($platform_id, $newAgent) {
         try {
             $sql = 'INSERT INTO jilo_agents
-                    (platform_id, type_id, url, secret_key)
+                    (platform_id, agent_type_id, url, secret_key)
                     VALUES
-                    (:platform_id, :type_id, :url, :secret_key)';
+                    (:platform_id, :agent_type_id, :url, :secret_key)';
 
             $query = $this->db->prepare($sql);
             $query->execute([
                 ':platform_id'		=> $platform_id,
-                ':type_id'		=> $newAgent['type_id'],
+                ':agent_type_id'	=> $newAgent['type_id'],
                 ':url'			=> $newAgent['url'],
                 ':secret_key'		=> $newAgent['secret_key'],
             ]);
@@ -56,7 +56,7 @@ class Agent {
     public function editAgent($platform_id, $updatedAgent) {
         try {
             $sql = 'UPDATE jilo_agents SET
-                        type_id = :type_id,
+                        agent_type_id = :agent_type_id,
                         url = :url,
                         secret_key = :secret_key
                     WHERE
@@ -66,7 +66,7 @@ class Agent {
 
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':type_id'		=> $updatedAgent['type_id'],
+                ':agent_type_id'	=> $updatedAgent['agent_type_id'],
                 ':url'			=> $updatedAgent['url'],
                 ':secret_key'		=> $updatedAgent['secret_key'],
                 ':agent_id'		=> $updatedAgent['id'],

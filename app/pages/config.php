@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $platformObject->addPlatform($newPlatform);
 
     // deleting an agent
-    } elseif (isset($_POST['delete']) && isset($_POST['item']) && $_POST['delete'] === 'true' && $_POST['item'] === 'agent') {
+    } elseif (isset($_POST['delete']) && isset($_POST['agent']) && $_POST['delete'] === 'true') {
         $result = $agentObject->deleteAgent($agent);
         if ($result === true) {
             $_SESSION['notice'] = "Agent id \"{$_REQUEST['agent']}\" deleted.";

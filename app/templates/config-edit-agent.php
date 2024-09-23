@@ -4,7 +4,7 @@
                     <p class="h4 card-header">Jilo Agent configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong></p>
                     <div class="card-body">
                         <p class="card-text">edit the agent details:</p>
-                        <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=agents">
+                        <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
 
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">

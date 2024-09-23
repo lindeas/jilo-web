@@ -49,28 +49,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //
 //    }
 
-    header("Location: $app_root?platform=$platform_id&page=agents");
+    header("Location: $app_root?platform=$platform_id&page=config");
     exit();
 
 // no form submitted, show the templates
 } else {
 
-    switch ($action) {
-        case 'add':
-            include '../app/templates/agent-add.php';
-            break;
-        case 'edit':
-            $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-            include '../app/templates/agent-edit.php';
-            break;
-        case 'delete':
-            $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-            include '../app/templates/agent-delete.php';
-            break;
-        default:
-            $agentDetails = $agentObject->getAgentDetails($platform_id);
-            include '../app/templates/agent-list.php';
-    }
+//    switch ($action) {
+//        case 'add':
+//            include '../app/templates/agent-add.php';
+//            break;
+//        case 'edit':
+//            $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+//            include '../app/templates/agent-edit.php';
+//            break;
+//        case 'delete':
+//            $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+//            include '../app/templates/agent-delete.php';
+//            break;
+//        default:
+//            $agentDetails = $agentObject->getAgentDetails($platform_id);
+//            include '../app/templates/agent-list.php';
+//    }
 }
 
 ?>
