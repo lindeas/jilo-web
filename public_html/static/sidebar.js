@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var sidebar = document.getElementById('sidebar');
     var mainContent = document.getElementById('mainContent');
     var toggleButton = document.getElementById('toggleSidebarButton');
+    var timeNow = document.getElementById('time_now');
 
     // update localStorage based on the current state
     function updateStorage() {
@@ -18,11 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
             toggleButton.textContent = ">>";
             sidebar.classList.add('collapsed');
             mainContent.classList.add('expanded');
+            timeNow.style.display = 'none';
         } else {
             toggleButton.value = "<<";
             toggleButton.textContent = "<<";
             sidebar.classList.remove('collapsed');
             mainContent.classList.remove('expanded');
+            timeNow.style.display = 'block';
         }
     }
 
@@ -38,9 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (toggleButton.value === ">>") {
           toggleButton.value = "<<";
           toggleButton.textContent = "<<";
+          timeNow.style.display = 'block';
         } else {
           toggleButton.value = ">>";
           toggleButton.textContent = ">>";
+          timeNow.style.display = 'none';
         }
 
         // Update with the new state
