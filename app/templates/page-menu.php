@@ -12,9 +12,11 @@
 
 <?php if ( isset($_SESSION['username']) ) { ?>
 
-<?php foreach ($platformsAll as $platform) { ?>
+<?php foreach ($platformsAll as $platform) {
+    $platform_switch_url = switchPlatform($platform['id'])
+?>
                 <li style="margin-right: 3px;">
-                    <a style="background-color: #111;" href="?platform=<?= htmlspecialchars($platform['id']) ?>&page=dashboard">
+                    <a style="background-color: #111;" href="<?= htmlspecialchars($platform_switch_url) ?>">
                         <?= htmlspecialchars($platform['name']) ?>
                     </a>
                 </li>
