@@ -99,6 +99,12 @@ class Agent {
         }
     }
 
+    // check for agent cache
+    public function checkAgentCache($agent_id) {
+        $agent_cache_name = $agent_id . '_cache';
+        $agent_cache_time = $agent_id . '_time';
+        return isset($_SESSION[$agent_cache_name]) && isset($_SESSION[$agent_cache_time]) && (time() - $_SESSION[$agent_cache_time] < 600);
+    }
 
 }
 
