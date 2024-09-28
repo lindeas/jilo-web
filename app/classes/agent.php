@@ -106,6 +106,36 @@ class Agent {
         return isset($_SESSION[$agent_cache_name]) && isset($_SESSION[$agent_cache_time]) && (time() - $_SESSION[$agent_cache_time] < 600);
     }
 
+    // fetch result from jilo agent API
+    pubic function fetchAgent($agent_id, $force = false) {
+
+        // we need agent details for URL and JWT token
+        $agent = $this->getAgentDetails($agent_id);
+        $agent_cache_name = $agent_id . '_cache';
+        $agent_cache_time = $agent_id . '_time';
+
+        // check if the cache is still valid, unless force-refresh is requested
+        if (!$force && this->checkAgentCache($agent_id)) {
+            return $_SESSION[$agent_cache_name];
+        }
+
+        // Make the API request
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $agent[0]['url']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // Cache the result and the timestamp if the response is successful
+        if ($response !== false) {
+            $_SESSION[$agent_cache_name] = $response;
+            $_SESSION[$agent_cache_time] = time();
+        }
+
+        return $response;
+    }
+
+
 }
 
 ?>
