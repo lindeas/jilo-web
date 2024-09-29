@@ -11,8 +11,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // FIXME code here
 
-    header("Location: $app_root?platform=$platform_id&page=config");
-    exit();
+    $force = isset($_POST['force']) && $_POST['force'] == 'true';
+    $result = fetchAgent($agent_id, $force);
+
+    if ($result !== false) {
+        echo $result; // Return the API response as JSON
+    } else {
+        echo json_encode(['error' => 'Failed to fetch API data']);
+    }
+
+//    header("Location: $app_root?platform=$platform_id&page=config");
+//    exit();
 
 // no form submitted, show the templates
 } else {
