@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($userObject->hasRight($user_id, 'view config file')) {
                         include '../app/templates/config-list.php';
                     } else {
-                        include '../app/templates/unauthorized.php';
+                        include '../app/templates/error-unauthorized.php';
                     }
             }
     }
