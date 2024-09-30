@@ -1,4 +1,4 @@
-function fetchData(agent_id, url, force = false) {
+function fetchData(agent_id, url, endpoint, force = false) {
 
     let counter = 0;
     const resultElement = document.getElementById("result" + agent_id);
@@ -14,13 +14,17 @@ function fetchData(agent_id, url, force = false) {
 
     // Create an AJAX request
     var xhr = new XMLHttpRequest();
+    const agentUrl = url + endpoint;
+
+    // FIXME for debugging purpose
+    console.log("Requesting URL:", agentUrl);
 
     // Handle invalid URL error
     try {
-        xhr.open("POST", url, true);
+        xhr.open("POST", agentUrl, true);
     } catch (e) {
         clearInterval(intervalId); // Stop the counter on error
-        resultElement.innerHTML = `Error: Invalid URL ${url}<br />` + e.message;
+        resultElement.innerHTML = `Error: Invalid URL ${agentUrl}<br />` + e.message;
         return; // Exit the function early
     }
 
@@ -39,13 +43,17 @@ function fetchData(agent_id, url, force = false) {
                 try {
                     // Parse and display the result
                     let result = JSON.parse(xhr.responseText);
-                    resultElement.innerHTML = JSON.stringify(result, null, 2);
+                    if (result.error) {
+                        resultElement.innerHTML = "Error: " + result.error;
+                    } else {
+                        resultElement.innerHTML = JSON.stringify(result, null, 2);
+                    }
                 } catch (e) {
                     // Display the error
                     resultElement.innerHTML = "Error: Response is not a valid JSON.<br />Response: " + xhr.responseText;
                 }
             } else {
-                resultElement.innerHTML = `Error: Unable to fetch data from ${url}<br />Status Code: ${xhr.status}<br />Status Text: ${xhr.statusText}<br />Response: ${xhr.responseText}`;
+                resultElement.innerHTML = `Error: Unable to fetch data from ${agentUrl}<br />Status Code: ${xhr.status}<br />Status Text: ${xhr.statusText}<br />Response: ${xhr.responseText}`;
             }
         }
     };
@@ -53,7 +61,7 @@ function fetchData(agent_id, url, force = false) {
     // Handle network-level errors (e.g., connection refused)
     xhr.onerror = function() {
         clearInterval(intervalId); // Stop the counter on error
-        resultElement.innerHTML = `Network Error:<br />Unable to connect to ${url}<br />Check network connection or try again later.`;
+        resultElement.innerHTML = `Network Error:<br />Unable to connect to ${agentUrl}<br />Check network connection or try again later.`;
     };
 
     // Handle the timeout event

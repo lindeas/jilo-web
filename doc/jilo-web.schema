@@ -43,7 +43,7 @@ CREATE TABLE jilo_agents (
 CREATE TABLE jilo_agent_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     description TEXT,
-    endponts TEXT
+    endpoint TEXT
 );
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

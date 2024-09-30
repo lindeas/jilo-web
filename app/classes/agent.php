@@ -9,19 +9,30 @@ class Agent {
 
     // get details of a specified agent ID (or all) in a specified platform ID
     public function getAgentDetails($platform_id, $agent_id = '') {
-        $sql = 'SELECT * FROM jilo_agents
+        $sql = 'SELECT
+                    ja.id,
+                    ja.platform_id,
+                    ja.agent_type_id,
+                    ja.url,
+                    ja.secret_key,
+                    jat.description AS agent_description,
+                    jat.endpoint AS agent_endpoint
+                FROM
+                    jilo_agents ja
+                JOIN
+                    jilo_agent_types jat ON ja.agent_type_id = jat.id
                 WHERE
                     platform_id = :platform_id';
+
         if ($agent_id !== '') {
-            $sql .= ' AND id = :agent_id';
-            $query = $this->db->prepare($sql);
-            $query->execute([
-                ':platform_id'		=> $platform_id,
-                ':agent_id'		=> $agent_id,
-            ]);
-        } else {
-            $query = $this->db->prepare($sql);
-            $query->bindParam(':platform_id', $platform_id);
+            $sql .= ' AND ja.id = :agent_id';
+        }
+
+        $query = $this->db->prepare($sql);
+
+        $query->bindParam(':platform_id', $platform_id);
+        if ($agent_id !== '') {
+            $query->bindParam(':agent_id', $agent_id);
         }
 
         $query->execute();
@@ -126,17 +137,25 @@ class Agent {
         curl_setopt($ch, CURLOPT_TIMEOUT, 10); // timeout 10 seconds
 
         $response = curl_exec($ch);
-        $curl_error = curl_error($ch); // curl error for debugging
+        $curl_error = curl_error($ch);
+        $curl_errno = curl_errno($ch);
 
         curl_close($ch);
 
-        // Cache the result and the timestamp if the response is successful
-        if ($response !== false) {
-            $_SESSION[$agent_cache_name] = $response;
-            $_SESSION[$agent_cache_time] = time();
-        } else {
-            $response = "Error: " . $curl_error;
+        // general curl error
+        if ($curl_error) {
+            return json_encode(['error' => 'curl error: ' . $curl_error]);
         }
+
+        // other custom error(s)
+        if (strpos($response, 'Auth header not received') !== false) {
+            return json_encode(['error' => 'Auth header not received']);
+        }
+
+        // Cache the result and the timestamp if the response is successful
+        $_SESSION[$agent_cache_name] = $response;
+        $_SESSION[$agent_cache_time] = time();
+
         return $response;
     }
 

@@ -6,8 +6,8 @@
 <?php foreach ($agentDetails as $agent) { ?>
                         <p class="card-text">
                             agent id<?= htmlspecialchars($agent['id']) ?>: type <?= htmlspecialchars($agent['agent_type_id']) ?>, url <?= htmlspecialchars($agent['url']) ?>
-                            <button onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>')">fetch data</button>
-                            <button onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', true)">force refresh</button>
+                            <button onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>')">fetch data</button>
+                            <button onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>', true)">force refresh</button>
                         </p>
                         <p>Result:</p>
                         <pre id="result<?= htmlspecialchars($agent['id']) ?>">click a button to fetch data from the agent.</pre>
