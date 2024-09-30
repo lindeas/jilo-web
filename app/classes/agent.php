@@ -123,15 +123,20 @@ class Agent {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $agent[0]['url']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10); // timeout 10 seconds
+
         $response = curl_exec($ch);
+        $curl_error = curl_error($ch); // curl error for debugging
+
         curl_close($ch);
 
         // Cache the result and the timestamp if the response is successful
         if ($response !== false) {
             $_SESSION[$agent_cache_name] = $response;
             $_SESSION[$agent_cache_time] = time();
+        } else {
+            $response = "Error: " . $curl_error;
         }
-
         return $response;
     }
 
