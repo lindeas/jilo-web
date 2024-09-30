@@ -11,11 +11,11 @@
                             endpoint: <strong><?= htmlspecialchars($agent['url']) ?><?= htmlspecialchars($agent['agent_endpoint']) ?></strong>
                             <br />
 <?php if (isset($_SESSION["{$agent['id']}_cache"])) { ?>
-                            <button class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="load recently cached data" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>')">load cache</button>
-                            <button class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="get fresh data from agent" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>', true)">force refresh</button>
+                            <button class="btn btn-primary" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" title="load recently cached data" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>')">load cache</button>
+                            <button class="btn btn-primary" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" title="get fresh data from agent" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>', true)">force refresh</button>
 <?php } else { ?>
-                            <button class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="get data from the agent" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>')">fetch data</button>
-                            <button class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="no cache to refresh">force refresh</button>
+                            <button class="btn btn-primary" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" title="get data from the agent" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>')">fetch data</button>
+                            <button class="btn btn-light" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" title="no cache to refresh">force refresh</button>
 <?php } ?>
                     </p>
                         <p>Result:</p>
