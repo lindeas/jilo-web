@@ -133,14 +133,14 @@ $userObject = new User($dbWeb);
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
 
-    $notice = "You were logged out.<br />You can log in again.";
-    $user_id = $userObject->getUserId($currentUser)[0]['id'];
-    $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
-
     // clean up session
     session_unset();
     session_destroy();
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
+
+    $notice = "You were logged out.<br />You can log in again.";
+    $user_id = $userObject->getUserId($currentUser)[0]['id'];
+    $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
 
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
