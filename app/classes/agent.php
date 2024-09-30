@@ -107,7 +107,7 @@ class Agent {
     }
 
     // fetch result from jilo agent API
-    pubic function fetchAgent($agent_id, $force = false) {
+    public function fetchAgent($agent_id, $force = false) {
 
         // we need agent details for URL and JWT token
         $agent = $this->getAgentDetails($agent_id);
