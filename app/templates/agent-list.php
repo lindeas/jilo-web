@@ -10,6 +10,16 @@
                             <br />
                             endpoint: <strong><?= htmlspecialchars($agent['url']) ?><?= htmlspecialchars($agent['agent_endpoint']) ?></strong>
                             <br />
+<?php
+    $payload = [
+        'iss' => 'Jilo Web',
+        'aud' => $config['domain'],
+        'iat' => time(),
+        'exp' => time() + 3600,
+        'agent_id' => $agent['id']
+    ];
+    $jwt = $agentObject->generateAgentToken($payload, $agent['secret_key']);
+?>
 <?php if (isset($_SESSION["{$agent['id']}_cache"])) { ?>
                             <button class="btn btn-primary" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" title="load recently cached data" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>')">load cache</button>
                             <button class="btn btn-primary" data-toggle="tooltip" data-trigger="hover" data-placement="bottom" title="get fresh data from agent" onclick="fetchData('<?= htmlspecialchars($agent['id']) ?>', '<?= htmlspecialchars($agent['url']) ?>', '<?= htmlspecialchars($agent['agent_endpoint']) ?>', true)">force refresh</button>
@@ -20,7 +30,4 @@
                     </p>
                         <p>Result:</p>
                         <pre id="result<?= htmlspecialchars($agent['id']) ?>">click a button to fetch data from the agent.</pre>
-<?php
-    print_r($_SESSION);
-?>
 <?php } ?>

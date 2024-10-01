@@ -1,4 +1,4 @@
-function fetchData(agent_id, url, endpoint, force = false) {
+function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
 
     let counter = 0;
     const resultElement = document.getElementById("result" + agent_id);
@@ -27,6 +27,9 @@ function fetchData(agent_id, url, endpoint, force = false) {
         resultElement.innerHTML = `Error: Invalid URL ${agentUrl}<br />` + e.message;
         return; // Exit the function early
     }
+
+    // send the token
+    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
 
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 

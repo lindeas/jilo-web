@@ -110,12 +110,45 @@ class Agent {
         }
     }
 
+
     // check for agent cache
     public function checkAgentCache($agent_id) {
         $agent_cache_name = $agent_id . '_cache';
         $agent_cache_time = $agent_id . '_time';
         return isset($_SESSION[$agent_cache_name]) && isset($_SESSION[$agent_cache_time]) && (time() - $_SESSION[$agent_cache_time] < 600);
     }
+
+
+    // method for base64 URL encoding for JWT tokens
+    private function base64UrlEncode($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+
+    // generate a JWT token for jilo agent
+    public function generateAgentToken($payload, $secret_key) {
+
+        // header
+        $header = json_encode([
+            'typ' => 'JWT',
+            'alg' => 'HS256'
+        ]);
+        $base64Url_header = $this->base64UrlEncode($header);
+
+        // payload
+        $payload = json_encode($payload);
+        $base64Url_payload = $this->base64UrlEncode($payload);
+
+        // signature
+        $signature = hash_hmac('sha256', $base64Url_header . "." . $base64Url_payload, $secret_key, true);
+        $base64Url_signature = $this->base64UrlEncode($signature);
+
+        // build the JWT
+        $jwt = $base64Url_header . "." . $base64Url_payload . "." . $base64Url_signature;
+
+        return $jwt;
+    }
+
 
     // fetch result from jilo agent API
     public function fetchAgent($agent_id, $force = false) {
