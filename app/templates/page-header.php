@@ -25,6 +25,7 @@
     </script>
 <?php if ($page === 'agents') { ?>
     <script src="<?= $app_root ?>static/agents.js"></script>
+    <link rel="stylesheet" type="text/css" href="<?= $app_root ?>static/css/agents.css">
 <?php } ?>
     <title>Jilo Web</title>
     <link rel="icon" type="image/x-icon" href="<?= $app_root ?>static/favicon.ico">

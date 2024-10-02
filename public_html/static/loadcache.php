@@ -12,7 +12,9 @@ if (isset($_SESSION["agent{$agent}_cache"])) {
     echo json_encode([
         'status' => 'success',
         'data' => $_SESSION["agent{$agent}_cache"],
-        'cache_time' => $_SESSION["agent{$agent}_cache_time"] ?? time()  // we store cache time in the session
+        // we store cache time in the session
+        // FIXME may need to move to file cache
+        'cache_time' => $_SESSION["agent{$agent}_cache_time"] ?? time()
     ]);
 } else {
     // If no cached data exists

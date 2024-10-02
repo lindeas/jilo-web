@@ -55,13 +55,22 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
                     } else {
                         // show the result in the html
                         resultElement.innerHTML = JSON.stringify(result, null, 2);
-                        cacheInfoElement.innerHTML = "";
+
+                        // Show the cache timestamp from the session
+                        const cacheTimestamp = new Date(result.cache_time);
+
+                        // Display the cache retrieval date and time
+                        const formattedDate = cacheTimestamp.toLocaleDateString();
+                        const formattedTime = cacheTimestamp.toLocaleTimeString();
+                        cacheInfoElement.innerHTML = `cache refreshed on ${formattedDate} at ${formattedTime}`;
+
                         // send the result to PHP to store in session
                         saveResultToSession(result, agent_id);
                     }
                 } catch (e) {
                     // Display the error
                     resultElement.innerHTML = "Error: Response is not a valid JSON.<br />Response: " + xhr.responseText;
+                    console.error("error:", e);
                 }
             } else {
                 resultElement.innerHTML = `Error: Unable to fetch data from ${agentUrl}<br />Status Code: ${xhr.status}<br />Status Text: ${xhr.statusText}<br />Response: ${xhr.responseText}`;
@@ -139,6 +148,7 @@ function loadCache(agent_id) {
                     }
                 } catch (e) {
                     resultElement.innerHTML = "Error loading cached data.";
+                    console.error("error:", e);
                 }
             } else {
                 resultElement.innerHTML = `Error: Unable to load cache. Status code: ${xhr.status}`;
