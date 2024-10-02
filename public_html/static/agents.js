@@ -57,7 +57,8 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
                         resultElement.innerHTML = JSON.stringify(result, null, 2);
 
                         // Show the cache timestamp from the session
-                        const cacheTimestamp = new Date(result.cache_time);
+                        const now = Date.now();
+                        const cacheTimestamp = new Date(now);
 
                         // Display the cache retrieval date and time
                         const formattedDate = cacheTimestamp.toLocaleDateString();
@@ -135,7 +136,7 @@ function loadCache(agent_id) {
                         resultElement.innerHTML = JSON.stringify(response.data, null, 2);
 
                         // Get the cache timestamp from the session
-                        const cacheTimestamp = new Date(response.cache_time);
+                        const cacheTimestamp = new Date(response.cache_time * 1000);
 
                         // Display the cache retrieval date and time
                         const formattedDate = cacheTimestamp.toLocaleDateString();
