@@ -16,8 +16,8 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
     var xhr = new XMLHttpRequest();
     const agentUrl = url + endpoint;
 
-    // FIXME for debugging purpose
-    console.log("Requesting URL:", agentUrl);
+    // DEBUG show the requested URL for debugging purpose
+    //console.log("Requesting URL:", agentUrl);
 
     // Handle invalid URL error
     try {
@@ -29,9 +29,8 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
     }
 
     // send the token
-    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
-
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
 
     // Set a timeout in milliseconds (10 seconds = 10000 ms)
     xhr.timeout = 10000;
@@ -46,6 +45,9 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
                 try {
                     // Parse and display the result
                     let result = JSON.parse(xhr.responseText);
+                    // DEBUG display the result
+                    //console.log(xhr.responseText);
+
                     if (result.error) {
                         resultElement.innerHTML = "Error: " + result.error;
                     } else {
