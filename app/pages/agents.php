@@ -6,22 +6,33 @@ require '../app/classes/agent.php';
 
 $agentObject = new Agent($dbWeb);
 
-// if a form is submitted, it's from the edit page
+// if it's a POST request, it's saving to cache
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-// FIXME code here
-//    header("Location: $app_root?platform=$platform_id&page=config");
-//    exit();
+    // read the JSON sent from javascript
+    $data = file_get_contents("php://input");
+    $result = json_decode($data, true);
 
-    $force = isset($_POST['force']) && $_POST['force'] == 'true';
-    $agent_id = $_POST['agent'];
-    $result = fetchAgent($agent_id, $force);
-
-    if ($result !== false) {
-        echo $result; // Return the API response as JSON
+    // store the data in the session
+    if ($result) {
+        $_SESSION["agent{$agent}_cache"] = $result;
+        $_SESSION["agent{$agent}_cache_time"] = time();  // store the cache time
+        echo json_encode(['status' => 'success']);
     } else {
-        echo json_encode(['error' => 'Failed to fetch API data']);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid data']);
     }
+
+//// if it's a GET request, it's read/load from cache
+//} elseif ($loadcache === true) {
+//
+//    // check if cached data exists in session
+//    if (isset($_SESSION["agent{$agent}_cache"])) {
+//        // return the cached data in JSON format
+//        echo json_encode(['status' => 'success', 'data' => $_SESSION["agent{$agent}_cache"]]);
+//    } else {
+//        // if no cached data exists
+//        echo json_encode(['status' => 'error', 'message' => 'No cached data found']);
+//    }
 
 // no form submitted, show the templates
 } else {

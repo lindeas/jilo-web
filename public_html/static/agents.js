@@ -1,7 +1,9 @@
 function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
+    // FIXME make use of force variable
 
     let counter = 0;
     const resultElement = document.getElementById("result" + agent_id);
+    const cacheInfoElement = document.getElementById("cacheInfo" + agent_id);
 
     // Show loading text
     resultElement.innerHTML = "Loading... (0 seconds)";
@@ -51,7 +53,11 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
                     if (result.error) {
                         resultElement.innerHTML = "Error: " + result.error;
                     } else {
+                        // show the result in the html
                         resultElement.innerHTML = JSON.stringify(result, null, 2);
+                        cacheInfoElement.innerHTML = "";
+                        // send the result to PHP to store in session
+                        saveResultToSession(result, agent_id);
                     }
                 } catch (e) {
                     // Display the error
@@ -95,4 +101,74 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
 //        }
 //    }, 1000); // Simulate a minimum 1 second delay for testing
 
+}
+
+
+// load the result from cache
+function loadCache(agent_id) {
+    const resultElement = document.getElementById("result" + agent_id);
+    const cacheInfoElement = document.getElementById("cacheInfo" + agent_id);
+    resultElement.innerHTML = "Loading cached data...";
+
+    // Fetch the cached data from PHP
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "static/loadcache.php?agent="+agent_id, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    let response = JSON.parse(xhr.responseText);
+
+                    if (response.status === 'success') {
+                        // Display the cached data
+                        resultElement.innerHTML = JSON.stringify(response.data, null, 2);
+
+                        // Get the cache timestamp from the session
+                        const cacheTimestamp = new Date(response.cache_time);
+
+                        // Display the cache retrieval date and time
+                        const formattedDate = cacheTimestamp.toLocaleDateString();
+                        const formattedTime = cacheTimestamp.toLocaleTimeString();
+                        cacheInfoElement.innerHTML = `cache retrieved on ${formattedDate} at ${formattedTime}`;
+
+                    } else {
+                        resultElement.innerHTML = "No cached data found.";
+                            cacheInfoElement.innerHTML = "";
+                    }
+                } catch (e) {
+                    resultElement.innerHTML = "Error loading cached data.";
+                }
+            } else {
+                resultElement.innerHTML = `Error: Unable to load cache. Status code: ${xhr.status}`;
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+        resultElement.innerHTML = "Network error occurred while fetching the cached data.";
+    };
+
+    xhr.send();
+}
+
+
+// we send result to PHP session, to be available to the whole app
+function saveResultToSession(result, agent_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "?page=agents&agent="+agent_id, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log("Data saved to session successfully.");
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error("Error saving data to session.");
+    };
+
+    xhr.send(JSON.stringify(result));
 }
