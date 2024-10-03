@@ -81,18 +81,22 @@ echo "\n";
                                                         <a class="btn btn-danger" style="padding: 2px;" href="<?= $app_root ?>?page=config&platform=<?= htmlspecialchars($agent_array['platform_id'])?>&agent=<?= htmlspecialchars($agent_array['id']) ?>&action=delete">delete agent</a>
                                                     </div>
                                                     <div style="padding-left: 100px; padding-bottom: 20px;">
-<?php foreach ($agent_array as $key => $value) {
-        if ($key === 'id') continue;
-?>
                                                         <div class="row mb-1" style="padding-left: 100px;">
                                                             <div class="col-md-4 text-end">
-                                                                <?= $key ?>:
+                                                                agent type:
                                                             </div>
                                                             <div class="border col-md-8 text-start">
-                                                                <?= $value ?>
+                                                                <?= $agent_array['agent_description'] ?>
                                                             </div>
                                                         </div>
-<?php } ?>
+                                                        <div class="row mb-1" style="padding-left: 100px;">
+                                                            <div class="col-md-4 text-end">
+                                                                endpoint:
+                                                            </div>
+                                                            <div class="border col-md-8 text-start">
+                                                                <?= $agent_array['url'].$agent_array['agent_endpoint'] ?>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
