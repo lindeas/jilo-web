@@ -9,7 +9,7 @@ class Component {
 
 
     // list of component events
-    public function jitsiComponents($jitsi_component, $component_id, $from_time, $until_time, $offset=0, $items_per_page='') {
+    public function jitsiComponents($jitsi_component, $component_id, $event_type, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
         // FIXME make it similar to the bash version
@@ -31,7 +31,13 @@ FROM
 WHERE
     jitsi_component = %s
 AND
-    component_id = %s
+    component_id = %s";
+        if ($event_type != '' && $event_type != 'event_type') {
+            $sql .= "
+AND
+    event_type LIKE '%%%s%%'";
+        }
+        $sql .= "
 AND
     (time >= '%s 00:00:00' AND time <= '%s 23:59:59')
 ORDER BY
@@ -42,7 +48,14 @@ ORDER BY
             $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
         }
 
-        $sql = sprintf($sql, $jitsi_component, $component_id, $from_time, $until_time);
+        // FIXME this needs to be done with bound params instead of sprintf
+        if ($event_type != '' && $event_type != 'event_type') {
+            $sql = sprintf($sql, $jitsi_component, $component_id, $event_type, $from_time, $until_time);
+            $sql = str_replace("LIKE '%'", "LIKE '%", $sql);
+            $sql = str_replace("'%'\nAND", "%' AND", $sql);
+        } else {
+            $sql = sprintf($sql, $jitsi_component, $component_id, $from_time, $until_time);
+        }
 
         $query = $this->db->prepare($sql);
         $query->execute();

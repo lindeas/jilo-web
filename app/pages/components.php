@@ -10,17 +10,10 @@ include '../app/helpers/time_range.php';
 
 // jitsi component events list
 // we use $_REQUEST, so that both links and forms work
-if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-    $jitsi_component = "'" . $_REQUEST['name'] . "'";
-    $component_id = 'component_id';
-} elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-    $component_id = "'" . $_REQUEST['id'] . "'";
-    $jitsi_component = 'jitsi_component';
-} else {
-    // we need the variables to use them later in sql for columnname = columnname
-    $jitsi_component = 'jitsi_component';
-    $component_id = 'component_id';
-}
+// if it's there, but empty, we make it same as the field name; otherwise assign the value
+$jitsi_component = !empty($_REQUEST['name']) ? "'" . $_REQUEST['name'] . "'" : 'jitsi_component';
+$component_id = !empty($_REQUEST['id']) ? "'" . $_REQUEST['id'] . "'" : 'component_id';
+$event_type = !empty($_REQUEST['event']) ? "'" . $_REQUEST['event'] . "'" : 'event_type';
 
 
 //
@@ -38,8 +31,8 @@ $browse_page = (int)$browse_page;
 $offset = ($browse_page -1) * $items_per_page;
 
 // prepare the result
-$search = $componentObject->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time, $offset, $items_per_page);
-$search_all = $componentObject->jitsiComponents($jitsi_component, $component_id, $from_time, $until_time);
+$search = $componentObject->jitsiComponents($jitsi_component, $component_id, $event_type, $from_time, $until_time, $offset, $items_per_page);
+$search_all = $componentObject->jitsiComponents($jitsi_component, $component_id, $event_type, $from_time, $until_time);
 
 if (!empty($search)) {
     // we get total items and number of pages
@@ -68,8 +61,6 @@ if (!empty($search)) {
 // prepare the widget
 $widget['full'] = false;
 $widget['name'] = 'AllComponents';
-$widget['collapsible'] = false;
-$widget['collapsed'] = false;
 $widget['filter'] = true;
 $widget['pagination'] = true;
 
@@ -89,6 +80,6 @@ if (!empty($components['records'])) {
 }
 
 // display the widget
-include '../app/templates/widget.php';
+include '../app/templates/event-list-components.php';
 
 ?>

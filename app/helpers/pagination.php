@@ -3,14 +3,17 @@
                             <div class="pagination">
 <?php
     $param = '';
-    if (isset($_GET['id'])) {
-        $param .= '&id=' . $_GET['id'];
+    if (isset($_REQUEST['id'])) {
+        $param .= '&id=' . $_REQUEST['id'];
     }
-    if (isset($_GET['name'])) {
-        $param .= '&name=' . $_GET['name'];
+    if (isset($_REQUEST['name'])) {
+        $param .= '&name=' . $_REQUEST['name'];
     }
-    if (isset($_GET['ip'])) {
-        $param .= '&ip=' . $_GET['ip'];
+    if (isset($_REQUEST['ip'])) {
+        $param .= '&ip=' . $_REQUEST['ip'];
+    }
+    if (isset($_REQUEST['event'])) {
+        $param .= '&event=' . $_REQUEST['event'];
     }
     if ($browse_page > 1) {
         echo '<span><a href="' . $url . '&p=1">first</a></span>';
