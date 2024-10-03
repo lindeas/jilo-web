@@ -12,7 +12,14 @@
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="type_id" value="<?= htmlspecialchars($agentDetails[0]['agent_type_id'])?>" required autofocus />
+                                    <select class="form-control" type="text" name="type" id="agent_type_id" required>
+                                        <option></option>
+<?php foreach ($jilo_agent_types as $agent_type) { ?>
+                                        <option value="<?= $agent_type['id']?>" <?php if ($agentDetails[0]['agent_type_id'] === $agent_type['id']) echo 'selected'; ?>>
+                                            <?= $agent_type['description'] ?>
+                                        </option>
+<?php } ?>
+                                    </select>
                                     <p class="text-start"><small>type of agent (meet, jvb, jibri, all)</small></p>
                                 </div>
                             </div>

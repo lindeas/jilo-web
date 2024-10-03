@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // new agent adding
     if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'agent') {
         $newAgent = [
-            'type_id'		=> 1,
-            'url'		=> $_POST['url'],
+            'type_id'       => $_POST['type'],
+            'url'           => $_POST['url'],
             'secret_key'	=> $_POST['secret_key'],
         ];
         $result = $agentObject->addAgent($platform_id, $newAgent);
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // new platform adding
     } elseif (isset($_POST['new']) && $_POST['new'] === 'true') {
         $newPlatform = [
-            'name'		=> $_POST['name'],
+            'name'          => $_POST['name'],
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
@@ -57,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // an update to an existing agent
     } elseif (isset($_POST['agent'])) {
         $updatedAgent = [
-            'id'		=> $agent,
-            'agent_type_id'	=> 1,
-            'url'		=> $_POST['url'],
+            'id'            => $agent,
+            'agent_type_id' => $_POST['type'],
+            'url'           => $_POST['url'],
             'secret_key'	=> $_POST['secret_key'],
         ];
         $result = $agentObject->editAgent($platform_id, $updatedAgent);
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $platform = $_POST['platform'];
         $updatedPlatform = [
-            'name'		=> $_POST['name'],
+            'name'		    => $_POST['name'],
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
@@ -126,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         default:
             switch ($action) {
                 case 'add-agent':
+                    $jilo_agent_types = $agentObject->getAgentTypes();
                     include '../app/templates/config-add-agent.php';
                     break;
                 case 'add':
@@ -134,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 case 'edit':
                     if (isset($_GET['agent'])) {
                         $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+                        $jilo_agent_types = $agentObject->getAgentTypes();
                         include '../app/templates/config-edit-agent.php';
                     } else {
                         include '../app/templates/config-edit-platform.php';

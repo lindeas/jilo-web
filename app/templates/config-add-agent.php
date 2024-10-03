@@ -3,7 +3,7 @@
                 <div class="card text-center w-50 mx-auto">
                     <p class="h4 card-header">Add new Jilo Agent to Jitsi platform "<strong><?= htmlspecialchars($platformDetails[0]['name']) ?></strong>"</p>
                     <div class="card-body">
-                        <!--p class="card-text">add new platform:</p-->
+                        <!--p class="card-text">add new agent:</p-->
                         <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
 
                             <div class="row mb-3">
@@ -12,7 +12,14 @@
                                     <span class="text-danger" style="margin-right: -12px;">*</span>
                                 </div>
                                 <div class="col-md-8">
-                                    <input class="form-control" type="text" name="type" value="" required autofocus />
+                                    <select class="form-control" type="text" name="type" id="agent_type_id" required>
+                                        <option></option>
+<?php foreach ($jilo_agent_types as $agent_type) { ?>
+                                        <option value="<?= $agent_type['id']?>">
+                                            <?= $agent_type['description'] ?>
+                                        </option>
+<?php } ?>
+                                    </select>
                                     <p class="text-start"><small>type of agent (meet, jvb, jibri, all)</small></p>
                                 </div>
                             </div>

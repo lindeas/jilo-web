@@ -40,6 +40,17 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // get agent types
+    public function getAgentTypes() {
+        $sql = 'SELECT *
+                    FROM jilo_agent_types
+                    ORDER BY id';
+        $query = $this->db->prepare($sql);
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // add new agent
     public function addAgent($platform_id, $newAgent) {
         try {
