@@ -30,5 +30,5 @@
 <?php } ?>
                             <span id="cacheInfo<?= htmlspecialchars($agent['id']) ?>" style="margin: 5px 0;"></span>
                     </p>
-                        <pre class="agent_result" id="result<?= htmlspecialchars($agent['id']) ?>">click a button to fetch data from the agent.</pre>
+                        <pre class="results" id="result<?= htmlspecialchars($agent['id']) ?>">click a button to fetch data from the agent.</pre>
 <?php } ?>

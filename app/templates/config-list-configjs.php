@@ -12,7 +12,7 @@
                             <span class="m-3"><a class="btn btn-light" href="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=configjs&mode=raw">view raw file contents</a></span>
 <?php } ?>
                         </p>
-<pre style="text-align: left;">
+<pre class="results">
 <?php
 echo htmlspecialchars($platformConfigjs);
 ?>

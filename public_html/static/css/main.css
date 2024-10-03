@@ -172,3 +172,14 @@
 .th-time {
     width: 200px;
 }
+
+.results {
+    text-align: left;
+    font-family: monospace;
+    white-space: pre-wrap;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow-x: auto;
+}
