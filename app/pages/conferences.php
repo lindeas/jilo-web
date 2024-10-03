@@ -9,8 +9,12 @@ $db = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform
 include '../app/helpers/time_range.php';
 
 // conference id/name are specified when searching specific conference(s)
-// either id OR name, id has precedence
 // we use $_REQUEST, so that both links and forms work
+// if it's there, but empty, we make it same as the field name; otherwise assign the value
+
+//$conferenceName = !empty($_REQUEST['name']) ? "'" . $_REQUEST['name'] . "'" : 'conference_name';
+//$conferenceId = !empty($_REQUEST['id']) ? "'" . $_REQUEST['id'] . "'" : 'conference_id';
+
 if (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
     $conferenceId = $_REQUEST['id'];
     unset($_REQUEST['name']);
@@ -140,6 +144,6 @@ if (!empty($conferences['records'])) {
 }
 
 // display the widget
-include '../app/templates/widget.php';
+include '../app/templates/event-list-conferences.php';
 
 ?>

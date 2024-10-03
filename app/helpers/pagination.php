@@ -15,6 +15,12 @@
     if (isset($_REQUEST['event'])) {
         $param .= '&event=' . $_REQUEST['event'];
     }
+    if (isset($_REQUEST['from_time'])) {
+        $param .= '&from_time=' . $_REQUEST['from_time'];
+    }
+    if (isset($_REQUEST['until_time'])) {
+        $param .= '&until_time=' . $_REQUEST['until_time'];
+    }
 
     $max_visible_pages = 10;
     $step_pages = 10;

@@ -274,25 +274,52 @@ ORDER BY
         $until_time = htmlspecialchars(strip_tags($until_time));
 
         // number of conferences for time period (if given)
-        // NB we need to cross check with first occurrence of "bridge selected"
-        // as in Jicofo logs there is no way to get the time for conference ID creation
+        // FIXME sometimes there is no start/end time, find a way around this
         $sql = "
-SELECT COUNT(c.conference_id) as conferences
-FROM
-    conferences c
-LEFT JOIN (
-    SELECT ce.conference_id, MIN(ce.time) as first_event_time
-    FROM conference_events ce
-    WHERE ce.conference_event = 'bridge selected'
-    GROUP BY ce.conference_id
-) AS first_event ON c.conference_id = first_event.conference_id
-LEFT JOIN
-    conference_events ce ON c.conference_id = ce.conference_id
-WHERE
-    (ce.time >= '%s 00:00:00' AND ce.time <= '%s 23:59:59')
-AND (ce.conference_event = 'conference created'
-    OR (ce.conference_event = 'bridge selected' AND ce.time = first_event.first_event_time)
-)";
+SELECT COUNT(*) AS conferences
+    FROM (
+    SELECT DISTINCT
+        (SELECT COALESCE
+            (
+                (SELECT ce.time
+                    FROM conference_events ce
+                    WHERE
+                        ce.conference_id = c.conference_id
+                        AND
+                        ce.conference_event = 'conference created'
+                ),
+                (SELECT ce.time
+                    FROM conference_events ce
+                    WHERE
+                        ce.conference_id = c.conference_id
+                        AND
+                        ce.conference_event = 'bridge selected'
+                )
+            )
+        ) AS start,
+        (SELECT COALESCE
+            (
+                (SELECT ce.time
+                    FROM conference_events ce
+                    WHERE
+                        ce.conference_id = c.conference_id
+                        AND
+                        (ce.conference_event = 'conference expired' OR ce.conference_event = 'conference stopped')
+                ),
+                (SELECT pe.time
+                    FROM participant_events pe
+                    WHERE
+                        pe.event_param = c.conference_id
+                        ORDER BY pe.time DESC
+                        LIMIT 1
+                )
+            )
+        ) AS end
+        FROM conferences c
+        JOIN
+            conference_events ce ON c.conference_id = ce.conference_id
+        WHERE (start >= '%s 00:00:00' AND end <= '%s 23:59:59')
+    ) AS subquery";
 
         $sql = sprintf($sql, $from_time, $until_time);
 
