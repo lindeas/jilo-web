@@ -17,9 +17,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result) {
         $_SESSION["agent{$agent}_cache"] = $result;
         $_SESSION["agent{$agent}_cache_time"] = time();  // store the cache time
-        echo json_encode(['status' => 'success']);
+        echo json_encode([
+            'status'    => 'success',
+            'message'   => "Cache for agent {$agent} is stored."
+        ]);
+    } elseif ($result === null && !empty($agent)) {
+        unset($_SESSION["agent{$agent}_cache"]);
+        unset($_SESSION["agent{$agent}_cache_time"]);
+        echo json_encode([
+            'status'    => 'success',
+            'message'   => "Cache for agent {$agent} is cleared."
+        ]);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid data']);
+        echo json_encode([
+            'status'    => 'error',
+            'message'   => 'Invalid data'
+        ]);
     }
 
 //// if it's a GET request, it's read/load from cache

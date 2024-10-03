@@ -2,6 +2,8 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
     // FIXME make use of force variable
 
     let counter = 0;
+    const loadCacheButton = document.getElementById('agent' + agent_id + '-cache');
+    const clearCacheButton = document.getElementById('agent' + agent_id + '-clear');
     const resultElement = document.getElementById("result" + agent_id);
     const cacheInfoElement = document.getElementById("cacheInfo" + agent_id);
 
@@ -56,14 +58,21 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
                         // show the result in the html
                         resultElement.innerHTML = JSON.stringify(result, null, 2);
 
-                        // Show the cache timestamp from the session
+                        // get the cache timestamp from the session
                         const now = Date.now();
                         const cacheTimestamp = new Date(now);
 
-                        // Display the cache retrieval date and time
+                        // display the cache retrieval date and time
                         const formattedDate = cacheTimestamp.toLocaleDateString();
                         const formattedTime = cacheTimestamp.toLocaleTimeString();
+                        cacheInfoElement.style.display = '';
                         cacheInfoElement.innerHTML = `cache refreshed on ${formattedDate} at ${formattedTime}`;
+
+                        // show the cache buttons
+                        loadCacheButton.disabled = false;
+                        loadCacheButton.style.display = '';
+                        clearCacheButton.disabled = false;
+                        clearCacheButton.style.display = '';
 
                         // send the result to PHP to store in session
                         saveResultToSession(result, agent_id);
@@ -162,6 +171,27 @@ function loadCache(agent_id) {
     };
 
     xhr.send();
+}
+
+
+// clear cache
+function clearCache(agent_id) {
+    const loadCacheButton = document.getElementById('agent' + agent_id + '-cache');
+    const clearCacheButton = document.getElementById('agent' + agent_id + '-clear');
+    const cacheInfoElement = document.getElementById('cacheInfo' + agent_id);
+    const resultElement = document.getElementById("result" + agent_id);
+
+    saveResultToSession(null, agent_id);
+
+    // hides the cache buttons
+    // FIXME add a check whether the saveResult function was successful
+    loadCacheButton.disabled = true;
+    loadCacheButton.style.display = 'none';
+    clearCacheButton.disabled = true;
+    clearCacheButton.style.display = 'none';
+    cacheInfoElement.innerHTML = '';
+    cacheInfoElement.style.display = 'none';
+    resultElement.innerHTML = 'click a button to to display data from the agent.';
 }
 
 

@@ -113,8 +113,8 @@ class Agent {
 
     // check for agent cache
     public function checkAgentCache($agent_id) {
-        $agent_cache_name = $agent_id . '_cache';
-        $agent_cache_time = $agent_id . '_time';
+        $agent_cache_name = 'agent' . $agent_id . '_cache';
+        $agent_cache_time = 'agent' . $agent_id . '_time';
         return isset($_SESSION[$agent_cache_name]) && isset($_SESSION[$agent_cache_time]) && (time() - $_SESSION[$agent_cache_time] < 600);
     }
 
@@ -155,8 +155,8 @@ class Agent {
 
         // we need agent details for URL and JWT token
         $agent = $this->getAgentDetails($agent_id);
-        $agent_cache_name = $agent_id . '_cache';
-        $agent_cache_time = $agent_id . '_time';
+        $agent_cache_name = 'agent' . $agent_id . '_cache';
+        $agent_cache_time = 'agent' . $agent_id . '_time';
 
         // check if the cache is still valid, unless force-refresh is requested
         if (!$force && this->checkAgentCache($agent_id)) {
@@ -192,6 +192,12 @@ class Agent {
         return $response;
     }
 
+
+    // clear agent cache
+    public function clearAgentCache($agent_id) {
+        $_SESSION["agent{$agent_id}_cache"] = '';
+        $_SESSION["agent{$agent_id}_cache_time"] = '';
+    }
 
 }
 
