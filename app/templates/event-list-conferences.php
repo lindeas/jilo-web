@@ -48,7 +48,12 @@
                             <tbody>
 <?php     foreach ($widget['table_records'] as $row) { ?>
                                 <tr>
-<?php        foreach ($row as $key => $column) {
+<?php       $stats_id = false;
+            $participant_ip = false;
+            if (isset($row['event']) && $row['event'] === 'stats_id') $stats_id = true;
+            if (isset($row['event']) && $row['event'] === 'pair selected') $participant_ip = true;
+
+            foreach ($row as $key => $column) {
                     if ($key === 'conference ID' && isset($conferenceId) && $conferenceId === $column) { ?>
                                     <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
 <?php               } elseif ($key === 'conference ID') { ?>
@@ -57,10 +62,16 @@
                                     <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
 <?php               } elseif ($key === 'conference name') { ?>
                                     <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php               } elseif ($key === 'participant ID') { ?>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php               } elseif ($stats_id && $key === 'parameter') { ?>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php               } elseif ($participant_ip && $key === 'parameter') { ?>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
 <?php               } else { ?>
                                     <td><?= htmlspecialchars($column ?? '') ?></td>
 <?php               }
-                } ?>
+            } ?>
                                 </tr>
 <?php     } ?>
                             </tbody>
