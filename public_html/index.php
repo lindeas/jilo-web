@@ -15,7 +15,7 @@
 // flush it later only when there is no redirect
 ob_start();
 
-// sanitize all vars that may end up in URLs or forms
+// sanitize all input vars that may end up in URLs or forms
 require '../app/helpers/sanitize.php';
 
 require '../app/helpers/errors.php';

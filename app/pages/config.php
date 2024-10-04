@@ -17,12 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //    $content = file_get_contents($config_file);
 //    $updatedContent = $content;
 
-    // sanitize
-    $type = htmlspecialchars($_POST['type']);
-    $url = htmlspecialchars($_POST['url']);
-    $secret_key = htmlspecialchars($_POST['secret_key']);
-    $name = htmlspecialchars($_POST['name']);
-
     // new agent adding
     if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'agent') {
         $newAgent = [

@@ -2,14 +2,14 @@
                 <!-- user profile -->
                 <div class="card text-center w-50 mx-auto">
 
-                    <p class="h4 card-header">Profile of <?= $userDetails[0]['username'] ?></p>
+                    <p class="h4 card-header">Profile of <?= htmlspecialchars($userDetails[0]['username']) ?></p>
                     <div class="card-body">
 
                         <div class="row">
 
                             <div class="col-md-4 avatar-container">
                                 <div>
-                                    <img class="avatar-img" src="<?= $app_root . htmlspecialchars($avatar) ?>" alt="avatar" />
+                                    <img class="avatar-img" src="<?= htmlspecialchars($app_root) . htmlspecialchars($avatar) ?>" alt="avatar" />
                                 </div>
                             </div>
 
@@ -20,7 +20,7 @@
                                         <label class="form-label"><small>username:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <?= $userDetails[0]['username'] ?>
+                                        <?= htmlspecialchars($userDetails[0]['username']) ?>
                                     </div>
                                 </div-->
 
@@ -29,7 +29,7 @@
                                         <label class="form-label"><small>name:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <?= $userDetails[0]['name'] ?>
+                                        <?= htmlspecialchars($userDetails[0]['name']) ?>
                                     </div>
                                 </div>
 
@@ -38,7 +38,7 @@
                                         <label class="form-label"><small>email:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <?= $userDetails[0]['email'] ?>
+                                        <?= htmlspecialchars($userDetails[0]['email']) ?>
                                     </div>
                                 </div>
 
@@ -48,7 +48,7 @@
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
 <?php if (isset($userDetails[0]['timezone'])) { ?>
-                                        <?= $userDetails[0]['timezone'] ?>&nbsp;&nbsp;<span style="font-size: 0.66em;">(<?= getUTCOffset($userDetails[0]['timezone']) ?>)</span>
+                                        <?= htmlspecialchars($userDetails[0]['timezone']) ?>&nbsp;&nbsp;<span style="font-size: 0.66em;">(<?= htmlspecialchars(getUTCOffset($userDetails[0]['timezone'])) ?>)</span>
 <?php } ?>
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@
                                         <label class="form-label"><small>bio:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <textarea class="scroll-box" rows="10" readonly><?= $userDetails[0]['bio'] ?? '' ?></textarea>
+                                        <textarea class="scroll-box" rows="10" readonly><?= htmlspecialchars($userDetails[0]['bio'] ?? '') ?></textarea>
                                     </div>
                                 </div>
 
@@ -68,7 +68,7 @@
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
 <?php foreach ($userRights as $right) { ?>
-                                        <?= $right['right_name'] ?>
+                                        <?= htmlspecialchars($right['right_name']) ?>
                                         <br />
 <?php } ?>
                                     </div>
@@ -77,7 +77,7 @@
                             </div>
 
                                 <p>
-                                    <a href="<?= $app_root ?>?page=profile&action=edit" class="btn btn-primary">Edit</a>
+                                    <a href="<?= htmlspecialchars($app_root) ?>?page=profile&action=edit" class="btn btn-primary">Edit</a>
                                 </p>
 
                         </div>

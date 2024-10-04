@@ -2,7 +2,7 @@
                 <div class="row">
 
 <?php if ($widget['collapsible'] === true) { ?>
-                    <a style="text-decoration: none;" data-toggle="collapse" href="#collapse<?= $widget['name'] ?>" role="button" aria-expanded="true" aria-controls="collapse<?= $widget['name'] ?>">
+                    <a style="text-decoration: none;" data-toggle="collapse" href="#collapse<?= htmlspecialchars($widget['name']) ?>" role="button" aria-expanded="true" aria-controls="collapse<?= htmlspecialchars($widget['name']) ?>">
                         <div class="card w-auto bg-light card-body"  style="flex-direction: row;"><?= $widget['title'] ?></div>
 <?php } else { ?>
                     <div class="card w-auto bg-light border-light card-body"  style="flex-direction: row;"><?= $widget['title'] ?></div>
@@ -15,10 +15,10 @@
 
                 </div>
 
-                <!-- widget "<?= $widget['name']; ?>" -->
-                <div class="collapse show" id="collapse<?= $widget['name'] ?>">
+                <!-- widget "<?= htmlspecialchars($widget['name']) ?>" -->
+                <div class="collapse show" id="collapse<?= htmlspecialchars($widget['name']) ?>">
 <?php if ($time_range_specified) { ?>
-                    <p class="m-3">time period: <strong><?= $from_time ?> - <?= $until_time ?></strong></p>
+                    <p class="m-3">time period: <strong><?= htmlspecialchars($from_time) ?> - <?= htmlspecialchars($until_time) ?></strong></p>
 <?php } ?>
                     <div class="mb-5">
 <?php if ($widget['full'] === true) { ?>
@@ -27,7 +27,7 @@
                                 <tr>
                                     <th scope="col"></th>
 <?php     foreach ($widget['records'] as $record) { ?>
-                                    <th scope="col"><?= $record['table_headers'] ?></th>
+                                    <th scope="col"><?= htmlspecialchars($record['table_headers']) ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>
@@ -36,7 +36,7 @@
                                     <td>conferences</td>
 <?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['conferences'])) { ?>
-                                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= $record['conferences'] ?></a> <?php } else { ?>
+                                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences&from_time=<?= htmlspecialchars($record['from_time']) ?>&until_time=<?= htmlspecialchars($record['until_time']) ?>"><?= htmlspecialchars($record['conferences']) ?></a> <?php } else { ?>
                                         0<?php } ?>
                                     </td>
 <?php     } ?>
@@ -45,7 +45,7 @@
                                     <td>participants</td>
 <?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['participants'])) { ?>
-                                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= $record['participants'] ?></a> <?php } else { ?>
+                                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=participants&from_time=<?= htmlspecialchars($record['from_time']) ?>&until_time=<?= htmlspecialchars($record['until_time']) ?>"><?= htmlspecialchars($record['participants']) ?></a> <?php } else { ?>
                                         0<?php } ?>
                                     </td>
 <?php     } ?>
@@ -57,4 +57,4 @@
 <?php } ?>
                     </div>
                 </div>
-                <!-- /widget "<?= $widget['name']; ?>" -->
+                <!-- /widget "<?= htmlspecialchars($widget['name']) ?>" -->

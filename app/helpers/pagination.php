@@ -26,7 +26,7 @@
     $step_pages = 10;
 
     if ($browse_page > 1) {
-        echo '<span><a href="' . $url . '&p=1">first</a></span>';
+        echo '<span><a href="' . htmlspecialchars($url) . '&p=1">first</a></span>';
     } else {
         echo '<span>first</span>';
     }
@@ -47,20 +47,20 @@
             if ($i === $browse_page) {
                 // current page, no link
                 if ($browse_page > 1) {
-                    echo '<span><a href="' . $app_root . '?platform=' . $platform_id . '&page=' . $page . $param . '&p=' . ($browse_page -1) . '"><<</a></span>';
+                    echo '<span><a href="' . htmlspecialchars($app_root) . '?platform=' . htmlspecialchars($platform_id) . '&page=' . htmlspecialchars($page) . htmlspecialchars($param) . '&p=' . (htmlspecialchars($browse_page) -1) . '"><<</a></span>';
                 } else {
                     echo '<span><<</span>';
                 }
-                echo '[' . $i . ']';
+                echo '[' . htmlspecialchars($i) . ']';
 
                 if ($browse_page < $page_count) {
-                    echo '<span><a href="' . $app_root . '?platform=' . $platform_id . '&page=' . $page . $param . '&p=' . ($browse_page +1) . '">>></a></span>';
+                    echo '<span><a href="' . htmlspecialchars($app_root) . '?platform=' . htmlspecialchars($platform_id) . '&page=' . htmlspecialchars($page) . htmlspecialchars($param) . '&p=' . (htmlspecialchars($browse_page) +1) . '">>></a></span>';
                 } else {
                     echo '<span>>></span>';
                 }
             } else {
                 // other pages
-                echo '<span><a href="' . $app_root . '?platform=' . $platform_id . '&page=' . $page . $param . '&p=' . $i . '">[' . $i . ']</a></span>';
+                echo '<span><a href="' . htmlspecialchars($app_root) . '?platform=' . htmlspecialchars($platform_id) . '&page=' . htmlspecialchars($page) . htmlspecialchars($param) . '&p=' . htmlspecialchars($i) . '">[' . htmlspecialchars($i) . ']</a></span>';
             }
         // show ellipses between distant pages
         } elseif (
@@ -72,7 +72,7 @@
     }
 
     if ($browse_page < $page_count) {
-        echo '<span><a href="' . $app_root . '?platform=' . $platform_id . '&page=' . $page . $param . '&p=' . ($page_count) . '">last</a></span>';
+        echo '<span><a href="' . htmlspecialchars($app_root) . '?platform=' . htmlspecialchars($platform_id) . '&page=' . htmlspecialchars($page) . htmlspecialchars($param) . '&p=' . (htmlspecialchars($page_count)) . '">last</a></span>';
     } else {
         echo '<span>last</span>';
     }

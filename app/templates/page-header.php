@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="<?= $app_root ?>static/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="<?= $app_root ?>static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/main.css">
 <?php if ($page === 'logs') { ?>
-    <link rel="stylesheet" type="text/css" href="<?= $app_root ?>static/css/logs.css">
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/logs.css">
 <?php } ?>
 <?php if ($page === 'profile') { ?>
-    <link rel="stylesheet" type="text/css" href="<?= $app_root ?>static/css/profile.css">
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/profile.css">
 <?php } ?>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -24,10 +24,10 @@
         })();
     </script>
 <?php if ($page === 'agents') { ?>
-    <script src="<?= $app_root ?>static/agents.js"></script>
+    <script src="<?= htmlspecialchars($app_root) ?>static/agents.js"></script>
 <?php } ?>
     <title>Jilo Web</title>
-    <link rel="icon" type="image/x-icon" href="<?= $app_root ?>static/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars($app_root) ?>static/favicon.ico">
 </head>
 
 <body>

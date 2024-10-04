@@ -2,15 +2,15 @@
                 <!-- user profile -->
                 <div class="card text-center w-50 mx-auto">
 
-                    <p class="h4 card-header">Profile of <?= $userDetails[0]['username'] ?></p>
+                    <p class="h4 card-header">Profile of <?= htmlspecialchars($userDetails[0]['username']) ?></p>
                     <div class="card-body">
 
-                        <form method="POST" action="<?= $app_root ?>?page=profile" enctype="multipart/form-data">
+                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=profile" enctype="multipart/form-data">
                             <div class="row">
                                 <p class="border rounded bg-light mb-4"><small>edit the profile fields</small></p>
                                 <div class="col-md-4 avatar-container">
                                     <div class="avatar-wrapper">
-                                        <img class="avatar-img" src="<?= $app_root . htmlspecialchars($avatar) ?>" alt="avatar" />
+                                        <img class="avatar-img" src="<?= htmlspecialchars($app_root) . htmlspecialchars($avatar) ?>" alt="avatar" />
         <div class="avatar-btn-container">
 
                                         <label for="avatar-upload" class="avatar-btn avatar-btn-select btn btn-primary">
@@ -36,7 +36,7 @@
                                             <span class="text-danger" style="margin-right: -12px;">*</span>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="username" value="<?= $userDetails[0]['username'] ?>" required />
+                                            <input class="form-control" type="text" name="username" value="<?= htmlspecialchars($userDetails[0]['username']) ?>" required />
                                         </div>
                                     </div-->
 
@@ -45,7 +45,7 @@
                                             <label for="name" class="form-label"><small>name:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="name" value="<?= $userDetails[0]['name'] ?>" autofocus />
+                                            <input class="form-control" type="text" name="name" value="<?= htmlspecialchars($userDetails[0]['name']) ?>" autofocus />
                                         </div>
                                     </div>
 
@@ -54,7 +54,7 @@
                                             <label for="email" class="form-label"><small>email:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="email" value="<?= $userDetails[0]['email'] ?>" />
+                                            <input class="form-control" type="text" name="email" value="<?= htmlspecialchars($userDetails[0]['email']) ?>" />
                                         </div>
                                     </div>
 
@@ -65,8 +65,8 @@
                                         <div class="col-md-8 text-start bg-light">
                                             <select class="form-control" name="timezone" id="timezone">
 <?php foreach ($allTimezones as $timezone) { ?>
-                                                <option value="<?= $timezone ?>" <?= $timezone === $userTimezone ? 'selected' : '' ?>>
-                                                    <?= $timezone ?>&nbsp;&nbsp;(<?= getUTCOffset($timezone) ?>)
+                                                <option value="<?= htmlspecialchars($timezone) ?>" <?= $timezone === $userTimezone ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($timezone) ?>&nbsp;&nbsp;(<?= htmlspecialchars(getUTCOffset($timezone)) ?>)
                                                 </option>
 <?php } ?>
                                             </select>
@@ -78,7 +78,7 @@
                                             <label for="bio" class="form-label"><small>bio:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <textarea class="form-control" name="bio" rows="10"><?= $userDetails[0]['bio'] ?? '' ?></textarea>
+                                            <textarea class="form-control" name="bio" rows="10"><?= htmlspecialchars($userDetails[0]['bio'] ?? '') ?></textarea>
                                         </div>
                                     </div>
 
@@ -98,7 +98,7 @@
     } ?>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="rights[]" value="<?= htmlspecialchars($right['right_id']) ?>" id="right_<?= htmlspecialchars($right['right_id']) ?>" <?= $isChecked ? 'checked' : '' ?> />
-                                                <label class="form-check-label" for="right_<?= htmlspecialchars($right['right_id']) ?>"><?= $right['right_name'] ?></label>
+                                                <label class="form-check-label" for="right_<?= htmlspecialchars($right['right_id']) ?>"><?= htmlspecialchars($right['right_name']) ?></label>
                                             </div>
 <?php } ?>
                                         </div>
@@ -107,7 +107,7 @@
                                 </div>
 
                                 <p>
-                                    <a href="<?= $app_root ?>?page=profile" class="btn btn-secondary">Cancel</a>
+                                    <a href="<?= htmlspecialchars($app_root) ?>?page=profile" class="btn btn-secondary">Cancel</a>
                                     <input type="submit" class="btn btn-primary" value="Save" />
                                 </p>
 
@@ -123,7 +123,7 @@
                                                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <img class="avatar-img" src="<?= $app_root . htmlspecialchars($avatar) ?>" alt="avatar" />
+                                                        <img class="avatar-img" src="<?= htmlspecialchars($app_root) . htmlspecialchars($avatar) ?>" alt="avatar" />
                                                         <br />
                                                         Are you sure you want to delete your avatar?
                                                         <br />
@@ -131,7 +131,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                        <form id="remove-avatar-form" data-action="remove-avatar" method="POST" action="<?= $app_root ?>?page=profile&action=remove&item=avatar">
+                                                        <form id="remove-avatar-form" data-action="remove-avatar" method="POST" action="<?= htmlspecialchars($app_root) ?>?page=profile&action=remove&item=avatar">
                                                             <button type="button" class="btn btn-danger" id="confirm-delete">Delete Avatar</button>
                                                         </form>
                                                     </div>
@@ -156,7 +156,7 @@ document.getElementById('avatar-upload').addEventListener('change', function(eve
 // Avatar file size and type control
 document.getElementById('avatar-upload').addEventListener('change', function() {
     const maxFileSize = 500 * 1024; // 500 KB in bytes
-    const currentAvatar = '<?= $app_root . htmlspecialchars($avatar) ?>'; // current avatar
+    const currentAvatar = '<?= htmlspecialchars($app_root) . htmlspecialchars($avatar) ?>'; // current avatar
     const file = this.files[0];
 
     if (file) {
