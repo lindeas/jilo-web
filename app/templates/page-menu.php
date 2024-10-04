@@ -17,7 +17,7 @@
 ?>
                 <li style="margin-right: 3px;">
                     <a style="background-color: #111;" href="<?= htmlspecialchars($platform_switch_url) ?>">
-                        <?= htmlspecialchars($platform['name']) ?>
+                        <?= $platform['name'] ?>
                     </a>
                 </li>
 <?php } ?>

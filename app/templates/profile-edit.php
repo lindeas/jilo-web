@@ -98,7 +98,7 @@
     } ?>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="rights[]" value="<?= htmlspecialchars($right['right_id']) ?>" id="right_<?= htmlspecialchars($right['right_id']) ?>" <?= $isChecked ? 'checked' : '' ?> />
-                                                <label class="form-check-label" for="right_<?= htmlspecialchars($right['right_id']) ?>"><?= htmlspecialchars($right['right_name']) ?></label>
+                                                <label class="form-check-label" for="right_<?= htmlspecialchars($right['right_id']) ?>"><?= $right['right_name'] ?></label>
                                             </div>
 <?php } ?>
                                         </div>

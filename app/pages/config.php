@@ -17,12 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //    $content = file_get_contents($config_file);
 //    $updatedContent = $content;
 
+    // sanitize
+    $type = htmlspecialchars($_POST['type']);
+    $url = htmlspecialchars($_POST['url']);
+    $secret_key = htmlspecialchars($_POST['secret_key']);
+    $name = htmlspecialchars($_POST['name']);
+
     // new agent adding
     if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'agent') {
         $newAgent = [
-            'type_id'       => $_POST['type'],
-            'url'           => $_POST['url'],
-            'secret_key'	=> $_POST['secret_key'],
+            'type_id'       => $type,
+            'url'           => $url,
+            'secret_key'	=> $secret_key,
         ];
         $result = $agentObject->addAgent($platform_id, $newAgent);
         if ($result === true) {
@@ -34,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // new platform adding
     } elseif (isset($_POST['new']) && $_POST['new'] === 'true') {
         $newPlatform = [
-            'name'          => $_POST['name'],
+            'name'          => $name,
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
@@ -58,9 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['agent'])) {
         $updatedAgent = [
             'id'            => $agent,
-            'agent_type_id' => $_POST['type'],
-            'url'           => $_POST['url'],
-            'secret_key'	=> $_POST['secret_key'],
+            'agent_type_id' => $type,
+            'url'           => $url,
+            'secret_key'	=> $secret_key,
         ];
         $result = $agentObject->editAgent($platform_id, $updatedAgent);
         if ($result === true) {
@@ -73,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $platform = $_POST['platform'];
         $updatedPlatform = [
-            'name'		    => $_POST['name'],
+            'name'		    => $name,
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];

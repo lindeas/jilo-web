@@ -24,7 +24,7 @@
                             <thead class="thead-dark">
                                 <tr>
 <?php     foreach ($widget['table_headers'] as $header) { ?>
-                                    <th scope="col"><?= htmlspecialchars($header) ?></th>
+                                    <th scope="col"><?= $header ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>
@@ -37,31 +37,31 @@
             if (isset($row['event']) && $row['event'] === 'pair selected') $participant_ip = true;
             foreach ($row as $key => $column) {
                     if ($key === 'conference ID' && isset($conferenceId) && $conferenceId === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($key === 'conference ID') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&id=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($key === 'conference name' && isset($conferenceName) && $conferenceName === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($key === 'conference name') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($key === 'participant ID' && isset($participantId) && $participantId === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($key === 'participant ID') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&id=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($key === 'component ID') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=components&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=components&id=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($stats_id && $key === 'parameter' && isset($participantName) && $participantName === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($stats_id && $key === 'parameter') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&name=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($participant_ip && $key === 'parameter' && isset($participantIp) && $participantIp === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($participant_ip && $key === 'parameter') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($key === 'component') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=components&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=components&name=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } else { ?>
-                                    <td><?= htmlspecialchars($column ?? '') ?></td>
+                                    <td><?= $column ?? '' ?></td>
 <?php               }
                 } ?>
                                 </tr>

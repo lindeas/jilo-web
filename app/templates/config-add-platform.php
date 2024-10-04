@@ -4,7 +4,7 @@
                     <p class="h4 card-header">Add new Jitsi platform</p>
                     <div class="card-body">
                         <!--p class="card-text">add new platform:</p-->
-                        <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
+                        <form method="POST" action="<?= $app_root ?>?platform=<?= $platform_id ?>&page=config">
 
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">

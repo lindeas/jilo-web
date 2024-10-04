@@ -15,6 +15,9 @@
 // flush it later only when there is no redirect
 ob_start();
 
+// sanitize all vars that may end up in URLs or forms
+require '../app/helpers/sanitize.php';
+
 require '../app/helpers/errors.php';
 
 // error reporting, comment out in production
@@ -65,21 +68,10 @@ if ($config_file) {
     die('Config file not found');
 }
 
-$app_root = $config['folder'];
+$app_root = htmlspecialchars($config['folder']);
 
 session_name('jilo');
 session_start();
-
-if (isset($_REQUEST['page'])) {
-    $page = $_REQUEST['page'];
-} else {
-    $page = 'dashboard';
-}
-if (isset($_REQUEST['item'])) {
-    $item = $_REQUEST['item'];
-} else {
-    $item = '';
-}
 
 // check if logged in
 unset($currentUser);
@@ -94,14 +86,6 @@ if (isset($_COOKIE['username'])) {
 if ( !isset($_COOKIE['username']) && ($page !== 'login' && $page !== 'register') ) {
     header('Location: index.php?page=login');
     exit();
-}
-
-// we use 'notice' for all non-critical messages and 'error' for errors
-if (isset($_SESSION['notice'])) {
-    $notice = $_SESSION['notice'];
-}
-if (isset($_SESSION['error'])) {
-    $error = $_SESSION['error'];
 }
 
 // connect to db of Jilo Web
@@ -121,8 +105,10 @@ $platformObject = new Platform($dbWeb);
 $platformsAll = $platformObject->getPlatformDetails();
 
 // by default we connect ot the first configured platform
-$firstPlatform = $platformsAll[0]['id'];
-$platform_id = $_REQUEST['platform'] ?? $firstPlatform;
+if ($platform_id == '') {
+    $platform_id = $platformsAll[0]['id'];
+}
+
 $platformDetails = $platformObject->getPlatformDetails($platform_id);
 
 // init user functions

@@ -27,7 +27,7 @@
                                 <tr>
                                     <th scope="col"></th>
 <?php     foreach ($widget['records'] as $record) { ?>
-                                    <th scope="col"><?= htmlspecialchars($record['table_headers']) ?></th>
+                                    <th scope="col"><?= $record['table_headers'] ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>
@@ -36,7 +36,7 @@
                                     <td>conferences</td>
 <?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['conferences'])) { ?>
-                                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['conferences']) ?></a> <?php } else { ?>
+                                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= $record['conferences'] ?></a> <?php } else { ?>
                                         0<?php } ?>
                                     </td>
 <?php     } ?>
@@ -45,7 +45,7 @@
                                     <td>participants</td>
 <?php     foreach ($widget['records'] as $record) { ?>
                                     <td><?php if (!empty($record['participants'])) { ?>
-                                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= htmlspecialchars($record['participants']) ?></a> <?php } else { ?>
+                                        <a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&from_time=<?= $record['from_time'] ?>&until_time=<?= $record['until_time'] ?>"><?= $record['participants'] ?></a> <?php } else { ?>
                                         0<?php } ?>
                                     </td>
 <?php     } ?>

@@ -1,10 +1,10 @@
 
                 <!-- widget "agents" -->
                 <div class="card text-center w-50 mx-auto">
-                    <p class="h4 card-header">Add new Jilo Agent to Jitsi platform "<strong><?= htmlspecialchars($platformDetails[0]['name']) ?></strong>"</p>
+                    <p class="h4 card-header">Add new Jilo Agent to Jitsi platform "<strong><?= $platformDetails[0]['name'] ?></strong>"</p>
                     <div class="card-body">
                         <!--p class="card-text">add new agent:</p-->
-                        <form method="POST" action="<?= $app_root ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
+                        <form method="POST" action="<?= $app_root ?>?platform=<?= $platform_id ?>&page=config">
 
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">

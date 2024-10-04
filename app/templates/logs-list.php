@@ -24,7 +24,7 @@
                             <thead class="thead-dark">
                                 <tr>
 <?php     foreach ($widget['table_headers'] as $header) { ?>
-                                    <th scope="col" class="th-<?= htmlspecialchars($header) ?>"><?= htmlspecialchars($header) ?></th>
+                                    <th scope="col" class="th-<?= $header ?>"><?= $header ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>
@@ -34,9 +34,9 @@
 <?php
             foreach ($row as $key => $column) {
                     if ($key === 'user ID' && isset($user_id) && $user_id === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } else { ?>
-                                    <td><?= htmlspecialchars($column ?? '') ?></td>
+                                    <td><?= $column ?? '' ?></td>
 <?php               }
                 } ?>
                                 </tr>

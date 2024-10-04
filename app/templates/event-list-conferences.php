@@ -6,9 +6,9 @@
                     <div class="card w-auto bg-light border-light card-body text-right" style="text-align: right;">
                         <form method="POST" id="filter_form" action="?platform=<?= $platform_id?>&page=<?= $page ?>">
                             <label for="from_time">from</label>
-                            <input type="date" id="from_time" name="from_time"<?php if (isset($_REQUEST['from_time'])) echo " value=\"" . $_REQUEST['from_time'] . "\"" ?> />
+                            <input type="date" id="from_time" name="from_time"<?php if (isset($_REQUEST['from_time'])) echo " value=\"" . $from_time . "\"" ?> />
                             <label for="until_time">until</label>
-                            <input type="date" id="until_time" name="until_time"<?php if (isset($_REQUEST['until_time'])) echo " value=\"" . $_REQUEST['until_time'] . "\"" ?> />
+                            <input type="date" id="until_time" name="until_time"<?php if (isset($_REQUEST['until_time'])) echo " value=\"" . $until_time . "\"" ?> />
                             <input type="text" name="id" placeholder="conference ID"<?php if (isset($_REQUEST['id'])) echo " value=\"" . $_REQUEST['id'] . "\"" ?> />
                             <input type="text" name="name" placeholder="conference name"<?php if (isset($_REQUEST['name'])) echo " value=\"" . $_REQUEST['name'] . "\"" ?> />
                             <input type="button" onclick="clearFilter()" value="clear" />
@@ -41,7 +41,7 @@
                             <thead class="thead-dark">
                                 <tr>
 <?php     foreach ($widget['table_headers'] as $header) { ?>
-                                    <th scope="col"><?= htmlspecialchars($header) ?></th>
+                                    <th scope="col"><?= $header ?></th>
 <?php     } ?>
                                 </tr>
                             </thead>
@@ -55,21 +55,21 @@
 
             foreach ($row as $key => $column) {
                     if ($key === 'conference ID' && isset($conferenceId) && $conferenceId === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($key === 'conference ID') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&id=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($key === 'conference name' && isset($conferenceName) && $conferenceName === $column) { ?>
-                                    <td><strong><?= htmlspecialchars($column ?? '') ?></strong></td>
+                                    <td><strong><?= $column ?? '' ?></strong></td>
 <?php               } elseif ($key === 'conference name') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($key === 'participant ID') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&id=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&id=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($stats_id && $key === 'parameter') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&name=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } elseif ($participant_ip && $key === 'parameter') { ?>
-                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+                                    <td><a href="<?= $app_root ?>?platform=<?= $platform_id?>&page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= $column ?? '' ?></a></td>
 <?php               } else { ?>
-                                    <td><?= htmlspecialchars($column ?? '') ?></td>
+                                    <td><?= $column ?? '' ?></td>
 <?php               }
             } ?>
                                 </tr>
