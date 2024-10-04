@@ -68,7 +68,7 @@ if ($config_file) {
     die('Config file not found');
 }
 
-$app_root = htmlspecialchars($config['folder']);
+$app_root = $config['folder'];
 
 session_name('jilo');
 session_start();

@@ -66,7 +66,7 @@ class Database {
             $this->pdo = new PDO($dsn, $options['user'], $options['password'] ?? '');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            $error = getError('MySQL connection failed: ', $config['environment'], $e->getMessage());
+            $error = getError('MySQL connection failed: ', $e->getMessage(), $config['environment']);
         }
     }
 
