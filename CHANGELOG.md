@@ -8,12 +8,19 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Added support for managing Jilo Agents
+- Authenticating to Jilo Agents with JWT tokens with a shared secret key
+- Added Jilo Agent functionality to fetch data, cache it and manage the cache
 - Added more fields and avatar image to user profile
-- Added pagination for the longer listings
+- Added pagination (with ellipses) for the longer listings
 - Added initial support for application logs
 
 ### Changed
 - Jitsi platforms config moved from file to SQLite database
+
+### Fixed
+- All output HTML sanitized
+- Sanitized input forms data
+- Fixed error in calculation of monthly total conferences on front page
 
 #### Links
 - upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2...HEAD
