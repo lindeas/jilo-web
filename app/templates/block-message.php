@@ -1,7 +1,7 @@
 <?php if (isset($error)) { ?>
-        <div class="error"><?= htmlspecialchars($error) ?></div>
+        <div class="error"><?= $error ?></div>
 <?php } ?>
 
 <?php if (isset($notice)) { ?>
-        <div class="notice"><?= htmlspecialchars($notice) ?></div>
+        <div class="notice"><?= $notice ?></div>
 <?php } ?>

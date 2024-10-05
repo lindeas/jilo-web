@@ -14,13 +14,14 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                 <div class="sidebar-content card ml-3 mt-3">
                     <ul class="list-group">
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>statistics</small></p></li>
-
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=dashboard">
                             <li class="list-group-item<?php if ($page === 'dashboard') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-chart-line" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="general jitsi stats"></i>general stats
                             </li>
                         </a>
+
+                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>logs statistics</small></p></li>
+
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences">
                             <li class="list-group-item<?php if ($page === 'conferences') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-video" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="conferences"></i>conferences
@@ -37,24 +38,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jilo-web config</small></p></li>
-
-<?php if ($userObject->hasRight($user_id, 'view config file')) {?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>config
-                            </li>
-                        </a>
-<?php } ?>
-<?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
-                            <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs
-                            </li>
-                        </a>
-<?php } ?>
-
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>current Jitsi platform</small></p></li>
+                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>live data</small></p></li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=configjs">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'configjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
@@ -71,6 +55,29 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                                 <i class="fas fa-mask" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo agents"></i>jilo agents
                             </li>
                         </a>
+
+                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>system</small></p></li>
+
+<?php if ($userObject->hasRight($user_id, 'view config file')) {?>
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config">
+                            <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>config
+                            </li>
+                        </a>
+<?php } ?>
+<?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
+                            <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs
+                            </li>
+                        </a>
+<?php } ?>
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=help">
+                            <li class="list-group-item<?php if ($page === 'help') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="help"></i>help
+                            </li>
+                        </a>
+
                     </ul>
                 </div>
             </div>

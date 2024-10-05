@@ -13,14 +13,20 @@
 <?php if ( isset($_SESSION['username']) ) { ?>
 
 <?php foreach ($platformsAll as $platform) {
-    $platform_switch_url = switchPlatform($platform['id'])
+    $platform_switch_url = switchPlatform($platform['id']);
 ?>
                 <li style="margin-right: 3px;">
-                    <a style="background-color: #111;" href="<?= htmlspecialchars($platform_switch_url) ?>">
+<?php if ((isset($_REQUEST['platform']) || empty($_SERVER['QUERY_STRING'])) && $platform['id'] == $platform_id) { ?>
+                    <a style="background-color: #fff; border: 1px solid #111; color: #111; border-bottom-color: #fff; padding-bottom: 12px" href="#">
                         <?= htmlspecialchars($platform['name']) ?>
                     </a>
+<?php     } else { ?>
+                    <a href="<?= htmlspecialchars($platform_switch_url) ?>">
+                        <?= htmlspecialchars($platform['name']) ?>
+                    </a>
+<?php     } ?>
                 </li>
-<?php } ?>
+<?php   } ?>
 
 <?php } ?>
             </ul>
