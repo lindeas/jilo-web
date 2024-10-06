@@ -17,9 +17,9 @@
 ?>
                 <li style="margin-right: 3px;">
 <?php if ((isset($_REQUEST['platform']) || empty($_SERVER['QUERY_STRING'])) && $platform['id'] == $platform_id) { ?>
-                    <a style="background-color: #fff; border: 1px solid #111; color: #111; border-bottom-color: #fff; padding-bottom: 12px" href="#">
+                    <span style="background-color: #fff; border: 1px solid #111; color: #111; border-bottom-color: #fff; padding-bottom: 12px;">
                         <?= htmlspecialchars($platform['name']) ?>
-                    </a>
+                    </span>
 <?php     } else { ?>
                     <a href="<?= htmlspecialchars($platform_switch_url) ?>">
                         <?= htmlspecialchars($platform['name']) ?>

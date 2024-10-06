@@ -25,7 +25,7 @@
     color: white;
 }
 
-.menu-left li a, .menu-right li a {
+.menu-left li a, .menu-left li span, .menu-right li a {
     display: block;
     color: white;
     text-align: center;
