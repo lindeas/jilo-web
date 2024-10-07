@@ -183,3 +183,7 @@
     border-radius: 5px;
     overflow-x: auto;
 }
+
+.table-results, .filter-results {
+    font-size: 0.85em;
+}

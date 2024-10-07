@@ -22,7 +22,7 @@
 <?php } ?>
                     <div class="mb-5">
 <?php if ($widget['full'] === true) { ?>
-                        <table class="table table-striped table-hover table-bordered">
+                        <table class="table table-results table-striped table-hover table-bordered">
                             <thead class="thead-dark">
                                 <tr>
                                     <th scope="col"></th>

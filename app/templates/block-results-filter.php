@@ -1,7 +1,7 @@
 
                     <!-- Results filter -->
                     <div class="card w-auto bg-light border-light card-body text-right" style="text-align: right;">
-                        <form method="POST" id="filter_form" action="?platform=<?= htmlspecialchars($platform_id) ?>&page=<?= htmlspecialchars($page) ?>">
+                        <form method="POST" id="filter_form" class="filter-results" action="?platform=<?= htmlspecialchars($platform_id) ?>&page=<?= htmlspecialchars($page) ?>">
                             <label for="from_time">from</label>
                             <input type="date" id="from_time" name="from_time"<?php if (isset($_REQUEST['from_time'])) echo " value=\"" . htmlspecialchars($from_time) . "\"" ?> />
                             <label for="until_time">until</label>

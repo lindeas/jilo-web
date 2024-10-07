@@ -20,7 +20,7 @@
 <?php } ?>
                     <div class="mb-5">
 <?php if ($widget['full'] === true) { ?>
-                        <table class="table table-striped table-hover table-bordered">
+                        <table class="table table-results table-striped table-hover table-bordered">
                             <thead class="thead-dark">
                                 <tr>
 <?php     foreach ($widget['table_headers'] as $header) { ?>
@@ -60,6 +60,10 @@
                                     <td><a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=participants&ip=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
 <?php               } elseif ($key === 'component') { ?>
                                     <td><a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=components&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
+<?php
+                    // in general listings we don't show seconds and miliseconds
+                    } elseif ($key === 'start' || $key === 'end') { ?>
+                                    <td><?= htmlspecialchars(substr($column ?? '', 0, -7)) ?></td>
 <?php               } else { ?>
                                     <td><?= htmlspecialchars($column ?? '') ?></td>
 <?php               }
