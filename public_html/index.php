@@ -39,6 +39,7 @@ $allowed_urls = [
     'profile',
     'config',
     'logs',
+    'help',
 
     'login',
     'logout',

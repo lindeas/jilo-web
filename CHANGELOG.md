@@ -13,9 +13,11 @@ All notable changes to this project will be documented in this file.
 - Added more fields and avatar image to user profile
 - Added pagination (with ellipses) for the longer listings
 - Added initial support for application logs
+- Added help page
 
 ### Changed
 - Jitsi platforms config moved from file to SQLite database
+- Left sidebar menu items reordered
 
 ### Fixed
 - All output HTML sanitized

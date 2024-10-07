@@ -68,7 +68,7 @@
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
 <?php foreach ($userRights as $right) { ?>
-                                        <?= htmlspecialchars($right['right_name']) ?>
+                                        <?= htmlspecialchars($right['right_name'] ?? '') ?>
                                         <br />
 <?php } ?>
                                     </div>
