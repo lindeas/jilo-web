@@ -38,6 +38,19 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
+                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>graphs</small></p></li>
+
+                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=graphs">
+                            <li class="list-group-item<?php if ($page === 'graphs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-chart-bar" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="graphs"></i>graphs
+                            </li>
+                        </a>
+                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=latest">
+                            <li class="list-group-item<?php if ($page === 'latest') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="latest data"></i>latest data
+                            </li>
+                        </a>
+
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>live data</small></p></li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=configjs">
@@ -68,7 +81,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 <?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
                             <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs
+                                <i class="fas fa-shoe-prints" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs
                             </li>
                         </a>
 <?php } ?>

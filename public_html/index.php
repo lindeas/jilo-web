@@ -34,6 +34,9 @@ $allowed_urls = [
     'participants',
     'components',
 
+    'graphs',
+    'latest',
+
     'agents',
 
     'profile',
