@@ -42,7 +42,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=graphs">
                             <li class="list-group-item<?php if ($page === 'graphs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-chart-bar" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="graphs"></i>graphs
+                                <i class="fas fa-chart-bar" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="combined graphs"></i>combined graphs
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=latest">

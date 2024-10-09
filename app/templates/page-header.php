@@ -26,6 +26,11 @@
 <?php if ($page === 'agents') { ?>
     <script src="<?= htmlspecialchars($app_root) ?>static/agents.js"></script>
 <?php } ?>
+<?php if ($page === 'graphs') { ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+<?php } ?>
     <title>Jilo Web</title>
     <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars($app_root) ?>static/favicon.ico">
 </head>
