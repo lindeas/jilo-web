@@ -1,15 +1,19 @@
 
-<div>
-    <button onclick="setTimeRange('today')">today</button>
-    <button onclick="setTimeRange('last2days')">last 2 days</button>
-    <button onclick="setTimeRange('last7days')">last 7 days</button>
-    <button onclick="setTimeRange('thisMonth')">month</button>
-    <button onclick="setTimeRange('thisYear')">year</button>
+<div class="row">
+    <div class="card w-auto bg-light border-light card-body filter-results">
+        <div class="btn-group" role="group">
+            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('today')" value="today" />
+            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('last2days')" value="last 2 days" />
+            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('last7days')" value="last 7 days" />
+            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('thisMonth')" value="month" />
+            <input type="button" style="margin-right: 18px;" onclick="setTimeRange('thisYear')" value="year" />
 
-    <input type="date" id="start-date">
+            <input type="date" style="margin-right: 3px;" id="start-date">
 
-    <input type="date" id="end-date">
-    <button onclick="setCustomTimeRange()">custom range</button>
+            <input type="date" style="margin-right: 3px;" id="end-date">
+            <input type="button" onclick="setCustomTimeRange()" value="custom range" />
+        </div>
+    </div>
 </div>
 
 <script>
