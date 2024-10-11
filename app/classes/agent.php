@@ -210,6 +210,12 @@ class Agent {
         $_SESSION["agent{$agent_id}_cache_time"] = '';
     }
 
+
+    // get latest stored jilo agents data
+    public function getLatestData($platform_id, $agent_type, $metric_type) {
+        // retrieves data already stored in db from another function (or the jilo-server to-be)
+    }
+
 }
 
 ?>
