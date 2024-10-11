@@ -36,6 +36,8 @@ Bootstrap is used in this project and is licensed under the MIT License. See lic
 
 JQuery is used in this project and is licensed under the MIT License. See license-jquery file.
 
+Chart.js is used in this project and is licensed under the MIT License. See license-chartjs file.
+
 ## requirements
 
 - web server (deb: apache | nginx)

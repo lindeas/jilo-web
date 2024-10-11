@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 - Added pagination (with ellipses) for the longer listings
 - Added initial support for application logs
 - Added help page
+- Added support for graphs by Chart.js
+- Added "graphs" section in sidebar with graphs and latest data pages
 
 ### Changed
 - Jitsi platforms config moved from file to SQLite database
