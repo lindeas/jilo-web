@@ -1,4 +1,6 @@
 
+    <div class="container-fluid">
+
         <!-- Menu -->
         <div class="menu-container">
             <ul class="menu-left">

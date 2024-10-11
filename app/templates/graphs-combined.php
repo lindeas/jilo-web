@@ -2,16 +2,16 @@
 <div class="row">
     <div class="card w-auto bg-light border-light card-body filter-results">
         <div class="btn-group" role="group">
-            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('today')" value="today" />
-            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('last2days')" value="last 2 days" />
-            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('last7days')" value="last 7 days" />
-            <input type="button" style="margin-right: 3px;" onclick="setTimeRange('thisMonth')" value="month" />
-            <input type="button" style="margin-right: 18px;" onclick="setTimeRange('thisYear')" value="year" />
+            <input type="button" class="button" style="margin-right: 3px;" onclick="setTimeRange('today'); setActive(this)" value="today" />
+            <input type="button" class="button" style="margin-right: 3px;" onclick="setTimeRange('last2days'); setActive(this)" value="last 2 days" />
+            <input type="button" class="button active" style="margin-right: 3px;" onclick="setTimeRange('last7days'); setActive(this)" value="last 7 days" />
+            <input type="button" class="button" style="margin-right: 3px;" onclick="setTimeRange('thisMonth'); setActive(this)" value="month" />
+            <input type="button" class="button" style="margin-right: 18px;" onclick="setTimeRange('thisYear'); setActive(this)" value="year" />
 
             <input type="date" style="margin-right: 3px;" id="start-date">
 
             <input type="date" style="margin-right: 3px;" id="end-date">
-            <input type="button" onclick="setCustomTimeRange()" value="custom range" />
+            <input type="button" class="button" onclick="setCustomTimeRange(); setActive(this)" value="custom range" />
         </div>
     </div>
 </div>
@@ -117,6 +117,18 @@ function setCustomTimeRange() {
         graphObj.graph.update();
         updatePeriodLabel(graphObj.graph, graphObj.label); // Update the period label
     });
+}
+
+// Set the clicked button state to active
+function setActive(element) {
+    // Remove 'active' class from all buttons
+    var buttons = document.querySelectorAll('.button');
+    buttons.forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' class only to the clicked button
+    element.classList.add('active');
 }
 
 // Call setTimeRange('last7days') on page load to pre-load last 7 days by default

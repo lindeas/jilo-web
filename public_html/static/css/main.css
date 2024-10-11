@@ -187,3 +187,9 @@
 .table-results, .filter-results {
     font-size: 0.85em;
 }
+
+.button.active {
+    background-color: lightgray;
+    border: 1px solid gray;
+    border-radius: 4px;
+}
