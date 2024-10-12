@@ -11,7 +11,7 @@
             <input type="date" style="margin-right: 3px;" id="start-date">
 
             <input type="date" style="margin-right: 3px;" id="end-date">
-            <input type="button" class="button" onclick="setCustomTimeRange(); setActive(this)" value="custom range" />
+            <input type="button" id="custom_range" class="button" onclick="setCustomTimeRange(); setActive(this)" value="custom range" />
         </div>
     </div>
 </div>

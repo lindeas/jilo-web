@@ -73,6 +73,7 @@ var graph_<?= $data['graph_name'] ?> = new Chart(ctx, {
                     },
                     onZoom: function({ chart }) {
                         propagateZoom(chart); // Propagate the zoom to all graphs
+                        setActive(document.getElementById('custom_range'));
                     }
                 }
             },
