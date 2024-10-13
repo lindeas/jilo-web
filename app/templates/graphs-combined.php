@@ -1,4 +1,6 @@
 
+<hr /><p class="m-3">NB: This functionality is still under development. The data is just an example.</p><hr /><!-- FIXME remove when implemented -->
+
 <div class="row">
     <div class="card w-auto bg-light border-light card-body filter-results">
         <div class="btn-group" role="group">

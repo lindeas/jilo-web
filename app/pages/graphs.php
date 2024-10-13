@@ -1,18 +1,23 @@
 <?php
 
 // FIXME example data
+$one = date('Y-m-d',strtotime("-5 days"));
+$two = date('Y-m-d',strtotime("-4 days"));
+$three = date('Y-m-d',strtotime("-2 days"));
+$four = date('Y-m-d',strtotime("-1 days"));
+
 $graph[0]['data0'] = [
-    ['date' => '2024-10-06', 'value' => 10],
-    ['date' => '2024-10-07', 'value' => 20],
-    ['date' => '2024-10-10', 'value' => 15],
-    ['date' => '2024-10-11', 'value' => 25],
+    ['date' => $one, 'value' => 10],
+    ['date' => $two, 'value' => 20],
+    ['date' => $three, 'value' => 15],
+    ['date' => $four, 'value' => 25],
 ];
 
 $graph[0]['data1'] = [
-    ['date' => '2024-10-06', 'value' => 12],
-    ['date' => '2024-10-07', 'value' => 23],
-    ['date' => '2024-10-10', 'value' => 11],
-    ['date' => '2024-10-11', 'value' => 27],
+    ['date' => $one, 'value' => 12],
+    ['date' => $two, 'value' => 23],
+    ['date' => $three, 'value' => 11],
+    ['date' => $four, 'value' => 27],
 ];
 
 $graph[0]['graph_name'] = 'conferences';
@@ -21,17 +26,17 @@ $graph[0]['graph_data0_label'] = 'Conferences from Jitsi logs (Jilo)';
 $graph[0]['graph_data1_label'] = 'Conferences from Jitsi API (Jilo Agents)';
 
 $graph[1]['data0'] = [
-    ['date' => '2024-10-06', 'value' => 20],
-    ['date' => '2024-10-07', 'value' => 30],
-    ['date' => '2024-10-10', 'value' => 15],
-    ['date' => '2024-10-11', 'value' => 55],
+    ['date' => $one, 'value' => 20],
+    ['date' => $two, 'value' => 30],
+    ['date' => $three, 'value' => 15],
+    ['date' => $four, 'value' => 55],
 ];
 
 $graph[1]['data1'] = [
-    ['date' => '2024-10-06', 'value' => 22],
-    ['date' => '2024-10-07', 'value' => 33],
-    ['date' => '2024-10-10', 'value' => 11],
-    ['date' => '2024-10-11', 'value' => 57],
+    ['date' => $one, 'value' => 22],
+    ['date' => $two, 'value' => 33],
+    ['date' => $three, 'value' => 11],
+    ['date' => $four, 'value' => 57],
 ];
 
 $graph[1]['graph_name'] = 'participants';

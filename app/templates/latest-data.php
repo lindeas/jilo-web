@@ -5,6 +5,7 @@
 
                 <div class="collapse show" id="collapse<?= htmlspecialchars($widget['name']) ?>">
                     <div class="mb-5">
+                        <hr /><p class="m-3">NB: This functionality is still under development. The data is just an example.</p><hr /><!-- FIXME remove when implemented -->
 <?php if ($widget['full'] === true) { ?>
                         <table class="table table-results table-striped table-hover table-bordered">
                             <thead class="thead-dark">
@@ -39,7 +40,6 @@
 <?php } else { ?>
                         <p class="m-3">No records found.</p>
 <?php } ?>
-                        <hr /><p class="m-3">NB: This functionality is still under development.</p>
                     </div>
                 </div>
                 <!-- /widget "<?= htmlspecialchars($widget['name']) ?>" -->
