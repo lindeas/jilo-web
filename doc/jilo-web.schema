@@ -46,6 +46,15 @@ CREATE TABLE jilo_agent_types (
     description TEXT,
     endpoint TEXT
 );
+CREATE TABLE jilo_agent_checks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_id INTEGER,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status_code INTEGER,
+    response_time_ms INTEGER,
+    response_content TEXT,
+    FOREIGN KEY (agent_id) REFERENCES jilo_agents(id)
+);
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGET NOT NULL,
