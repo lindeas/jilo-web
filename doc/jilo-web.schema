@@ -37,6 +37,7 @@ CREATE TABLE jilo_agents (
     agent_type_id INTEGER NOT NULL,
     url TEXT NOT NULL,
     secret_key TEXT,
+    check_period INTEGER DEFAULT 0,
     FOREIGN KEY (platform_id) REFERENCES platforms(id),
     FOREIGN KEY (agent_type_id) REFERENCES jilo_agent_types(id)
 );
