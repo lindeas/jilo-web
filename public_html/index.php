@@ -8,7 +8,7 @@
  * License: GPLv2
  * Project URL: https://lindeas.com/jilo
  * Year: 2024
- * Version: 0.2
+ * Version: 0.2.1
  */
 
 // we start output buffering and.

@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## Unreleased
+## 0.2.1 - 2024-10-17
+
+#### Links
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2...v0.2.1
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2...v0.2.1
+- github: https://github.com/lindeas/jilo-web/compare/v0.2...v0.2.1
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2...v0.2.1
 
 ### Added
 - Added support for managing Jilo Agents
@@ -25,12 +31,6 @@ All notable changes to this project will be documented in this file.
 - All output HTML sanitized
 - Sanitized input forms data
 - Fixed error in calculation of monthly total conferences on front page
-
-#### Links
-- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2...HEAD
-- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2...HEAD
-- github: https://github.com/lindeas/jilo-web/compare/v0.2...HEAD
-- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2...HEAD
 
 ---
 
