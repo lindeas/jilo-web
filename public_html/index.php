@@ -147,6 +147,15 @@ if ($page == 'logout') {
         $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
     }
 
+    // check if the Jilo Server is running
+    require '../app/classes/server.php';
+    $serverObject = new Server($dbWeb);
+
+    $server_status = $serverObject->getServerStatus();
+    if (!$server_status) {
+        $error = 'The Jilo Server is not running. Some data may be old and incorrect.';
+    }
+
     // page building
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
