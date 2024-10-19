@@ -38,6 +38,14 @@ It's a multi-user web tool with user levels and access rights integrated into it
 
 The current website you are looking at is running a Jilo Web instance.
 
+<hr /><strong>"Jilo Server"</strong>
+
+Jilo Server is a server component written in Go, meant to work alongside Jilo Web. It is responsible for all automated tasks - health checks, periodic retrieval of data from the remote Jilo Agents, etc.
+
+It generally works on the same machine as the web interface Jilo Web and shares its database, although if needed it could be deployed on a separate machine.
+
+Jilo Web checks for the Jilo Server availability and displays a warning if there is a problem with the server.
+
 </div>
 
                     </div>
