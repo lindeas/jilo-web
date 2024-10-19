@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## Unreleased
+
+#### Links
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2.1...HEAD
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2.1...HEAD
+- github: https://github.com/lindeas/jilo-web/compare/v0.2.1...HEAD
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2.1...HEAD
+
+### Added
+- Added Jilo Server check and notice on error
+- Added status page
+
+---
+
 ## 0.2.1 - 2024-10-17
 
 #### Links
