@@ -41,6 +41,7 @@ $allowed_urls = [
 
     'profile',
     'config',
+    'status',
     'logs',
     'help',
 
@@ -151,7 +152,10 @@ if ($page == 'logout') {
     require '../app/classes/server.php';
     $serverObject = new Server($dbWeb);
 
-    $server_status = $serverObject->getServerStatus();
+    $server_host = '127.0.0.1';
+    $server_port = '8080';
+    $server_endpoint = '/health';
+    $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
     if (!$server_status) {
         $error = 'The Jilo Server is not running. Some data may be old and incorrect.';
     }

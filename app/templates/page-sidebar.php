@@ -78,6 +78,11 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 <?php } ?>
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=status">
+                            <li class="list-group-item<?php if ($page === 'status' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-heartbeat" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="status"></i>status
+                            </li>
+                        </a>
 <?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
                             <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
