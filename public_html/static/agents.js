@@ -58,24 +58,27 @@ function fetchData(agent_id, url, endpoint, jwtToken, force = false) {
                         // show the result in the html
                         resultElement.innerHTML = JSON.stringify(result, null, 2);
 
-                        // get the cache timestamp from the session
-                        const now = Date.now();
-                        const cacheTimestamp = new Date(now);
+                        // we don't cache the /status
+                        if (endpoint !== '/status') {
+                            // get the cache timestamp from the session
+                            const now = Date.now();
+                            const cacheTimestamp = new Date(now);
 
-                        // display the cache retrieval date and time
-                        const formattedDate = cacheTimestamp.toLocaleDateString();
-                        const formattedTime = cacheTimestamp.toLocaleTimeString();
-                        cacheInfoElement.style.display = '';
-                        cacheInfoElement.innerHTML = `cache refreshed on ${formattedDate} at ${formattedTime}`;
+                            // display the cache retrieval date and time
+                            const formattedDate = cacheTimestamp.toLocaleDateString();
+                            const formattedTime = cacheTimestamp.toLocaleTimeString();
+                            cacheInfoElement.style.display = '';
+                            cacheInfoElement.innerHTML = `cache refreshed on ${formattedDate} at ${formattedTime}`;
 
-                        // show the cache buttons
-                        loadCacheButton.disabled = false;
-                        loadCacheButton.style.display = '';
-                        clearCacheButton.disabled = false;
-                        clearCacheButton.style.display = '';
+                            // show the cache buttons
+                            loadCacheButton.disabled = false;
+                            loadCacheButton.style.display = '';
+                            clearCacheButton.disabled = false;
+                            clearCacheButton.style.display = '';
 
-                        // send the result to PHP to store in session
-                        saveResultToSession(result, agent_id);
+                            // send the result to PHP to store in session
+                            saveResultToSession(result, agent_id);
+                        }
                     }
                 } catch (e) {
                     // Display the error
