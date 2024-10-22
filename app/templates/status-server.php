@@ -1,5 +1,5 @@
 
-                <!-- jilo agents -->
+                <!-- jilo status -->
                 <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Jilo platform status</p>
                     <div class="card-body">
