@@ -146,18 +146,18 @@ if ($page == 'logout') {
         $userDetails = $userObject->getUserDetails($user_id);
         $userRights = $userObject->getUserRights($user_id);
         $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
-    }
 
-    // check if the Jilo Server is running
-    require '../app/classes/server.php';
-    $serverObject = new Server($dbWeb);
+        // check if the Jilo Server is running
+        require '../app/classes/server.php';
+        $serverObject = new Server($dbWeb);
 
-    $server_host = '127.0.0.1';
-    $server_port = '8080';
-    $server_endpoint = '/health';
-    $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
-    if (!$server_status) {
-        $error = 'The Jilo Server is not running. Some data may be old and incorrect.';
+        $server_host = '127.0.0.1';
+        $server_port = '8080';
+        $server_endpoint = '/health';
+        $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
+        if (!$server_status) {
+            $error = 'The Jilo Server is not running. Some data may be old and incorrect.';
+        }
     }
 
     // page building
