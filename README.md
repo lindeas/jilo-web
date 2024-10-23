@@ -43,6 +43,7 @@ Chart.js is used in this project and is licensed under the MIT License. See lice
 - web server (deb: apache | nginx)
 - php support in the web server (deb: php-fpm | libapache2-mod-php)
 - pdo and pdo_sqlite support in php (deb: php-db, php-sqlite3) uncomment in php.ini: ;extension=pdo_sqlite
+- php-curl module
 
 ## installation
 

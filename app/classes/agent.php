@@ -40,6 +40,30 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // get details of a specified agent ID
+    public function getAgentIDDetails($agent_id) {
+        $sql = 'SELECT
+                    ja.id,
+                    ja.platform_id,
+                    ja.agent_type_id,
+                    ja.url,
+                    ja.secret_key,
+                    jat.description AS agent_description,
+                    jat.endpoint AS agent_endpoint
+                FROM
+                    jilo_agents ja
+                JOIN
+                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                WHERE
+                    ja.id = :agent_id';
+
+        $query = $this->db->prepare($sql);
+        $query->bindParam(':agent_id', $agent_id);
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // get agent types
     public function getAgentTypes() {
         $sql = 'SELECT *
@@ -165,30 +189,54 @@ class Agent {
     public function fetchAgent($agent_id, $force = false) {
 
         // we need agent details for URL and JWT token
-        $agent = $this->getAgentDetails($agent_id);
+        $agentDetails = $this->getAgentIDDetails($agent_id);
+
+        // Safe exit in case the agent is not found
+        if (empty($agentDetails)) {
+            return json_encode(['error' => 'Agent not found']);
+        }
+
+        $agent = $agentDetails[0];
         $agent_cache_name = 'agent' . $agent_id . '_cache';
         $agent_cache_time = 'agent' . $agent_id . '_time';
 
         // check if the cache is still valid, unless force-refresh is requested
-        if (!$force && this->checkAgentCache($agent_id)) {
+        if (!$force && $this->checkAgentCache($agent_id)) {
             return $_SESSION[$agent_cache_name];
         }
 
+        // generate the JWT token
+        $payload = [
+            'agent_id'      => $agent_id,
+            'timestamp'     => time()
+        ];
+        $jwt = $this->generateAgentToken($payload, $agent['secret_key']);
+
         // Make the API request
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $agent[0]['url']);
+        curl_setopt($ch, CURLOPT_URL, $agent['url'] . $agent['agent_endpoint']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10); // timeout 10 seconds
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $jwt,
+            'Content-Type: application/json'
+        ]);
 
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         $curl_errno = curl_errno($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);
 
-        // general curl error
-        if ($curl_error) {
+        // curl error
+        if ($curl_errno) {
             return json_encode(['error' => 'curl error: ' . $curl_error]);
+        }
+
+        // response is not 200 OK
+        if ($http_code !== 200) {
+            return json_encode(['error' => 'HTTP error: ' . $http_code]);
         }
 
         // other custom error(s)
