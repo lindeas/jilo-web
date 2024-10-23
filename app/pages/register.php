@@ -23,12 +23,12 @@ if ($config['registration_enabled'] === true) {
             // redirect to login
             if ($result === true) {
                 $_SESSION['notice'] = "Registration successful.<br />You can log in now.";
-                header('Location: index.php');
+                header('Location: ' . htmlspecialchars($app_root));
                 exit();
             // registration fail, redirect to login
             } else {
                 $_SESSION['error'] = "Registration failed. $result";
-                header('Location: index.php');
+                header('Location: ' . htmlspecialchars($app_root));
                 exit();
             }
         }

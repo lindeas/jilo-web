@@ -42,7 +42,7 @@ try {
             $_SESSION['notice'] = "Login successful";
             $user_id = $userObject->getUserId($username)[0]['id'];
             $logObject->insertLog($user_id, "Login: User \"$username\" logged in. IP: $user_IP", 'user');
-            header('Location: index.php');
+            header('Location: ' . htmlspecialchars($app_root));
             exit();
 
         // login failed
@@ -50,7 +50,7 @@ try {
             $_SESSION['error'] = "Login failed.";
             $user_id = $userObject->getUserId($username)[0]['id'];
             $logObject->insertLog($user_id, "Login: Failed login attempt for user \"$username\". IP: $user_IP", 'user');
-            header('Location: index.php');
+            header('Location: ' . htmlspecialchars($app_root));
             exit();
         }
     }
