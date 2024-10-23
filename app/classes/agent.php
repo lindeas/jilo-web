@@ -245,7 +245,8 @@ class Agent {
         }
 
         // Cache the result and the timestamp if the response is successful
-        $_SESSION[$agent_cache_name] = $response;
+        // We decode it so that it's pure JSON and not escaped
+        $_SESSION[$agent_cache_name] = json_decode($response, true);
         $_SESSION[$agent_cache_time] = time();
 
         return $response;
