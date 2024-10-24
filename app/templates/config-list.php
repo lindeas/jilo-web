@@ -97,6 +97,16 @@ echo "\n";
                                                                 <?= htmlspecialchars($agent_array['url'].$agent_array['agent_endpoint']) ?>
                                                             </div>
                                                         </div>
+<?php if (isset($agent_array['check_period']) && $agent_array['check_period'] !== 0) { ?>
+                                                        <div class="row mb-1" style="padding-left: 100px;">
+                                                            <div class="col-md-4 text-end">
+                                                                check period:
+                                                            </div>
+                                                            <div class="border col-md-8 text-start">
+                                                                <?= htmlspecialchars($agent_array['check_period']) ?>
+                                                            </div>
+                                                        </div>
+<?php } ?>
                                                     </div>
                                                 </div>
                                             </div>

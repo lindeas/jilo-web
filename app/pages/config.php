@@ -61,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'agent_type_id' => $type,
             'url'           => $url,
             'secret_key'	=> $secret_key,
+            'check_period'  => $check_period,
         ];
         $result = $agentObject->editAgent($platform_id, $updatedAgent);
         if ($result === true) {

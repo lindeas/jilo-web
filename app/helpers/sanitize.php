@@ -38,6 +38,9 @@ if (isset($_POST['url'])) {
 if (isset($_POST['secret_key'])) {
     $secret_key = htmlspecialchars($_POST['secret_key']);
 }
+if (isset($_POST['check_period'])) {
+    $check_period = htmlspecialchars($_POST['check_period']);
+}
 
 // platforms
 if (isset($_POST['name'])) {

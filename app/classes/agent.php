@@ -15,6 +15,7 @@ class Agent {
                     ja.agent_type_id,
                     ja.url,
                     ja.secret_key,
+                    ja.check_period,
                     jat.description AS agent_description,
                     jat.endpoint AS agent_endpoint
                 FROM
@@ -48,6 +49,7 @@ class Agent {
                     ja.agent_type_id,
                     ja.url,
                     ja.secret_key,
+                    ja.check_period,
                     jat.description AS agent_description,
                     jat.endpoint AS agent_endpoint
                 FROM
@@ -104,7 +106,8 @@ class Agent {
             $sql = 'UPDATE jilo_agents SET
                         agent_type_id = :agent_type_id,
                         url = :url,
-                        secret_key = :secret_key
+                        secret_key = :secret_key,
+                        check_period = :check_period
                     WHERE
                         id = :agent_id
                     AND
@@ -115,6 +118,7 @@ class Agent {
                 ':agent_type_id'	=> $updatedAgent['agent_type_id'],
                 ':url'			=> $updatedAgent['url'],
                 ':secret_key'		=> $updatedAgent['secret_key'],
+                ':check_period' => $updatedAgent['check_period'],
                 ':agent_id'		=> $updatedAgent['id'],
                 ':platform_id'		=> $platform_id,
             ]);
