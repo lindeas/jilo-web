@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'type_id'       => $type,
             'url'           => $url,
             'secret_key'	=> $secret_key,
+            'check_period'  => $check_period,
         ];
         $result = $agentObject->addAgent($platform_id, $newAgent);
         if ($result === true) {

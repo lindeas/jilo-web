@@ -81,9 +81,9 @@ class Agent {
     public function addAgent($platform_id, $newAgent) {
         try {
             $sql = 'INSERT INTO jilo_agents
-                    (platform_id, agent_type_id, url, secret_key)
+                    (platform_id, agent_type_id, url, secret_key, check_period)
                     VALUES
-                    (:platform_id, :agent_type_id, :url, :secret_key)';
+                    (:platform_id, :agent_type_id, :url, :secret_key, :check_period)';
 
             $query = $this->db->prepare($sql);
             $query->execute([
@@ -91,6 +91,7 @@ class Agent {
                 ':agent_type_id'	=> $newAgent['type_id'],
                 ':url'			=> $newAgent['url'],
                 ':secret_key'		=> $newAgent['secret_key'],
+                ':check_period'     => $newAgent['check_period'],
             ]);
 
             return true;

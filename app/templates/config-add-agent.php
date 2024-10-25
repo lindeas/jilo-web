@@ -46,6 +46,17 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-end">
+                                    <label for="check_period" class="form-label">check period</label>
+                                    <span class="text-danger" style="margin-right: -12px;">*</span>
+                                </div>
+                                <div class="col-md-8">
+                                    <input class="form-control" type="text" name="check_period" value="0" required />
+                                    <p class="text-start"><small>period in minutes for the automatic agent check (0 disables it)</small></p>
+                                </div>
+                            </div>
+
                             <input type="hidden" name="new" value="true" />
                             <input type="hidden" name="item" value="agent" />
 
