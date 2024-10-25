@@ -103,7 +103,7 @@ echo "\n";
                                                                 check period:
                                                             </div>
                                                             <div class="border col-md-8 text-start">
-                                                                <?= htmlspecialchars($agent_array['check_period']) ?> minutes
+                                                                <?= htmlspecialchars($agent_array['check_period']) ?> <?= ($agent_array['check_period'] == 1 ? 'minute' : 'minutes') ?>
                                                             </div>
                                                         </div>
 <?php } ?>
