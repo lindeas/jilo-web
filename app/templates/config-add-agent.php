@@ -23,7 +23,7 @@ if (in_array($agent_type['id'], $jilo_agent_types_in_platform)) {
                                         </option>
 <?php } ?>
                                     </select>
-                                    <p class="text-start"><small>type of agent (meet, jvb, jibri, all)</small></p>
+                                    <p class="text-start"><small>type of agent (meet, jvb, jibri, etc.)<br />if a type has already been aded, it's disabled here</small></p>
                                 </div>
                             </div>
 
