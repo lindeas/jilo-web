@@ -77,6 +77,22 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // get agent types already configured for a platform
+    public function getPlatformAgentTypes($platform_id) {
+        $sql = 'SELECT
+                    id,
+                    agent_type_id
+                FROM
+                    jilo_agents
+                WHERE
+                    platform_id = :platform_id';
+        $query - $this->db->prepare($sql);
+        $query->bindParam(':platform_id', $platform_id);
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // add new agent
     public function addAgent($platform_id, $newAgent) {
         try {
