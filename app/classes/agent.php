@@ -86,7 +86,7 @@ class Agent {
                     jilo_agents
                 WHERE
                     platform_id = :platform_id';
-        $query - $this->db->prepare($sql);
+        $query = $this->db->prepare($sql);
         $query->bindParam(':platform_id', $platform_id);
         $query->execute();
 

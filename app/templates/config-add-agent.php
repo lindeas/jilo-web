@@ -15,7 +15,10 @@
                                     <select class="form-control" type="text" name="type" id="agent_type_id" required>
                                         <option></option>
 <?php foreach ($jilo_agent_types as $agent_type) { ?>
-                                        <option value="<?= htmlspecialchars($agent_type['id']) ?>">
+                                        <option value="<?= htmlspecialchars($agent_type['id']) ?>"<?php
+if (in_array($agent_type['id'], $jilo_agent_types_in_platform)) {
+    echo 'disabled="disabled"';
+} ?>>
                                             <?= htmlspecialchars($agent_type['description']) ?>
                                         </option>
 <?php } ?>

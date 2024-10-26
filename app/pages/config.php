@@ -129,6 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             switch ($action) {
                 case 'add-agent':
                     $jilo_agent_types = $agentObject->getAgentTypes();
+                    $jilo_agents_in_platform = $agentObject->getPlatformAgentTypes($platform_id);
+                    $jilo_agent_types_in_platform = array_column($jilo_agents_in_platform, 'agent_type_id');
                     include '../app/templates/config-add-agent.php';
                     break;
                 case 'add':
