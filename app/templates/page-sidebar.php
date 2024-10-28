@@ -38,7 +38,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>graphs</small></p></li>
+                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>live data</small></p></li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=graphs">
                             <li class="list-group-item<?php if ($page === 'graphs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
@@ -50,15 +50,12 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                                 <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="latest data"></i>latest data
                             </li>
                         </a>
-
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>live data</small></p></li>
-
-                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=configjs">
+                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=configjs">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'configjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-tv" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="config.js"></i>config.js
                             </li>
                         </a>
-                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=interfaceconfigjs">
+                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=interfaceconfigjs">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'interfaceconfigjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-th" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="interface_config.js"></i>interface_config.js
                             </li>
