@@ -36,7 +36,6 @@ $allowed_urls = [
 
     'data',
 
-    'graphs',
     'latest',
 
     'agents',
