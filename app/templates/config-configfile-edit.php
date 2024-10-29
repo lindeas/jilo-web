@@ -13,7 +13,7 @@ echo "\n";
 ?>
 
                             <br />
-                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
+                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file" />Cancel</a>
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </form>
 
