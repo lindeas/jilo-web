@@ -70,17 +70,17 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=platforms">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>platforms
+                                <i class="fas fa-sitemap" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>platforms
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=hosts">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>hosts
+                                <i class="fas fa-laptop" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>hosts
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoints">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>endpoints
+                                <i class="fas fa-stethoscope" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>endpoints
                             </li>
                         </a>
 
