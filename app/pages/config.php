@@ -109,19 +109,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // no form submitted, show the templates
 } else {
 
-    // $item - config.js and interface_config.js are special case; remote loaded files
     switch ($item) {
-        case 'configjs':
+        case 'platforms':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
             $platformConfigjs = $configObject->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include '../app/templates/config-list-configjs.php';
             break;
-        case 'interfaceconfigjs':
+        case 'hosts':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
             $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include '../app/templates/config-list-interfaceconfigjs.php';
+            break;
+        case 'endpoints':
+            $mode = $_REQUEST['mode'] ?? '';
+            $raw = ($mode === 'raw');
+            $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
+            include '../app/templates/config-list-interfaceconfigjs.php';
+            break;
+        case 'config_file':
+            if ($userObject->hasRight($user_id, 'view config file')) {
+                include '../app/templates/config-configfile.php';
+            } else {
+                include '../app/templates/error-unauthorized.php';
+            }
             break;
 
     // if there is no $item, we work on the local config DB
@@ -153,12 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         include '../app/templates/config-delete-platform.php';
                     }
                     break;
-                default:
-                    if ($userObject->hasRight($user_id, 'view config file')) {
-                        include '../app/templates/config-list.php';
-                    } else {
-                        include '../app/templates/error-unauthorized.php';
-                    }
             }
     }
 }
