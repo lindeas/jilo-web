@@ -129,10 +129,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             include '../app/templates/config-list-interfaceconfigjs.php';
             break;
         case 'config_file':
-            if ($userObject->hasRight($user_id, 'view config file')) {
-                include '../app/templates/config-configfile.php';
+            if (isset($action) && $action === 'edit') {
+                include '../app/templates/config-configfile-edit.php';
             } else {
-                include '../app/templates/error-unauthorized.php';
+                if ($userObject->hasRight($user_id, 'view config file')) {
+                    include '../app/templates/config-configfile.php';
+                } else {
+                    include '../app/templates/error-unauthorized.php';
+                }
             }
             break;
 
