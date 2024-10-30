@@ -28,7 +28,7 @@ foreach ($platformDetails[0] as $key => $value) {
 <?php } ?>
                             <br />
                             <input type="hidden" name="platform" value="<?= htmlspecialchars($platform_id) ?>" />
-                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
+                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
                             <input type="submit" class="btn btn-primary" value="Save" />
                         </form>
                     </div>

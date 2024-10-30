@@ -113,6 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         case 'platform':
             if (isset($action) && $action === 'edit') {
                 include '../app/templates/config-platform-edit.php';
+            } elseif (isset($action) && $action === 'delete') {
+                include '../app/templates/config-platform-delete.php';
             } else {
                 if ($userObject->hasRight($user_id, 'view config file')) {
                     include '../app/templates/config-platform.php';
@@ -170,8 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (isset($_GET['agent'])) {
                         $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
                         include '../app/templates/config-delete-agent.php';
-                    } else {
-                        include '../app/templates/config-delete-platform.php';
                     }
                     break;
             }
