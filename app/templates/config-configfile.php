@@ -9,9 +9,10 @@ include '../app/helpers/render.php';
 renderConfig($config, '0');
 echo "\n";
 ?>
-                        <br />
-                        <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file&action=edit" />Edit</a>
 
                     </div>
                 </div>
+
+                <br />
+                <a class="btn btn-danger" href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file&action=edit" />Edit</a>
                 <!-- /widget "config" -->

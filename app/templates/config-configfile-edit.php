@@ -4,7 +4,8 @@
                     <p class="h4 card-header">Jilo configuration file</p>
                     <div class="card-body">
                         <p class="card-text">editing the Jilo Server configuration file
-                            <span class="text-danger">this may break everything, use with extreme caution</span>
+                            <br />
+                            <span class="text-danger"><strong>this may break everything, use with extreme caution</strong></span>
                         </p>
                         <form method="POST" action="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=config_file">
 
