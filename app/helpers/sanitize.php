@@ -28,6 +28,17 @@ if (isset($_SESSION['error'])) {
     $error = htmlspecialchars($_SESSION['error']); // 'error' for errors
 }
 
+// hosts
+if (isset($_POST['address'])) {
+    $address = htmlspecialchars($_POST['address']);
+}
+if (isset($_POST['port'])) {
+    $port = htmlspecialchars($_POST['port']);
+}
+if (isset($_POST['name'])) {
+    $name = htmlspecialchars($_POST['name']);
+}
+
 // agents
 if (isset($_POST['type'])) {
     $type = htmlspecialchars($_POST['type']);

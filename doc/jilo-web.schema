@@ -14,6 +14,7 @@ CREATE TABLE users_meta (
     bio TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
 CREATE TABLE users_rights (
     user_id INTEGER,
     right_id INTEGER,
@@ -25,12 +26,32 @@ CREATE TABLE rights (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
 );
+
+CREATE TABLE logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGET NOT NULL,
+    time TEXT DEFAULT (DATETIME('now')),
+    scope TEXT NOT NULL,
+    message TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE platforms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
     jitsi_url TEXT NOT NULL,
     jilo_database TEXT NOT NULL
 );
+
+CREATE TABLE hosts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    address TEXT NOT NULL,
+    port INTEGER NOT NULL,
+    platform_id INTEGER NOT NULL,
+    name TEXT,
+    FOREIGN KEY(platform_id) REFERENCES platforms(id)
+);
+
 CREATE TABLE jilo_agents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     platform_id INTEGER NOT NULL,
@@ -54,12 +75,4 @@ CREATE TABLE jilo_agent_checks (
     response_time_ms INTEGER,
     response_content TEXT,
     FOREIGN KEY (agent_id) REFERENCES jilo_agents(id)
-);
-CREATE TABLE logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGET NOT NULL,
-    time TEXT DEFAULT (DATETIME('now')),
-    scope TEXT NOT NULL,
-    message TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
 );

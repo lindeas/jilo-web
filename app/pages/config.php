@@ -4,9 +4,11 @@ $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 
 require '../app/classes/config.php';
+require '../app/classes/host.php';
 require '../app/classes/agent.php';
 
 $configObject = new Config();
+$hostObject = new Host($dbWeb);
 $agentObject = new Agent($dbWeb);
 
 // if a form is submitted, it's from the edit page
@@ -17,8 +19,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //    $content = file_get_contents($config_file);
 //    $updatedContent = $content;
 
+    // new host adding
+    if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'host') {
+        $newHost = [
+            'address'       => $address,
+            'port'          => $port,
+            'platform_id'   => $platform_id,
+            'name'          => $name,
+        ];
+        $result = $hostObject->addHost($newHost);
+        if ($result === true) {
+            $_SESSION['notice'] = "New Jilo host added.";
+        } else {
+            $_SESSION['error'] = "Adding the host failed. Error: $result";
+        }
+
     // new agent adding
-    if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'agent') {
+    } elseif (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'agent') {
         $newAgent = [
             'type_id'       => $type,
             'url'           => $url,
@@ -136,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 include '../app/templates/config-host-delete.php';
             } else {
                 if ($userObject->hasRight($user_id, 'view config file')) {
+                    $hostDetails = $hostObject->getHostDetails();
                     include '../app/templates/config-host.php';
                 } else {
                     include '../app/templates/error-unauthorized.php';
