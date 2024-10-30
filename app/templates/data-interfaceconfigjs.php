@@ -7,9 +7,9 @@
                             <span class="m-3">URL: <?= htmlspecialchars($platformDetails[0]['jitsi_url']) ?></span>
                             <span class="m-3">FILE: interface_config.js</span>
 <?php if ($mode === 'raw') { ?>
-                            <span class="m-3"><a class="btn btn-light" href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=interfaceconfigjs">view only active lines</a></span>
+                            <span class="m-3"><a class="btn btn-light" href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=interfaceconfigjs">view only active lines</a></span>
 <?php } else { ?>
-                            <span class="m-3"><a class="btn btn-light" href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=interfaceconfigjs&mode=raw">view raw file contents</a></span>
+                            <span class="m-3"><a class="btn btn-light" href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=interfaceconfigjs&mode=raw">view raw file contents</a></span>
 <?php } ?>
                         </p>
 <pre class="results">

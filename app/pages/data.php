@@ -86,14 +86,14 @@ switch ($item) {
         $mode = $_REQUEST['mode'] ?? '';
         $raw = ($mode === 'raw');
         $platformConfigjs = $configObject->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
-        include '../app/templates/config-list-configjs.php';
+        include '../app/templates/data-configjs.php';
         break;
 
     case 'interfaceconfigjs':
         $mode = $_REQUEST['mode'] ?? '';
         $raw = ($mode === 'raw');
         $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
-        include '../app/templates/config-list-interfaceconfigjs.php';
+        include '../app/templates/data-interfaceconfigjs.php';
         break;
 
     default:
