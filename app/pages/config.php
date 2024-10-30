@@ -110,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
 
     switch ($item) {
+
         case 'platform':
             if (isset($action) && $action === 'add') {
                 include '../app/templates/config-platform-add.php';
@@ -125,18 +126,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
             break;
+
         case 'host':
-            $mode = $_REQUEST['mode'] ?? '';
-            $raw = ($mode === 'raw');
-            $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
-            include '../app/templates/config-list-interfaceconfigjs.php';
+            if (isset($action) && $action === 'add') {
+                include '../app/templates/config-host-add.php';
+            } elseif (isset($action) && $action === 'edit') {
+                include '../app/templates/config-host-edit.php';
+            } elseif (isset($action) && $action === 'delete') {
+                include '../app/templates/config-host-delete.php';
+            } else {
+                if ($userObject->hasRight($user_id, 'view config file')) {
+                    include '../app/templates/config-host.php';
+                } else {
+                    include '../app/templates/error-unauthorized.php';
+                }
+            }
             break;
+
         case 'endpoint':
-            $mode = $_REQUEST['mode'] ?? '';
-            $raw = ($mode === 'raw');
-            $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
-            include '../app/templates/config-list-interfaceconfigjs.php';
+            // TODO
             break;
+
         case 'config_file':
             if (isset($action) && $action === 'edit') {
                 include '../app/templates/config-configfile-edit.php';
