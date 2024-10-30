@@ -3,7 +3,7 @@
                 <div class="card text-center w-50 mx-auto">
                     <p class="h4 card-header">Add new host in Jitsi platform <strong><?= htmlspecialchars($platformDetails[0]['name']) ?></strong></p>
                     <div class="card-body">
-                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=host">
+                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config&item=host">
 
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">
@@ -36,7 +36,7 @@
                                     <p class="text-start"><small>description or name of the host (optional)</small></p>
                                 </div>
                             </div>
-                            <input type="hidden" name="platform_id" value="<?= htmlspecialchars($platformDetails[0]['id'])?>" />
+                            <input type="hidden" name="platform" value="<?= htmlspecialchars($platformDetails[0]['id'])?>" />
                             <input type="hidden" name="item" value="host" />
                             <input type="hidden" name="new" value="true" />
 

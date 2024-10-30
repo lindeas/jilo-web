@@ -120,7 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // FIXME the new file is not loaded on first page load
     unset($config);
-    header("Location: $app_root?platform=$platform_id&page=config");
+//    header("Location: $app_root?platform=$platform_id&page=config");
+    header("Location: $app_root?page=config&item=$item");
     exit();
 
 // no form submitted, show the templates
