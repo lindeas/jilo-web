@@ -110,19 +110,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
 
     switch ($item) {
-        case 'platforms':
-            $mode = $_REQUEST['mode'] ?? '';
-            $raw = ($mode === 'raw');
-            $platformConfigjs = $configObject->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
-            include '../app/templates/config-list-configjs.php';
+        case 'platform':
+            if (isset($action) && $action === 'edit') {
+                include '../app/templates/config-platform-edit.php';
+            } else {
+                if ($userObject->hasRight($user_id, 'view config file')) {
+                    include '../app/templates/config-platform.php';
+                } else {
+                    include '../app/templates/error-unauthorized.php';
+                }
+            }
             break;
-        case 'hosts':
+        case 'host':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
             $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include '../app/templates/config-list-interfaceconfigjs.php';
             break;
-        case 'endpoints':
+        case 'endpoint':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
             $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);

@@ -1,7 +1,7 @@
         <div class="row">
 
             <!-- Sidebar -->
-            <div class="col-md-3 sidebar-wrapper bg-light" id="sidebar">
+            <div class="col-md-3 mb-5 sidebar-wrapper bg-light" id="sidebar">
             <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
 <?php
 $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
@@ -68,17 +68,17 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jitsi platforms config</small></p></li>
 
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=platforms">
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-sitemap" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>platforms
                             </li>
                         </a>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=hosts">
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-laptop" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>hosts
                             </li>
                         </a>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoints">
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoint">
                             <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-stethoscope" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>endpoints
                             </li>
