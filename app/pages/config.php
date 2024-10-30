@@ -111,7 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     switch ($item) {
         case 'platform':
-            if (isset($action) && $action === 'edit') {
+            if (isset($action) && $action === 'add') {
+                include '../app/templates/config-platform-add.php';
+            } elseif (isset($action) && $action === 'edit') {
                 include '../app/templates/config-platform-edit.php';
             } elseif (isset($action) && $action === 'delete') {
                 include '../app/templates/config-platform-delete.php';
@@ -156,16 +158,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $jilo_agent_types_in_platform = array_column($jilo_agents_in_platform, 'agent_type_id');
                     include '../app/templates/config-add-agent.php';
                     break;
-                case 'add':
-                    include '../app/templates/config-add-platform.php';
-                    break;
                 case 'edit':
                     if (isset($_GET['agent'])) {
                         $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
                         $jilo_agent_types = $agentObject->getAgentTypes();
                         include '../app/templates/config-edit-agent.php';
-                    } else {
-                        include '../app/templates/config-edit-platform.php';
                     }
                     break;
                 case 'delete':
