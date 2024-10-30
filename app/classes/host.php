@@ -96,14 +96,14 @@ class Host {
 
 
     // delete a host
-    public function deleteAgent($agent_id) {
+    public function deleteHost($host_id) {
         try {
-            $sql = 'DELETE FROM jilo_agents
+            $sql = 'DELETE FROM hosts
                     WHERE
-                    id = :agent_id';
+                    id = :host_id';
 
             $query = $this->db->prepare($sql);
-            $query->bindParam(':agent_id', $agent_id);
+            $query->bindParam(':host_id', $host_id);
 
             $query->execute();
             return true;

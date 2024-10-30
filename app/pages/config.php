@@ -2,6 +2,7 @@
 
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
+$host = $_REQUEST['host'] ?? '';
 
 require '../app/classes/config.php';
 require '../app/classes/host.php';
@@ -57,6 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'jilo_database'	=> $_POST['jilo_database'],
         ];
         $platformObject->addPlatform($newPlatform);
+
+    // deleting a host
+    } elseif (isset($_POST['delete']) && isset($_POST['host']) && $_POST['delete'] === 'true') {
+        $result = $hostObject->deleteHost($host);
+        if ($result === true) {
+            $_SESSION['notice'] = "Host id \"{$_REQUEST['host']}\" deleted.";
+        } else {
+            $_SESSION['error'] = "Deleting the host failed. Error: $result";
+        }
 
     // deleting an agent
     } elseif (isset($_POST['delete']) && isset($_POST['agent']) && $_POST['delete'] === 'true') {
@@ -151,6 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } elseif (isset($action) && $action === 'edit') {
                 include '../app/templates/config-host-edit.php';
             } elseif (isset($action) && $action === 'delete') {
+                $hostDetails = $hostObject->getHostDetails($platform_id, $agent);
                 include '../app/templates/config-host-delete.php';
             } else {
                 if ($userObject->hasRight($user_id, 'view config file')) {
