@@ -1,5 +1,5 @@
 
-                <!-- widget "config" -->
+                <!-- widget "platforms" -->
                 <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Jilo configuration :: Jitsi Meet platforms</p>
                     <div class="card-body">
@@ -49,4 +49,4 @@
 <?php } ?>
                     </div>
                 </div>
-                <!-- /widget "config" -->
+                <!-- /widget "platforms" -->

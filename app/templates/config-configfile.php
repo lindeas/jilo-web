@@ -1,5 +1,5 @@
 
-                <!-- widget "config" -->
+                <!-- widget "config file" -->
                 <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Jilo configuration file</p>
                     <div class="card-body">
@@ -14,4 +14,4 @@ echo "\n";
                         <a class="btn btn-outline-danger btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file&action=edit" />Edit</a>
                     </div>
                 </div>
-                <!-- /widget "config" -->
+                <!-- /widget "config file" -->

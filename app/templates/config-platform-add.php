@@ -1,5 +1,5 @@
 
-                <!-- widget "config" -->
+                <!-- widget "platforms" -->
                 <div class="card text-center w-50 mx-lef">
                     <p class="h4 card-header">Add new Jitsi platform</p>
                     <div class="card-body">
@@ -48,4 +48,4 @@
                         </form>
                     </div>
                 </div>
-                <!-- /widget "config" -->
+                <!-- /widget "platforms" -->

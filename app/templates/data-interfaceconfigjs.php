@@ -1,5 +1,5 @@
 
-                <!-- widget "config" -->
+                <!-- widget "interfaceconfig" -->
                 <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Configuration of the Jitsi platform <strong><?= htmlspecialchars($platformDetails[0]['name']) ?></strong></p>
                     <div class="card-body">
@@ -19,4 +19,4 @@ echo htmlspecialchars($platformInterfaceConfigjs);
 </pre>
                     </div>
                 </div>
-                <!-- /widget "config" -->
+                <!-- /widget "interfaceconfig" -->

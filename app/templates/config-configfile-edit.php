@@ -1,5 +1,5 @@
 
-                <!-- widget "config" -->
+                <!-- widget "config file" -->
                 <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Jilo configuration file :: edit</p>
                     <div class="card-body">
@@ -23,4 +23,4 @@ echo "\n";
 
                     </div>
                 </div>
-                <!-- /widget "config" -->
+                <!-- /widget "config file" -->

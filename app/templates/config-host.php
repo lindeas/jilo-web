@@ -1,5 +1,5 @@
 
-                <!-- widget "config" -->
+                <!-- widget "hosts" -->
                 <div class="card text-center w-75 mx-lef">
                     <p class="h4 card-header">Jilo configuration :: Jitsi Meet hosts</p>
                     <div class="card-body">
@@ -36,4 +36,4 @@
 <?php } ?>
                     </div>
                 </div>
-                <!-- /widget "config" -->
+                <!-- /widget "hosts" -->
