@@ -5,10 +5,11 @@
                     <div class="card-body">
                         <p class="card-text">Jitsi platforms configuration &nbsp;<a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform&action=add">add new</a></p>
 <?php foreach ($platformsAll as $platform_array) {
+    $hosts = $hostObject->getHostDetails($platform_array['id']);
     $agents = $agentObject->getAgentDetails($platform_array['id']);
 ?>
                         <a name="platform<?= htmlspecialchars($platform_array['id']) ?>"></a>
-                        <div class="row mb-1 border" style="padding: 20px; padding-bottom: 0px;">
+                        <div class="row mb-1 border<?= isset($_REQUEST['platform']) && (int)$platform_array['id'] === (int)$_REQUEST['platform'] ? ' bg-light' : '' ?>" style="padding: 20px; padding-bottom: 0px;">
                             <p>
                                 platform id <?= htmlspecialchars($platform_array['id']) ?> - <strong><?= htmlspecialchars($platform_array['name']) ?></strong>
                                 &nbsp;
@@ -35,13 +36,13 @@
                                 <div class="row mb-1" style="padding-left: 100px;">
                                     <div class="col-md-4 text-end"></div>
                                     <div class="col-md-8 text-start">
-                                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform_array['id']) ?>">FIXME 3 hosts</a>
+                                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform_array['id']) ?>#platform<?= htmlspecialchars($platform_array['id']) ?>"><?= htmlspecialchars(count($hosts)) ?> <?= htmlspecialchars(count($hosts)) === '1' ? 'host' : 'hosts' ?></a>
                                     </div>
                                 </div>
                                 <div class="row mb-1" style="padding-left: 100px;">
                                     <div class="col-md-4 text-end"></div>
                                     <div class="col-md-8 text-start">
-                                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoint&platform=<?= htmlspecialchars($platform_array['id']) ?>"><?= htmlspecialchars(count($agents)) ?> <?= htmlspecialchars(count($agents)) === 1 ? 'jilo agent endpoint' : 'jilo agent endpoints' ?></a>
+                                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoint&platform=<?= htmlspecialchars($platform_array['id']) ?>#platform<?= htmlspecialchars($platform_array['id']) ?>"><?= htmlspecialchars(count($agents)) ?> <?= htmlspecialchars(count($agents)) === '1' ? 'endpoint' : 'endpoints' ?></a>
                                     </div>
                                 </div>
                             </div>

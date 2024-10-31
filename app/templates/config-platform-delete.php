@@ -23,7 +23,7 @@ foreach ($platformDetails[0] as $key => $value) {
                             <input type="hidden" name="delete" value="true" />
                             <p class="h5 text-danger">Are you sure you want to delete this platform?</p>
                             <br />
-                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
+                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform&platform=<?= htmlspecialchars($platform_id) ?>#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
                             &nbsp;&nbsp;
                             <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
                         </form>
