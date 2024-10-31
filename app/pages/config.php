@@ -57,7 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
-        $platformObject->addPlatform($newPlatform);
+        $result = $platformObject->addPlatform($newPlatform);
+        if ($result === true) {
+            $_SESSION['notice'] = "New Jitsi platform added.";
+        } else {
+            $_SESSION['error'] = "Adding the platform failed. Error: $result";
+        }
 
     // deleting a host
     } elseif (isset($_POST['delete']) && isset($_POST['host']) && $_POST['delete'] === 'true') {
@@ -80,7 +85,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // deleting a platform
     } elseif (isset($_POST['delete']) && $_POST['delete'] === 'true') {
         $platform = $_POST['platform'];
-        $platformObject->deletePlatform($platform);
+        $result = $platformObject->deletePlatform($platform);
+        if ($result === true) {
+            $_SESSION['notice'] = "Platform \"{$platformObject['name']}\" added.";
+        } else {
+            $_SESSION['error'] = "Adding the platform failed. Error: $result";
+        }
 
     // an update to an existing host
     } elseif (isset($_POST['host'])) {
