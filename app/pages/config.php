@@ -159,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($action) && $action === 'add') {
                 include '../app/templates/config-host-add.php';
             } elseif (isset($action) && $action === 'edit') {
+                $hostDetails = $hostObject->getHostDetails($platform_id, $agent);
                 include '../app/templates/config-host-edit.php';
             } elseif (isset($action) && $action === 'delete') {
                 $hostDetails = $hostObject->getHostDetails($platform_id, $agent);

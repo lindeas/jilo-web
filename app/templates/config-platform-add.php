@@ -1,6 +1,6 @@
 
                 <!-- widget "config" -->
-                <div class="card text-center w-50 mx-auto">
+                <div class="card text-center w-50 mx-lef">
                     <p class="h4 card-header">Add new Jitsi platform</p>
                     <div class="card-body">
                         <!--p class="card-text">add new platform:</p-->
@@ -42,8 +42,9 @@
                             <input type="hidden" name="new" value="true" />
 
                             <br />
-                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform" />Cancel</a>
-                            <input type="submit" class="btn btn-primary" value="Save" />
+                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform" />Cancel</a>
+                            &nbsp;&nbsp;
+                            <input type="submit" class="btn btn-primary btn-sm" value="Save" />
                         </form>
                     </div>
                 </div>

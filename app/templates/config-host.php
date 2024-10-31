@@ -13,18 +13,21 @@
                             <p class="text-start">
                                 platform <strong><?= htmlspecialchars($platform_array['name']) ?></strong>
                             </p>
-
+                            <ul class="text-start" style="padding-left: 50px;">
 <?php foreach ($hosts as $host_array) { ?>
-                            <a name="platform<?= htmlspecialchars($platform_array['id']) ?>host<?= htmlspecialchars($host_array['id']) ?>"></a>
-                            <p class="text-start" style="padding-left: 50px;">
-                                <?= htmlspecialchars($host_array['address']) ?>:<?= htmlspecialchars($host_array['port']) ?>
-                                &nbsp;
-                                <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($host_array['platform_id']) ?>&host=<?= htmlspecialchars($host_array['id']) ?>&action=edit">edit host</a>
-                                <a class="btn btn-outline-danger btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($host_array['platform_id']) ?>&host=<?= htmlspecialchars($host_array['id']) ?>&action=delete">delete host</a>
-                            </p>
+                                <li style="padding-bottom: 10px;">
+                                    <a name="platform<?= htmlspecialchars($platform_array['id']) ?>host<?= htmlspecialchars($host_array['id']) ?>"></a>
+                                    <span>
+                                        <?= htmlspecialchars($host_array['address']) ?>:<?= htmlspecialchars($host_array['port']) ?>
+                                        &nbsp;
+                                        <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($host_array['platform_id']) ?>&host=<?= htmlspecialchars($host_array['id']) ?>&action=edit">edit host</a>
+                                        <a class="btn btn-outline-danger btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($host_array['platform_id']) ?>&host=<?= htmlspecialchars($host_array['id']) ?>&action=delete">delete host</a>
+                                    </span>
+                                </li>
 <?php } ?>
+                            </ul>
                             <p class="text-start" style="padding-left: 50px;">
-                                total <?= htmlspecialchars(count($hosts)) ?> <?= htmlspecialchars(count($hosts)) === 1 ? 'jilo host' : 'jilo hosts' ?>&nbsp;
+                                total <?= htmlspecialchars(count($hosts)) ?> jilo <?= htmlspecialchars(count($hosts)) === '1' ? 'host' : 'hosts' ?>&nbsp;
                                 &nbsp;
                                 <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform_array['id']) ?>&action=add">add new</a>
                             </p>

@@ -1,9 +1,8 @@
 
                 <!-- widget "config" -->
-                <div class="card text-center w-50 mx-auto">
-                    <p class="h4 card-header">Jilo web configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong></p>
+                <div class="card text-center w-50 mx-lef">
+                    <p class="h4 card-header">Jilo configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong> :: edit</p>
                     <div class="card-body">
-                        <p class="card-text">edit the platform details:</p>
                         <form method="POST" action="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
 <?php
 foreach ($platformDetails[0] as $key => $value) {
@@ -28,8 +27,9 @@ foreach ($platformDetails[0] as $key => $value) {
 <?php } ?>
                             <br />
                             <input type="hidden" name="platform" value="<?= htmlspecialchars($platform_id) ?>" />
-                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
-                            <input type="submit" class="btn btn-primary" value="Save" />
+                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform#platform<?= htmlspecialchars($platform_id) ?>" />Cancel</a>
+                            &nbsp;&nbsp;
+                            <input type="submit" class="btn btn-primary btn-sm" value="Save" />
                         </form>
                     </div>
                 </div>

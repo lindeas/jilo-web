@@ -1,6 +1,6 @@
 
                 <!-- widget "hosts" -->
-                <div class="card text-center w-50 mx-auto">
+                <div class="card text-center w-50 mx-lef">
                     <p class="h4 card-header">Jilo configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong></p>
                     <div class="card-body">
                         <p class="card-text">delete a host:</p>
@@ -24,8 +24,9 @@ foreach ($hostDetails[0] as $key => $value) {
                             <input type="hidden" name="delete" value="true" />
                             <p class="h5 text-danger">Are you sure you want to delete this host?</p>
                             <br />
-                            <a class="btn btn-secondary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host#platform<?= htmlspecialchars($platform_id) ?>host<?= htmlspecialchars($hostDetails[0]['id']) ?>" />Cancel</a>
-                            <input type="submit" class="btn btn-danger" value="Delete" />
+                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host#platform<?= htmlspecialchars($platform_id) ?>host<?= htmlspecialchars($hostDetails[0]['id']) ?>" />Cancel</a>
+                            &nbsp;&nbsp;
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
                         </form>
                     </div>
                 </div>
