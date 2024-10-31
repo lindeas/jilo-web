@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ];
         $result = $hostObject->editHost($platform_id, $updatedHost);
         if ($result === true) {
-            $_SESSION['notice'] = "Host id \"{$_REQUEST['host']}\" edited.";
+            $_SESSION['notice'] = "Host \"{$_REQUEST['address']}:{$_REQUEST['port']}\" edited.";
         } else {
             $_SESSION['error'] = "Editing the host failed. Error: $result";
         }
@@ -220,29 +220,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             break;
 
-    // if there is no $item, we work on the local config DB
         default:
-            switch ($action) {
-                case 'add-agent':
-                    $jilo_agent_types = $agentObject->getAgentTypes();
-                    $jilo_agents_in_platform = $agentObject->getPlatformAgentTypes($platform_id);
-                    $jilo_agent_types_in_platform = array_column($jilo_agents_in_platform, 'agent_type_id');
-                    include '../app/templates/config-add-agent.php';
-                    break;
-                case 'edit':
-                    if (isset($_GET['agent'])) {
-                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-                        $jilo_agent_types = $agentObject->getAgentTypes();
-                        include '../app/templates/config-edit-agent.php';
-                    }
-                    break;
-                case 'delete':
-                    if (isset($_GET['agent'])) {
-                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-                        include '../app/templates/config-delete-agent.php';
-                    }
-                    break;
-            }
+        // the default config page is the platforms page
+            header("Location: $app_root?page=config&item=platform");
+            exit();
+
+//            switch ($action) {
+//                case 'add-agent':
+//                    $jilo_agent_types = $agentObject->getAgentTypes();
+//                    $jilo_agents_in_platform = $agentObject->getPlatformAgentTypes($platform_id);
+//                    $jilo_agent_types_in_platform = array_column($jilo_agents_in_platform, 'agent_type_id');
+//                    include '../app/templates/config-add-agent.php';
+//                    break;
+//                case 'edit':
+//                    if (isset($_GET['agent'])) {
+//                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+//                        $jilo_agent_types = $agentObject->getAgentTypes();
+//                        include '../app/templates/config-edit-agent.php';
+//                    }
+//                    break;
+//                case 'delete':
+//                    if (isset($_GET['agent'])) {
+//                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
+//                        include '../app/templates/config-delete-agent.php';
+//                    }
+//                    break;
+//            }
     }
 }
 

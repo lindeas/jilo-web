@@ -41,22 +41,22 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>live data</small></p></li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=graphs">
-                            <li class="list-group-item<?php if ($page === 'graphs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'data' && $item === 'graphs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-chart-bar" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="combined graphs"></i>combined graphs
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=latest">
-                            <li class="list-group-item<?php if ($page === 'latest') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'data' && $item === 'latest') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-list" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="latest data"></i>latest data
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=configjs">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'configjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'data' && $item === 'configjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-tv" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="config.js"></i>config.js
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=data&item=interfaceconfigjs">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'interfaceconfigjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'data' && $item === 'interfaceconfigjs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-th" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="interface_config.js"></i>interface_config.js
                             </li>
                         </a>
@@ -69,17 +69,17 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jitsi platforms config</small></p></li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'config' && $item === 'platform') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-sitemap" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>platforms
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'config' && $item === 'host') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-laptop" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>hosts
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoint">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'config' && $item === 'endpoint') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-stethoscope" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>endpoints
                             </li>
                         </a>
@@ -88,7 +88,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
 <?php if ($userObject->hasRight($user_id, 'view config file')) {?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                            <li class="list-group-item<?php if ($page === 'config' && $item === 'config_file') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>config file
                             </li>
                         </a>
