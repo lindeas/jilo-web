@@ -21,13 +21,6 @@ if (isset($_REQUEST['until_time'])) {
     $until_time = htmlspecialchars($_REQUEST['until_time']);
 }
 
-if (isset($_SESSION['notice'])) {
-    $notice = htmlspecialchars($_SESSION['notice']); // 'notice' for all non-critical messages
-}
-if (isset($_SESSION['error'])) {
-    $error = htmlspecialchars($_SESSION['error']); // 'error' for errors
-}
-
 // hosts
 if (isset($_POST['address'])) {
     $address = htmlspecialchars($_POST['address']);
