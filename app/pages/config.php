@@ -121,7 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'jitsi_url'		=> $_POST['jitsi_url'],
             'jilo_database'	=> $_POST['jilo_database'],
         ];
-        $platformObject->editPlatform($platform, $updatedPlatform);
+        $result = $platformObject->editPlatform($platform, $updatedPlatform);
+        if ($result === true) {
+            $_SESSION['notice'] = "Platform \"{$_REQUEST['name']}\" edited.";
+        } else {
+            $_SESSION['error'] = "Editing the platform failed. Error: $result";
+        }
 
     }
 

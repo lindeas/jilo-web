@@ -3,7 +3,7 @@
                 <div class="card text-center w-50 mx-lef">
                     <p class="h4 card-header">Jilo configuration for Jitsi platform <strong>"<?= htmlspecialchars($platformDetails[0]['name']) ?>"</strong> :: edit</p>
                     <div class="card-body">
-                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config">
+                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=platform">
 <?php
 foreach ($platformDetails[0] as $key => $value) {
     if ($key === 'id') continue;
