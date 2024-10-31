@@ -65,26 +65,20 @@ class Host {
     }
 
     // edit an existing host
-    public function editAgent($platform_id, $updatedAgent) {
+    public function editHost($platform_id, $updatedHost) {
         try {
-            $sql = 'UPDATE jilo_agents SET
-                        agent_type_id = :agent_type_id,
-                        url = :url,
-                        secret_key = :secret_key,
-                        check_period = :check_period
+            $sql = 'UPDATE hosts SET
+                        address = :address,
+                        port = :port,
+                        name = :name,
                     WHERE
-                        id = :agent_id
-                    AND
-                        platform_id = :platform_id';
+                        id = :id';
 
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':agent_type_id'	=> $updatedAgent['agent_type_id'],
-                ':url'			=> $updatedAgent['url'],
-                ':secret_key'		=> $updatedAgent['secret_key'],
-                ':check_period' => $updatedAgent['check_period'],
-                ':agent_id'		=> $updatedAgent['id'],
-                ':platform_id'		=> $platform_id,
+                ':address'  => $updatedHost['address'],
+                ':port'     => $updatedHost['port'],
+                ':name'     => $updatedHost['name'],
             ]);
 
             return true;

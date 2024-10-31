@@ -82,6 +82,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $platform = $_POST['platform'];
         $platformObject->deletePlatform($platform);
 
+    // an update to an existing host
+    } elseif (isset($_POST['host'])) {
+        $updatedHost = [
+            'id'        => $host,
+            'address'   => $address,
+            'port'      => $port,
+            'name'      => $name,
+        ];
+        $result = $hostObject->editHost($platform_id, $updatedHost);
+        if ($result === true) {
+            $_SESSION['notice'] = "Host id \"{$_REQUEST['host']}\" edited.";
+        } else {
+            $_SESSION['error'] = "Editing the host failed. Error: $result";
+        }
+
     // an update to an existing agent
     } elseif (isset($_POST['agent'])) {
         $updatedAgent = [
