@@ -70,12 +70,13 @@ class Host {
             $sql = 'UPDATE hosts SET
                         address = :address,
                         port = :port,
-                        name = :name,
+                        name = :name
                     WHERE
                         id = :id';
 
             $query = $this->db->prepare($sql);
             $query->execute([
+                ':id'       => $updatedHost['id'],
                 ':address'  => $updatedHost['address'],
                 ':port'     => $updatedHost['port'],
                 ':name'     => $updatedHost['name'],
