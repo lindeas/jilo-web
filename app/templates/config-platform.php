@@ -29,7 +29,14 @@
                                         <?= htmlspecialchars($key) ?>:
                                     </div>
                                     <div class="col-md-8 text-start">
+<?php if ($key === 'jitsi_url') { ?>
+                                        <a href="<?= htmlspecialchars($value) ?>" target="_blank" rel="noopener noreferrer" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="open the Jitsi Meet platform in a new window">
+                                            <?= htmlspecialchars($value) ?>
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+<?php } else { ?>
                                         <?= htmlspecialchars($value) ?>
+<?php } ?>
                                     </div>
                                 </div>
 <?php } ?>
