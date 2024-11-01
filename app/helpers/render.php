@@ -65,6 +65,8 @@ function editConfig($configPart, $indent, $platform=false, $parent='') {
                                     </select>
 <?php } elseif ($config_item === 'version') {?>
                                     <input class="form-control" type="text" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? '') ?>" disabled />
+<?php } elseif ($config_item === 'db_type') {?>
+                                    <input class="form-control" type="text" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? '') ?>" disabled />
 <?php } else { ?>
                                     <input class="form-control" type="text" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? '') ?>" />
 <?php } ?>
