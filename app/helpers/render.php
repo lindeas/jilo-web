@@ -2,8 +2,6 @@
 
 // render config variables array
 function renderConfig($configPart, $indent, $platform=false, $parent='') {
-    global $app_root;
-    global $config;
 ?>
                         <div style="padding-left: <?= $indent ?>px; padding-bottom: 20px;">
 <?php foreach ($configPart as $config_item => $config_value) { ?>
@@ -40,8 +38,6 @@ function renderConfig($configPart, $indent, $platform=false, $parent='') {
 
 // render config variables array
 function editConfig($configPart, $indent, $platform=false, $parent='') {
-    global $app_root;
-    global $config;
 ?>
                         <div style="padding-left: <?= $indent ?>px; padding-bottom: 20px;">
 <?php foreach ($configPart as $config_item => $config_value) { ?>
