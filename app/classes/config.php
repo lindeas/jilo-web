@@ -3,7 +3,7 @@
 class Config {
 
     // edit the config file
-    public function editConfigFile($updatedConfig) {
+    public function editConfigFile($updatedConfig, $config_file) {
         // first we get a fresh config file contents as text
         $config_contents = file_get_contents($config_file);
         if (!$config_contents) {
@@ -15,7 +15,7 @@ class Config {
             // we look for 'option' => value
             // option is always in single quotes
             // value is without quotes, because it could be true/false
-            $patterm = "/(['\"]{$key}['\"]\s*=>\s*)([^,]+),/"
+            $patterm = "/(['\"]{$key}['\"]\s*=>\s*)([^,]+),/";
 
             // prepare the value and replace it
             $replacementValue = var_export($newValue, true);

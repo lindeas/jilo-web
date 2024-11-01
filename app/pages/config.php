@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // editing the config file
     if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
-        $result = $configObject->editConfigFile($_POST);
+        $result = $configObject->editConfigFile($_POST, $config_file);
         if ($result === true) {
             $_SESSION['notice'] = "The config file is edited.";
         } else {
