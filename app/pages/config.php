@@ -222,8 +222,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 include '../app/templates/config-configfile-edit.php';
             } else {
                 if ($userObject->hasRight($user_id, 'view config file')) {
-                    // we need to reload config, it could be edited
-                    $config = require $config_file;
                     include '../app/templates/config-configfile.php';
                 } else {
                     include '../app/templates/error-unauthorized.php';
