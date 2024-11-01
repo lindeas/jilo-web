@@ -15,7 +15,7 @@ class Config {
             // we look for 'option' => value
             // option is always in single quotes
             // value is without quotes, because it could be true/false
-            $patterm = "/(['\"]{$key}['\"]\s*=>\s*)([^,]+),/";
+            $pattern = "/(['\"]{$key}['\"]\s*=>\s*)([^,]+),/";
 
             // prepare the value and replace it
             $replacementValue = var_export($newValue, true);
