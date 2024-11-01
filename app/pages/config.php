@@ -15,11 +15,6 @@ $agentObject = new Agent($dbWeb);
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-// FIXME - if editing the flat file is no more needed, remove this
-//    // load the config file and initialize a copy
-//    $content = file_get_contents($config_file);
-//    $updatedContent = $content;
-
     // editing the config file
     if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
         $result = $configObject->editConfigFile($_POST, $config_file);
@@ -155,16 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //        $_SESSION['error'] = getError('Configuration file is not writable.');
 //        header("Location: $app_root?platform=$platform_id&page=config");
 //        exit();
-//    }
-//
-//    // try to update the config file
-//    if (file_put_contents($config_file, $updatedContent) !== false) {
-//        // update successful
-//        $_SESSION['notice'] = "Configuration for {$_POST['name']} is updated.";
-//    } else {
-//        // unsuccessful
-//        $error = error_get_last();
-//        $_SESSION['error'] = getError('Error updating the config: ' . ($error['message'] ?? 'unknown error'));
 //    }
 
 // FIXME the new file is not loaded on first page load
