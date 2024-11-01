@@ -6,7 +6,7 @@
                         <div class="card-text">
                             <p class="text-danger"><strong>this may break everything, use with extreme caution</strong></p>
                         </div>
-                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=config&item=config_file">
+                        <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file">
 
 <?php
 include '../app/helpers/render.php';
@@ -15,11 +15,12 @@ echo "\n";
 ?>
 
                             <p class="text-danger"><strong>this may break everything, use with extreme caution</strong></p>
+                            <br />
+                            <input type="hidden" name="item" value="config_file" />
                             <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file" />Cancel</a>
                             &nbsp;&nbsp;
                             <input type="submit" class="btn btn-danger btn-sm" value="Save" />
                         </form>
-
 
                     </div>
                 </div>

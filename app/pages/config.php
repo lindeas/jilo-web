@@ -20,8 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //    $content = file_get_contents($config_file);
 //    $updatedContent = $content;
 
+    // editing the config file
+    if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
+        $result = $configObject->editConfigFile($_POST);
+        if ($result === true) {
+            $_SESSION['notice'] = "The config file is edited.";
+        } else {
+            $_SESSION['error'] = "Editing the config file failed. Error: $result";
+        }
+
     // new host adding
-    if (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'host') {
+    } elseif (isset($_POST['new']) && isset($_POST['item']) && $_POST['new'] === 'true' && $_POST['item'] === 'host') {
         $newHost = [
             'address'       => $address,
             'port'          => $port,

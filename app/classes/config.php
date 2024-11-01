@@ -2,6 +2,35 @@
 
 class Config {
 
+    // edit the config file
+    public function editConfigFile($updatedConfig) {
+        // first we get a fresh config file contents as text
+        $config_contents = file_get_contents($config_file);
+        if (!$config_contents) {
+            return "Failed to read the config file \"$config_file\".";
+        }
+
+        // loop through the variables and updated them
+        foreach ($updatedConfig as $key => $newValue) {
+            // we look for 'option' => value
+            // option is always in single quotes
+            // value is without quotes, because it could be true/false
+            $patterm = "/(['\"]{$key}['\"]\s*=>\s*)([^,]+),/"
+
+            // prepare the value and replace it
+            $replacementValue = var_export($newValue, true);
+            $config_contents = preg_replace($pattern, "$1{$replacementValue},", $config_contents);
+        }
+
+        // write the new config file
+        if (!file_put_contents($config_file, $config_contents)) {
+            return "Failed to write the config file \"$config_file\".";
+        }
+
+        return true;
+    }
+
+
     // loading the config.js
     public function getPlatformConfigjs($jitsiUrl, $raw = false) {
         // constructing the URL
