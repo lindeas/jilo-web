@@ -13,7 +13,7 @@ function renderConfig($configPart, $indent) {
             if (is_array($config_value)) {
                 // here we render recursively nested arrays
                 $indent = $indent + 50;
-                renderConfig($config_value, $indent, $platform);
+                renderConfig($config_value, $indent);
                 $indent = 0;
             } else {
                 // if it's not array, just display it
@@ -48,7 +48,7 @@ function editConfig($configPart, $indent) {
             if (is_array($config_value)) {
                 // here we render recursively nested arrays
                 $indent = $indent + 50;
-                editConfig($config_value, $indent, $platform);
+                editConfig($config_value, $indent);
                 $indent = 0;
             } else {
                 // if it's not array, just display it
