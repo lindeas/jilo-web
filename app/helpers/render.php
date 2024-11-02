@@ -1,7 +1,7 @@
 <?php
 
 // render config variables array
-function renderConfig($configPart, $indent, $platform=false) {
+function renderConfig($configPart, $indent) {
 ?>
                         <div style="padding-left: <?= $indent ?>px; padding-bottom: 20px;">
 <?php foreach ($configPart as $config_item => $config_value) { ?>
@@ -35,7 +35,7 @@ function renderConfig($configPart, $indent, $platform=false) {
 
 
 // render config variables array
-function editConfig($configPart, $indent, $platform=false) {
+function editConfig($configPart, $indent) {
 ?>
                         <div style="padding-left: <?= $indent ?>px; padding-bottom: 20px;">
 <?php foreach ($configPart as $config_item => $config_value) { ?>
