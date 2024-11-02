@@ -57,8 +57,8 @@ function editConfig($configPart, $indent, $platform=false, $parent='') {
 ?>
                                 <div class="col-md-8 text-start">
 <?php if ($config_item === 'registration_enabled') { ?>
-                                    <input type="hidden" name="<?= htmlspecialchars($config_item) ?>" value="0" />
-                                    <input class="form-check-input" type="checkbox" role="switch" name="<?= htmlspecialchars($config_item) ?>" value="<?= htmlspecialchars($config_value ?? 0) ?>" <?= ($config_value === 1 || $config_value === true) ? 'checked' : '' ?> />
+                                    <input type="hidden" name="<?= htmlspecialchars($config_item) ?>" value="false" />
+                                    <input class="form-check-input" type="checkbox" role="switch" name="<?= htmlspecialchars($config_item) ?>" value="true" <?= ($config_value === 1 || $config_value === true) ? 'checked' : '' ?> />
 <?php } elseif ($config_item === 'environment') { ?>
                                     <select class="form-control" type="text" name="<?= htmlspecialchars($config_item) ?>">
                                         <option value="development"<?= ($config_value === 'development') ? ' selected' : '' ?>>development</option>

@@ -17,10 +17,10 @@ class Config {
             // value is without quotes, because it could be true/false
             $pattern = "/(['\"]{$key}['\"]\s*=>\s*)([^,]+),/";
 
-            // prepare the value, treating booleans as 'true' or 'false'
-            if ($newValue === 1) {
+            // prepare the value, make booleans w/out single quotes
+            if ($newValue === 'true') {
                 $replacementValue = 'true';
-            } elseif ($newValue === 0) {
+            } elseif ($newValue === 'false') {
                 $replacementValue = 'false';
             } else {
                 $replacementValue = var_export($newValue, true);
