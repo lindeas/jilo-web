@@ -24,10 +24,15 @@ function renderConfig($configPart, $indent, $platform=false, $parent='') {
                 $indent = 0;
             } else {
                 // if it's not array, just display it
-?>
+                if ($config_item === 'registration_enabled') { ?>
+                                <div class="border col-md-8 text-start">
+                                    <?= ($config_value === 1 || $config_value === true) ? 'true' : 'false' ?>
+                                </div>
+<?php           } else { ?>
                                 <div class="border col-md-8 text-start">
                                     <?= htmlspecialchars($config_value ?? '')?>
                                 </div>
+<?php           } ?>
 <?php       } ?>
                             </div>
 <?php } ?>
