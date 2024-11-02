@@ -43,7 +43,7 @@
                             <input type="hidden" name="host" value="<?= htmlspecialchars($hostDetails[0]['id']) ?>" />
 
                             <br />
-                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host#platform<?= htmlspecialchars($platform_id) ?>host<?= htmlspecialchars($hostDetails[0]['id']) ?>" />Cancel</a>
+                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform_id) ?>&host=<?= htmlspecialchars($hostDetails[0]['id']) ?>#platform<?= htmlspecialchars($platform_id) ?>host<?= htmlspecialchars($hostDetails[0]['id']) ?>" />Cancel</a>
                             &nbsp;&nbsp;
                             <input type="submit" class="btn btn-primary btn-sm" value="Save" />
                         </form>
