@@ -17,7 +17,7 @@
 <?php foreach ($hosts as $host_array) { ?>
                                 <li style="padding-bottom: 10px;">
                                     <a name="platform<?= htmlspecialchars($platform_array['id']) ?>host<?= htmlspecialchars($host_array['id']) ?>"></a>
-                                    <span class="<?= isset($_REQUEST['platform']) && (int)$platform_array['id'] === (int)$_REQUEST['platform'] && isset($_REQUEST['host']) && (int)$host_array['id'] === (int)$_REQUEST['host'] ? 'border rounded bg-light' : '' ?>" style="padding: 12px;">
+                                    <span class="<?= isset($_REQUEST['platform']) && (int)$platform_array['id'] === (int)$_REQUEST['platform'] && isset($_REQUEST['host']) && (int)$host_array['id'] === (int)$_REQUEST['host'] ? 'border rounded bg-light' : '' ?>" style="padding: 10px;">
                                         <?= htmlspecialchars($host_array['address']) ?>:<?= htmlspecialchars($host_array['port']) ?>
                                         &nbsp;
                                         <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($host_array['platform_id']) ?>&host=<?= htmlspecialchars($host_array['id']) ?>&action=edit">edit host</a>
