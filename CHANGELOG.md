@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - Added Jilo Server check and notice on error
 - Added status page
 - Added Jilo agents status checks
-
+- Added periodic Jilo agents checks
 
 ---
 
