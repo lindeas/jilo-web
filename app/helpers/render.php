@@ -13,14 +13,7 @@ function renderConfig($configPart, $indent, $platform=false, $parent='') {
             if (is_array($config_value)) {
                 // here we render recursively nested arrays
                 $indent = $indent + 50;
-                if ($parent === 'platforms') {
-                    $indent = 100;
-                }
-                if ($config_item === 'platforms') {
-                    renderConfig($config_value, $indent, $platform, 'platforms');
-                } else {
-                    renderConfig($config_value, $indent, $platform);
-                }
+                renderConfig($config_value, $indent, $platform);
                 $indent = 0;
             } else {
                 // if it's not array, just display it
