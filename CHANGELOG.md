@@ -18,10 +18,12 @@ All notable changes to this project will be documented in this file.
 - Added Jilo agents status checks
 - Added periodic Jilo agents checks
 - Added "data" page in the "live data" sidebar
+- Added "jitsi platforms config" section in the sidebar
 
 ### Changed
 - Moved all live checks pages to the "live data" sidebar section
 - Separated the config page to multiple pages
+- Moved the config pages to "jitsi platforms config" section
 
 ---
 
