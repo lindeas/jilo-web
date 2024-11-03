@@ -21,11 +21,15 @@ All notable changes to this project will be documented in this file.
 - Added "jitsi platforms config" section in the sidebar
 - Added editing for platforms
 - Added editing for hosts
+- Added editing for the Jilo configuration file
 
 ### Changed
 - Moved all live checks pages to the "live data" sidebar section
 - Separated the config page to multiple pages
 - Moved the config pages to "jitsi platforms config" section
+
+### Fixed
+- Fixed bugs in config editing pages and cleaned up the HTML
 
 ---
 
