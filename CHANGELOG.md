@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Added status page
 - Added Jilo agents status checks
 - Added periodic Jilo agents checks
+- Added "data" page in the "live data" sidebar
 
 ---
 
