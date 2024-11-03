@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
 - Added periodic Jilo agents checks
 - Added "data" page in the "live data" sidebar
 
+### Changed
+- Moved all live checks pages to the "live data" sidebar section
+- Separated the config page to multiple pages
+
 ---
 
 ## 0.2.1 - 2024-10-17
