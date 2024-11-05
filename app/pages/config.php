@@ -154,7 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // FIXME the new file is not loaded on first page load
     unset($config);
-//    header("Location: $app_root?platform=$platform_id&page=config");
     header("Location: $app_root?page=config&item=$item");
     exit();
 
@@ -199,26 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             break;
 
         case 'endpoint':
-            // TODO
-            break;
-
-        case 'config_file':
-            if (isset($action) && $action === 'edit') {
-                include '../app/templates/config-configfile-edit.php';
-            } else {
-                if ($userObject->hasRight($user_id, 'view config file')) {
-                    include '../app/templates/config-configfile.php';
-                } else {
-                    include '../app/templates/error-unauthorized.php';
-                }
-            }
-            break;
-
-        default:
-        // the default config page is the platforms page
-            header("Location: $app_root?page=config&item=platform");
-            exit();
-
+            // TODO ad here endpoints options
 //            switch ($action) {
 //                case 'add-agent':
 //                    $jilo_agent_types = $agentObject->getAgentTypes();
@@ -240,6 +220,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 //                    }
 //                    break;
 //            }
+            break;
+
+        case 'config_file':
+            if (isset($action) && $action === 'edit') {
+                include '../app/templates/config-configfile-edit.php';
+            } else {
+                if ($userObject->hasRight($user_id, 'view config file')) {
+                    include '../app/templates/config-configfile.php';
+                } else {
+                    include '../app/templates/error-unauthorized.php';
+                }
+            }
+            break;
+
+        default:
+        // the default config page is the platforms page
+            header("Location: $app_root?page=config&item=platform");
+            exit();
     }
 }
 

@@ -7,7 +7,6 @@
                         <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config&item=host">
 <?php
 foreach ($hostDetails[0] as $key => $value) {
-//    if ($key === 'id') continue;
 ?>
                             <div class="row mb-3">
                                 <div class="col-md-4 text-end">
