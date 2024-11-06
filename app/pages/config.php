@@ -17,11 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // editing the config file
     if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
-        $result = $configObject->editConfigFile($_POST, $config_file);
-        if ($result === true) {
-            $_SESSION['notice'] = "The config file is edited.";
+        // check if file is writable
+        if (!is_writable($config_file)) {
+            $_SESSION['error'] = "Configuration file is not writable.";
         } else {
-            $_SESSION['error'] = "Editing the config file failed. Error: $result";
+            $result = $configObject->editConfigFile($_POST, $config_file);
+            if ($result === true) {
+                $_SESSION['notice'] = "The config file is edited.";
+            } else {
+                $_SESSION['error'] = "Editing the config file failed. Error: $result";
+            }
         }
 
     // new host adding
@@ -143,14 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
     }
-
-// FIXME - if this is not needed for editing the flat file, remove it
-//    // check if file is writable
-//    if (!is_writable($config_file)) {
-//        $_SESSION['error'] = getError('Configuration file is not writable.');
-//        header("Location: $app_root?platform=$platform_id&page=config");
-//        exit();
-//    }
 
 // FIXME the new file is not loaded on first page load
     unset($config);
