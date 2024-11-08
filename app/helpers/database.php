@@ -31,10 +31,7 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                 $pdo = $db->getConnection();
                 return ['db' => $db, 'error' => null];
             } catch (Exception $e) {
-                $error = getError('Error connecting to DB.', $e->getMessage());
-                return $error;
-//                include '../app/templates/block-message.php';
-//                exit();
+                return ['db' => null, 'error' => getError('Error connecting to DB.', $e->getMessage())];
             }
         // mysql/mariadb database
         } elseif ($config['db']['db_type'] === 'mysql' || $config['db']['db_type'] === 'mariadb') {
@@ -50,10 +47,7 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                 $pdo = $db->getConnection();
                 return ['db' => $db, 'error' => null];
             } catch (Exception $e) {
-                $error = getError('Error connecting to DB.', $e->getMessage());
-                return $error;
-//                include '../app/templates/block-message.php';
-//                exit();
+                return ['db' => null, 'error' => getError('Error connecting to DB.', $e->getMessage())];
             }
         // unknown database
         } else {
@@ -64,6 +58,5 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
 
     }
 
-//    return $db;
 }
 ?>
