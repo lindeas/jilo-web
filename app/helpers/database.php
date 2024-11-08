@@ -13,10 +13,9 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                 'type'		=> 'sqlite',
                 'dbFile'	=> $dbFile,
             ]);
+            return ['db' => $db, 'error' => null];
         } catch (Exception $e) {
-            $error = getError('Error connecting to DB.', $e->getMessage());
-            include '../app/templates/block-message.php';
-            exit();
+            return ['db' => null, 'error' => getError('Error connecting to DB.', $e->getMessage())];
         }
 
     // connecting to a jilo-web database of the web app
@@ -30,10 +29,12 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                     'dbFile'	=> $config['db']['sqlite_file'],
                 ]);
                 $pdo = $db->getConnection();
+                return $db;
             } catch (Exception $e) {
                 $error = getError('Error connecting to DB.', $e->getMessage());
-                include '../app/templates/block-message.php';
-                exit();
+                return $error;
+//                include '../app/templates/block-message.php';
+//                exit();
             }
         // mysql/mariadb database
         } elseif ($config['db']['db_type'] === 'mysql' || $config['db']['db_type'] === 'mariadb') {
@@ -47,10 +48,12 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                     'password'	=> $config['db']['sql_password'],
                 ]);
                 $pdo = $db->getConnection();
+                return $db;
             } catch (Exception $e) {
                 $error = getError('Error connecting to DB.', $e->getMessage());
-                include '../app/templates/block-message.php';
-                exit();
+                return $error;
+//                include '../app/templates/block-message.php';
+//                exit();
             }
         // unknown database
         } else {
@@ -61,6 +64,6 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
 
     }
 
-    return $db;
+//    return $db;
 }
 ?>
