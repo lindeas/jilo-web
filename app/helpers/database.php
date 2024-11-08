@@ -29,7 +29,7 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                     'dbFile'	=> $config['db']['sqlite_file'],
                 ]);
                 $pdo = $db->getConnection();
-                return $db;
+                return ['db' => $db, 'error' => null];
             } catch (Exception $e) {
                 $error = getError('Error connecting to DB.', $e->getMessage());
                 return $error;
@@ -48,7 +48,7 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
                     'password'	=> $config['db']['sql_password'],
                 ]);
                 $pdo = $db->getConnection();
-                return $db;
+                return ['db' => $db, 'error' => null];
             } catch (Exception $e) {
                 $error = getError('Error connecting to DB.', $e->getMessage());
                 return $error;
