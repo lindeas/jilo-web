@@ -97,7 +97,13 @@ if ( !isset($_COOKIE['username']) && ($page !== 'login' && $page !== 'register')
 // connect to db of Jilo Web
 require '../app/classes/database.php';
 require '../app/helpers/database.php';
-$dbWeb = connectDB($config);
+$response = connectDB($config);
+if ($response['db'] === null) {
+    $error = $response['error'];
+    include '../app/templates/block-message.php';
+} else {
+    $dbWeb = $response['db'];
+}
 
 // start logging
 require '../app/classes/log.php';
