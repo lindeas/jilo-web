@@ -99,8 +99,8 @@ require '../app/classes/database.php';
 require '../app/helpers/database.php';
 $response = connectDB($config);
 if ($response['db'] === null) {
-    $error = $response['error'];
-    include '../app/templates/block-message.php';
+    $error .= $response['error'];
+//    include '../app/templates/block-message.php';
 } else {
     $dbWeb = $response['db'];
 }
@@ -176,10 +176,10 @@ if ($page == 'logout') {
     // page building
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
-    include '../app/templates/block-message.php';
     if (isset($currentUser)) {
         include '../app/templates/page-sidebar.php';
     }
+    include '../app/templates/block-message.php';
     if (in_array($page, $allowed_urls)) {
         // all normal pages
         include "../app/pages/{$page}.php";
