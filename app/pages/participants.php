@@ -3,7 +3,13 @@
 require '../app/classes/participant.php';
 
 // connect to database
-$db = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
+$response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
+if ($response['db'] === null) {
+    $error = $response['error'];
+    include '../app/templates/block-message.php';
+} else {
+    $db = $response['db'];
+}
 
 // specify time range
 include '../app/helpers/time_range.php';
