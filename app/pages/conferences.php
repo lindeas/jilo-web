@@ -10,7 +10,7 @@ if ($response['db'] === null) {
     $error = $response['error'];
     include '../app/templates/block-message.php';
 
-// otherwise if DB connectio is OK, go on
+// otherwise if DB connection is OK, go on
 } else {
     $db = $response['db'];
 
