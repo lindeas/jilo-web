@@ -9,7 +9,7 @@
     $hosts = $hostObject->getHostDetails($platform_array['id']);
 ?>
                         <a name="platform<?= htmlspecialchars($platform_array['id']) ?>"></a>
-                        <div class="row mb-1 border" style="padding: 20px; padding-bottom: 0px;">
+                        <div class="row mb-1 border <?= isset($_REQUEST['platform']) && (int)$platform_array['id'] === (int)$_REQUEST['platform'] ? 'rounded bg-light' : '' ?>" style="padding: 20px; padding-bottom: 0px;">
                             <p class="text-start">
                                 platform <strong><?= htmlspecialchars($platform_array['name']) ?></strong>
                             </p>
