@@ -41,7 +41,7 @@
                             <input type="hidden" name="new" value="true" />
 
                             <br />
-                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host" />Cancel</a>
+                            <a class="btn btn-outline-secondary btn-sm" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform_id) ?>&host=<?= htmlspecialchars($host) ?>#platform<?= htmlspecialchars($platform_id) ?>host<?= htmlspecialchars($host) ?>" />Cancel</a>
                             &nbsp;&nbsp;
                             <input type="submit" class="btn btn-primary btn-sm" value="Save" />
                         </form>
