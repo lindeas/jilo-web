@@ -23,8 +23,8 @@ class Server {
     /**
      * Checks the status of a Jilo server by sending a GET request to its health endpoint.
      *
-     * @param string $host     The server hostname or IP address (default: '127.0.0.1').
-     * @param int $port        The port on which the server is running (default: 8080).
+     * @param string $host The server hostname or IP address (default: '127.0.0.1').
+     * @param int $port The port on which the server is running (default: 8080).
      * @param string $endpoint The health check endpoint path (default: '/health').
      * @return bool True if the server returns a 200 OK status, otherwise false.
      */

@@ -1,13 +1,32 @@
 <?php
 
+/**
+ * Class User
+ * Handles user-related functionalities such as registration, login, rights management, and profile updates.
+ */
 class User {
+
+    /**
+     * @var PDO Database connection instance.
+     */
     private $db;
 
+    /**
+     * User constructor.
+     * 
+     * @param Database $database Database instance to retrieve a connection.
+     */
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
 
-    // registration
+    /**
+     * Registers a new user.
+     *
+     * @param string $username The username of the new user.
+     * @param string $password The password for the new user.
+     * @return bool|string True if registration is successful, error message otherwise.
+     */
     public function register($username, $password) {
         try {
             // we have two inserts, start a transaction
@@ -56,7 +75,13 @@ class User {
         }
     }
 
-    // login
+    /**
+     * Logs in a user by verifying credentials.
+     *
+     * @param string $username The username of the user.
+     * @param string $password The password of the user.
+     * @return bool True if login is successful, false otherwise.
+     */
     public function login($username, $password) {
         $query = $this->db->prepare("SELECT * FROM  users WHERE username = :username");
         $query->bindParam(':username', $username);
@@ -72,7 +97,12 @@ class User {
         }
     }
 
-    // get user ID from username
+    /**
+     * Retrieves a user ID based on the username.
+     *
+     * @param string $username The username to look up.
+     * @return array|null User ID details or null if not found.
+     */
     // FIXME not used now?
     public function getUserId($username) {
         $sql = 'SELECT id FROM users WHERE username = :username';
@@ -85,7 +115,12 @@ class User {
 
     }
 
-    // get user details
+    /**
+     * Fetches user details by user ID.
+     *
+     * @param int $user_id The user ID.
+     * @return array|null User details or null if not found.
+     */
     public function getUserDetails($user_id) {
         $sql = 'SELECT
                     um.*,
@@ -106,7 +141,13 @@ class User {
 
     }
 
-    // add user right
+    /**
+     * Grants a user a specific right.
+     *
+     * @param int $user_id The user ID.
+     * @param int $right_id The right ID to grant.
+     * @return void
+     */
     public function addUserRight($user_id, $right_id) {
         $sql = 'INSERT INTO users_rights
                     (user_id, right_id)
@@ -119,7 +160,13 @@ class User {
         ]);
     }
 
-    // remove user right
+    /**
+     * Revokes a specific right from a user.
+     *
+     * @param int $user_id The user ID.
+     * @param int $right_id The right ID to revoke.
+     * @return void
+     */
     public function removeUserRight($user_id, $right_id) {
         $sql = 'DELETE FROM users_rights
                 WHERE
@@ -133,7 +180,11 @@ class User {
         ]);
     }
 
-    // get all rights
+    /**
+     * Retrieves all rights in the system.
+     *
+     * @return array List of rights.
+     */
     public function getAllRights() {
         $sql = 'SELECT
                     id AS right_id,
@@ -147,7 +198,12 @@ class User {
 
     }
 
-    // get user rights
+    /**
+     * Retrieves the rights assigned to a specific user.
+     *
+     * @param int $user_id The user ID.
+     * @return array List of user rights.
+     */
     public function getUserRights($user_id) {
         $sql = 'SELECT
                     u.id AS user_id,
@@ -203,7 +259,13 @@ class User {
 
     }
 
-    // check if the user has a specific right
+    /**
+     * Check if the user has a specific right.
+     *
+     * @param int $user_id The user ID.
+     * @param string $right_name The human-readable name of the user right.
+     * @return bool True if the user has the right, false otherwise.
+     */
     function hasRight($user_id, $right_name) {
         $userRights = $this->getUserRights($user_id);
         $userHasRight = false;
@@ -224,7 +286,18 @@ class User {
 
     }
 
-    // update an existing user
+    /**
+     * Updates a user's metadata in the database.
+     *
+     * @param int $user_id The ID of the user to update.
+     * @param array $updatedUser An associative array containing updated user data:
+     *  - 'name' (string): The updated name of the user.
+     *  - 'email' (string): The updated email of the user.
+     *  - 'timezone' (string): The updated timezone of the user.
+     *  - 'bio' (string): The updated biography of the user.
+     *
+     * @return bool|string Returns true if the update is successful, or an error message if an exception occurs.
+     */
     public function editUser($user_id, $updatedUser) {
         try {
             $sql = 'UPDATE users_meta SET
@@ -250,7 +323,14 @@ class User {
 
     }
 
-    // remove an avatar
+    /**
+     * Removes a user's avatar from the database and deletes the associated file.
+     *
+     * @param int $user_id The ID of the user whose avatar is being removed.
+     * @param string $old_avatar Optional. The file path of the current avatar to delete. Default is an empty string.
+     *
+     * @return bool|string Returns true if the avatar is successfully removed, or an error message if an exception occurs.
+     */
     public function removeAvatar($user_id, $old_avatar = '') {
         try {
             // remove from database
@@ -275,7 +355,16 @@ class User {
 
     }
 
-    // change an avatar
+    /**
+     * Updates a user's avatar by uploading a new file and saving its path in the database.
+     *
+     * @param int $user_id The ID of the user whose avatar is being updated.
+     * @param array $avatar_file The uploaded avatar file from the $_FILES array.
+     *                           Should include 'tmp_name', 'name', 'error', etc.
+     * @param string $avatars_path The directory path where avatar files should be saved.
+     *
+     * @return bool|string Returns true if the avatar is successfully updated, or an error message if an exception occurs.
+     */
     public function changeAvatar($user_id, $avatar_file, $avatars_path) {
         try {
             // check if the file was uploaded
