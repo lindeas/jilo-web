@@ -1,13 +1,33 @@
 <?php
 
+/**
+ * Class Log
+ * Handles logging events into a database and reading log entries.
+ */
 class Log {
+    /**
+     * @var PDO $db The database connection instance.
+     */
     private $db;
 
+    /**
+     * Constructor to initialize the database connection.
+     *
+     * @param object $database An object providing the database connection.
+     */
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
 
-    // insert log event
+    /**
+     * Insert a log event into the database.
+     *
+     * @param int    $user_id The ID of the user associated with the log event.
+     * @param string $message The log message to insert.
+     * @param string $scope   The scope of the log event (e.g., 'user', 'system'). Default is 'user'.
+     *
+     * @return bool|string True on success, or an error message on failure.
+     */
     public function insertLog($user_id, $message, $scope='user') {
         try {
             $sql = 'INSERT INTO logs
@@ -29,7 +49,16 @@ class Log {
         }
     }
 
-    // read logs
+    /**
+     * Retrieve log entries from the database.
+     *
+     * @param int    $user_id        The ID of the user whose logs are being retrieved.
+     * @param string $scope          The scope of the logs ('user' or 'system').
+     * @param int    $offset         The offset for pagination. Default is 0.
+     * @param int    $items_per_page The number of log entries to retrieve per page. Default is no limit.
+     *
+     * @return array An array of log entries.
+     */
     public function readLog($user_id, $scope, $offset=0, $items_per_page='') {
         if ($scope === 'user') {
             $sql = 'SELECT * FROM logs WHERE user_id = :user_id ORDER BY time DESC';

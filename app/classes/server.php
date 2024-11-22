@@ -5,7 +5,6 @@
  * Handles server-related operations, including retrieving server status.
  */
 class Server {
-
     /**
      * @var PDO|null The database connection instance.
      */
