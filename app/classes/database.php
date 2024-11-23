@@ -28,15 +28,15 @@ class Database {
     public function __construct($options) {
         // check if PDO extension is loaded
         if ( !extension_loaded('pdo') ) {
-            $error = getError('PDO extension not loaded.');
+            throw new Exception('PDO extension not loaded.');
         }
 
         // options check
         if (empty($options['type'])) {
-            $error = getError('Database type is not set.');
+            throw new Exception('Database type is not set.');
         }
 
-        // database type
+        // connect based on database type
         switch ($options['type']) {
             case 'sqlite':
                 $this->connectSqlite($options);
@@ -45,7 +45,7 @@ class Database {
                 $this->connectMysql($options);
                 break;
             default:
-                $error = getError("Database type \"{$options['type']}\" is not supported.");
+                throw new Exception("Database type \"{$options['type']}\" is not supported.");
         }
     }
 
@@ -60,12 +60,12 @@ class Database {
     private function connectSqlite($options) {
         // pdo_sqlite extension is needed
         if (!extension_loaded('pdo_sqlite')) {
-            $error = getError('PDO extension for SQLite not loaded.');
+            throw new Exception('PDO extension for SQLite not loaded.');
         }
 
         // SQLite options
         if (empty($options['dbFile']) || !file_exists($options['dbFile'])) {
-            $error = getError("SQLite database file \"{$dbFile}\" not found.");
+            throw new Exception("SQLite database file \"{$options['dbFile']}\" not found.");
         }
 
         // connect to SQLite
@@ -75,7 +75,7 @@ class Database {
             // enable foreign key constraints (not ON by default in SQLite3)
             $this->pdo->exec('PRAGMA foreign_keys = ON;');
         } catch (PDOException $e) {
-            $error = getError('SQLite connection failed: ', $e->getMessage());
+            throw new Exception('SQLite connection failed: ' . $e->getMessage());
         }
     }
 
@@ -94,12 +94,12 @@ class Database {
     private function connectMysql($options) {
         // pdo_mysql extension is needed
         if (!extension_loaded('pdo_mysql')) {
-            $error = getError('PDO extension for MySQL not loaded.');
+            throw new Exception('PDO extension for MySQL not loaded.');
         }
 
         // MySQL options
         if (empty($options['host']) || empty($options['dbname']) || empty($options['user'])) {
-            $error = getError('MySQL connection data is missing.');
+            throw new Exception('MySQL connection data is missing.');
         }
 
         // Connect to MySQL
@@ -108,7 +108,7 @@ class Database {
             $this->pdo = new PDO($dsn, $options['user'], $options['password'] ?? '');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            $error = getError('MySQL connection failed: ', $e->getMessage(), $config['environment']);
+            throw new Exception('MySQL connection failed: ' . $e->getMessage());
         }
     }
 
