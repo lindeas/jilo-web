@@ -49,6 +49,14 @@ class Database {
         }
     }
 
+    /**
+     * Establishes a connection to a SQLite database.
+     *
+     * @param array $options An associative array with SQLite connection options:
+     *                       - dbFile: The path to the SQLite database file.
+     *
+     * @throws Exception If the SQLite PDO extension is not loaded or the database file is missing.
+     */
     private function connectSqlite($options) {
         // pdo_sqlite extension is needed
         if (!extension_loaded('pdo_sqlite')) {
@@ -71,6 +79,18 @@ class Database {
         }
     }
 
+    /**
+     * Establishes a connection to a MySQL (or MariaDB) database.
+     *
+     * @param array $options An associative array with MySQL connection options:
+     *                       - host: The database host.
+     *                       - port: The database port (default: 3306).
+     *                       - dbname: The name of the database.
+     *                       - user: The database username.
+     *                       - password: The database password (optional).
+     *
+     * @throws Exception If the MySQL PDO extension is not loaded or required options are missing.
+     */
     private function connectMysql($options) {
         // pdo_mysql extension is needed
         if (!extension_loaded('pdo_mysql')) {
@@ -92,6 +112,11 @@ class Database {
         }
     }
 
+    /**
+     * Retrieves the current PDO connection instance.
+     *
+     * @return PDO|null The PDO instance or null if no connection is established.
+     */
     public function getConnection() {
         return $this->pdo;
     }
