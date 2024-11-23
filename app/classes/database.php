@@ -1,10 +1,32 @@
 <?php
 
+/**
+ * Class Database
+ * Manages database connections for SQLite and MySQL (or MariaDB).
+ */
 class Database {
+    /**
+     * @var PDO|null $pdo The PDO instance representing the database connection.
+     */
     private $pdo;
 
+    /**
+     * Database constructor.
+     * Initializes the database connection based on provided options.
+     *
+     * @param array $options An associative array with database connection options:
+     *                       - type: The database type ('sqlite', 'mysql', or 'mariadb').
+     *                       - dbFile: The path to the SQLite database file (required for SQLite).
+     *                       - host: The database host (required for MySQL).
+     *                       - port: The port for MySQL (optional, default: 3306).
+     *                       - dbname: The name of the MySQL database (required for MySQL).
+     *                       - user: The username for MySQL (required for MySQL).
+     *                       - password: The password for MySQL (optional).
+     *
+     * @throws Exception If required extensions are not loaded or options are invalid.
+     */
     public function __construct($options) {
-        // pdo needed
+        // check if PDO extension is loaded
         if ( !extension_loaded('pdo') ) {
             $error = getError('PDO extension not loaded.');
         }
