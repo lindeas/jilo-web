@@ -2,11 +2,12 @@
 
 /**
  * Class Server
+ *
  * Handles server-related operations, including retrieving server status.
  */
 class Server {
     /**
-     * @var PDO|null The database connection instance.
+     * @var PDO|null $db The database connection instance.
      */
     private $db;
 

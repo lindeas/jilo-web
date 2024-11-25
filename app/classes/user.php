@@ -2,11 +2,12 @@
 
 /**
  * Class User
+ *
  * Handles user-related functionalities such as registration, login, rights management, and profile updates.
  */
 class User {
     /**
-     * @var PDO Database connection instance.
+     * @var PDO|null $db The database connection instance.
      */
     private $db;
 

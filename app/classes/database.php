@@ -2,11 +2,12 @@
 
 /**
  * Class Database
+ *
  * Manages database connections for SQLite and MySQL (or MariaDB).
  */
 class Database {
     /**
-     * @var PDO|null $pdo The PDO instance representing the database connection.
+     * @var PDO|null $pdo The database connection instance.
      */
     private $pdo;
 

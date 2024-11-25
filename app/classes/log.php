@@ -2,11 +2,12 @@
 
 /**
  * Class Log
+ *
  * Handles logging events into a database and reading log entries.
  */
 class Log {
     /**
-     * @var PDO $db The database connection instance.
+     * @var PDO|null $db The database connection instance.
      */
     private $db;
 
