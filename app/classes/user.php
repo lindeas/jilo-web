@@ -13,7 +13,7 @@ class User {
 
     /**
      * User constructor.
-     * 
+     *
      * @param Database $database Database instance to retrieve a connection.
      */
     public function __construct($database) {

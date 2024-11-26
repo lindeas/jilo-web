@@ -25,7 +25,7 @@ class Host {
      *
      * @param string $platform_id The platform ID to filter the hosts by (optional).
      * @param string $host_id The host ID to filter the details (optional).
-     * 
+     *
      * @return array The details of the host(s) in the form of an associative array.
      */
     public function getHostDetails($platform_id = '', $host_id = '') {
@@ -65,7 +65,7 @@ class Host {
      * Add a new host to the database.
      *
      * @param array $newHost An associative array containing the details of the host to be added.
-     * 
+     *
      * @return bool True if the host was added successfully, otherwise false.
      */
     public function addHost($newHost) {
@@ -95,7 +95,7 @@ class Host {
      *
      * @param string $platform_id The platform ID to which the host belongs.
      * @param array $updatedHost An associative array containing the updated details of the host.
-     * 
+     *
      * @return bool True if the host was updated successfully, otherwise false.
      */
     public function editHost($platform_id, $updatedHost) {
@@ -127,7 +127,7 @@ class Host {
      * Delete a host from the database.
      *
      * @param int $host_id The ID of the host to be deleted.
-     * 
+     *
      * @return bool True if the host was deleted successfully, otherwise false.
      */
     public function deleteHost($host_id) {
