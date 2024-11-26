@@ -1,17 +1,24 @@
 <?php
 
-// Jilo components status checks
-//
+/**
+ * Jilo Components Status Checks
+ *
+ * This page ("status") checks the status of various Jilo platform components
+ * by fetching data from agents and determining their availability.
+ * It generates output for each platform and agent.
+ */
 
 require '../app/classes/agent.php';
 $agentObject = new Agent($dbWeb);
 
 include '../app/templates/status-server.php';
 
+// loop through all platforms to check their agents
 foreach ($platformsAll as $platform) {
 
     include '../app/templates/status-platform.php';
 
+    // fetch agent details for the current platform
     $agentDetails = $agentObject->getAgentDetails($platform['id']);
     foreach ($agentDetails as $agent) {
         $agent_url = parse_url($agent['url']);
@@ -23,6 +30,7 @@ foreach ($platformsAll as $platform) {
         $agent_response = $agentObject->fetchAgent($agent['id'], true);
         $agent_data = json_decode($agent_response);
 
+        // determine agent availability based on response data
         if (json_last_error() === JSON_ERROR_NONE) {
             $agent_availability = '<span class="text-warning">unknown</span>';
             foreach ($agent_data as $key => $value) {
