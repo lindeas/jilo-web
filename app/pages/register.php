@@ -1,17 +1,23 @@
 <?php
 
-// registration is allowed, go on
+/**
+ * User registration
+ *
+ * This page ("register") handles user registration if the feature is enabled in the configuration.
+ * It accepts a POST request with a username and password, attempts to register the user,
+ * and redirects to the login page on success or displays an error message on failure.
+ */
+
+// check if the registration is allowed
 if ($config['registration_enabled'] === true) {
 
-//    require '../app/classes/user.php';
+    // clear any previous error messages
     unset($error);
 
     try {
 
         // connect to database
         $dbWeb = connectDB($config);
-
-//        $userObject = new User($dbWeb);
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
             $username = $_POST['username'];
