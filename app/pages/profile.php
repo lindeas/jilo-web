@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * User Profile Management
+ *
+ * This page ("profile") handles user profile actions such as updating user details,
+ * avatar management, and assigning or removing user rights.
+ * It supports both form submissions and displaying profile templates.
+ *
+ * Actions handled:
+ * - `remove`: Remove a user's avatar.
+ * - `edit`: Edit user profile details, rights, or avatar.
+ *
+ * Global Variables Used:
+ * - `$userObject`: Instance of the user management class.
+ * - `$userDetails`: Current user details array.
+ * - `$userRights`: Array of user's current rights.
+ * - `$config`: Configuration array for avatars and other settings.
+ * - `$app_root`: Base URL of the application.
+ */
+
 $action = $_REQUEST['action'] ?? '';
 
 // if a form is submitted, it's from the edit page
