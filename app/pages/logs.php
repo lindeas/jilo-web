@@ -1,8 +1,11 @@
 <?php
 
-//
-// logs listings
-//
+/**
+ * Logs Listings
+ *
+ * This page ("logs") retrieves and displays logs for a specified user within a time range.
+ * It supports pagination and filtering, and generates a widget to display the logs.
+ */
 
 // specify time range
 include '../app/helpers/time_range.php';
@@ -13,7 +16,7 @@ $browse_page = $_REQUEST['p'] ?? 1;
 $browse_page = (int)$browse_page;
 $offset = ($browse_page -1) * $items_per_page;
 
-// user or system
+// logs scope: user or system
 $scope = 'user';
 
 // prepare the result
