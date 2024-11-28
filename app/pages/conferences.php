@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Conference information
+ *
+ * This page ("conferences") handles the listing and searching of conferences from the database.
+ * It supports searching by conference ID, name, or listing all conferences within a specified time range.
+ */
+
 require '../app/classes/conference.php';
 
 // connect to database

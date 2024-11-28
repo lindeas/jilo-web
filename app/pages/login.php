@@ -3,7 +3,7 @@
 /**
  * User Login
  *
- * this page ("login") handles user login, session management, cookie handling, and error logging.
+ * This page ("login") handles user login, session management, cookie handling, and error logging.
  * Supports "remember me" functionality to extend session duration.
  *
  * Global Variables Used:
