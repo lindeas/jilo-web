@@ -1,5 +1,25 @@
 <?php
 
+/**
+ * User Login
+ *
+ * this page ("login") handles user login, session management, cookie handling, and error logging.
+ * Supports "remember me" functionality to extend session duration.
+ *
+ * Global Variables Used:
+ * - `$userObject`: Instance of the user management class.
+ * - `$logObject`: Instance of the logging class.
+ * - `$config`: Configuration array containing settings for cookies, domain, and folder.
+ * - `$app_root`: Base URL of the application.
+ * - `$user_IP`: Captured IP address of the user.
+ *
+ * Actions Performed:
+ * - Validates login credentials.
+ * - Manages session and cookies based on "remember me" option.
+ * - Logs successful and failed login attempts.
+ * - Displays login form and optional custom messages.
+ */
+
 // clear the global error var before login
 unset($error);
 
