@@ -1,5 +1,33 @@
 <?php
 
+/**
+ * Participants information
+ *
+ * This page ("participants") retrieves and displays participant information for conferences,
+ * allowing filtering by participant ID, name, or IP address.
+ * It supports pagination and displays the results in a widget.
+ *
+ * Dependencies:
+ * - `Participant` class for interacting with the database.
+ * - Time range helper for filtering data within a specific time range.
+ * - Widget template for displaying results.
+ *
+ * Global Variables Used:
+ * - `$config`: Application configuration array.
+ * - `$platformDetails`: Array containing platform details.
+ * - `$platform_id`: Current platform ID.
+ *
+ * Inputs:
+ * - `$_REQUEST['id']`: Participant ID to filter by.
+ * - `$_REQUEST['name']`: Participant name (stats_id) to filter by.
+ * - `$_REQUEST['ip']`: Participant IP to filter by.
+ * - `$_REQUEST['p']`: Page number for pagination (default: 1).
+ *
+ * Outputs:
+ * - Displays a widget with the filtered participant data.
+ * - Displays an error message if the database connection fails.
+ */
+
 require '../app/classes/participant.php';
 
 // connect to database
