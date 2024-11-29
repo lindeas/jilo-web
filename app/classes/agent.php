@@ -1,13 +1,36 @@
 <?php
 
+/**
+ * class Agent
+ *
+ * Provides methods to interact with Jilo agents, including retrieving details, managing agents, generating JWT tokens,
+ * and fetching data from agent APIs.
+ */
 class Agent {
+    /**
+     * @var PDO|null $db The database connection instance.
+     */
     private $db;
 
+    /**
+     * Agent constructor.
+     * Initializes the database connection.
+     *
+     * @param object $database The database object to initialize the connection.
+     */
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
 
-    // get details of a specified agent ID (or all) in a specified platform ID
+
+    /**
+     * Retrieves details of a specified agent ID (or all agents) in a specified platform.
+     *
+     * @param int $platform_id The platform ID to filter agents by.
+     * @param int $agent_id The agent ID to filter by. If empty, all agents are returned.
+     *
+     * @return array The list of agent details.
+     */
     public function getAgentDetails($platform_id, $agent_id = '') {
         $sql = 'SELECT
                     ja.id,
@@ -41,7 +64,14 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // get details of a specified agent ID
+
+    /**
+     * Retrieves details of a specified agent by its agent ID.
+     *
+     * @param int $agent_id The agent ID to filter by.
+     *
+     * @return array The agent details.
+     */
     public function getAgentIDDetails($agent_id) {
         $sql = 'SELECT
                     ja.id,
@@ -66,7 +96,12 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // get agent types
+
+    /**
+     * Retrieves all agent types.
+     *
+     * @return array List of all agent types.
+     */
     public function getAgentTypes() {
         $sql = 'SELECT *
                     FROM jilo_agent_types
@@ -77,7 +112,14 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // get agent types already configured for a platform
+
+    /**
+     * Retrieves agent types already configured for a specific platform.
+     *
+     * @param int $platform_id The platform ID to filter agents by.
+     *
+     * @return array List of agent types configured for the platform.
+     */
     public function getPlatformAgentTypes($platform_id) {
         $sql = 'SELECT
                     id,
@@ -93,7 +135,15 @@ class Agent {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // add new agent
+
+    /**
+     * Adds a new agent to the platform.
+     *
+     * @param int $platform_id The platform ID where the agent is to be added.
+     * @param array $newAgent The new agent details to add.
+     *
+     * @return bool|string Returns true on success or an error message on failure.
+     */
     public function addAgent($platform_id, $newAgent) {
         try {
             $sql = 'INSERT INTO jilo_agents
@@ -117,7 +167,15 @@ class Agent {
         }
     }
 
-    // edit an existing agent
+
+    /**
+     * Edits an existing agent's details.
+     *
+     * @param int $platform_id The platform ID where the agent exists.
+     * @param array $updatedAgent The updated agent details.
+     *
+     * @return bool|string Returns true on success or an error message on failure.
+     */
     public function editAgent($platform_id, $updatedAgent) {
         try {
             $sql = 'UPDATE jilo_agents SET
@@ -148,7 +206,13 @@ class Agent {
     }
 
 
-    // delete an agent
+    /**
+     * Deletes an agent from the platform.
+     *
+     * @param int $agent_id The agent ID to delete.
+     *
+     * @return bool|string Returns true on success or an error message on failure.
+     */
     public function deleteAgent($agent_id) {
         try {
             $sql = 'DELETE FROM jilo_agents
@@ -167,7 +231,13 @@ class Agent {
     }
 
 
-    // check for agent cache
+    /**
+     * Checks if the agent cache is still valid.
+     *
+     * @param int $agent_id The agent ID to check.
+     *
+     * @return bool Returns true if cache is valid, false otherwise.
+     */
     public function checkAgentCache($agent_id) {
         $agent_cache_name = 'agent' . $agent_id . '_cache';
         $agent_cache_time = 'agent' . $agent_id . '_time';
@@ -175,13 +245,26 @@ class Agent {
     }
 
 
-    // method for base64 URL encoding for JWT tokens
+    /**
+     * Base64 URL encodes the input data. Used for encoding JWT tokens
+     *
+     * @param string $data The data to encode.
+     *
+     * @return string The base64 URL encoded string.
+     */
     private function base64UrlEncode($data) {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }
 
 
-    // generate a JWT token for jilo agent
+    /**
+     * Generates a JWT token for a Jilo agent.
+     *
+     * @param array $payload The payload data to include in the token.
+     * @param string $secret_key The secret key used to sign the token.
+     *
+     * @return string The generated JWT token.
+     */
     public function generateAgentToken($payload, $secret_key) {
 
         // header
@@ -206,7 +289,14 @@ class Agent {
     }
 
 
-    // fetch result from jilo agent API
+    /**
+     * Fetches data from a Jilo agent's API, optionally forcing a refresh of the cache.
+     *
+     * @param int $agent_id The agent ID to fetch data for.
+     * @param bool $force Whether to force-refresh the cache (default: false).
+     *
+     * @return string The API response, or an error message in JSON format.
+     */
     public function fetchAgent($agent_id, $force = false) {
 
         // we need agent details for URL and JWT token
@@ -274,15 +364,28 @@ class Agent {
     }
 
 
-    // clear agent cache
+    /**
+     * Clears the cached data for a specific agent.
+     *
+     * @param int $agent_id The agent ID for which the cache should be cleared.
+     */
     public function clearAgentCache($agent_id) {
         $_SESSION["agent{$agent_id}_cache"] = '';
         $_SESSION["agent{$agent_id}_cache_time"] = '';
     }
 
 
-    // get latest stored jilo agents data
+    /**
+     * Retrieves the latest stored data for a specific platform, agent type, and metric type.
+     *
+     * @param int $platform_id The platform ID.
+     * @param string $agent_type The agent type.
+     * @param string $metric_type The metric type to filter by.
+     *
+     * @return mixed The latest stored data.
+     */
     public function getLatestData($platform_id, $agent_type, $metric_type) {
+        // TODO
         // retrieves data already stored in db from another function (or the jilo-server to-be)
     }
 
