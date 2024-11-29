@@ -1,14 +1,40 @@
 <?php
 
+/**
+ * class Component
+ *
+ * Provides methods to interact with Jitsi component events in the database.
+ */
 class Component {
+    /**
+     * @var PDO|null $db The database connection instance.
+     */
     private $db;
 
+    /**
+     * Component constructor.
+     * Initializes the database connection.
+     *
+     * @param object $database The database object to initialize the connection.
+     */
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
 
 
-    // list of component events
+    /**
+     * Retrieves Jitsi component events based on various filters.
+     *
+     * @param string $jitsi_component The Jitsi component name.
+     * @param int $component_id The component ID.
+     * @param string $event_type The type of event to filter by.
+     * @param string $from_time The start date in 'YYYY-MM-DD' format.
+     * @param string $until_time The end date in 'YYYY-MM-DD' format.
+     * @param int $offset The offset for pagination.
+     * @param int $items_per_page The number of items to retrieve per page.
+     *
+     * @return array The list of Jitsi component events or an empty array if no results.
+     */
     public function jitsiComponents($jitsi_component, $component_id, $event_type, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -62,7 +88,6 @@ ORDER BY
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
 }
 
