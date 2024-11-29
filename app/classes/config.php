@@ -1,8 +1,19 @@
 <?php
 
+/**
+ * class Config
+ *
+ * Handles editing and fetching configuration files.
+ */
 class Config {
 
-    // edit the config file
+    /**
+     * Edits a configuration file by updating specified options.
+     *
+     * @param array $updatedConfig Key-value pairs of configuration options to update.
+     * @param string $config_file Path to the configuration file.
+     * @return mixed Returns true on success, or an error message on failure.
+     */
     public function editConfigFile($updatedConfig, $config_file) {
         // first we get a fresh config file contents as text
         $config_contents = file_get_contents($config_file);
@@ -39,7 +50,13 @@ class Config {
     }
 
 
-    // loading the config.js
+    /**
+     * Loads the config.js file from the Jitsi server.
+     *
+     * @param string $jitsiUrl The base URL of the Jitsi server.
+     * @param bool $raw Whether to return the full file (true) or only uncommented values (false).
+     * @return string The content of the config.js file or an error message.
+     */
     public function getPlatformConfigjs($jitsiUrl, $raw = false) {
         // constructing the URL
         $configjsFile = $jitsiUrl . '/config.js';
@@ -81,7 +98,13 @@ class Config {
     }
 
 
-    // loading the interface_config.js
+    /**
+     * Loads the interface_config.js file from the Jitsi server.
+     *
+     * @param string $jitsiUrl The base URL of the Jitsi server.
+     * @param bool $raw Whether to return the full file (true) or only uncommented values (false).
+     * @return string The content of the interface_config.js file or an error message.
+     */
     public function getPlatformInterfaceConfigjs($jitsiUrl, $raw = false) {
         // constructing the URL
         $interfaceConfigjsFile = $jitsiUrl . '/interface_config.js';
@@ -121,7 +144,6 @@ class Config {
         return $platformInterfaceConfigjs;
 
     }
-
 
 }
 
