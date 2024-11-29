@@ -21,7 +21,7 @@ class Router {
      *
      * @return void
      */
-    public function add() {
+    public function add($pattern, $callback) {
         $this->routes[$pattern] = $callback;
     }
 
@@ -33,12 +33,13 @@ class Router {
      * @return void Outputs the result of the invoked callback or a 404 error if no route matches.
      */
     public function dispatch($url) {
-        // remove variables from url
+        // remove query string variables from url
         $url = strtok($url, '?');
 
         foreach ($this->routes as $pattern => $callback) {
+            // check if the URL matches the current route pattern
             if (preg_match('#^' . $pattern . '$#', $url, $matches)) {
-                // move any exact match
+                // remove the exact match to extrat parameters
                 array_shift($matches);
                 return $this->invoke($callback, $matches);
             }
@@ -61,8 +62,21 @@ class Router {
      */
     private function invoke($callback, $params) {
         list($controllerName, $methodName) = explode('@', $callback);
-        $controllerClass = "../pages/$pageName";
+        $controllerClass = "../pages/$controllerName";
+
+        // ensure the controller class exists
+        if (!class_exists($controllerClass)) {
+            throw new Exception("Controller '$controllerClass' not found.");
+        }
+
         $controller = new $controllerClass();
+
+        // ensure the method exists on the controller
+        if (!method_exists($controller, $methodName)) {
+            throw new Exception("Method '$methodName' not found in controller '$controllerClass'.");
+        }
+
+        // call the controller's method with the parameters
         call_user_func_array([$controller, $methodName], $params);
     }
 
