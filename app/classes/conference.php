@@ -1,14 +1,38 @@
 <?php
 
+/**
+ * class Conference
+ *
+ * Provides methods for querying conference-related data from the database.
+ */
 class Conference {
+    /**
+     * @var PDO|null $db The database connection instance.
+     */
     private $db;
 
+    /**
+     * Conference constructor.
+     * Initializes the database connection.
+     *
+     * @param object $database The database object to initialize the connection.
+     */
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
 
 
-    // search/list specific conference ID
+    /**
+     * Retrieves conference data by conference ID within a specific time range.
+     *
+     * @param string $conference_id The conference ID.
+     * @param string $from_time The start date in 'YYYY-MM-DD' format.
+     * @param string $until_time The end date in 'YYYY-MM-DD' format.
+     * @param int $offset The offset for pagination.
+     * @param int $items_per_page The number of items to retrieve per page.
+     *
+     * @return array The list of conference events or an empty array if no results.
+     */
     public function conferenceById($conference_id, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -83,7 +107,17 @@ ORDER BY
     }
 
 
-    // search/list specific conference name
+    /**
+     * Retrieves conference data by conference name within a specific time range.
+     *
+     * @param string $conference_name The conference name.
+     * @param string $from_time The start date in 'YYYY-MM-DD' format.
+     * @param string $until_time The end date in 'YYYY-MM-DD' format.
+     * @param int $offset The offset for pagination.
+     * @param int $items_per_page The number of items to retrieve per page.
+     *
+     * @return array The list of conference events or an empty array if no results.
+     */
     public function conferenceByName($conference_name, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -158,7 +192,16 @@ ORDER BY
     }
 
 
-    // list of all conferences
+    /**
+     * Retrieves all conferences within a specific time range, formatted.
+     *
+     * @param string $from_time The start date in 'YYYY-MM-DD' format.
+     * @param string $until_time The end date in 'YYYY-MM-DD' format.
+     * @param int $offset The offset for pagination.
+     * @param int $items_per_page The number of items to retrieve per page.
+     *
+     * @return array The list of formatted conference data or an empty array if no results.
+     */
     public function conferencesAllFormatted($from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -257,7 +300,15 @@ ORDER BY
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // number of conferences
+
+    /**
+     * Retrieves the number of conferences within a specific time range.
+     *
+     * @param string $from_time The start date in 'YYYY-MM-DD' format.
+     * @param string $until_time The end date in 'YYYY-MM-DD' format.
+     *
+     * @return int The number of conferences found.
+     */
     public function conferenceNumber($from_time, $until_time) {
 
         // time period drill-down
