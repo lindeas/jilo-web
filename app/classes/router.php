@@ -12,6 +12,7 @@ class Router {
      */
     private $routes = [];
 
+
     /**
      * Adds a new route to the router.
      *
@@ -23,6 +24,7 @@ class Router {
     public function add($pattern, $callback) {
         $this->routes[$pattern] = $callback;
     }
+
 
     /**
      * Dispatches a request to the appropriate route callback.
@@ -48,6 +50,7 @@ class Router {
         http_response_code(404);
         echo '404 page not found';
     }
+
 
     /**
      * Invokes the callback for a matched route.

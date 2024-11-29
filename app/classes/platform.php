@@ -21,6 +21,7 @@ class Platform {
         $this->db = $database->getConnection();
     }
 
+
     /**
      * Retrieve details of a specific platform or all platforms.
      *
@@ -42,6 +43,7 @@ class Platform {
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     /**
      * Add a new platform to the database.
@@ -73,6 +75,7 @@ class Platform {
             return $e->getMessage();
         }
     }
+
 
     /**
      * Edit an existing platform in the database.
@@ -109,6 +112,7 @@ class Platform {
         }
     }
 
+
     /**
      * Delete a platform from the database.
      *
@@ -132,7 +136,6 @@ class Platform {
             return $e->getMessage();
         }
     }
-
 
 }
 

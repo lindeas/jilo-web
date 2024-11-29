@@ -21,6 +21,7 @@ class Server {
         $this->db = $database->getConnection();
     }
 
+
     /**
      * Checks the status of a Jilo server by sending a GET request to its health endpoint.
      *

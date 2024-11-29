@@ -21,6 +21,7 @@ class Host {
         $this->db = $database->getConnection();
     }
 
+
     /**
      * Get details of a specified host ID (or all hosts) in a specified platform ID.
      *
@@ -90,6 +91,7 @@ class Host {
             return $e->getMessage();
         }
     }
+
 
     /**
      * Edit an existing host in the database.

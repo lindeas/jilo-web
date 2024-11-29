@@ -21,6 +21,7 @@ class User {
         $this->db = $database->getConnection();
     }
 
+
     /**
      * Registers a new user.
      *
@@ -77,6 +78,7 @@ class User {
         }
     }
 
+
     /**
      * Logs in a user by verifying credentials.
      *
@@ -100,6 +102,7 @@ class User {
         }
     }
 
+
     /**
      * Retrieves a user ID based on the username.
      *
@@ -118,6 +121,7 @@ class User {
         return $query->fetchAll(PDO::FETCH_ASSOC);
 
     }
+
 
     /**
      * Fetches user details by user ID.
@@ -146,6 +150,7 @@ class User {
 
     }
 
+
     /**
      * Grants a user a specific right.
      *
@@ -165,6 +170,7 @@ class User {
             ':right_id'		=> $right_id,
         ]);
     }
+
 
     /**
      * Revokes a specific right from a user.
@@ -187,6 +193,7 @@ class User {
         ]);
     }
 
+
     /**
      * Retrieves all rights in the system.
      *
@@ -204,6 +211,7 @@ class User {
         return $query->fetchAll(PDO::FETCH_ASSOC);
 
     }
+
 
     /**
      * Retrieves the rights assigned to a specific user.
@@ -267,6 +275,7 @@ class User {
 
     }
 
+
     /**
      * Check if the user has a specific right.
      *
@@ -294,6 +303,7 @@ class User {
         return $userHasRight;
 
     }
+
 
     /**
      * Updates a user's metadata in the database.
@@ -332,6 +342,7 @@ class User {
 
     }
 
+
     /**
      * Removes a user's avatar from the database and deletes the associated file.
      *
@@ -363,6 +374,7 @@ class User {
         }
 
     }
+
 
     /**
      * Updates a user's avatar by uploading a new file and saving its path in the database.

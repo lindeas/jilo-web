@@ -50,6 +50,7 @@ class Database {
         }
     }
 
+
     /**
      * Establishes a connection to a SQLite database.
      *
@@ -79,6 +80,7 @@ class Database {
             $error = getError('SQLite connection failed: ', $e->getMessage());
         }
     }
+
 
     /**
      * Establishes a connection to a MySQL (or MariaDB) database.
@@ -112,6 +114,7 @@ class Database {
             $error = getError('MySQL connection failed: ', $e->getMessage());
         }
     }
+
 
     /**
      * Retrieves the current PDO connection instance.

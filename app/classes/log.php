@@ -21,6 +21,7 @@ class Log {
         $this->db = $database->getConnection();
     }
 
+
     /**
      * Insert a log event into the database.
      *
@@ -50,6 +51,7 @@ class Log {
             return $e->getMessage();
         }
     }
+
 
     /**
      * Retrieve log entries from the database.
