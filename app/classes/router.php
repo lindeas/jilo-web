@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Router
+ * class Router
  *
  * A simple Router class to manage URL-to-callback mapping and dispatch requests to the appropriate controllers and methods.
  * The class supports defining routes, matching URLs against patterns, and invoking callbacks for matched routes.

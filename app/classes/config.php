@@ -12,6 +12,7 @@ class Config {
      *
      * @param array $updatedConfig Key-value pairs of configuration options to update.
      * @param string $config_file Path to the configuration file.
+     *
      * @return mixed Returns true on success, or an error message on failure.
      */
     public function editConfigFile($updatedConfig, $config_file) {
@@ -55,6 +56,7 @@ class Config {
      *
      * @param string $jitsiUrl The base URL of the Jitsi server.
      * @param bool $raw Whether to return the full file (true) or only uncommented values (false).
+     *
      * @return string The content of the config.js file or an error message.
      */
     public function getPlatformConfigjs($jitsiUrl, $raw = false) {
@@ -103,6 +105,7 @@ class Config {
      *
      * @param string $jitsiUrl The base URL of the Jitsi server.
      * @param bool $raw Whether to return the full file (true) or only uncommented values (false).
+     *
      * @return string The content of the interface_config.js file or an error message.
      */
     public function getPlatformInterfaceConfigjs($jitsiUrl, $raw = false) {

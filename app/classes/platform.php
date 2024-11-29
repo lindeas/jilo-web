@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Platform
+ * class Platform
  *
  * Handles platform management in the database, including retrieving, adding, editing, and deleting platforms.
  */

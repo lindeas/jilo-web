@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Host
+ * class Host
  *
  * Manages the hosts in the database, providing methods to retrieve, add, edit, and delete host entries.
  */

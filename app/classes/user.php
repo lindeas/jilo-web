@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class User
+ * class User
  *
  * Handles user-related functionalities such as registration, login, rights management, and profile updates.
  */
@@ -25,6 +25,7 @@ class User {
      *
      * @param string $username The username of the new user.
      * @param string $password The password for the new user.
+     *
      * @return bool|string True if registration is successful, error message otherwise.
      */
     public function register($username, $password) {
@@ -80,6 +81,7 @@ class User {
      *
      * @param string $username The username of the user.
      * @param string $password The password of the user.
+     *
      * @return bool True if login is successful, false otherwise.
      */
     public function login($username, $password) {
@@ -101,6 +103,7 @@ class User {
      * Retrieves a user ID based on the username.
      *
      * @param string $username The username to look up.
+     *
      * @return array|null User ID details or null if not found.
      */
     // FIXME not used now?
@@ -119,6 +122,7 @@ class User {
      * Fetches user details by user ID.
      *
      * @param int $user_id The user ID.
+     *
      * @return array|null User details or null if not found.
      */
     public function getUserDetails($user_id) {
@@ -146,6 +150,7 @@ class User {
      *
      * @param int $user_id The user ID.
      * @param int $right_id The right ID to grant.
+     *
      * @return void
      */
     public function addUserRight($user_id, $right_id) {
@@ -165,6 +170,7 @@ class User {
      *
      * @param int $user_id The user ID.
      * @param int $right_id The right ID to revoke.
+     *
      * @return void
      */
     public function removeUserRight($user_id, $right_id) {
@@ -202,6 +208,7 @@ class User {
      * Retrieves the rights assigned to a specific user.
      *
      * @param int $user_id The user ID.
+     *
      * @return array List of user rights.
      */
     public function getUserRights($user_id) {
@@ -264,6 +271,7 @@ class User {
      *
      * @param int $user_id The user ID.
      * @param string $right_name The human-readable name of the user right.
+     *
      * @return bool True if the user has the right, false otherwise.
      */
     function hasRight($user_id, $right_name) {

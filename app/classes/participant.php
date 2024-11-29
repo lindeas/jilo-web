@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Participant
+ * class Participant
  *
  * This class provides methods to retrieve information about participants and their related conference data.
  * It supports querying participant details by ID, name, or IP, as well as listing all participants and counting them within a specific time frame.

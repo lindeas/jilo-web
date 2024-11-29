@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Database
+ * class Database
  *
  * Manages database connections for SQLite and MySQL (or MariaDB).
  */

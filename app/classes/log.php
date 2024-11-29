@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Log
+ * class Log
  *
  * Handles logging events into a database and reading log entries.
  */
