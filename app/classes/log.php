@@ -12,9 +12,10 @@ class Log {
     private $db;
 
     /**
-     * Constructor to initialize the database connection.
+     * Logs constructor.
+     * Initializes the database connection.
      *
-     * @param object $database An object providing the database connection.
+     * @param object $database The database object to initialize the connection.
      */
     public function __construct($database) {
         $this->db = $database->getConnection();

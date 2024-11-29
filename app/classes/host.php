@@ -13,8 +13,9 @@ class Host {
 
     /**
      * Host constructor.
+     * Initializes the database connection.
      *
-     * @param Database $database The database connection object.
+     * @param object $database The database object to initialize the connection.
      */
     public function __construct($database) {
         $this->db = $database->getConnection();

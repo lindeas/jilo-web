@@ -9,6 +9,7 @@
  * @param string $message            A user-friendly message to display.
  * @param string $error              The detailed error message for debugging (optional).
  * @param string|null $environment   The environment type ('production', 'development', etc.). If null, defaults to the configured environment.
+ *
  * @return string                    The appropriate message based on the environment.
  */
 function getError($message, $error = '', $environment = null) {

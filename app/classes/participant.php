@@ -14,8 +14,9 @@ class Participant {
 
     /**
      * Constructor
+     * Initializes the database connection.
      *
-     * @param object $database Database instance to retrieve a connection.
+     * @param object $database The database object to initialize the connection.
      */
     public function __construct($database) {
         $this->db = $database->getConnection();
