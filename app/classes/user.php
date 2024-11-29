@@ -14,7 +14,7 @@ class User {
     /**
      * User constructor.
      *
-     * @param Database $database Database instance to retrieve a connection.
+     * @param object $database Database instance to retrieve a connection.
      */
     public function __construct($database) {
         $this->db = $database->getConnection();

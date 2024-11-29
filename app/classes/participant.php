@@ -1,14 +1,38 @@
 <?php
 
+/**
+ * Class Participant
+ *
+ * This class provides methods to retrieve information about participants and their related conference data.
+ * It supports querying participant details by ID, name, or IP, as well as listing all participants and counting them within a specific time frame.
+ */
 class Participant {
+    /**
+     * @var PDO|null $db The database connection instance.
+     */
     private $db;
 
+    /**
+     * Constructor
+     *
+     * @param object $database Database instance to retrieve a connection.
+     */
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
 
 
-    // search/list specific participant ID
+    /**
+     * Retrieve conferences by participant ID within a specified time period.
+     *
+     * @param string $participant_id  The participant's ID (endpoint_id).
+     * @param string $from_time       The start date (format: 'YYYY-MM-DD'). Defaults to '0000-01-01' if empty.
+     * @param string $until_time      The end date (format: 'YYYY-MM-DD'). Defaults to '9999-12-31' if empty.
+     * @param int    $offset          The offset for pagination.
+     * @param int    $items_per_page  The number of items per page for pagination.
+     *
+     * @return array List of conferences involving the specified participant ID.
+     */
     public function conferenceByParticipantId($participant_id, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -83,7 +107,17 @@ ORDER BY
     }
 
 
-    // search/list specific participant name (stats_id)
+    /**
+     * Retrieve conferences by participant name within a specified time period.
+     *
+     * @param string $participant_name The participant's name (stats_id).
+     * @param string $from_time        The start date (format: 'YYYY-MM-DD'). Defaults to '0000-01-01' if empty.
+     * @param string $until_time       The end date (format: 'YYYY-MM-DD'). Defaults to '9999-12-31' if empty.
+     * @param int    $offset           The offset for pagination.
+     * @param int    $items_per_page   The number of items per page for pagination.
+     *
+     * @return array List of conferences involving the specified participant name.
+     */
     public function conferenceByParticipantName($participant_name, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -158,7 +192,17 @@ ORDER BY
     }
 
 
-    // search/list specific participant IP
+    /**
+     * Retrieve conferences by participant IP within a specified time period.
+     *
+     * @param string $participant_ip   The participant's IP address.
+     * @param string $from_time        The start date (format: 'YYYY-MM-DD'). Defaults to '0000-01-01' if empty.
+     * @param string $until_time       The end date (format: 'YYYY-MM-DD'). Defaults to '9999-12-31' if empty.
+     * @param int    $offset           The offset for pagination.
+     * @param int    $items_per_page   The number of items per page for pagination.
+     *
+     * @return array List of conferences involving the specified participant IP.
+     */
     public function conferenceByParticipantIP($participant_ip, $from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -233,7 +277,16 @@ ORDER BY
     }
 
 
-    // list of all participants
+    /**
+     * Retrieve a list of all participants within a specified time period.
+     *
+     * @param string $from_time       The start date (format: 'YYYY-MM-DD'). Defaults to '0000-01-01' if empty.
+     * @param string $until_time      The end date (format: 'YYYY-MM-DD'). Defaults to '9999-12-31' if empty.
+     * @param int    $offset          The offset for pagination.
+     * @param int    $items_per_page  The number of items per page for pagination.
+     *
+     * @return array List of all participants.
+     */
     public function participantsAll($from_time, $until_time, $offset=0, $items_per_page='') {
 
         // time period drill-down
@@ -274,7 +327,15 @@ ORDER BY p.id";
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // number of participants
+
+    /**
+     * Count the number of participants within a specified time period.
+     *
+     * @param string $from_time  The start date (format: 'YYYY-MM-DD'). Defaults to '0000-01-01' if empty.
+     * @param string $until_time The end date (format: 'YYYY-MM-DD'). Defaults to '9999-12-31' if empty.
+     *
+     * @return int The number of participants.
+     */
     public function participantNumber($from_time, $until_time) {
 
         // time period drill-down
@@ -308,7 +369,6 @@ AND pe.event_type = 'participant joining'";
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
 }
 

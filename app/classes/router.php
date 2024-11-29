@@ -7,7 +7,6 @@
  * The class supports defining routes, matching URLs against patterns, and invoking callbacks for matched routes.
  */
 class Router {
-
     /**
      * @var array $routes Associative array of route patterns and their corresponding callbacks.
      */
