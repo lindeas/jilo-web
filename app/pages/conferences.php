@@ -3,8 +3,9 @@
 /**
  * Conference information
  *
- * This page ("conferences") handles the listing and searching of conferences from the database.
- * It supports searching by conference ID, name, or listing all conferences within a specified time range.
+ * This page ("conferences") retrieves and displays information about conferences.
+ * Allows filtering by conference ID or name, and listing within a specified time range.
+ * Supports pagination.
  */
 
 require '../app/classes/conference.php';
