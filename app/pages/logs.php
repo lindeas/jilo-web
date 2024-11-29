@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Logs Listings
+ * Logs listings
  *
  * This page ("logs") retrieves and displays logs for a specified user within a time range.
  * It supports pagination and filtering, and generates a widget to display the logs.

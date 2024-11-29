@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Jilo Components Status Checks
+ * Jilo components status checks
  *
  * This page ("status") checks the status of various Jilo platform components
  * by fetching data from agents and determining their availability.
