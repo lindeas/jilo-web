@@ -10,7 +10,6 @@ if ($response['db'] === null) {
     include '../app/templates/block-message.php';
 } else {
     $db = $response['db'];
-}
 
 //
 // dashboard widget listings
@@ -205,5 +204,7 @@ if (!empty($conferences['records'])) {
 
 // display the widget
 include '../app/templates/widget.php';
+
+}
 
 ?>
