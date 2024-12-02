@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Main dashboard file for displaying conference statistics.
+ * 
+ * This file connects to the database and displays various widgets:
+ * 1. Monthly statistics for the past year.
+ * 2. Conferences from the last 2 days.
+ * 3. The most recent 10 conferences.
+ */
+
 require '../app/classes/conference.php';
 require '../app/classes/participant.php';
 
@@ -20,6 +29,12 @@ if ($response['db'] === null) {
     // monthly usage
     $conferenceObject = new Conference($db);
     $participantObject = new Participant($db);
+
+    /**
+     * Monthly usage statistics for the last year.
+     *
+     * Retrieves conference and participant numbers for each month within the past year.
+     */
 
     // monthly conferences for the last year
     $fromMonth = (new DateTime())->sub(new DateInterval('P1Y'));
@@ -83,6 +98,12 @@ if ($response['db'] === null) {
     ////
     // conferences in last 2 days
 
+    /**
+     * Conferences in the last 2 days.
+     *
+     * Displays a summary of all conferences held in the past 48 hours.
+     */
+
     // time range limit
     $from_time = date('Y-m-d', time() - 60 * 60 * 24 * 2);
     $until_time = date('Y-m-d', time());
@@ -141,6 +162,12 @@ if ($response['db'] === null) {
 
     ////
     // last 10 conferences
+
+    /**
+     * Last 10 conferences.
+     *
+     * Displays the 10 most recent conferences in the database.
+     */
 
     // all time
     $from_time = '0000-01-01';
