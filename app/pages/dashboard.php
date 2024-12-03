@@ -2,7 +2,7 @@
 
 /**
  * Main dashboard file for displaying conference statistics.
- * 
+ *
  * This file connects to the database and displays various widgets:
  * 1. Monthly statistics for the past year.
  * 2. Conferences from the last 2 days.
@@ -14,21 +14,19 @@ require '../app/classes/participant.php';
 
 // connect to database
 $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
+
+// if DB connection has error, display it and stop here
 if ($response['db'] === null) {
     $error = $response['error'];
     include '../app/templates/block-message.php';
+
+// otherwise if DB connection is OK, go on
 } else {
     $db = $response['db'];
 
-    //
-    // dashboard widget listings
-    //
-
-
-    ////
-    // monthly usage
     $conferenceObject = new Conference($db);
     $participantObject = new Participant($db);
+
 
     /**
      * Monthly usage statistics for the last year.
@@ -95,9 +93,6 @@ if ($response['db'] === null) {
     include '../app/templates/widget-monthly.php';
 
 
-    ////
-    // conferences in last 2 days
-
     /**
      * Conferences in the last 2 days.
      *
@@ -159,9 +154,6 @@ if ($response['db'] === null) {
     // display the widget
     include '../app/templates/widget.php';
 
-
-    ////
-    // last 10 conferences
 
     /**
      * Last 10 conferences.
