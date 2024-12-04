@@ -16,6 +16,14 @@ include '../app/templates/status-server.php';
 // loop through all platforms to check their agents
 foreach ($platformsAll as $platform) {
 
+    // check if we can connect to the jilo database
+    $response = connectDB($config, 'jilo', $platform['jilo_database'], $platform['id']);
+    if ($response['error'] !== null) {
+        $jilo_database_status = '<span class="text-danger">' . htmlspecialchars($response['error']) . '</span>';
+    } else {
+        $jilo_database_status = '<span class="text-success">OK</span>';
+    }
+
     include '../app/templates/status-platform.php';
 
     // fetch agent details for the current platform
