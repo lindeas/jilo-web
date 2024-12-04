@@ -3,7 +3,7 @@
 /**
  * Main dashboard file for displaying conference statistics.
  *
- * This file connects to the database and displays various widgets:
+ * This page ("dashboard") connects to the database and displays various widgets:
  * 1. Monthly statistics for the past year.
  * 2. Conferences from the last 2 days.
  * 3. The most recent 10 conferences.

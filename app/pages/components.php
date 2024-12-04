@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Components information
+ *
+ * This page ("components") connects to the database and displays filtered Jitsi component events.
+ */
+
 require '../app/classes/component.php';
 
 // connect to database
