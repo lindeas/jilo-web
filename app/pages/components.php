@@ -3,7 +3,9 @@
 /**
  * Components information
  *
- * This page ("components") connects to the database and displays filtered Jitsi component events.
+ * This page ("components") retrieves and displays information about Jitsi components events.
+ * Allows filtering by component ID, name, or event name, and listing within a specified time range.
+ * Supports pagination.
  */
 
 require '../app/classes/component.php';
