@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Configuration management.
+ *
+ * This page ("config") handles configuration by adding, editing, and deleting platforms,
+ * hosts, agents, and the configuration file itself.
+ */
+
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 $host = $_REQUEST['host'] ?? '';
@@ -12,8 +19,10 @@ $configObject = new Config();
 $hostObject = new Host($dbWeb);
 $agentObject = new Agent($dbWeb);
 
-// if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    /**
+     * Handles form submissions from editing page
+     */
 
     // editing the config file
     if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
@@ -154,8 +163,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header("Location: $app_root?page=config&item=$item");
     exit();
 
-// no form submitted, show the templates
 } else {
+    /**
+     * Handles GET requests to display templates.
+     */
 
     switch ($item) {
 
@@ -196,6 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         case 'endpoint':
             // TODO ad here endpoints options
+            echo 'under construction';
 //            switch ($action) {
 //                case 'add-agent':
 //                    $jilo_agent_types = $agentObject->getAgentTypes();
