@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Agent cache management
+ *
+ * This page ("agents") handles caching for agents. It allows storing, clearing, and retrieving
+ * agent-related data in the session using AJAX requests. The cache is stored with a timestamp
+ * to allow time-based invalidation if needed.
+ */
+
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 require '../app/classes/agent.php';
