@@ -7,7 +7,8 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
     if ($database === 'jilo') {
         try {
             if (!$dbFile || !file_exists($dbFile)) {
-                throw new Exception(getError("Invalid platform ID \"{$platformId}\", database file \"{$dbFile}\" not found."));
+                throw new Exception(getError("Invalid platform ID \"{$platformId}\", database file \"{$dbFile}\" not found.
+                                            <br />Check the <a href=\"?page=config&item=platform&platform={$platformId}&action=edit\">platform settings</a>"));
             }
             $db = new Database([
                 'type'		=> 'sqlite',
