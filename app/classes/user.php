@@ -10,6 +10,7 @@ class User {
      * @var PDO|null $db The database connection instance.
      */
     private $db;
+    private $ratelimiter;
 
     /**
      * User constructor.
@@ -19,6 +20,7 @@ class User {
      */
     public function __construct($database) {
         $this->db = $database->getConnection();
+        $this->ratelimiter = new RateLimiter($database);
     }
 
 
@@ -88,17 +90,33 @@ class User {
      * @return bool True if login is successful, false otherwise.
      */
     public function login($username, $password) {
-        $query = $this->db->prepare("SELECT * FROM  users WHERE username = :username");
+        // get client IP address
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+
+        // check rate limiting
+        if (!$this->rateLimiter->attempt($username, $ipAddress)) {
+            $remainingTime = $this->rateLimiter->getDecayMinutes();
+            throw new Exception("Too many login attempts. Please try again in {$remainingTime} minutes.");
+        }
+
+        $query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
         $query->bindParam(':username', $username);
         $query->execute();
 
         $user = $query->fetch(PDO::FETCH_ASSOC);
-        if ( $user && password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             return true;
+        }
+
+        // Login failed, return remaining attempts info
+        $remainingAttempts = $this->rateLimiter->getRemainingAttempts($username, $ipAddress);
+        if ($remainingAttempts > 0) {
+            throw new Exception("Invalid credentials. {$remainingAttempts} attempts remaining.");
         } else {
-            return false;
+            $remainingTime = $this->rateLimiter->getDecayMinutes();
+            throw new Exception("Too many login attempts. Please try again in {$remainingTime} minutes.");
         }
     }
 
