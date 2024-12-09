@@ -67,6 +67,30 @@ class RateLimiter {
         return ($ip & $mask) == $subnet;
     }
 
+    public function addToWhitelist($ip, $isNetwork = false) {
+        if ($isNetwork) {
+            if (!in_array($ip, $this->whitelistedNetworks)) {
+                $this->whitelistedNetworks[] = $ip;
+            }
+        } else {
+            if (!in_array($ip, $this->whitelistedIps)) {
+                $this->whitelistedIps[] = $ip;
+            }
+        }
+    }
+
+    public function removeFromWhitelist($ip) {
+        $indexIp = array_search($ip, $this->whitelistedIps);
+        if ($indexIp !== false) {
+            unset($this->whitelistedIps[$indexIp]);
+        }
+
+        $indexNetwork = array_search($ip, $this->whitelistedNetworks);
+        if ($indexNetwork !== false) {
+            unset($this->whitelistedNetworks[$indexNetwork]);
+        }
+    }
+
     public function attempt($username, $ipAddress) {
         // Clean old attempts
         $this->clearOldAttempts();
