@@ -5,10 +5,13 @@ class RateLimiter {
     private $maxAttempts = 5;        // Maximum login attempts
     private $decayMinutes = 15;      // Time window in minutes
     private $tableName = 'login_attempts';
+    private $whitelistedIps = [];       // Whitelisted IPs
+    private $whitelistedNetworks = [];  // Whitelisted CIDR ranges
 
     public function __construct($database) {
         $this->db = $database->getConnection();
         $this->createTableIfNotExists();
+        $this->loadWhitelist();
     }
 
     private function createTableIfNotExists() {
@@ -21,6 +24,47 @@ class RateLimiter {
         )";
 
         $this->db->exec($sql);
+    }
+
+    private function loadWhitelist() {
+        // Load from database or config
+        $this->whitelistedIps = [
+            '127.0.0.1',        // localhost
+            '::1'               // localhost IPv6
+        ];
+
+        $this->whitelistedNetworks = [
+            '10.0.0.0/8',      // Private network
+            '172.16.0.0/12',   // Private network
+            '192.168.0.0/16'   // Private network
+        ];
+    }
+
+    private function isIpWhitelisted($ip) {
+        // Check exact IP match
+        if (in_array($ip, $this->whitelistedIps)) {
+            return true;
+        }
+
+        // Check CIDR ranges
+        foreach ($this->whitelistedNetworks as $network) {
+            if ($this->ipInRange($ip, $network)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function ipInRange($ip, $cidr) {
+        list($subnet, $bits) = explode('/', $cidr);
+
+        $ip = ip2long($ip);
+        $subnet = ip2long($subnet);
+        $mask = -1 << (32 - $bits);
+        $subnet &= $mask;
+
+        return ($ip & $mask) == $subnet;
     }
 
     public function attempt($username, $ipAddress) {
