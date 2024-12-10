@@ -113,10 +113,10 @@ class RateLimiter {
     }
 
     public function tooManyAttempts($username, $ipAddress) {
-        $sql = "SELECT COUNT(*) as attempts 
-                FROM {$this->tableName} 
-                WHERE ip_address = :ip 
-                AND username = :username 
+        $sql = "SELECT COUNT(*) as attempts
+                FROM {$this->tableName}
+                WHERE ip_address = :ip
+                AND username = :username
                 AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
 
         $stmt = $this->db->prepare($sql);
@@ -131,7 +131,7 @@ class RateLimiter {
     }
 
     public function clearOldAttempts() {
-        $sql = "DELETE FROM {$this->tableName} 
+        $sql = "DELETE FROM {$this->tableName}
                 WHERE attempted_at < datetime('now', '-' || :minutes || ' minutes')";
 
         $stmt = $this->db->prepare($sql);
@@ -141,10 +141,10 @@ class RateLimiter {
     }
 
     public function getRemainingAttempts($username, $ipAddress) {
-        $sql = "SELECT COUNT(*) as attempts 
-                FROM {$this->tableName} 
-                WHERE ip_address = :ip 
-                AND username = :username 
+        $sql = "SELECT COUNT(*) as attempts
+                FROM {$this->tableName}
+                WHERE ip_address = :ip
+                AND username = :username
                 AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
 
         $stmt = $this->db->prepare($sql);
