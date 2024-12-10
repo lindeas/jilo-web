@@ -92,6 +92,11 @@ class RateLimiter {
     }
 
     public function attempt($username, $ipAddress) {
+        // Skip rate limiting for whitelisted IPs
+        if ($this->isIpWhitelisted($ipAddress)) {
+            return true;
+        }
+
         // Clean old attempts
         $this->clearOldAttempts();
 
