@@ -4,7 +4,7 @@ class RateLimiter {
     private $db;
     private $maxAttempts = 5;        // Maximum login attempts
     private $decayMinutes = 15;      // Time window in minutes
-    private $tableName = 'login_attempts';
+    private $ratelimitTable = 'login_attempts';
     private $whitelistedIps = [];       // Whitelisted IPs
     private $whitelistedNetworks = [];  // Whitelisted CIDR ranges
 
@@ -16,7 +16,7 @@ class RateLimiter {
 
     // Database preparation
     private function createTableIfNotExists() {
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->tableName} (
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->ratelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip_address VARCHAR(45) NOT NULL,
             username VARCHAR(255) NOT NULL,
@@ -106,7 +106,7 @@ class RateLimiter {
         $this->clearOldAttempts();
 
         // Record this attempt
-        $sql = "INSERT INTO {$this->tableName} (ip_address, username) VALUES (:ip, :username)";
+        $sql = "INSERT INTO {$this->ratelimitTable} (ip_address, username) VALUES (:ip, :username)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':ip'		=> $ipAddress,
@@ -119,7 +119,7 @@ class RateLimiter {
 
     public function tooManyAttempts($username, $ipAddress) {
         $sql = "SELECT COUNT(*) as attempts
-                FROM {$this->tableName}
+                FROM {$this->ratelimitTable}
                 WHERE ip_address = :ip
                 AND username = :username
                 AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
@@ -136,7 +136,7 @@ class RateLimiter {
     }
 
     public function clearOldAttempts() {
-        $sql = "DELETE FROM {$this->tableName}
+        $sql = "DELETE FROM {$this->ratelimitTable}
                 WHERE attempted_at < datetime('now', '-' || :minutes || ' minutes')";
 
         $stmt = $this->db->prepare($sql);
@@ -147,7 +147,7 @@ class RateLimiter {
 
     public function getRemainingAttempts($username, $ipAddress) {
         $sql = "SELECT COUNT(*) as attempts
-                FROM {$this->tableName}
+                FROM {$this->ratelimitTable}
                 WHERE ip_address = :ip
                 AND username = :username
                 AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
