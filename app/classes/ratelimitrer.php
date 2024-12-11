@@ -14,6 +14,7 @@ class RateLimiter {
         $this->loadWhitelist();
     }
 
+    // Database preparation
     private function createTableIfNotExists() {
         $sql = "CREATE TABLE IF NOT EXISTS {$this->tableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,8 +27,9 @@ class RateLimiter {
         $this->db->exec($sql);
     }
 
+    // List of IPs to bypass rate limiting
     private function loadWhitelist() {
-        // Load from database or config
+        // FIXME Load from database or config
         $this->whitelistedIps = [
             '127.0.0.1',        // localhost
             '::1'               // localhost IPv6
@@ -40,6 +42,7 @@ class RateLimiter {
         ];
     }
 
+    // Check if IP is whitelisted
     private function isIpWhitelisted($ip) {
         // Check exact IP match
         if (in_array($ip, $this->whitelistedIps)) {
@@ -67,6 +70,7 @@ class RateLimiter {
         return ($ip & $mask) == $subnet;
     }
 
+    // Add to whitelist
     public function addToWhitelist($ip, $isNetwork = false) {
         if ($isNetwork) {
             if (!in_array($ip, $this->whitelistedNetworks)) {
@@ -79,6 +83,7 @@ class RateLimiter {
         }
     }
 
+    // Remove from whitelist
     public function removeFromWhitelist($ip) {
         $indexIp = array_search($ip, $this->whitelistedIps);
         if ($indexIp !== false) {
