@@ -57,19 +57,23 @@ class RateLimiter {
 
     // Check if IP is whitelisted
     private function isIpWhitelisted($ip) {
-        // Check exact IP match
-        if (in_array($ip, $this->whitelistedIps)) {
-            return true;
-        }
+        // Check exact IP match and CIDR ranges
+         $stmt = $this->db->prepare("SELECT ip_address, is_network FROM {$this->whitelistTable}");
+         $stmt->execute();
 
-        // Check CIDR ranges
-        foreach ($this->whitelistedNetworks as $network) {
-            if ($this->ipInRange($ip, $network)) {
-                return true;
-            }
-        }
+         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+             if ($row['is_network']) {
+                 if ($this->ipInRange($ip, $row['ip_address'])) {
+                     return true;
+                 }
+             } else {
+                 if ($ip === $row['ip_address']) {
+                     return true;
+                 }
+             }
+         }
 
-        return false;
+         return false;
     }
 
     private function ipInRange($ip, $cidr) {
@@ -84,29 +88,30 @@ class RateLimiter {
     }
 
     // Add to whitelist
-    public function addToWhitelist($ip, $isNetwork = false) {
-        if ($isNetwork) {
-            if (!in_array($ip, $this->whitelistedNetworks)) {
-                $this->whitelistedNetworks[] = $ip;
-            }
-        } else {
-            if (!in_array($ip, $this->whitelistedIps)) {
-                $this->whitelistedIps[] = $ip;
-            }
-        }
+    public function addToWhitelist($ip, $isNetwork = false, $description = '', $createdBy = 'system') {
+        $stmt = $this->db->prepare("INSERT INTO {$this->whitelistTable}
+            (ip_address, is_network, description, created_by)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+            is_network = VALUES(is_network),
+            description = VALUES(description),
+            created_by = VALUES(created_by)");
+
+        return $stmt->execute([$ip, $isNetwork, $description, $createdBy]);
     }
 
     // Remove from whitelist
     public function removeFromWhitelist($ip) {
-        $indexIp = array_search($ip, $this->whitelistedIps);
-        if ($indexIp !== false) {
-            unset($this->whitelistedIps[$indexIp]);
-        }
+        $stmt = $this->db->prepare("DELETE FROM {$this->whitelistTable} WHERE ip_address = ?");
 
-        $indexNetwork = array_search($ip, $this->whitelistedNetworks);
-        if ($indexNetwork !== false) {
-            unset($this->whitelistedNetworks[$indexNetwork]);
-        }
+        return $stmt->execute([$ip]);
+    }
+
+    public function getWhitelistedIps() {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->whitelistTable} ORDER BY created_at DESC");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function attempt($username, $ipAddress) {
