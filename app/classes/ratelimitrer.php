@@ -5,17 +5,19 @@ class RateLimiter {
     private $maxAttempts = 5;        // Maximum login attempts
     private $decayMinutes = 15;      // Time window in minutes
     private $ratelimitTable = 'login_attempts';
+    private $whitelistTable = 'ip_whitelist';
     private $whitelistedIps = [];       // Whitelisted IPs
     private $whitelistedNetworks = [];  // Whitelisted CIDR ranges
 
     public function __construct($database) {
         $this->db = $database->getConnection();
-        $this->createTableIfNotExists();
+        $this->createTablesIfNotExists();
         $this->loadWhitelist();
     }
 
     // Database preparation
-    private function createTableIfNotExists() {
+    private function createTablesIfNotExists() {
+        // Login attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->ratelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip_address VARCHAR(45) NOT NULL,
@@ -23,7 +25,18 @@ class RateLimiter {
             attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_ip_username (ip_address, username)
         )";
+        $this->db->exec($sql);
 
+        // IP whitelist table
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->whitelistTable} (
+            id int(11) PRIMARY KEY AUTO_INCREMENT,
+            ip_address VARCHAR(45) NOT NULL,
+            is_network BOOLEAN DEFAULT FALSE,
+            description VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_by VARCHAR(255),
+            UNIQUE KEY unique_ip (ip_address)
+        )";
         $this->db->exec($sql);
     }
 
