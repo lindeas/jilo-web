@@ -27,6 +27,24 @@ CREATE TABLE rights (
     name TEXT NOT NULL UNIQUE
 );
 
+CREATE TABLE login_attepts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ip_address TEXT NOT NULL,
+    username TEXT NOT NULL,
+    attempted_at TEXT DEFAULT (DATETIME('now')),
+);
+CREATE INDEX idx_ip_username ON login_attempts (ip_address, username);
+
+CREATE TABLE ip_whitelist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ip_address TEXT NOT NULL,
+    is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0, 1)),
+    description TEXT,
+    created_at TEXT DEFAULT (DATETIME('now')),
+    created_by TEXT,
+    UNIQUE (ip_address)
+);
+
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGET NOT NULL,
