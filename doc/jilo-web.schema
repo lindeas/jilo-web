@@ -45,7 +45,7 @@ CREATE TABLE ip_whitelist (
     UNIQUE (ip_address)
 );
 
-INSERT INTO ip_whitelist (ip_address, is_network, description, created_by) VALUES
+INSERT OR IGNORE INTO ip_whitelist (ip_address, is_network, description, created_by) VALUES
 ('127.0.0.1', 0, 'localhost IPv4', 'system'),
 ('::1', 0, 'localhost IPv6', 'system'),
 ('10.0.0.0/8', 1, 'Private network', 'system'),

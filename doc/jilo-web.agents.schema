@@ -1,5 +1,5 @@
-INSERT INTO jilo_agent_types VALUES(1,'jvb','/jvb');
-INSERT INTO jilo_agent_types VALUES(2,'jicofo','/jicofo');
-INSERT INTO jilo_agent_types VALUES(3,'prosody','/prosody');
-INSERT INTO jilo_agent_types VALUES(4,'nginx','/nginx');
-INSERT INTO jilo_agent_types VALUES(5,'jibri','/jibri');
+INSERT OR IGNORE INTO jilo_agent_types VALUES(1,'jvb','/jvb');
+INSERT OR IGNORE INTO jilo_agent_types VALUES(2,'jicofo','/jicofo');
+INSERT OR IGNORE INTO jilo_agent_types VALUES(3,'prosody','/prosody');
+INSERT OR IGNORE INTO jilo_agent_types VALUES(4,'nginx','/nginx');
+INSERT OR IGNORE INTO jilo_agent_types VALUES(5,'jibri','/jibri');
