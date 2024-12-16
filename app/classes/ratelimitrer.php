@@ -6,13 +6,10 @@ class RateLimiter {
     private $decayMinutes = 15;      // Time window in minutes
     private $ratelimitTable = 'login_attempts';
     private $whitelistTable = 'ip_whitelist';
-    private $whitelistedIps = [];       // Whitelisted IPs
-    private $whitelistedNetworks = [];  // Whitelisted CIDR ranges
 
     public function __construct($database) {
         $this->db = $database->getConnection();
         $this->createTablesIfNotExists();
-        $this->loadWhitelist();
     }
 
     // Database preparation
@@ -38,21 +35,6 @@ class RateLimiter {
             UNIQUE KEY unique_ip (ip_address)
         )";
         $this->db->exec($sql);
-    }
-
-    // List of IPs to bypass rate limiting
-    private function loadWhitelist() {
-        // FIXME Load from database or config
-        $this->whitelistedIps = [
-            '127.0.0.1',        // localhost
-            '::1'               // localhost IPv6
-        ];
-
-        $this->whitelistedNetworks = [
-            '10.0.0.0/8',      // Private network
-            '172.16.0.0/12',   // Private network
-            '192.168.0.0/16'   // Private network
-        ];
     }
 
     // Check if IP is whitelisted
