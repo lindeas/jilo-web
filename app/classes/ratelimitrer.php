@@ -35,6 +35,23 @@ class RateLimiter {
             UNIQUE KEY unique_ip (ip_address)
         )";
         $this->db->exec($sql);
+
+        // Default IPs to whitelist (local interface and private networks IPs)
+        $defaultIps = [
+            ['127.0.0.1', false, 'localhost IPv4'],
+            ['::1', false, 'localhost IPv6'],
+            ['10.0.0.0/8', true, 'Private network (Class A)'],
+            ['172.16.0.0/12', true, 'Private network (Class B)'],
+            ['192.168.0.0/16', true, 'Private network (Class C)']
+        ];
+
+        // Insert default whitelisted IPs if they don't exist
+        $stmt = $this->db->prepare("INSERT IGNORE INTO {$this->whitelistTable} 
+            (ip_address, is_network, description, created_by) 
+            VALUES (?, ?, ?, 'system')");
+        foreach ($defaultIps as $ip) {
+            $stmt->execute([$ip[0], $ip[1], $ip[2]]);
+        }
     }
 
     // Check if IP is whitelisted
