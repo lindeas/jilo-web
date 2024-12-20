@@ -28,7 +28,7 @@ class RateLimiter {
 
         // IP whitelist table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->whitelistTable} (
-            id int(11) PRIMARY KEY AUTO_INCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip_address VARCHAR(45) NOT NULL,
             is_network BOOLEAN DEFAULT FALSE,
             description VARCHAR(255),
