@@ -48,8 +48,8 @@ class RateLimiter {
         ];
 
         // Insert default whitelisted IPs if they don't exist
-        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->whitelistTable} 
-            (ip_address, is_network, description, created_by) 
+        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->whitelistTable}
+            (ip_address, is_network, description, created_by)
             VALUES (?, ?, ?, 'system')");
         foreach ($defaultIps as $ip) {
             $stmt->execute([$ip[0], $ip[1], $ip[2]]);
