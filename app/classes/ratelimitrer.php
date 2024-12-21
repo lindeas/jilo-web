@@ -89,16 +89,37 @@ class RateLimiter {
     }
 
     // Add to whitelist
-    public function addToWhitelist($ip, $isNetwork = false, $description = '', $createdBy = 'system') {
-        $stmt = $this->db->prepare("INSERT INTO {$this->whitelistTable}
-            (ip_address, is_network, description, created_by)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-            is_network = VALUES(is_network),
-            description = VALUES(description),
-            created_by = VALUES(created_by)");
+    public function addToWhitelist($ip, $isNetwork = false, $description = '', $createdBy = 'system', $userId = null) {
+        try {
+            $stmt = $this->db->prepare("INSERT INTO {$this->whitelistTable}
+                (ip_address, is_network, description, created_by)
+                VALUES (?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                is_network = VALUES(is_network),
+                description = VALUES(description),
+                created_by = VALUES(created_by)");
 
-        return $stmt->execute([$ip, $isNetwork, $description, $createdBy]);
+                $result = $stmt->execute([$ip, $isNetwork, $description, $createdBy]);
+
+                if ($result) {
+                    $logMessage = sprintf(
+                        'IP Whitelist: Added %s "%s" by %s. Description: %s',
+                        $isNetwork ? 'network' : 'IP',
+                        $ip,
+                        $createdBy,
+                        $description
+                    );
+                    $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+                }
+
+            return $result;
+
+        } catch (Exception $e) {
+            if ($userId) {
+                $this->log->insertLog($userId, "IP Whitelist: Failed to add {$ip}: " . $e->getMessage(), 'system');
+            }
+            return false;
+        }
     }
 
     // Remove from whitelist
