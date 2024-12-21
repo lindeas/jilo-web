@@ -19,9 +19,9 @@ class RateLimiter {
         // Login attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->ratelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address VARCHAR(45) NOT NULL,
-            username VARCHAR(255) NOT NULL,
-            attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            ip_address TEXT NOT NULL,
+            username TEXT NOT NULL,
+            attempted_at TEXT DEFAULT (DATETIME('now')),
             INDEX idx_ip_username (ip_address, username)
         )";
         $this->db->exec($sql);
@@ -29,11 +29,11 @@ class RateLimiter {
         // IP whitelist table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->whitelistTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address VARCHAR(45) NOT NULL,
-            is_network BOOLEAN DEFAULT FALSE,
-            description VARCHAR(255),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            created_by VARCHAR(255),
+            ip_address TEXT NOT NULL,
+            is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
+            description TEXT,
+            created_at TEXT DEFAULT (DATETIME('now')),
+            created_by TEXT,
             UNIQUE KEY unique_ip (ip_address)
         )";
         $this->db->exec($sql);
@@ -48,7 +48,7 @@ class RateLimiter {
         ];
 
         // Insert default whitelisted IPs if they don't exist
-        $stmt = $this->db->prepare("INSERT IGNORE INTO {$this->whitelistTable} 
+        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->whitelistTable} 
             (ip_address, is_network, description, created_by) 
             VALUES (?, ?, ?, 'system')");
         foreach ($defaultIps as $ip) {
