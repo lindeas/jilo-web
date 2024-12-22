@@ -123,10 +123,37 @@ class RateLimiter {
     }
 
     // Remove from whitelist
-    public function removeFromWhitelist($ip) {
-        $stmt = $this->db->prepare("DELETE FROM {$this->whitelistTable} WHERE ip_address = ?");
+    public function removeFromWhitelist($ip, $userId = null, $removedBy = 'system') {
+        try {
+            // Get IP details before removal for logging
+            $stmt = $this->db->prepare("SELECT * FROM {$this->whitelistTable} WHERE ip_address = ?");
+            $stmt->execute([$ip]);
+            $ipDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $stmt->execute([$ip]);
+            // Remove the IP
+            $stmt = $this->db->prepare("DELETE FROM {$this->whitelistTable} WHERE ip_address = ?");
+
+            $result = $stmt->execute([$ip]);
+
+            if ($result && $ipDetails) {
+                $logMessage = sprintf(
+                    'IP Whitelist: Removed %s "%s" by %s. Was added by: %s',
+                    $ipDetails['is_network'] ? 'network' : 'IP',
+                    $ip,
+                    $removedBy,
+                    $ipDetails['created_by']
+                );
+                $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+            }
+
+            return $result;
+
+        } catch (Exception $e) {
+            if ($userId) {
+                $this->log->insertLog($userId, "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage(), 'system');
+            }
+            return false;
+        }
     }
 
     public function getWhitelistedIps() {
