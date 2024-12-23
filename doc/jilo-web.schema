@@ -27,7 +27,7 @@ CREATE TABLE rights (
     name TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE login_attepts (
+CREATE TABLE login_attempts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     ip_address TEXT NOT NULL,
     username TEXT NOT NULL,
