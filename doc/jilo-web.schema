@@ -52,6 +52,24 @@ INSERT OR IGNORE INTO ip_whitelist (ip_address, is_network, description, created
 ('172.16.0.0/12', 1, 'Private network', 'system'),
 ('192.168.0.0/16', 1, 'Private network', 'system');
 
+CREATE TABLE ip_blacklist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ip_address TEXT NOT NULL,
+    is_network BOOLEAN DEFAULT 0 CHECK(IS_NETWORK IN (0,1)),
+    reason TEXT,
+    expiry_time TEXT,
+    created_at TEXT DEFAULT (DATETIME('now')),
+    created_by TEXT,
+    UNIQUE (ip_address)
+);
+
+INSERT OR IGNORE INTO ip_blacklist (ip_address, is_network, reason, created_by) VALUES
+('0.0.0.0/8', 1, 'Reserved address space - RFC 1122', 'system'),
+('100.64.0.0/10', 1, 'Carrier-grade NAT space - RFC 6598', 'system'),
+('192.0.2.0/24', 1, 'TEST-NET-1 Documentation space - RFC 5737', 'system'),
+('198.51.100.0/24', 1, 'TEST-NET-2 Documentation space - RFC 5737', 'system'),
+('203.0.113.0/24', 1, 'TEST-NET-3 Documentation space - RFC 5737', 'system');
+
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGET NOT NULL,
