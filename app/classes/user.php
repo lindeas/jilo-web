@@ -10,7 +10,7 @@ class User {
      * @var PDO|null $db The database connection instance.
      */
     private $db;
-    private $ratelimiter;
+    private $rateLimiter;
 
     /**
      * User constructor.
@@ -20,7 +20,7 @@ class User {
      */
     public function __construct($database) {
         $this->db = $database->getConnection();
-        $this->ratelimiter = new RateLimiter($database);
+        $this->rateLimiter = new RateLimiter($database);
     }
 
 

@@ -11,11 +11,11 @@ class RateLimiter {
     public function __construct($database) {
         $this->db = $database->getConnection();
         $this->log = new Log($database);
-        $this->createTablesIfNotExists();
+        $this->createTablesIfNotExist();
     }
 
     // Database preparation
-    private function createTablesIfNotExists() {
+    private function createTablesIfNotExist() {
         // Login attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->ratelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
