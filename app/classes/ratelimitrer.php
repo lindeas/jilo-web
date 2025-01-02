@@ -29,12 +29,23 @@ class RateLimiter {
         // IP whitelist table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->whitelistTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL,
+            ip_address TEXT NOT NULL UNIQUE,
             is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
             description TEXT,
             created_at TEXT DEFAULT (DATETIME('now')),
-            created_by TEXT,
-            UNIQUE KEY unique_ip (ip_address)
+            created_by TEXT
+        )";
+        $this->db->exec($sql);
+
+        // IP blacklist table
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->blacklistTable} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip_address TEXT NOT NULL UNIQUE,
+            is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
+            reason TEXT,
+            expiry_time TEXT NULL,
+            created_at TEXT DEFAULT (DATETIME('now')),
+            created_by TEXT
         )";
         $this->db->exec($sql);
 
