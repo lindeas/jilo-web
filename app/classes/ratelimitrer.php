@@ -86,7 +86,6 @@ class RateLimiter {
 
     }
 
-    // Check if IP is whitelisted
     private function isIpWhitelisted($ip) {
         // Check exact IP match and CIDR ranges
          $stmt = $this->db->prepare("SELECT ip_address, is_network FROM {$this->whitelistTable}");
@@ -105,6 +104,31 @@ class RateLimiter {
          }
 
          return false;
+    }
+
+    private function isIpBlacklisted($ip) {
+        // First check if IP is explicitly blacklisted or in a blacklisted range
+        $stmt = $this->db->prepare("SELECT ip_address, is_network, expiry_time FROM {$this->blacklistTable}");
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // Skip expired entries
+            if ($row['expiry_time'] !== null && strtotime($row['expiry_time']) < time()) {
+                continue;
+            }
+
+            if ($row['is_network']) {
+                if ($this->ipInRange($ip, $row['ip_address'])) {
+                    return true;
+                }
+            } else {
+                if ($ip === $row['ip_address']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private function ipInRange($ip, $cidr) {
