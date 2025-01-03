@@ -111,6 +111,9 @@ include '../app/helpers/logs.php';
 $logObject = new Log($dbWeb);
 $user_IP = getUserIP();
 
+// init rate limiter
+require '../app/classes/ratelimiter.php';
+
 // get platforms details
 require '../app/classes/platform.php';
 $platformObject = new Platform($dbWeb);

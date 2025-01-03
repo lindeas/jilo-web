@@ -33,7 +33,6 @@ CREATE TABLE login_attempts (
     username TEXT NOT NULL,
     attempted_at TEXT DEFAULT (DATETIME('now')),
 );
-CREATE INDEX idx_ip_username ON login_attempts (ip_address, username);
 
 CREATE TABLE ip_whitelist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

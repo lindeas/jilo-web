@@ -22,8 +22,7 @@ class RateLimiter {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip_address TEXT NOT NULL,
             username TEXT NOT NULL,
-            attempted_at TEXT DEFAULT (DATETIME('now')),
-            INDEX idx_ip_username (ip_address, username)
+            attempted_at TEXT DEFAULT (DATETIME('now'))
         )";
         $this->db->exec($sql);
 
