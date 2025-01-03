@@ -2,6 +2,7 @@
 
 class RateLimiter {
     private $db;
+    private $log;
     private $maxAttempts = 5;        // Maximum login attempts
     private $decayMinutes = 15;      // Time window in minutes
     private $ratelimitTable = 'login_attempts';
@@ -9,6 +10,7 @@ class RateLimiter {
 
     public function __construct($database) {
         $this->db = $database->getConnection();
+        $this->log = new Log($database);
         $this->createTablesIfNotExists();
     }
 
