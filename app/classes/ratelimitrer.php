@@ -145,6 +145,15 @@ class RateLimiter {
     // Add to whitelist
     public function addToWhitelist($ip, $isNetwork = false, $description = '', $createdBy = 'system', $userId = null) {
         try {
+            // Check if IP is blacklisted first
+            if ($this->isIpBlacklisted($ip)) {
+                $message = "Cannot whitelist {$ip} - IP is currently blacklisted";
+                if ($userId) {
+                    $this->log->insertLog($userId, "IP Whitelist: {$message}", 'system');
+                }
+                return false;
+            }
+
             $stmt = $this->db->prepare("INSERT INTO {$this->whitelistTable}
                 (ip_address, is_network, description, created_by)
                 VALUES (?, ?, ?, ?)
