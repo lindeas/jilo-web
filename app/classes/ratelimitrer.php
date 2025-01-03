@@ -219,6 +219,83 @@ class RateLimiter {
         }
     }
 
+    public function addToBlacklist($ip, $isNetwork = false, $reason = '', $createdBy = 'system', $userId = null, $expiryHours = null) {
+        try {
+            // Check if IP is whitelisted first
+            if ($this->isIpWhitelisted($ip)) {
+                $message = "Cannot blacklist {$ip} - IP is currently whitelisted";
+                if ($userId) {
+                    $this->log->insertLog($userId, "IP Blacklist: {$message}", 'system');
+                }
+                return false;
+            }
+
+            $expiryTime = $expiryHours ? date('Y-m-d H:i:s', strtotime("+{$expiryHours} hours")) : null;
+
+            $stmt = $this->db->prepare("INSERT INTO {$this->blacklistTable}
+                (ip_address, is_network, reason, expiry_time, created_by)
+                VALUES (?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                is_network = VALUES(is_network),
+                reason = VALUES(reason),
+                expiry_time = VALUES(expiry_time),
+                created_by = VALUES(created_by)");
+
+            $result = $stmt->execute([$ip, $isNetwork, $reason, $expiryTime, $createdBy]);
+
+            if ($result) {
+                $logMessage = sprintf(
+                    'IP Blacklist: Added %s "%s" by %s. Reason: %s. Expires: %s',
+                    $isNetwork ? 'network' : 'IP',
+                    $ip,
+                    $createdBy,
+                    $reason,
+                    $expiryTime ?? 'never'
+                );
+                $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            if ($userId) {
+                $this->log->insertLog($userId, "IP Blacklist: Failed to add {$ip}: " . $e->getMessage(), 'system');
+            }
+            return false;
+        }
+    }
+
+    public function removeFromBlacklist($ip, $userId = null, $removedBy = 'system') {
+        try {
+            // Get IP details before removal for logging
+            $stmt = $this->db->prepare("SELECT * FROM {$this->blacklistTable} WHERE ip_address = ?");
+            $stmt->execute([$ip]);
+            $ipDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Remove the IP
+            $stmt = $this->db->prepare("DELETE FROM {$this->blacklistTable} WHERE ip_address = ?");
+            $result = $stmt->execute([$ip]);
+
+            if ($result && $ipDetails) {
+                $logMessage = sprintf(
+                    'IP Blacklist: Removed %s "%s" by %s. Was added by: %s. Reason was: %s',
+                    $ipDetails['is_network'] ? 'network' : 'IP',
+                    $ip,
+                    $removedBy,
+                    $ipDetails['created_by'],
+                    $ipDetails['reason']
+                );
+                $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            if ($userId) {
+                $this->log->insertLog($userId, "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage(), 'system');
+            }
+            return false;
+        }
+    }
+
     public function getWhitelistedIps() {
         $stmt = $this->db->prepare("SELECT * FROM {$this->whitelistTable} ORDER BY created_at DESC");
         $stmt->execute();
