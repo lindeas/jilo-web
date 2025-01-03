@@ -310,6 +310,25 @@ class RateLimiter {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function cleanupExpiredEntries() {
+        try {
+            // Remove expired blacklist entries
+            $stmt = $this->db->prepare("DELETE FROM {$this->blacklistTable}
+                WHERE expiry_time IS NOT NULL AND expiry_time < NOW()");
+            $stmt->execute();
+
+            // Clean old login attempts
+            $stmt = $this->db->prepare("DELETE FROM {$this->tableName}
+                WHERE attempted_at < DATE_SUB(NOW(), INTERVAL ? MINUTE)");
+            $stmt->execute([$this->decayMinutes]);
+
+            return true;
+        } catch (Exception $e) {
+            $this->log->insertLog(0, "Failed to cleanup expired entries: " . $e->getMessage(), 'system');
+            return false;
+        }
+    }
+
     public function attempt($username, $ipAddress) {
         // Skip rate limiting for whitelisted IPs
         if ($this->isIpWhitelisted($ipAddress)) {
