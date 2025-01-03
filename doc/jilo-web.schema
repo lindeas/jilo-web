@@ -37,12 +37,11 @@ CREATE INDEX idx_ip_username ON login_attempts (ip_address, username);
 
 CREATE TABLE ip_whitelist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ip_address TEXT NOT NULL,
+    ip_address TEXT NOT NULL UNIQUE,
     is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0, 1)),
     description TEXT,
     created_at TEXT DEFAULT (DATETIME('now')),
     created_by TEXT,
-    UNIQUE (ip_address)
 );
 
 INSERT OR IGNORE INTO ip_whitelist (ip_address, is_network, description, created_by) VALUES
@@ -54,13 +53,12 @@ INSERT OR IGNORE INTO ip_whitelist (ip_address, is_network, description, created
 
 CREATE TABLE ip_blacklist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ip_address TEXT NOT NULL,
+    ip_address TEXT NOT NULL UNIQUE,
     is_network BOOLEAN DEFAULT 0 CHECK(IS_NETWORK IN (0,1)),
     reason TEXT,
     expiry_time TEXT,
     created_at TEXT DEFAULT (DATETIME('now')),
     created_by TEXT,
-    UNIQUE (ip_address)
 );
 
 INSERT OR IGNORE INTO ip_blacklist (ip_address, is_network, reason, created_by) VALUES
