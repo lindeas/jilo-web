@@ -7,6 +7,7 @@ class RateLimiter {
     private $decayMinutes = 15;      // Time window in minutes
     private $ratelimitTable = 'login_attempts';
     private $whitelistTable = 'ip_whitelist';
+    private $blacklistTable = 'ip_blacklist';
 
     public function __construct($database) {
         $this->db = $database->getConnection();
