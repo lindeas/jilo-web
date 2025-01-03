@@ -303,6 +303,13 @@ class RateLimiter {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getBlacklistedIps() {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->blacklistTable} ORDER BY created_at DESC");
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function attempt($username, $ipAddress) {
         // Skip rate limiting for whitelisted IPs
         if ($this->isIpWhitelisted($ipAddress)) {
