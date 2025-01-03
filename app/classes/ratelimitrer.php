@@ -65,6 +65,24 @@ class RateLimiter {
         foreach ($defaultIps as $ip) {
             $stmt->execute([$ip[0], $ip[1], $ip[2]]);
         }
+
+        // Insert known malicious networks
+        $defaultBlacklist = [
+            ['0.0.0.0/8', true, 'Reserved address space - RFC 1122'],
+            ['100.64.0.0/10', true, 'Carrier-grade NAT space - RFC 6598'],
+            ['192.0.2.0/24', true, 'TEST-NET-1 Documentation space - RFC 5737'],
+            ['198.51.100.0/24', true, 'TEST-NET-2 Documentation space - RFC 5737'],
+            ['203.0.113.0/24', true, 'TEST-NET-3 Documentation space - RFC 5737']
+        ];
+
+        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->blacklistTable} 
+            (ip_address, is_network, reason, created_by) 
+            VALUES (?, ?, ?, 'system')");
+
+        foreach ($defaultBlacklist as $ip) {
+            $stmt->execute([$ip[0], $ip[1], $ip[2]]);
+        }
+
     }
 
     // Check if IP is whitelisted
