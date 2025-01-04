@@ -5,6 +5,8 @@ class RateLimiter {
     private $log;
     private $maxAttempts = 5;        // Maximum login attempts
     private $decayMinutes = 15;      // Time window in minutes
+    private $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
+    private $autoBlacklistDuration = 24;  // Hours to blacklist for
     private $ratelimitTable = 'login_attempts';
     private $whitelistTable = 'ip_whitelist';
     private $blacklistTable = 'ip_blacklist';
@@ -317,9 +319,9 @@ class RateLimiter {
             $stmt->execute();
 
             // Clean old login attempts
-            $stmt = $this->db->prepare("DELETE FROM {$this->tableName}
-                WHERE attempted_at < DATE_SUB(NOW(), INTERVAL ? MINUTE)");
-            $stmt->execute([$this->decayMinutes]);
+            $stmt = $this->db->prepare("DELETE FROM {$this->ratelimitTable}
+                WHERE attempted_at < DATE_SUB(NOW(), INTERVAL :minutes MINUTE)");
+            $stmt->execute([':minutes' => $this->decayMinutes]);
 
             return true;
         } catch (Exception $e) {
@@ -328,8 +330,13 @@ class RateLimiter {
         }
     }
 
-    public function attempt($username, $ipAddress) {
-        // Skip rate limiting for whitelisted IPs
+    public function isAllowed($username, $ipAddress) {
+        // First check if IP is blacklisted
+        if ($this->isIpBlacklisted($ipAddress)) {
+            return false;
+        }
+
+        // Then check if IP is whitelisted
         if ($this->isIpWhitelisted($ipAddress)) {
             return true;
         }
@@ -337,16 +344,50 @@ class RateLimiter {
         // Clean old attempts
         $this->clearOldAttempts();
 
+        // Check if we've hit the rate limit
+        if ($this->tooManyAttempts($username, $ipAddress)) {
+            return false;
+        }
+
+        // Check total attempts across all usernames from this IP
+        $sql = "SELECT COUNT(*) as total_attempts
+                FROM {$this->ratelimitTable}
+                WHERE ip_address = :ip
+                AND attempted_at > DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':ip'      => $ipAddress,
+            ':minutes' => $this->decayMinutes
+        ]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Check if we would hit auto-blacklist threshold
+        return $result['total_attempts'] < $this->autoBlacklistThreshold;
+    }
+
+    public function attempt($username, $ipAddress) {
         // Record this attempt
         $sql = "INSERT INTO {$this->ratelimitTable} (ip_address, username) VALUES (:ip, :username)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':ip'		=> $ipAddress,
-            ':username'		=> $username
+            ':ip'           => $ipAddress,
+            ':username'     => $username
         ]);
 
-        // Check if too many attempts
-        return !$this->tooManyAttempts($username, $ipAddress);
+        // Auto-blacklist if too many attempts
+        if (!$this->isAllowed($username, $ipAddress)) {
+            $this->addToBlacklist(
+                $ipAddress,
+                false,
+                'Auto-blacklisted due to excessive login attempts',
+                'system',
+                null,
+                $this->autoBlacklistDuration
+            );
+            return false;
+        }
+
+        return true;
     }
 
     public function tooManyAttempts($username, $ipAddress) {
@@ -354,7 +395,7 @@ class RateLimiter {
                 FROM {$this->ratelimitTable}
                 WHERE ip_address = :ip
                 AND username = :username
-                AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
+                AND attempted_at > DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -369,7 +410,7 @@ class RateLimiter {
 
     public function clearOldAttempts() {
         $sql = "DELETE FROM {$this->ratelimitTable}
-                WHERE attempted_at < datetime('now', '-' || :minutes || ' minutes')";
+                WHERE attempted_at < DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -382,7 +423,7 @@ class RateLimiter {
                 FROM {$this->ratelimitTable}
                 WHERE ip_address = :ip
                 AND username = :username
-                AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
+                AND attempted_at > DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([

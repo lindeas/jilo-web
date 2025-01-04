@@ -93,12 +93,16 @@ class User {
         // get client IP address
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-        // check rate limiting
-        if (!$this->rateLimiter->attempt($username, $ipAddress)) {
+        // Record attempt
+        $this->rateLimiter->attempt($username, $ipAddress);
+
+        // Check rate limiting first
+        if (!$this->rateLimiter->isAllowed($username, $ipAddress)) {
             $remainingTime = $this->rateLimiter->getDecayMinutes();
             throw new Exception("Too many login attempts. Please try again in {$remainingTime} minutes.");
         }
 
+        // Then check credentials
         $query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
         $query->bindParam(':username', $username);
         $query->execute();
@@ -110,14 +114,9 @@ class User {
             return true;
         }
 
-        // Login failed, return remaining attempts info
+        // Get remaining attempts AFTER this failed attempt
         $remainingAttempts = $this->rateLimiter->getRemainingAttempts($username, $ipAddress);
-        if ($remainingAttempts > 0) {
-            throw new Exception("Invalid credentials. {$remainingAttempts} attempts remaining.");
-        } else {
-            $remainingTime = $this->rateLimiter->getDecayMinutes();
-            throw new Exception("Too many login attempts. Please try again in {$remainingTime} minutes.");
-        }
+        throw new Exception("Invalid credentials. {$remainingAttempts} attempts remaining.");
     }
 
 
