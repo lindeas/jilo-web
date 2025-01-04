@@ -3,6 +3,18 @@
     <div class="row mb-4">
         <div class="col">
             <h2>Security Settings</h2>
+            <?php if (!empty($error_message)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($error_message) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php endif; ?>
+            <?php if (!empty($success_message)): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($success_message) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php endif; ?>
             <ul class="nav nav-tabs">
                 <?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit whitelist')) { ?>
                 <li class="nav-item">
@@ -221,3 +233,21 @@
     <?php } ?>
 </div>
 <!-- /Security Settings -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap alerts
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        var closeButton = alert.querySelector('.btn-close');
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                alert.classList.remove('show');
+                setTimeout(function() {
+                    alert.remove();
+                }, 150);
+            });
+        }
+    });
+});
+</script>

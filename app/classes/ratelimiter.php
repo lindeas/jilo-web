@@ -53,11 +53,11 @@ class RateLimiter {
 
         // Default IPs to whitelist (local interface and private networks IPs)
         $defaultIps = [
-            ['127.0.0.1', false, 'localhost IPv4'],
-            ['::1', false, 'localhost IPv6'],
-            ['10.0.0.0/8', true, 'Private network (Class A)'],
-            ['172.16.0.0/12', true, 'Private network (Class B)'],
-            ['192.168.0.0/16', true, 'Private network (Class C)']
+            ['127.0.0.1', 0, 'localhost IPv4'],
+            ['::1', 0, 'localhost IPv6'],
+            ['10.0.0.0/8', 1, 'Private network (Class A)'],
+            ['172.16.0.0/12', 1, 'Private network (Class B)'],
+            ['192.168.0.0/16', 1, 'Private network (Class C)']
         ];
 
         // Insert default whitelisted IPs if they don't exist
@@ -70,15 +70,15 @@ class RateLimiter {
 
         // Insert known malicious networks
         $defaultBlacklist = [
-            ['0.0.0.0/8', true, 'Reserved address space - RFC 1122'],
-            ['100.64.0.0/10', true, 'Carrier-grade NAT space - RFC 6598'],
-            ['192.0.2.0/24', true, 'TEST-NET-1 Documentation space - RFC 5737'],
-            ['198.51.100.0/24', true, 'TEST-NET-2 Documentation space - RFC 5737'],
-            ['203.0.113.0/24', true, 'TEST-NET-3 Documentation space - RFC 5737']
+            ['0.0.0.0/8', 1, 'Reserved address space - RFC 1122'],
+            ['100.64.0.0/10', 1, 'Carrier-grade NAT space - RFC 6598'],
+            ['192.0.2.0/24', 1, 'TEST-NET-1 Documentation space - RFC 5737'],
+            ['198.51.100.0/24', 1, 'TEST-NET-2 Documentation space - RFC 5737'],
+            ['203.0.113.0/24', 1, 'TEST-NET-3 Documentation space - RFC 5737']
         ];
 
-        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->blacklistTable} 
-            (ip_address, is_network, reason, created_by) 
+        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->blacklistTable}
+            (ip_address, is_network, reason, created_by)
             VALUES (?, ?, ?, 'system')");
 
         foreach ($defaultBlacklist as $ip) {
@@ -155,13 +155,9 @@ class RateLimiter {
                 return false;
             }
 
-            $stmt = $this->db->prepare("INSERT INTO {$this->whitelistTable}
+            $stmt = $this->db->prepare("INSERT OR REPLACE INTO {$this->whitelistTable}
                 (ip_address, is_network, description, created_by)
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                is_network = VALUES(is_network),
-                description = VALUES(description),
-                created_by = VALUES(created_by)");
+                VALUES (?, ?, ?, ?)");
 
                 $result = $stmt->execute([$ip, $isNetwork, $description, $createdBy]);
 
@@ -187,7 +183,7 @@ class RateLimiter {
     }
 
     // Remove from whitelist
-    public function removeFromWhitelist($ip, $userId = null, $removedBy = 'system') {
+    public function removeFromWhitelist($ip, $removedBy = 'system', $userId = null) {
         try {
             // Get IP details before removal for logging
             $stmt = $this->db->prepare("SELECT * FROM {$this->whitelistTable} WHERE ip_address = ?");
@@ -233,14 +229,9 @@ class RateLimiter {
 
             $expiryTime = $expiryHours ? date('Y-m-d H:i:s', strtotime("+{$expiryHours} hours")) : null;
 
-            $stmt = $this->db->prepare("INSERT INTO {$this->blacklistTable}
+            $stmt = $this->db->prepare("INSERT OR REPLACE INTO {$this->blacklistTable}
                 (ip_address, is_network, reason, expiry_time, created_by)
-                VALUES (?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                is_network = VALUES(is_network),
-                reason = VALUES(reason),
-                expiry_time = VALUES(expiry_time),
-                created_by = VALUES(created_by)");
+                VALUES (?, ?, ?, ?, ?)");
 
             $result = $stmt->execute([$ip, $isNetwork, $reason, $expiryTime, $createdBy]);
 
@@ -265,7 +256,7 @@ class RateLimiter {
         }
     }
 
-    public function removeFromBlacklist($ip, $userId = null, $removedBy = 'system') {
+    public function removeFromBlacklist($ip, $removedBy = 'system', $userId = null) {
         try {
             // Get IP details before removal for logging
             $stmt = $this->db->prepare("SELECT * FROM {$this->blacklistTable} WHERE ip_address = ?");
