@@ -16,9 +16,15 @@
 ob_start();
 
 // sanitize all input vars that may end up in URLs or forms
-require '../app/helpers/sanitize.php';
+require '../app/includes/sanitize.php';
 
-require '../app/helpers/errors.php';
+require '../app/includes/errors.php';
+
+// Include Messages class
+require_once '../app/classes/messages.php';
+
+// Initialize variables for feedback messages
+$messages = [];
 
 // error reporting, comment out in production
 ini_set('display_errors', 1);
@@ -97,7 +103,7 @@ if ( !isset($_COOKIE['username']) && ($page !== 'login' && $page !== 'register')
 
 // connect to db of Jilo Web
 require '../app/classes/database.php';
-require '../app/helpers/database.php';
+require '../app/includes/database.php';
 $response = connectDB($config);
 if ($response['db'] === null) {
     $error .= $response['error'];
@@ -197,6 +203,8 @@ if ($page == 'logout') {
         $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
         if (!$server_status) {
             $error = 'The Jilo Server is not running. Some data may be old and incorrect.';
+            Messages::get('SECURITY', 'RATE_LIMIT_INFO');
+            Messages::render('SECURITY', 'RATE_LIMIT_INFO');
         }
     }
 
