@@ -3,18 +3,9 @@
     <div class="row mb-4">
         <div class="col">
             <h2>Security Settings</h2>
-            <?php if (!empty($error_message)): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($error_message) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php endif; ?>
-            <?php if (!empty($success_message)): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($success_message) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php endif; ?>
+            <?php foreach ($messages as $msg): ?>
+                <?= Messages::render($msg['category'], $msg['key'], $msg['custom_message'] ?? null) ?>
+            <?php endforeach; ?>
             <ul class="nav nav-tabs">
                 <?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit whitelist')) { ?>
                 <li class="nav-item">
