@@ -93,11 +93,22 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 <?php } ?>
+<?php if ($userObject->hasRight($user_id, 'superuser') ||
+          $userObject->hasRight($user_id, 'edit whitelist') ||
+          $userObject->hasRight($user_id, 'edit blacklist') ||
+          $userObject->hasRight($user_id, 'edit ratelimiting')) { ?>
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=security">
+                            <li class="list-group-item<?php if ($page === 'security') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-shield-alt" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="security"></i>security
+                            </li>
+                        </a>
+<?php } ?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=status">
                             <li class="list-group-item<?php if ($page === 'status' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-heartbeat" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="status"></i>status
                             </li>
                         </a>
+
 <?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
                             <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">

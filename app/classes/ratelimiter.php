@@ -1,15 +1,15 @@
 <?php
 
 class RateLimiter {
-    private $db;
+    public $db;
     private $log;
-    private $maxAttempts = 5;        // Maximum login attempts
-    private $decayMinutes = 15;      // Time window in minutes
-    private $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
-    private $autoBlacklistDuration = 24;  // Hours to blacklist for
-    private $ratelimitTable = 'login_attempts';
-    private $whitelistTable = 'ip_whitelist';
-    private $blacklistTable = 'ip_blacklist';
+    public $maxAttempts = 5;        // Maximum login attempts
+    public $decayMinutes = 15;      // Time window in minutes
+    public $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
+    public $autoBlacklistDuration = 24;  // Hours to blacklist for
+    public $ratelimitTable = 'login_attempts';
+    public $whitelistTable = 'ip_whitelist';
+    public $blacklistTable = 'ip_blacklist';
 
     public function __construct($database) {
         $this->db = $database->getConnection();

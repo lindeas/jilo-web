@@ -44,6 +44,7 @@ $allowed_urls = [
     'config',
     'status',
     'logs',
+    'security',
     'help',
 
     'login',
@@ -147,6 +148,29 @@ if ($page == 'logout') {
     include '../app/templates/page-menu.php';
     include '../app/templates/block-message.php';
     include '../app/pages/login.php';
+
+} elseif ($page === 'security') {
+    // Security settings require login
+    if (!isset($currentUser)) {
+        include '../app/templates/error-unauthorized.php';
+        exit;
+    }
+
+    // Get user details and rights
+    $user_id = $userObject->getUserId($currentUser)[0]['id'];
+    $userDetails = $userObject->getUserDetails($user_id);
+    $userRights = $userObject->getUserRights($user_id);
+    $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC';
+
+    // Initialize RateLimiter
+    require_once '../app/classes/ratelimiter.php';
+    $rateLimiter = new RateLimiter($dbWeb);
+
+    include '../app/templates/page-header.php';
+    include '../app/templates/page-menu.php';
+    include '../app/templates/page-sidebar.php';
+    include '../app/pages/security.php';
+    include '../app/templates/page-footer.php';
 
 } else {
 
