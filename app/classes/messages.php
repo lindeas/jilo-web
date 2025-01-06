@@ -124,19 +124,21 @@ class Messages {
     /**
      * Render message HTML
      */
-    public static function render($category, $key, $customMessage = null, $dismissible = null) {
+    public static function render($category, $key, $customMessage = null, $dismissible = false, $small = false) {
         $config = self::get($category, $key);
         if (!$config) return '';
 
         $message = $customMessage ?? $config['message'];
         $isDismissible = $dismissible ?? $config['dismissible'];
         $dismissClass = $isDismissible ? ' alert-dismissible fade show' : '';
-        $dismissButton = $isDismissible ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
+        $dismissButton = $isDismissible ? '<button type="button" class="btn-close' . ($small ? ' btn-close-sm' : '') . '" data-bs-dismiss="alert" aria-label="Close"></button>' : '';
+        $smallClass = $small ? ' alert-sm' : '';
 
         return sprintf(
-            '<div class="alert alert-%s%s" role="alert">%s%s</div>',
+            '<div class="alert alert-%s%s%s" role="alert">%s%s</div>',
             $config['type'],
             $dismissClass,
+            $smallClass,
             htmlspecialchars($message),
             $dismissButton
         );
@@ -145,7 +147,7 @@ class Messages {
     /**
      * Store message in session for display after redirect
      */
-    public static function flash($category, $key, $customMessage = null, $dismissible = null) {
+    public static function flash($category, $key, $customMessage = null, $dismissible = false, $small = false) {
         if (!isset($_SESSION['flash_messages'])) {
             $_SESSION['flash_messages'] = [];
         }
@@ -153,7 +155,8 @@ class Messages {
             'category' => $category,
             'key' => $key,
             'custom_message' => $customMessage,
-            'dismissible' => $dismissible
+            'dismissible' => $dismissible,
+            'small' => $small
         ];
     }
 

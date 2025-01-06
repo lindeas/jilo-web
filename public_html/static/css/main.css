@@ -201,3 +201,17 @@ html, body {
     border: 1px solid gray;
     border-radius: 4px;
 }
+
+/* messages system */
+.alert-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.alert-sm .btn-close-sm {
+    padding: 0.25rem 0.25rem;
+    margin: -0.125rem -0.125rem -0.125rem auto;
+    font-size: 0.75rem;
+}

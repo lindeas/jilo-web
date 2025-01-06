@@ -188,7 +188,7 @@ if ($page == 'logout') {
         $server_endpoint = '/health';
         $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
         if (!$server_status) {
-            echo Messages::render('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false);
+            echo Messages::render('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false, true);
         }
     }
 
