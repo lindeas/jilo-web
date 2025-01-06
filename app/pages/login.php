@@ -23,7 +23,7 @@ try {
 
     // Initialize RateLimiter
     require_once '../app/classes/ratelimiter.php';
-    $rateLimiter = new RateLimiter($dbWeb);
+    $rateLimiter = new RateLimiter($dbWeb['db']);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         try {
