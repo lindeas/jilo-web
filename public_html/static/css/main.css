@@ -5,6 +5,7 @@ html, body {
     padding: 0;
 }
 
+/* menu */
 .menu-container {
     display: flex;
     justify-content: space-between;
@@ -43,6 +44,7 @@ html, body {
 .menu-left li a:hover, .menu-right li a:hover {
     background-color: #111;
 }
+/* /menu */
 
 .error {
     color: red;
@@ -150,6 +152,10 @@ html, body {
     width: calc(70% + 3em);
 }
 
+.sidebar-content a {
+    text-decoration: none;
+}
+
 .logo {
     height: 36px;
     margin-top: 10px;
@@ -162,20 +168,26 @@ html, body {
     background-color: lightseagreen;
 }
 
-.sidebar-content a {
-    text-decoration: none;
+input[type="select"]:disabled,
+input[type="radio"]:disabled {
+  background-color: #e0e0e0; /* Light gray background */
+  color: #999999; /* Gray text */
+  border-color: #cccccc; /* Lighter gray border */
+  cursor: not-allowed; /* Shows the 'not-allowed' cursor */
+  opacity: 0.7; /* Makes it slightly transparent */
 }
 
+/* pagination */
 .pagination {
     font-size: 0.66em;
     text-align: center;
     display: block;
 }
-
 .pagination span {
     margin-left: 5px;
     margin-right: 5px;
 }
+/* /pagination */
 
 .th-time {
     width: 200px;
