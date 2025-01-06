@@ -21,10 +21,27 @@ try {
     // connect to database
     $dbWeb = connectDB($config);
 
+    // Initialize RateLimiter
+    require_once '../app/classes/ratelimiter.php';
+    $rateLimiter = new RateLimiter($dbWeb);
+
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         try {
             $username = $_POST['username'];
             $password = $_POST['password'];
+
+            // Check if IP is blacklisted
+            if ($rateLimiter->isIpBlacklisted($user_IP)) {
+                throw new Exception(Messages::get('LOGIN', 'IP_BLACKLISTED')['message']);
+            }
+
+            // Check rate limiting (but skip if IP is whitelisted)
+            if (!$rateLimiter->isIpWhitelisted($user_IP)) {
+                $attempts = $rateLimiter->getRecentAttempts($user_IP);
+                if ($attempts >= $rateLimiter->maxAttempts) {
+                    throw new Exception(Messages::get('LOGIN', 'LOGIN_BLOCKED')['message']);
+                }
+            }
 
             // login successful
             if ( $userObject->login($username, $password) ) {
@@ -52,32 +69,40 @@ try {
                     'samesite'	=> 'Strict'
                 ]);
 
-                // redirect to index
-                $_SESSION['notice'] = "Login successful";
+                // Log successful login
                 $user_id = $userObject->getUserId($username)[0]['id'];
                 $logObject->insertLog($user_id, "Login: User \"$username\" logged in. IP: $user_IP", 'user');
+
+                // Set success message and redirect
+                Messages::flash('LOGIN', 'LOGIN_SUCCESS');
                 header('Location: ' . htmlspecialchars($app_root));
                 exit();
+            } else {
+                throw new Exception(Messages::get('LOGIN', 'LOGIN_FAILED')['message']);
             }
         } catch (Exception $e) {
             // Log the failed attempt
-            $error = $e->getMessage();
+            Messages::flash('ERROR', 'DEFAULT', $e->getMessage());
             if (isset($username)) {
                 $user_id = $userObject->getUserId($username)[0]['id'] ?? 0;
-                $logObject->insertLog($user_id, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$error}", 'user');
+                $logObject->insertLog($user_id, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", 'user');
             }
-            include '../app/templates/block-message.php';
         }
     }
 } catch (Exception $e) {
-    $error = getError('There was an unexpected error. Please try again.', $e->getMessage());
+    Messages::flash('ERROR', 'DEFAULT', 'There was an unexpected error. Please try again.');
 }
 
+// Show configured login message if any
 if (!empty($config['login_message'])) {
-    $notice = $config['login_message'];
-    include '../app/templates/block-message.php';
+    echo Messages::render('NOTICE', 'DEFAULT', $config['login_message'], false);
 }
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
+// Load the template
 include '../app/templates/form-login.php';
 
 ?>

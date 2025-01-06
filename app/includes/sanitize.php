@@ -21,6 +21,15 @@ if (isset($_REQUEST['until_time'])) {
     $until_time = htmlspecialchars($_REQUEST['until_time']);
 }
 
+// sanitize session vars
+if (isset($_SESSION)) {
+    foreach ($_SESSION as $key => $value) {
+        if (is_string($value)) {
+            $_SESSION[$key] = htmlspecialchars($value);
+        }
+    }
+}
+
 // hosts
 if (isset($_POST['address'])) {
     $address = htmlspecialchars($_POST['address']);

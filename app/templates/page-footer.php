@@ -18,6 +18,28 @@ $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
+
+
+<script>
+// dismissible messages
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap alerts
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        var closeButton = alert.querySelector('.btn-close');
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                alert.classList.remove('show');
+                setTimeout(function() {
+                    alert.remove();
+                }, 150);
+            });
+        }
+    });
+});
+</script>
+
+
 </body>
 
 </html>

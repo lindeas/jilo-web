@@ -18,13 +18,13 @@ ob_start();
 // sanitize all input vars that may end up in URLs or forms
 require '../app/includes/sanitize.php';
 
-require '../app/includes/errors.php';
-
-// Include Messages class
+// Initialize message system
 require_once '../app/classes/messages.php';
-
-// Initialize variables for feedback messages
 $messages = [];
+
+include '../app/includes/messages.php';
+
+require '../app/includes/errors.php';
 
 // error reporting, comment out in production
 ini_set('display_errors', 1);
@@ -104,12 +104,19 @@ if ( !isset($_COOKIE['username']) && ($page !== 'login' && $page !== 'register')
 // connect to db of Jilo Web
 require '../app/classes/database.php';
 require '../app/includes/database.php';
-$response = connectDB($config);
-if ($response['db'] === null) {
-    $error .= $response['error'];
-//    include '../app/templates/block-message.php';
-} else {
+try {
+    $response = connectDB($config);
+    if (!$response['db']) {
+        throw new Exception('Could not connect to database: ' . $response['error']);
+    }
     $dbWeb = $response['db'];
+} catch (Exception $e) {
+    Messages::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
+    include '../app/templates/page-header.php';
+    include '../app/includes/messages.php';
+    include '../app/includes/messages-show.php';
+    include '../app/templates/page-footer.php';
+    exit();
 }
 
 // start logging
@@ -146,37 +153,16 @@ if ($page == 'logout') {
     session_destroy();
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
-    $notice = "You were logged out.<br />You can log in again.";
+    // Log successful logout
     $user_id = $userObject->getUserId($currentUser)[0]['id'];
     $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
 
+    // Set success message
+    Messages::flash('LOGIN', 'LOGOUT_SUCCESS');
+
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
-    include '../app/templates/block-message.php';
     include '../app/pages/login.php';
-
-} elseif ($page === 'security') {
-    // Security settings require login
-    if (!isset($currentUser)) {
-        include '../app/templates/error-unauthorized.php';
-        exit;
-    }
-
-    // Get user details and rights
-    $user_id = $userObject->getUserId($currentUser)[0]['id'];
-    $userDetails = $userObject->getUserDetails($user_id);
-    $userRights = $userObject->getUserRights($user_id);
-    $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC';
-
-    // Initialize RateLimiter
-    require_once '../app/classes/ratelimiter.php';
-    $rateLimiter = new RateLimiter($dbWeb);
-
-    include '../app/templates/page-header.php';
-    include '../app/templates/page-menu.php';
-    include '../app/templates/page-sidebar.php';
-    include '../app/pages/security.php';
-    include '../app/templates/page-footer.php';
 
 } else {
 
@@ -202,9 +188,7 @@ if ($page == 'logout') {
         $server_endpoint = '/health';
         $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
         if (!$server_status) {
-            $error = 'The Jilo Server is not running. Some data may be old and incorrect.';
-            Messages::get('SECURITY', 'RATE_LIMIT_INFO');
-            Messages::render('SECURITY', 'RATE_LIMIT_INFO');
+            echo Messages::render('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false);
         }
     }
 
@@ -214,7 +198,6 @@ if ($page == 'logout') {
     if (isset($currentUser)) {
         include '../app/templates/page-sidebar.php';
     }
-    include '../app/templates/block-message.php';
     if (in_array($page, $allowed_urls)) {
         // all normal pages
         include "../app/pages/{$page}.php";

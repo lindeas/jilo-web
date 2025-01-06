@@ -3,9 +3,6 @@
     <div class="row mb-4">
         <div class="col">
             <h2>Security Settings</h2>
-            <?php foreach ($messages as $msg): ?>
-                <?= Messages::render($msg['category'], $msg['key'], $msg['custom_message'] ?? null) ?>
-            <?php endforeach; ?>
             <ul class="nav nav-tabs">
                 <?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit whitelist')) { ?>
                 <li class="nav-item">
@@ -172,7 +169,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3>Rate Limiting Settings</h3>
-                    Restricts brute force or flooding attempts at login page.
+                    Rate limiting settings control how many failed login attempts are allowed before blocking an IP address.
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
@@ -224,21 +221,3 @@
     <?php } ?>
 </div>
 <!-- /Security Settings -->
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Bootstrap alerts
-    var alerts = document.querySelectorAll('.alert');
-    alerts.forEach(function(alert) {
-        var closeButton = alert.querySelector('.btn-close');
-        if (closeButton) {
-            closeButton.addEventListener('click', function() {
-                alert.classList.remove('show');
-                setTimeout(function() {
-                    alert.remove();
-                }, 150);
-            });
-        }
-    });
-});
-</script>

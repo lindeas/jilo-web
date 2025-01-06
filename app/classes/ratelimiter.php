@@ -3,8 +3,8 @@
 class RateLimiter {
     public $db;
     private $log;
-    public $maxAttempts = 5;        // Maximum login attempts
-    public $decayMinutes = 15;      // Time window in minutes
+    public $maxAttempts = 5;           // Maximum login attempts
+    public $decayMinutes = 15;         // Time window in minutes
     public $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
     public $autoBlacklistDuration = 24;  // Hours to blacklist for
     public $ratelimitTable = 'login_attempts';
@@ -22,7 +22,7 @@ class RateLimiter {
         // Login attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->ratelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL,
+            ip_address TEXT NOT NULL UNIQUE,
             username TEXT NOT NULL,
             attempted_at TEXT DEFAULT (DATETIME('now'))
         )";
@@ -45,7 +45,7 @@ class RateLimiter {
             ip_address TEXT NOT NULL UNIQUE,
             is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
             reason TEXT,
-            expiry_time TEXT NULL,
+            expiry_time TEXT  NULL,
             created_at TEXT DEFAULT (DATETIME('now')),
             created_by TEXT
         )";
@@ -53,11 +53,11 @@ class RateLimiter {
 
         // Default IPs to whitelist (local interface and private networks IPs)
         $defaultIps = [
-            ['127.0.0.1', 0, 'localhost IPv4'],
-            ['::1', 0, 'localhost IPv6'],
-            ['10.0.0.0/8', 1, 'Private network (Class A)'],
-            ['172.16.0.0/12', 1, 'Private network (Class B)'],
-            ['192.168.0.0/16', 1, 'Private network (Class C)']
+            ['127.0.0.1', false, 'localhost IPv4'],
+            ['::1', false, 'localhost IPv6'],
+            ['10.0.0.0/8', true, 'Private network (Class A)'],
+            ['172.16.0.0/12', true, 'Private network (Class B)'],
+            ['192.168.0.0/16', true, 'Private network (Class C)']
         ];
 
         // Insert default whitelisted IPs if they don't exist
@@ -70,11 +70,11 @@ class RateLimiter {
 
         // Insert known malicious networks
         $defaultBlacklist = [
-            ['0.0.0.0/8', 1, 'Reserved address space - RFC 1122'],
-            ['100.64.0.0/10', 1, 'Carrier-grade NAT space - RFC 6598'],
-            ['192.0.2.0/24', 1, 'TEST-NET-1 Documentation space - RFC 5737'],
-            ['198.51.100.0/24', 1, 'TEST-NET-2 Documentation space - RFC 5737'],
-            ['203.0.113.0/24', 1, 'TEST-NET-3 Documentation space - RFC 5737']
+            ['0.0.0.0/8', true, 'Reserved address space - RFC 1122'],
+            ['100.64.0.0/10', true, 'Carrier-grade NAT space - RFC 6598'],
+            ['192.0.2.0/24', true, 'TEST-NET-1 Documentation space - RFC 5737'],
+            ['198.51.100.0/24', true, 'TEST-NET-2 Documentation space - RFC 5737'],
+            ['203.0.113.0/24', true, 'TEST-NET-3 Documentation space - RFC 5737']
         ];
 
         $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->blacklistTable}
@@ -87,27 +87,21 @@ class RateLimiter {
 
     }
 
-    private function isIpWhitelisted($ip) {
-        // Check exact IP match and CIDR ranges
-         $stmt = $this->db->prepare("SELECT ip_address, is_network FROM {$this->whitelistTable}");
-         $stmt->execute();
-
-         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-             if ($row['is_network']) {
-                 if ($this->ipInRange($ip, $row['ip_address'])) {
-                     return true;
-                 }
-             } else {
-                 if ($ip === $row['ip_address']) {
-                     return true;
-                 }
-             }
-         }
-
-         return false;
+    /**
+     * Get number of recent login attempts for an IP
+     */
+    public function getRecentAttempts($ip) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as attempts FROM {$this->ratelimitTable} 
+            WHERE ip_address = ? AND attempted_at > datetime('now', '-' || :minutes || ' minutes')");
+        $stmt->execute([$ip, $this->decayMinutes]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return intval($result['attempts']);
     }
 
-    private function isIpBlacklisted($ip) {
+    /**
+     * Check if an IP is blacklisted
+     */
+    public function isIpBlacklisted($ip) {
         // First check if IP is explicitly blacklisted or in a blacklisted range
         $stmt = $this->db->prepare("SELECT ip_address, is_network, expiry_time FROM {$this->blacklistTable}");
         $stmt->execute();
@@ -118,6 +112,29 @@ class RateLimiter {
                 continue;
             }
 
+            if ($row['is_network']) {
+                if ($this->ipInRange($ip, $row['ip_address'])) {
+                    return true;
+                }
+            } else {
+                if ($ip === $row['ip_address']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if an IP is whitelisted
+     */
+    public function isIpWhitelisted($ip) {
+        // Check exact IP match and CIDR ranges
+        $stmt = $this->db->prepare("SELECT ip_address, is_network FROM {$this->whitelistTable}");
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             if ($row['is_network']) {
                 if ($this->ipInRange($ip, $row['ip_address'])) {
                     return true;
@@ -151,6 +168,7 @@ class RateLimiter {
                 $message = "Cannot whitelist {$ip} - IP is currently blacklisted";
                 if ($userId) {
                     $this->log->insertLog($userId, "IP Whitelist: {$message}", 'system');
+                    Messages::flash('ERROR', 'DEFAULT', $message);
                 }
                 return false;
             }
@@ -177,6 +195,7 @@ class RateLimiter {
         } catch (Exception $e) {
             if ($userId) {
                 $this->log->insertLog($userId, "IP Whitelist: Failed to add {$ip}: " . $e->getMessage(), 'system');
+                Messages::flash('ERROR', 'DEFAULT', "IP Whitelist: Failed to add {$ip}: " . $e->getMessage());
             }
             return false;
         }
@@ -211,6 +230,7 @@ class RateLimiter {
         } catch (Exception $e) {
             if ($userId) {
                 $this->log->insertLog($userId, "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage(), 'system');
+                Messages::flash('ERROR', 'DEFAULT', "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage());
             }
             return false;
         }
@@ -223,6 +243,7 @@ class RateLimiter {
                 $message = "Cannot blacklist {$ip} - IP is currently whitelisted";
                 if ($userId) {
                     $this->log->insertLog($userId, "IP Blacklist: {$message}", 'system');
+                    Messages::flash('ERROR', 'DEFAULT', $message);
                 }
                 return false;
             }
@@ -251,6 +272,7 @@ class RateLimiter {
         } catch (Exception $e) {
             if ($userId) {
                 $this->log->insertLog($userId, "IP Blacklist: Failed to add {$ip}: " . $e->getMessage(), 'system');
+                Messages::flash('ERROR', 'DEFAULT', "IP Blacklist: Failed to add {$ip}: " . $e->getMessage());
             }
             return false;
         }
@@ -283,6 +305,7 @@ class RateLimiter {
         } catch (Exception $e) {
             if ($userId) {
                 $this->log->insertLog($userId, "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage(), 'system');
+                Messages::flash('ERROR', 'DEFAULT', "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage());
             }
             return false;
         }
@@ -317,6 +340,7 @@ class RateLimiter {
             return true;
         } catch (Exception $e) {
             $this->log->insertLog(0, "Failed to cleanup expired entries: " . $e->getMessage(), 'system');
+            Messages::flash('ERROR', 'DEFAULT', "Failed to cleanup expired entries: " . $e->getMessage());
             return false;
         }
     }
@@ -390,9 +414,9 @@ class RateLimiter {
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':ip'		=> $ipAddress,
-            ':username'		=> $username,
-            ':minutes'		=> $this->decayMinutes
+            ':ip'           => $ipAddress,
+            ':username'     => $username,
+            ':minutes'      => $this->decayMinutes
         ]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -405,7 +429,7 @@ class RateLimiter {
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':minutes'		=> $this->decayMinutes
+            ':minutes'      => $this->decayMinutes
         ]);
     }
 
@@ -418,9 +442,9 @@ class RateLimiter {
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':ip'		=> $ipAddress,
-            ':username'		=> $username,
-            ':minutes'		=> $this->decayMinutes
+            ':ip'           => $ipAddress,
+            ':username'     => $username,
+            ':minutes'      => $this->decayMinutes
         ]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

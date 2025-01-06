@@ -9,14 +9,17 @@ if (!($userObject->hasRight($user_id, 'superuser') ||
     exit;
 }
 
-// Include Messages class
-require_once '../app/classes/messages.php';
-
-// Initialize variables for feedback messages
-$messages = [];
+if (!isset($currentUser)) {
+    include '../app/templates/error-unauthorized.php';
+    exit;
+}
 
 // Get current section
 $section = isset($_POST['section']) ? $_POST['section'] : (isset($_GET['section']) ? $_GET['section'] : 'whitelist');
+
+// Initialize RateLimiter
+require_once '../app/classes/ratelimiter.php';
+$rateLimiter = new RateLimiter($dbWeb);
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -81,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     } catch (Exception $e) {
         $messages[] = ['category' => 'SECURITY', 'key' => 'CUSTOM_ERROR', 'custom_message' => $e->getMessage()];
+        Messages::flash('SECURITY', 'CUSTOM_ERROR', 'custom_message');
     }
 
     if (empty($messages)) {
@@ -89,16 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
 }
-
-// Get flash messages from previous request
-$flash_messages = Messages::getFlash();
-$messages = array_merge($messages, array_map(function($flash) {
-    return [
-        'category' => $flash['category'],
-        'key' => $flash['key'],
-        'custom_message' => $flash['custom_message']
-    ];
-}, $flash_messages));
 
 // Always show rate limit info message for rate limiting section
 if ($section === 'ratelimit') {
@@ -109,7 +103,11 @@ if ($section === 'ratelimit') {
 $whitelisted = $rateLimiter->getWhitelistedIps();
 $blacklisted = $rateLimiter->getBlacklistedIps();
 
-// Include template
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
+// Load the template
 include '../app/templates/security.php';
 
 ?>

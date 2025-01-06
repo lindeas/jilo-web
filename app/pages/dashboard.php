@@ -9,6 +9,10 @@
  * 3. The most recent 10 conferences.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 require '../app/classes/conference.php';
 require '../app/classes/participant.php';
 
