@@ -168,16 +168,17 @@ if ($page == 'logout') {
 
     // if user is logged in, we need user details and rights
     if (isset($currentUser)) {
-        $user_id = $userObject->getUserId($currentUser)[0]['id'];
-        $userDetails = $userObject->getUserDetails($user_id);
-        $userRights = $userObject->getUserRights($user_id);
-        $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
 
         // If by error a logged in user requests the login page
         if ($page === 'login') {
             header('Location: ' . htmlspecialchars($app_root));
             exit();
         }
+        $user_id = $userObject->getUserId($currentUser)[0]['id'];
+        $userDetails = $userObject->getUserDetails($user_id);
+        $userRights = $userObject->getUserRights($user_id);
+        $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
+
 
         // check if the Jilo Server is running
         require '../app/classes/server.php';
