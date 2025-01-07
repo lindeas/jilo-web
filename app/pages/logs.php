@@ -7,6 +7,14 @@
  * It supports pagination and filtering, and generates a widget to display the logs.
  */
 
+// Check for rights; user or system
+if (($userObject->hasRight($user_id, 'superuser') ||
+      $userObject->hasRight($user_id, 'view app logs'))) {
+    $scope = 'system';
+} else {
+    $scope = 'user';
+}
+
 // specify time range
 include '../app/helpers/time_range.php';
 
@@ -15,9 +23,6 @@ $items_per_page = 15;
 $browse_page = $_REQUEST['p'] ?? 1;
 $browse_page = (int)$browse_page;
 $offset = ($browse_page -1) * $items_per_page;
-
-// logs scope: user or system
-$scope = 'user';
 
 // prepare the result
 $search = $logObject->readLog($user_id, $scope, $offset, $items_per_page);
