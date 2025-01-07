@@ -7,7 +7,9 @@ if (!empty($flash_messages)) {
         return [
             'category' => $flash['category'],
             'key' => $flash['key'],
-            'custom_message' => $flash['custom_message']
+            'custom_message' => $flash['custom_message'] ?? null,
+            'dismissible' => $flash['dismissible'] ?? false,
+            'small' => $flash['small'] ?? false
         ];
     }, $flash_messages));
 }

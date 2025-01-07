@@ -22,7 +22,7 @@ require '../app/includes/sanitize.php';
 require_once '../app/classes/messages.php';
 $messages = [];
 
-include '../app/includes/messages.php';
+//include '../app/includes/messages.php';
 
 require '../app/includes/errors.php';
 
@@ -189,7 +189,7 @@ if ($page == 'logout') {
         $server_endpoint = '/health';
         $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
         if (!$server_status) {
-            echo Messages::render('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false, true);
+            Messages::flash('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false, true);
         }
     }
 

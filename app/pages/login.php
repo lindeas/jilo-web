@@ -74,7 +74,7 @@ try {
                 $logObject->insertLog($user_id, "Login: User \"$username\" logged in. IP: $user_IP", 'user');
 
                 // Set success message and redirect
-                Messages::flash('LOGIN', 'LOGIN_SUCCESS');
+                Messages::flash('LOGIN', 'LOGIN_SUCCESS', null, true);
                 header('Location: ' . htmlspecialchars($app_root));
                 exit();
             } else {
