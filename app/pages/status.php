@@ -8,6 +8,10 @@
  * It generates output for each platform and agent.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 require '../app/classes/agent.php';
 $agentObject = new Agent($dbWeb);
 

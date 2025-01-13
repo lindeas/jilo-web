@@ -7,6 +7,10 @@
  * hosts, agents, and the configuration file itself.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 $host = $_REQUEST['host'] ?? '';

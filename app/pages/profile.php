@@ -12,6 +12,10 @@
  * - `edit`: Edit user profile details, rights, or avatar.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 $action = $_REQUEST['action'] ?? '';
 
 // if a form is submitted, it's from the edit page

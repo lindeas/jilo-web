@@ -8,6 +8,10 @@
  * Supports pagination.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 require '../app/classes/participant.php';
 
 // connect to database

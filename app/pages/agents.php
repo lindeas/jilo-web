@@ -8,6 +8,10 @@
  * to allow time-based invalidation if needed.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 require '../app/classes/agent.php';

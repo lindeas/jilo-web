@@ -7,6 +7,10 @@
  * It supports pagination and filtering, and generates a widget to display the logs.
  */
 
+// Get any new messages
+include '../app/includes/messages.php';
+include '../app/includes/messages-show.php';
+
 // Check for rights; user or system
 if (($userObject->hasRight($user_id, 'superuser') ||
       $userObject->hasRight($user_id, 'view app logs'))) {
