@@ -64,12 +64,35 @@ switch ($item) {
         break;
 
     case 'latest':
+        // Get latest data for both JVB and Jicofo agents
         $latestJvbConferences = $agentObject->getLatestData($platform_id, 'jvb', 'conferences');
         $latestJvbParticipants = $agentObject->getLatestData($platform_id, 'jvb', 'participants');
         $latestJicofoConferences = $agentObject->getLatestData($platform_id, 'jicofo', 'conferences');
         $latestJicofoParticipants = $agentObject->getLatestData($platform_id, 'jicofo', 'participants');
 
         $widget['records'] = array();
+
+        // Format data for JVB metrics
+        if ($latestJvbConferences !== null || $latestJvbParticipants !== null) {
+            $widget['records'][] = [
+                'table_headers' => 'JVB',
+                'conferences' => $latestJvbConferences ? $latestJvbConferences['value'] : null,
+                'participants' => $latestJvbParticipants ? $latestJvbParticipants['value'] : null,
+                'from_time' => $latestJvbConferences ? $latestJvbConferences['timestamp'] : ($latestJvbParticipants ? $latestJvbParticipants['timestamp'] : null),
+                'until_time' => $latestJvbConferences ? $latestJvbConferences['timestamp'] : ($latestJvbParticipants ? $latestJvbParticipants['timestamp'] : null)
+            ];
+        }
+
+        // Format data for Jicofo metrics
+        if ($latestJicofoConferences !== null || $latestJicofoParticipants !== null) {
+            $widget['records'][] = [
+                'table_headers' => 'Jicofo',
+                'conferences' => $latestJicofoConferences ? $latestJicofoConferences['value'] : null,
+                'participants' => $latestJicofoParticipants ? $latestJicofoParticipants['value'] : null,
+                'from_time' => $latestJicofoConferences ? $latestJicofoConferences['timestamp'] : ($latestJicofoParticipants ? $latestJicofoParticipants['timestamp'] : null),
+                'until_time' => $latestJicofoConferences ? $latestJicofoConferences['timestamp'] : ($latestJicofoParticipants ? $latestJicofoParticipants['timestamp'] : null)
+            ];
+        }
 
         // prepare the widget
         $widget['full'] = false;
@@ -78,10 +101,10 @@ switch ($item) {
         $widget['collapsible'] = false;
         $widget['collapsed'] = false;
         $widget['filter'] = false;
-        if (!empty($latestJvbConferences) && !empty($latestJvbParticipants) && !empty($latestJicofoConferences) && !empty($latestJicofoParticipants)) {
+        if (!empty($widget['records'])) {
             $widget['full'] = true;
         }
-        $widget['pagination'] = true;
+        $widget['pagination'] = false;
 
         include '../app/templates/latest-data.php';
         break;

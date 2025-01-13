@@ -385,8 +385,59 @@ class Agent {
      * @return mixed The latest stored data.
      */
     public function getLatestData($platform_id, $agent_type, $metric_type) {
-        // TODO
-        // retrieves data already stored in db from another function (or the jilo-server to-be)
+        $sql = 'SELECT 
+                    jac.timestamp,
+                    jac.response_content,
+                    jac.agent_id,
+                    jat.description
+                FROM 
+                    jilo_agent_checks jac
+                JOIN 
+                    jilo_agents ja ON jac.agent_id = ja.id
+                JOIN 
+                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                WHERE 
+                    ja.platform_id = :platform_id
+                    AND jat.description = :agent_type
+                    AND jac.status_code = 200
+                ORDER BY 
+                    jac.timestamp DESC
+                LIMIT 1';
+
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':platform_id' => $platform_id,
+            ':agent_type' => $agent_type
+        ]);
+
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            // Parse the JSON response content
+            $data = json_decode($result['response_content'], true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return null;
+            }
+            
+            // Extract the specific metric value from the response based on agent type
+            if ($agent_type === 'jvb') {
+                if (isset($data['jvb_api_data'][$metric_type])) {
+                    return [
+                        'value' => $data['jvb_api_data'][$metric_type],
+                        'timestamp' => $result['timestamp']
+                    ];
+                }
+            } elseif ($agent_type === 'jicofo') {
+                if (isset($data['jicofo_api_data'][$metric_type])) {
+                    return [
+                        'value' => $data['jicofo_api_data'][$metric_type],
+                        'timestamp' => $result['timestamp']
+                    ];
+                }
+            }
+        }
+        
+        return null;
     }
 
 }
