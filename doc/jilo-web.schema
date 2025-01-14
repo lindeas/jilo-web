@@ -14,7 +14,6 @@ CREATE TABLE users_meta (
     bio TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
 CREATE TABLE users_rights (
     user_id INTEGER,
     right_id INTEGER,
@@ -26,47 +25,25 @@ CREATE TABLE rights (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
 );
-
-CREATE TABLE login_attempts (
+INSERT INTO rights VALUES(1,'superuser');
+INSERT INTO rights VALUES(2,'edit users');
+INSERT INTO rights VALUES(3,'view config file');
+INSERT INTO rights VALUES(4,'edit config file');
+INSERT INTO rights VALUES(5,'view own profile');
+INSERT INTO rights VALUES(6,'edit own profile');
+INSERT INTO rights VALUES(7,'view all profiles');
+INSERT INTO rights VALUES(8,'edit all profiles');
+INSERT INTO rights VALUES(9,'view app logs');
+INSERT INTO rights VALUES(10,'view all platforms');
+INSERT INTO rights VALUES(11,'edit all platforms');
+INSERT INTO rights VALUES(12,'view all agents');
+INSERT INTO rights VALUES(13,'edit all agents');
+CREATE TABLE platforms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ip_address TEXT NOT NULL,
-    username TEXT NOT NULL,
-    attempted_at TEXT DEFAULT (DATETIME('now')),
+    name TEXT NOT NULL UNIQUE,
+    jitsi_url TEXT NOT NULL,
+    jilo_database TEXT NOT NULL
 );
-
-CREATE TABLE ip_whitelist (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ip_address TEXT NOT NULL UNIQUE,
-    is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0, 1)),
-    description TEXT,
-    created_at TEXT DEFAULT (DATETIME('now')),
-    created_by TEXT,
-);
-
-INSERT OR IGNORE INTO ip_whitelist (ip_address, is_network, description, created_by) VALUES
-('127.0.0.1', 0, 'localhost IPv4', 'system'),
-('::1', 0, 'localhost IPv6', 'system'),
-('10.0.0.0/8', 1, 'Private network', 'system'),
-('172.16.0.0/12', 1, 'Private network', 'system'),
-('192.168.0.0/16', 1, 'Private network', 'system');
-
-CREATE TABLE ip_blacklist (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ip_address TEXT NOT NULL UNIQUE,
-    is_network BOOLEAN DEFAULT 0 CHECK(IS_NETWORK IN (0,1)),
-    reason TEXT,
-    expiry_time TEXT,
-    created_at TEXT DEFAULT (DATETIME('now')),
-    created_by TEXT,
-);
-
-INSERT OR IGNORE INTO ip_blacklist (ip_address, is_network, reason, created_by) VALUES
-('0.0.0.0/8', 1, 'Reserved address space - RFC 1122', 'system'),
-('100.64.0.0/10', 1, 'Carrier-grade NAT space - RFC 6598', 'system'),
-('192.0.2.0/24', 1, 'TEST-NET-1 Documentation space - RFC 5737', 'system'),
-('198.51.100.0/24', 1, 'TEST-NET-2 Documentation space - RFC 5737', 'system'),
-('203.0.113.0/24', 1, 'TEST-NET-3 Documentation space - RFC 5737', 'system');
-
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGET NOT NULL,
@@ -75,44 +52,76 @@ CREATE TABLE logs (
     message TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-CREATE TABLE platforms (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
-    jitsi_url TEXT NOT NULL,
-    jilo_database TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS "jilo_agent_types" (
+	"id"	INTEGER,
+	"description"	TEXT,
+	"endpoint"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
-
-CREATE TABLE hosts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    address TEXT NOT NULL,
-    port INTEGER NOT NULL,
-    platform_id INTEGER NOT NULL,
-    name TEXT,
-    FOREIGN KEY(platform_id) REFERENCES platforms(id)
-);
-
-CREATE TABLE jilo_agents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    platform_id INTEGER NOT NULL,
-    agent_type_id INTEGER NOT NULL,
-    url TEXT NOT NULL,
-    secret_key TEXT,
-    check_period INTEGER DEFAULT 0,
-    FOREIGN KEY (platform_id) REFERENCES platforms(id),
-    FOREIGN KEY (agent_type_id) REFERENCES jilo_agent_types(id)
-);
-CREATE TABLE jilo_agent_types (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    description TEXT,
-    endpoint TEXT
-);
+INSERT INTO jilo_agent_types VALUES(1,'jvb','/jvb');
+INSERT INTO jilo_agent_types VALUES(2,'jicofo','/jicofo');
+INSERT INTO jilo_agent_types VALUES(3,'prosody','/prosody');
+INSERT INTO jilo_agent_types VALUES(4,'nginx','/nginx');
+INSERT INTO jilo_agent_types VALUES(5,'jibri','/jibri');
 CREATE TABLE jilo_agent_checks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    agent_id INTEGER,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status_code INTEGER,
-    response_time_ms INTEGER,
-    response_content TEXT,
-    FOREIGN KEY (agent_id) REFERENCES jilo_agents(id)
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        agent_id INTEGER,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        status_code INTEGER,
+        response_time_ms INTEGER,
+        response_content TEXT,
+        FOREIGN KEY(agent_id) REFERENCES jilo_agents(id)
 );
+CREATE TABLE IF NOT EXISTS "jilo_agents" (
+	"id"	INTEGER,
+	"platform_id"	INTEGER NOT NULL,
+	"agent_type_id"	INTEGER NOT NULL,
+	"url"	TEXT NOT NULL,
+	"secret_key"	TEXT,
+	"check_period"	INTEGER DEFAULT 0,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("agent_type_id") REFERENCES "jilo_agent_types"("id"),
+	FOREIGN KEY("platform_id") REFERENCES "platforms"("id")
+);
+CREATE TABLE IF NOT EXISTS "hosts" (
+	"id"	INTEGER NOT NULL,
+	"address"	TEXT NOT NULL,
+	"port"	INTEGER NOT NULL,
+	"platform_id"	INTEGER NOT NULL,
+	"name"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("platform_id") REFERENCES "platforms"("id")
+);
+CREATE TABLE login_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip_address TEXT NOT NULL,
+            username TEXT NOT NULL,
+            attempted_at TEXT DEFAULT (DATETIME('now'))
+        );
+CREATE TABLE ip_whitelist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip_address TEXT NOT NULL UNIQUE,
+            is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
+            description TEXT,
+            created_at TEXT DEFAULT (DATETIME('now')),
+            created_by TEXT
+        );
+INSERT INTO ip_whitelist VALUES(1,'127.0.0.1',0,'localhost IPv4','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(2,'::1',0,'localhost IPv6','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(3,'10.0.0.0/8',1,'Private network (Class A)','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(4,'172.16.0.0/12',1,'Private network (Class B)','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(5,'192.168.0.0/16',1,'Private network (Class C)','2025-01-04 11:39:08','system');
+CREATE TABLE ip_blacklist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip_address TEXT NOT NULL UNIQUE,
+            is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
+            reason TEXT,
+            expiry_time TEXT NULL,
+            created_at TEXT DEFAULT (DATETIME('now')),
+            created_by TEXT
+        );
+INSERT INTO ip_blacklist VALUES(1,'0.0.0.0/8',1,'Reserved address space - RFC 1122',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(2,'100.64.0.0/10',1,'Carrier-grade NAT space - RFC 6598',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(3,'192.0.2.0/24',1,'TEST-NET-1 Documentation space - RFC 5737',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(4,'198.51.100.0/24',1,'TEST-NET-2 Documentation space - RFC 5737',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(5,'203.0.113.0/24',1,'TEST-NET-3 Documentation space - RFC 5737',NULL,'2025-01-04 11:39:08','system');
