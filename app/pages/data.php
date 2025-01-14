@@ -77,10 +77,17 @@ switch ($item) {
                 'bridge_selector.operational_bridge_count' => ['label' => 'Operational bridges'],
                 'bridge_selector.in_shutdown_bridge_count' => ['label' => 'Bridges in shutdown']
             ],
+            'Jibri stats' => [
+                'jibri_detector.count' => ['label' => 'Jibri count'],
+                'jibri_detector.available' => ['label' => 'Jibri idle'],
+                'jibri.live_streaming_active' => ['label' => 'Jibri active streaming'],
+                'jibri.recording_active' => ['label' => 'Jibri active recording'],
+
+            ],
             'System stats' => [
                 'threads' => ['label' => 'Threads'],
-                'jibri_detector.count' => ['label' => 'Jibri count'],
-                'stress_level' => ['label' => 'Stress level']
+                'stress_level' => ['label' => 'Stress level'],
+                'version' => ['label' => 'Version']
             ]
         ];
 
