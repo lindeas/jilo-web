@@ -494,6 +494,77 @@ class Agent {
         return null;
     }
 
+    /**
+     * Gets historical data for a specific metric from agent checks
+     *
+     * @param int $platform_id The platform ID
+     * @param string $agent_type The type of agent (e.g., 'jvb', 'jicofo')
+     * @param string $metric_type The type of metric to retrieve
+     * @param string $from_time Start time in Y-m-d format
+     * @param string $until_time End time in Y-m-d format
+     * @return array Array with the dataset from agent checks
+     */
+    public function getHistoricalData($platform_id, $agent_type, $metric_type, $from_time, $until_time) {
+        // Get data from agent checks
+        $sql = 'SELECT
+                    DATE(jac.timestamp) as date,
+                    jac.response_content,
+                    COUNT(*) as checks_count
+                FROM
+                    jilo_agent_checks jac
+                JOIN
+                    jilo_agents ja ON jac.agent_id = ja.id
+                JOIN
+                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                WHERE
+                    ja.platform_id = :platform_id
+                    AND jat.description = :agent_type
+                    AND jac.status_code = 200
+                    AND DATE(jac.timestamp) BETWEEN :from_time AND :until_time
+                GROUP BY
+                    DATE(jac.timestamp)
+                ORDER BY
+                    DATE(jac.timestamp)';
+
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':platform_id' => $platform_id,
+            ':agent_type' => $agent_type,
+            ':from_time' => $from_time,
+            ':until_time' => $until_time
+        ]);
+
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $data = [];
+        foreach ($results as $row) {
+            $json_data = json_decode($row['response_content'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $api_data = [];
+                if ($agent_type === 'jvb') {
+                    $api_data = $json_data['jvb_api_data'] ?? [];
+                } elseif ($agent_type === 'jicofo') {
+                    $api_data = $json_data['jicofo_api_data'] ?? [];
+                } elseif ($agent_type === 'jigasi') {
+                    $api_data = $json_data['jigasi_api_data'] ?? [];
+                } elseif ($agent_type === 'prosody') {
+                    $api_data = $json_data['prosody_api_data'] ?? [];
+                } elseif ($agent_type === 'nginx') {
+                    $api_data = $json_data['nginx_api_data'] ?? [];
+                }
+
+                $value = $this->getNestedValue($api_data, $metric_type);
+                if ($value !== null) {
+                    $data[] = [
+                        'date' => $row['date'],
+                        'value' => $value
+                    ];
+                }
+            }
+        }
+
+        return $data;
+    }
 }
 
 ?>

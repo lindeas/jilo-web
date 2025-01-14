@@ -5,40 +5,30 @@
 
 <script>
 var ctx = document.getElementById('graph_<?= $data['graph_name'] ?>').getContext('2d');
-var chartData0 = <?php echo json_encode($data['data0']); ?>;
-var chartData1 = <?php echo json_encode($data['data1']); ?>;
 var timeRangeName = '';
 
-var labels = chartData0.map(function(item) {
-    return item.date;
-});
-var values0 = chartData0.map(function(item) {
-    return item.value;
-});
-var values1 = chartData1.map(function(item) {
-    return item.value;
-});
+// Prepare datasets
+var datasets = [];
+<?php foreach ($data['datasets'] as $dataset): ?>
+    var chartData = <?php echo json_encode($dataset['data']); ?>;
+    datasets.push({
+        label: '<?= $dataset['label'] ?>',
+        data: chartData.map(function(item) {
+            return {
+                x: item.date,
+                y: item.value
+            };
+        }),
+        borderColor: '<?= $dataset['color'] ?>',
+        borderWidth: 1,
+        fill: false
+    });
+<?php endforeach; ?>
 
 var graph_<?= $data['graph_name'] ?> = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: labels,
-        datasets: [
-            {
-                label: '<?= $data['graph_data0_label'] ?? '' ?>',
-                data: values0,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                fill: false
-            },
-            {
-                label: '<?= $data['graph_data1_label'] ?? '' ?>',
-                data: values1,
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                fill: false
-            }
-        ]
+        datasets: datasets
     },
     options: {
         layout: {
@@ -64,7 +54,6 @@ var graph_<?= $data['graph_name'] ?> = new Chart(ctx, {
                     mode: 'x'
                 },
                 zoom: {
-//                    enabled: true,
                     mode: 'x',
                     drag: {
                         enabled: true,  // Enable drag to select range
@@ -99,29 +88,25 @@ var graph_<?= $data['graph_name'] ?> = new Chart(ctx, {
     }
 });
 
-// Store the graphs in an array
+// Store graph instance and title for later reference
 graphs.push({
     graph: graph_<?= $data['graph_name'] ?>,
-    label: document.getElementById('current-period-<?= $data['graph_name'] ?>')
+    label: '<?= $data['graph_title'] ?>'
 });
 
-// Update the time range label
-function updatePeriodLabel(chart, labelElement) {
-    var startDate = chart.scales.x.min;
-    var endDate = chart.scales.x.max;
-    if (timeRangeName == 'today') {
-        labelElement.innerHTML = 'Currently displaying: ' + timeRangeName + ' (' + new Date(startDate).toLocaleDateString() + ')';
+// Function to update the period label
+function updatePeriodLabel(chart, label) {
+    var startDate = new Date(chart.scales.x.min);
+    var endDate = new Date(chart.scales.x.max);
+    var periodLabel = document.getElementById('current-period-<?= $data['graph_name'] ?>');
+
+    if (timeRangeName) {
+        periodLabel.textContent = label + ' (' + timeRangeName + ')';
     } else {
-        labelElement.innerHTML = 'Currently displaying: ' + timeRangeName + ' (' + new Date(startDate).toLocaleDateString() + ' - ' + new Date(endDate).toLocaleDateString() + ')';
+        periodLabel.textContent = label + ' (from ' + startDate.toLocaleDateString() + ' to ' + endDate.toLocaleDateString() + ')';
     }
 }
 
-// Attach the update function to the 'zoom' event
-graph_<?= $data['graph_name'] ?>.options.plugins.zoom.onZoom = function({ chart }) {
-    updatePeriodLabel(chart, document.getElementById('current-period-<?= $data['graph_name'] ?>'));
-};
-
-// Update the label initially when the chart is rendered
-updatePeriodLabel(graph_<?= $data['graph_name'] ?>, document.getElementById('current-period-<?= $data['graph_name'] ?>'));
-
+// Initial label update
+updatePeriodLabel(graph_<?= $data['graph_name'] ?>, '<?= $data['graph_title'] ?>');
 </script>
