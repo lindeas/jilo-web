@@ -376,6 +376,28 @@ class Agent {
 
 
     /**
+     * Gets a value from a nested array using dot notation
+     * e.g. "bridge_selector.bridge_count" will get $array['bridge_selector']['bridge_count']
+     *
+     * @param array $array The array to search in
+     * @param string $path The path in dot notation
+     * @return mixed|null The value if found, null otherwise
+     */
+    private function getNestedValue($array, $path) {
+        $keys = explode('.', $path);
+        $value = $array;
+
+        foreach ($keys as $key) {
+            if (!isset($value[$key])) {
+                return null;
+            }
+            $value = $value[$key];
+        }
+
+        return $value;
+    }
+
+    /**
      * Retrieves the latest stored data for a specific platform, agent type, and metric type.
      *
      * @param int $platform_id The platform ID.
@@ -385,22 +407,22 @@ class Agent {
      * @return mixed The latest stored data.
      */
     public function getLatestData($platform_id, $agent_type, $metric_type) {
-        $sql = 'SELECT 
+        $sql = 'SELECT
                     jac.timestamp,
                     jac.response_content,
                     jac.agent_id,
                     jat.description
-                FROM 
+                FROM
                     jilo_agent_checks jac
-                JOIN 
+                JOIN
                     jilo_agents ja ON jac.agent_id = ja.id
-                JOIN 
+                JOIN
                     jilo_agent_types jat ON ja.agent_type_id = jat.id
-                WHERE 
+                WHERE
                     ja.platform_id = :platform_id
                     AND jat.description = :agent_type
                     AND jac.status_code = 200
-                ORDER BY 
+                ORDER BY
                     jac.timestamp DESC
                 LIMIT 1';
 
@@ -411,32 +433,64 @@ class Agent {
         ]);
 
         $result = $query->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($result) {
             // Parse the JSON response content
             $data = json_decode($result['response_content'], true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 return null;
             }
-            
+
             // Extract the specific metric value from the response based on agent type
             if ($agent_type === 'jvb') {
-                if (isset($data['jvb_api_data'][$metric_type])) {
+                $value = $this->getNestedValue($data['jvb_api_data'], $metric_type);
+                if ($value !== null) {
                     return [
-                        'value' => $data['jvb_api_data'][$metric_type],
+                        'value' => $value,
                         'timestamp' => $result['timestamp']
                     ];
                 }
+
             } elseif ($agent_type === 'jicofo') {
-                if (isset($data['jicofo_api_data'][$metric_type])) {
+                $value = $this->getNestedValue($data['jicofo_api_data'], $metric_type);
+                if ($value !== null) {
                     return [
-                        'value' => $data['jicofo_api_data'][$metric_type],
+                        'value' => $value,
+                        'timestamp' => $result['timestamp']
+                    ];
+                }
+
+            } elseif ($agent_type === 'jigasi') {
+                $value = $this->getNestedValue($data['jigasi_api_data'], $metric_type);
+                if ($value !== null) {
+                    return [
+                        'value' => $value,
+                        'timestamp' => $result['timestamp']
+                    ];
+                }
+
+            } elseif ($agent_type === 'prosody') {
+                $value = $this->getNestedValue($data['prosody_api_data'], $metric_type);
+                if ($value !== null) {
+                    return [
+                        'value' => $value,
+                        'timestamp' => $result['timestamp']
+                    ];
+                }
+
+            } elseif ($agent_type === 'nginx') {
+                $value = $this->getNestedValue($data['nginx_api_data'], $metric_type);
+                if ($value !== null) {
+                    return [
+                        'value' => $value,
                         'timestamp' => $result['timestamp']
                     ];
                 }
             }
+
+
         }
-        
+
         return null;
     }
 

@@ -64,34 +64,59 @@ switch ($item) {
         break;
 
     case 'latest':
-        // Get latest data for both JVB and Jicofo agents
-        $latestJvbConferences = $agentObject->getLatestData($platform_id, 'jvb', 'conferences');
-        $latestJvbParticipants = $agentObject->getLatestData($platform_id, 'jvb', 'participants');
-        $latestJicofoConferences = $agentObject->getLatestData($platform_id, 'jicofo', 'conferences');
-        $latestJicofoParticipants = $agentObject->getLatestData($platform_id, 'jicofo', 'participants');
+        // Define metrics to display
+        $metrics = [
+            'Basic stats' => [
+                'conferences' => ['label' => 'Current conferences', 'link' => 'conferences'],
+                'participants' => ['label' => 'Current participants', 'link' => 'participants'],
+                'total_conferences_created' => ['label' => 'Total conferences created'],
+                'total_participants' => ['label' => 'Total participants']
+            ],
+            'Bridge stats' => [
+                'bridge_selector.bridge_count' => ['label' => 'Bridge count'],
+                'bridge_selector.operational_bridge_count' => ['label' => 'Operational bridges'],
+                'bridge_selector.in_shutdown_bridge_count' => ['label' => 'Bridges in shutdown']
+            ],
+            'System stats' => [
+                'threads' => ['label' => 'Threads'],
+                'jibri_detector.count' => ['label' => 'Jibri count'],
+                'stress_level' => ['label' => 'Stress level']
+            ]
+        ];
 
-        $widget['records'] = array();
+        // Get latest data for all the agents
+        $agents = ['jvb', 'jicofo', 'jibri', 'prosody', 'nginx'];
+        $widget['records'] = [];
 
-        // Format data for JVB metrics
-        if ($latestJvbConferences !== null || $latestJvbParticipants !== null) {
-            $widget['records'][] = [
-                'table_headers' => 'JVB',
-                'conferences' => $latestJvbConferences ? $latestJvbConferences['value'] : null,
-                'participants' => $latestJvbParticipants ? $latestJvbParticipants['value'] : null,
-                'from_time' => $latestJvbConferences ? $latestJvbConferences['timestamp'] : ($latestJvbParticipants ? $latestJvbParticipants['timestamp'] : null),
-                'until_time' => $latestJvbConferences ? $latestJvbConferences['timestamp'] : ($latestJvbParticipants ? $latestJvbParticipants['timestamp'] : null)
+        // Initialize records for each agent
+        foreach ($agents as $agent) {
+            $record = [
+                'table_headers' => strtoupper($agent),
+                'metrics' => [],
+                'timestamp' => null
             ];
-        }
 
-        // Format data for Jicofo metrics
-        if ($latestJicofoConferences !== null || $latestJicofoParticipants !== null) {
-            $widget['records'][] = [
-                'table_headers' => 'Jicofo',
-                'conferences' => $latestJicofoConferences ? $latestJicofoConferences['value'] : null,
-                'participants' => $latestJicofoParticipants ? $latestJicofoParticipants['value'] : null,
-                'from_time' => $latestJicofoConferences ? $latestJicofoConferences['timestamp'] : ($latestJicofoParticipants ? $latestJicofoParticipants['timestamp'] : null),
-                'until_time' => $latestJicofoConferences ? $latestJicofoConferences['timestamp'] : ($latestJicofoParticipants ? $latestJicofoParticipants['timestamp'] : null)
-            ];
+            // Fetch all metrics for this agent
+            foreach ($metrics as $section => $section_metrics) {
+                foreach ($section_metrics as $metric => $config) {
+                    $data = $agentObject->getLatestData($platform_id, $agent, $metric);
+                    if ($data !== null) {
+                        $record['metrics'][$section][$metric] = [
+                            'value' => $data['value'],
+                            'label' => $config['label'],
+                            'link' => isset($config['link']) ? $config['link'] : null
+                        ];
+                        // Use the most recent timestamp
+                        if ($record['timestamp'] === null || strtotime($data['timestamp']) > strtotime($record['timestamp'])) {
+                            $record['timestamp'] = $data['timestamp'];
+                        }
+                    }
+                }
+            }
+
+            if (!empty($record['metrics'])) {
+                $widget['records'][] = $record;
+            }
         }
 
         // prepare the widget
@@ -101,6 +126,7 @@ switch ($item) {
         $widget['collapsible'] = false;
         $widget['collapsed'] = false;
         $widget['filter'] = false;
+        $widget['metrics'] = $metrics; // Pass metrics configuration to template
         if (!empty($widget['records'])) {
             $widget['full'] = true;
         }

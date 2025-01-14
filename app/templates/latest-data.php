@@ -11,47 +11,41 @@
                                 <tr>
                                     <th scope="col">Metric</th>
 <?php     foreach ($widget['records'] as $record) { ?>
-                                    <th scope="col"><?= htmlspecialchars($record['table_headers']) ?></th>
+                                    <th scope="col">
+                                        <?= htmlspecialchars($record['table_headers']) ?>
+                                        <?php if ($record['timestamp']) { ?>
+                                            <br>
+                                            <small class="text-muted">as of <?= date('Y-m-d H:i:s', strtotime($record['timestamp'])) ?></small>
+                                        <?php } ?>
+                                    </th>
 <?php     } ?>
                                 </tr>
                             </thead>
                             <tbody>
+<?php     foreach ($widget['metrics'] as $section => $section_metrics) { ?>
+                                <tr class="table-secondary">
+                                    <th colspan="<?= count($widget['records']) + 1 ?>"><?= htmlspecialchars($section) ?></th>
+                                </tr>
+<?php         foreach ($section_metrics as $metric => $config) { ?>
                                 <tr>
-                                    <td>Conferences</td>
-<?php     foreach ($widget['records'] as $record) { ?>
+                                    <td><?= htmlspecialchars($config['label']) ?></td>
+<?php             foreach ($widget['records'] as $record) { ?>
                                     <td>
-                                        <?php if (isset($record['conferences'])) { ?>
-                                            <?php if ($record['conferences'] !== null) { ?>
-                                                <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences&from_time=<?= htmlspecialchars($record['from_time']) ?>&until_time=<?= htmlspecialchars($record['until_time']) ?>"><?= htmlspecialchars($record['conferences']) ?></a>
-                                                <br>
-                                                <small class="text-muted"><?= date('Y-m-d H:i:s', strtotime($record['from_time'])) ?></small>
+                                        <?php if (isset($record['metrics'][$section][$metric])) { 
+                                            $metric_data = $record['metrics'][$section][$metric];
+                                            if ($metric_data['link']) { ?>
+                                                <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=<?= htmlspecialchars($metric_data['link']) ?>&from_time=<?= htmlspecialchars($record['timestamp']) ?>&until_time=<?= htmlspecialchars($record['timestamp']) ?>"><?= htmlspecialchars($metric_data['value']) ?></a>
                                             <?php } else { ?>
-                                                <span class="text-muted">0</span>
-                                            <?php } ?>
-                                        <?php } else { ?>
+                                                <?= htmlspecialchars($metric_data['value']) ?>
+                                            <?php }
+                                        } else { ?>
                                             <span class="text-muted">No data</span>
                                         <?php } ?>
                                     </td>
-<?php     } ?>
+<?php             } ?>
                                 </tr>
-                                <tr>
-                                    <td>Participants</td>
-<?php     foreach ($widget['records'] as $record) { ?>
-                                    <td>
-                                        <?php if (isset($record['participants'])) { ?>
-                                            <?php if ($record['participants'] !== null) { ?>
-                                                <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=participants&from_time=<?= htmlspecialchars($record['from_time']) ?>&until_time=<?= htmlspecialchars($record['until_time']) ?>"><?= htmlspecialchars($record['participants']) ?></a>
-                                                <br>
-                                                <small class="text-muted"><?= date('Y-m-d H:i:s', strtotime($record['from_time'])) ?></small>
-                                            <?php } else { ?>
-                                                <span class="text-muted">0</span>
-                                            <?php } ?>
-                                        <?php } else { ?>
-                                            <span class="text-muted">No data</span>
-                                        <?php } ?>
-                                    </td>
+<?php         } ?>
 <?php     } ?>
-                                </tr>
                             </tbody>
                         </table>
 <?php } else { ?>
