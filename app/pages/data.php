@@ -100,6 +100,11 @@ if ($response['db'] === null) {
             // Prepare data for template
             $graph = $graphs;
 
+            // prepare the widget
+            $widget['full'] = false;
+            $widget['name'] = 'Graphs';
+            $widget['title'] = 'Jitsi graphs';
+
             include '../app/templates/graphs-combined.php';
             break;
 
