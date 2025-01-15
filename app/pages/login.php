@@ -95,7 +95,7 @@ try {
 
 // Show configured login message if any
 if (!empty($config['login_message'])) {
-    echo Messages::render('NOTICE', 'DEFAULT', $config['login_message'], false);
+    echo Messages::render('NOTICE', 'DEFAULT', $config['login_message'], false, false, false);
 }
 
 // Get any new messages

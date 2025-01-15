@@ -125,7 +125,7 @@ class Messages {
      * Render message HTML
      */
     // Usage: echo Messages::render('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
-    public static function render($category, $key, $customMessage = null, $dismissible = null, $small = false) {
+    public static function render($category, $key, $customMessage = null, $dismissible = null, $small = false, $sanitize = true) {
         $config = self::get($category, $key);
         if (!$config) return '';
 
@@ -140,7 +140,7 @@ class Messages {
             $config['type'],
             $dismissClass,
             $smallClass,
-            htmlspecialchars($message),
+            $sanitize ? htmlspecialchars($message) : $message,
             $dismissButton
         );
     }
