@@ -19,8 +19,7 @@ $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $pl
 
 // if DB connection has error, display it and stop here
 if ($response['db'] === null) {
-    $error = $response['error'];
-    include '../app/templates/block-message.php';
+    Messages::flash('ERROR', 'DEFAULT', $response['error']);
 
 // otherwise if DB connection is OK, go on
 } else {
@@ -34,8 +33,7 @@ if ($response['db'] === null) {
             // Connect to Jilo database for log data
             $jilo_response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
             if ($jilo_response['db'] === null) {
-                $error = $jilo_response['error'];
-                include '../app/templates/block-message.php';
+                Messages::flash('ERROR', 'DEFAULT', $jilo_response['error']);
                 break;
             }
             $jilo_db = $jilo_response['db'];

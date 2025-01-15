@@ -52,7 +52,7 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
         // unknown database
         } else {
             $error = "Error: unknow database type \"{$config['db']['db_type']}\"";
-            include '../app/templates/block-message.php';
+            Messages::flash('ERROR', 'DEFAULT', $error);
             exit();
         }
 

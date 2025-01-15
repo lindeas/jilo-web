@@ -1,8 +1,8 @@
 
-INSERT INTO users VALUES(1,'demo1','$2y$10$LtV9m.rMCJ.K/g45e6tzDexZ8C/9xxu3qFCkvz92pUYa7Jg06np0i');
-INSERT INTO users VALUES(2,'demo','$2y$10$tLCLvgYu91gf/zBoc58Am.iVls/SOMcIXO3ykGfgFFei9yneZTrb2');
+INSERT INTO users VALUES(1,'demo','$2y$10$tLCLvgYu91gf/zBoc58Am.iVls/SOMcIXO3ykGfgFFei9yneZTrb2');
+INSERT INTO users VALUES(2,'demo1','$2y$10$LtV9m.rMCJ.K/g45e6tzDexZ8C/9xxu3qFCkvz92pUYa7Jg06np0i');
 
-INSERT INTO users_meta VALUES(1,1,'admin user','admin@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web');
+INSERT INTO users_meta VALUES(1,1,'demo admin user','admin@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web');
 INSERT INTO users_meta VALUES(2,2,'demo user','demo@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web');
 
 INSERT INTO platforms VALUES(1,'meet.lindeas.com','https://meet.lindeas.com','../jilo-meet.lindeas.db');
