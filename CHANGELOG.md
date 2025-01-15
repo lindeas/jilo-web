@@ -13,17 +13,22 @@ All notable changes to this project will be documented in this file.
 - gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2.1...HEAD
 
 ### Added
-- Added Jilo Server check and notice on error
 - Added status page
+- Added latest data page
+- Added graphs page
 - Added Jilo agents status checks
 - Added periodic Jilo agents checks
-- Added "data" page in the "live data" sidebar
+- Added Jilo Server check and notice on error
 - Added "jitsi platforms config" section in the sidebar
 - Added editing for platforms
 - Added editing for hosts
 - Added editing for the Jilo configuration file
+- Added phpdoc comments
+- Added rate limiting for login with blacklist and whitelist
+- Added a page for configuring the rate limiting
 
 ### Changed
+- Implemented a new messaging and notifications system
 - Moved all live checks pages to the "live data" sidebar section
 - Separated the config page to multiple pages
 - Moved the config pages to "jitsi platforms config" section
