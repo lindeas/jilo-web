@@ -26,9 +26,9 @@
                                 <tr class="table-secondary">
                                     <th colspan="<?= count($widget['records']) + 1 ?>"><?= htmlspecialchars($section) ?></th>
                                 </tr>
-<?php         foreach ($section_metrics as $metric => $config) { ?>
+<?php         foreach ($section_metrics as $metric => $metricConfig) { ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($config['label']) ?></td>
+                                    <td><?= htmlspecialchars($metricConfig['label']) ?></td>
 <?php             foreach ($widget['records'] as $record) { ?>
                                     <td>
                                         <?php if (isset($record['metrics'][$section][$metric])) { 

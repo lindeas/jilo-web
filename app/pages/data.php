@@ -150,13 +150,13 @@ if ($response['db'] === null) {
 
                 // Fetch all metrics for this agent
                 foreach ($metrics as $section => $section_metrics) {
-                    foreach ($section_metrics as $metric => $config) {
+                    foreach ($section_metrics as $metric => $metricConfig) {
                         $data = $agentObject->getLatestData($platform_id, $agent, $metric);
                         if ($data !== null) {
                             $record['metrics'][$section][$metric] = [
                                 'value' => $data['value'],
-                                'label' => $config['label'],
-                                'link' => isset($config['link']) ? $config['link'] : null
+                                'label' => $metricConfig['label'],
+                                'link' => isset($metricConfig['link']) ? $metricConfig['link'] : null
                             ];
                             // Use the most recent timestamp
                             if ($record['timestamp'] === null || strtotime($data['timestamp']) > strtotime($record['timestamp'])) {
