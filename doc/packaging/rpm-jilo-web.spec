@@ -1,5 +1,5 @@
 Name: jilo-web
-Version: 0.2.1
+Version: 0.3
 Release: 1%{?dist}
 Summary: Jitsi logs web observer
 
@@ -54,6 +54,8 @@ cp %{sourcedir}/man-jilo.8 %{buildroot}/usr/share/man/man8/%{name}.8
 /usr/share/man/man8/%{name}.8.gz
 
 %changelog
+* Wed Jan 15 2025  Yasen Pramatarov <yasen@lindeas.com> 0.3
+- Build of upstream v0.3
 * Thu Oct 17 2024  Yasen Pramatarov <yasen@lindeas.com> 0.2.1
 - Build of upstream v0.2.1
 * Sat Aug 31 2024  Yasen Pramatarov <yasen@lindeas.com> 0.2

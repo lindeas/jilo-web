@@ -7,8 +7,8 @@
  * Author: Yasen Pramatarov
  * License: GPLv2
  * Project URL: https://lindeas.com/jilo
- * Year: 2024
- * Version: 0.2.1
+ * Year: 2024-2025
+ * Version: 0.3
  */
 
 // we start output buffering and.

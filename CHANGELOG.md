@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## Unreleased
+## 0.3 - 2025-01-15
 
 #### Links
-- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2.1...HEAD
-- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2.1...HEAD
-- github: https://github.com/lindeas/jilo-web/compare/v0.2.1...HEAD
-- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2.1...HEAD
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.2.1...v0.3
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.2.1...v0.3
+- github: https://github.com/lindeas/jilo-web/compare/v0.2.1...v0.3
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.2.1...v0.3
 
 ### Added
 - Added status page
