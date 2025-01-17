@@ -23,9 +23,9 @@ foreach ($platformsAll as $platform) {
     // check if we can connect to the jilo database
     $response = connectDB($config, 'jilo', $platform['jilo_database'], $platform['id']);
     if ($response['error'] !== null) {
-        $jilo_database_status = '<span class="text-danger">' . htmlspecialchars($response['error']) . '</span>';
+        $jilo_database_status = $response['error'];
     } else {
-        $jilo_database_status = '<span class="text-success">OK</span>';
+        $jilo_database_status = 'OK';
     }
 
     include '../app/templates/status-platform.php';
@@ -44,19 +44,19 @@ foreach ($platformsAll as $platform) {
 
         // determine agent availability based on response data
         if (json_last_error() === JSON_ERROR_NONE) {
-            $agent_availability = '<span class="text-warning">unknown</span>';
+            $agent_availability = 'unknown';
             foreach ($agent_data as $key => $value) {
                 if ($key === 'error') {
-                    $agent_availability = '<span class="text-danger">' . htmlspecialchars($value) . '</span>';
+                    $agent_availability = $value;
                     break;
                 }
                 if (preg_match('/_state$/', $key)) {
                     if ($value === 'error') {
-                        $agent_availability = '<span class="text-danger">not running</span>';
+                        $agent_availability = 'not running';
                         break;
                     }
                     if ($value === 'running') {
-                        $agent_availability = '<span class="text-success">running</span>';
+                        $agent_availability = 'running';
                         break;
                     }
                 }
@@ -66,6 +66,7 @@ foreach ($platformsAll as $platform) {
         }
 
         include '../app/templates/status-agent.php';
+        echo '</div>';
     }
 }
 
