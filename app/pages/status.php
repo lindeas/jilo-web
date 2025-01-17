@@ -66,8 +66,8 @@ foreach ($platformsAll as $platform) {
         }
 
         include '../app/templates/status-agent.php';
-        echo '</div>';
     }
+    echo '</div>';
+    echo '</div>';
 }
-
 ?>

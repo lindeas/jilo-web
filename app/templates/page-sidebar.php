@@ -2,13 +2,12 @@
 
             <!-- Sidebar -->
             <div class="col-md-3 mb-5 sidebar-wrapper bg-light" id="sidebar">
-            <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
+                <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
 <?php
 $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 ?>
-                <!--span style="vertical-align: top; font-size: 12px;"><?= htmlspecialchars($timeNow->format('d M Y H:i')) ?> <?= htmlspecialchars($userTimezone) ?></span-->
-                <span style="vertical-align: top; font-size: 12px;"><?= htmlspecialchars($timeNow->format('H:i')) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
-            </div>
+                    <span style="vertical-align: top; font-size: 12px;"><?= htmlspecialchars($timeNow->format('H:i')) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
+                </div>
 
                 <div class="col-4"><button class="btn btn-sm btn-info toggle-sidebar-button" type="button" id="toggleSidebarButton" value=">>"></button></div>
                 <div class="sidebar-content card ml-3 mt-3">
