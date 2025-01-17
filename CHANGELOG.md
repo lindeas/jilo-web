@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## Unreleased
+
+#### Links
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.3...HEAD
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.3...HEAD
+- github: https://github.com/lindeas/jilo-web/compare/v0.3...HEAD
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.3...HEAD
+
+### Added
+
+### Changed
+
+### Fixed
+
+---
+
 ## 0.3 - 2025-01-15
 
 #### Links
