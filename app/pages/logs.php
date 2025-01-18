@@ -15,6 +15,10 @@ include '../app/includes/messages-show.php';
 $has_system_access = ($userObject->hasRight($user_id, 'superuser') ||
                      $userObject->hasRight($user_id, 'view app logs'));
 
+// Get current page for pagination
+$currentPage = $_REQUEST['page_num'] ?? 1;
+$currentPage = (int)$currentPage;
+
 // Get selected tab
 $selected_tab = $_REQUEST['tab'] ?? 'user';
 if ($selected_tab === 'system' && !$has_system_access) {
@@ -44,18 +48,34 @@ if ($scope === 'system' && isset($_REQUEST['id']) && !empty($_REQUEST['id'])) {
 
 // pagination variables
 $items_per_page = 15;
-$browse_page = $_REQUEST['p'] ?? 1;
-$browse_page = (int)$browse_page;
-$offset = ($browse_page -1) * $items_per_page;
+$offset = ($currentPage - 1) * $items_per_page;
+
+// Get filter from request or default to empty
+$filter = $_REQUEST['filter'] ?? '';
+
+// Build params for pagination
+$params = '';
+if (!empty($filter)) {
+    $params .= '&filter=' . urlencode($filter);
+}
+if (isset($_REQUEST['from'])) {
+    $params .= '&from=' . urlencode($_REQUEST['from']);
+}
+if (isset($_REQUEST['until'])) {
+    $params .= '&until=' . urlencode($_REQUEST['until']);
+}
+if (isset($_REQUEST['tab'])) {
+    $params .= '&tab=' . urlencode($_REQUEST['tab']);
+}
 
 // prepare the result
-$search = $logObject->readLog($user_id, $scope, $offset, $items_per_page, $filters);
-$search_all = $logObject->readLog($user_id, $scope, 0, '', $filters);
+$search = $logObject->readLog($user_id, $scope, $offset, $items_per_page, $filter);
+$search_all = $logObject->readLog($user_id, $scope, '', '', $filter);
 
 if (!empty($search)) {
     // we get total items and number of pages
     $item_count = count($search_all);
-    $page_count = ceil($item_count / $items_per_page);
+    $totalPages = ceil($item_count / $items_per_page);
 
     $logs = array();
     $logs['records'] = array();

@@ -56,10 +56,11 @@
                         </table>
                     </div>
 <?php
-        if ($widget['pagination'] && $item_count > $items_per_page) {
-            include '../app/helpers/pagination.php';
-        }
-    } else { ?>
+if ($widget['pagination'] === true) {
+    include '../app/templates/pagination.php';
+}
+?>
+<?php } else { ?>
                     <div class="alert alert-info m-3">
                         <i class="fas fa-info-circle me-2"></i>No log entries found for the specified criteria.
                     </div>
