@@ -69,17 +69,17 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'platform') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-sitemap" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>platforms
+                                <i class="fas fa-sitemap" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="platforms config"></i>platforms
                             </li>
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host">
                             <li class="list-group-item<?php if ($page === 'config' && $item === 'host') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-laptop" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>hosts
+                                <i class="fas fa-laptop" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="hosts config"></i>hosts
                             </li>
                         </a>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=endpoint">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'endpoint') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-stethoscope" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>endpoints
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent">
+                            <li class="list-group-item<?php if ($page === 'config' && $item === 'agent') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-stethoscope" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="agents config"></i>agents
                             </li>
                         </a>
 
