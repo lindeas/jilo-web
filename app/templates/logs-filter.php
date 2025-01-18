@@ -1,26 +1,41 @@
-
                     <!-- Logs filter -->
-                    <div class="card w-auto bg-light border-light card-body text-right" style="text-align: right;">
-                        <form method="POST" id="filter_form" class="filter-results" action="?page=logs">
-                            <label for="from_time">from</label>
-                            <input type="date" id="from_time" name="from_time"<?php if (isset($_REQUEST['from_time'])) echo " value=\"" . htmlspecialchars($from_time) . "\"" ?> />
-                            <label for="until_time">until</label>
-                            <input type="date" id="until_time" name="until_time"<?php if (isset($_REQUEST['until_time'])) echo " value=\"" . htmlspecialchars($until_time) . "\"" ?> />
-                            <input type="text" name="id" placeholder="user ID"<?php if (isset($_REQUEST['id'])) echo " value=\"" . htmlspecialchars($_REQUEST['id']) . "\"" ?> />
-                            <input type="text" name="message" placeholder="message"<?php if (isset($_REQUEST['message'])) echo " value=\"" . htmlspecialchars($_REQUEST['message']) . "\"" ?> />
-                            <input type="button" onclick="clearFilter()" value="clear" />
-                            <input type="submit" value="search" />
-                        </form>
-                        <script>
-                            function clearFilter() {
-                                document.getElementById("filter_form").reset();
-                                const filterFields = document.querySelectorAll("#filter_form input");
-                                filterFields.forEach(input => {
-                                    if (input.type === 'text' ||input.type === 'date') {
-                                        input.value = '';
-                                    }
-                                });
-                            }
-                        </script>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <form method="get" action="" class="row g-3 align-items-end">
+                                <input type="hidden" name="page" value="logs">
+                                <input type="hidden" name="tab" value="<?= htmlspecialchars($widget['scope']) ?>">
+
+                                <div class="col-md-3">
+                                    <label for="from_time" class="form-label">From date</label>
+                                    <input type="date" class="form-control" id="from_time" name="from_time" value="<?= htmlspecialchars($_REQUEST['from_time'] ?? '') ?>">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="until_time" class="form-label">Until date</label>
+                                    <input type="date" class="form-control" id="until_time" name="until_time" value="<?= htmlspecialchars($_REQUEST['until_time'] ?? '') ?>">
+                                </div>
+
+<?php if ($widget['scope'] === 'system') { ?>
+                                <div class="col-md-2">
+                                    <label for="id" class="form-label">User ID</label>
+                                    <input type="text" class="form-control" id="id" name="id" value="<?= htmlspecialchars($_REQUEST['id'] ?? '') ?>" placeholder="Enter user ID">
+                                </div>
+<?php } ?>
+
+                                <div class="col-md">
+                                    <label for="message" class="form-label">Message</label>
+                                    <input type="text" class="form-control" id="message" name="message" value="<?= htmlspecialchars($_REQUEST['message'] ?? '') ?>" placeholder="Search in log messages">
+                                </div>
+
+                                <div class="col-md-auto">
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        <i class="fas fa-search me-2"></i>Search
+                                    </button>
+                                    <a href="?page=logs&tab=<?= htmlspecialchars($widget['scope']) ?>" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times me-2"></i>Clear
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <!-- /Logs filter -->
