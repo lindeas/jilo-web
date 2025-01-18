@@ -50,27 +50,27 @@ if ($scope === 'system' && isset($_REQUEST['id']) && !empty($_REQUEST['id'])) {
 $items_per_page = 15;
 $offset = ($currentPage - 1) * $items_per_page;
 
-// Get filter from request or default to empty
-$filter = $_REQUEST['filter'] ?? '';
-
 // Build params for pagination
 $params = '';
-if (!empty($filter)) {
-    $params .= '&filter=' . urlencode($filter);
+if (!empty($_REQUEST['from_time'])) {
+    $params .= '&from_time=' . urlencode($_REQUEST['from_time']);
 }
-if (isset($_REQUEST['from'])) {
-    $params .= '&from=' . urlencode($_REQUEST['from']);
+if (!empty($_REQUEST['until_time'])) {
+    $params .= '&until_time=' . urlencode($_REQUEST['until_time']);
 }
-if (isset($_REQUEST['until'])) {
-    $params .= '&until=' . urlencode($_REQUEST['until']);
+if (!empty($_REQUEST['message'])) {
+    $params .= '&message=' . urlencode($_REQUEST['message']);
+}
+if (!empty($_REQUEST['id'])) {
+    $params .= '&id=' . urlencode($_REQUEST['id']);
 }
 if (isset($_REQUEST['tab'])) {
     $params .= '&tab=' . urlencode($_REQUEST['tab']);
 }
 
 // prepare the result
-$search = $logObject->readLog($user_id, $scope, $offset, $items_per_page, $filter);
-$search_all = $logObject->readLog($user_id, $scope, '', '', $filter);
+$search = $logObject->readLog($user_id, $scope, $offset, $items_per_page, $filters);
+$search_all = $logObject->readLog($user_id, $scope, '', '', $filters);
 
 if (!empty($search)) {
     // we get total items and number of pages
@@ -105,16 +105,15 @@ if (!empty($search)) {
 
 // prepare the widget
 $widget['full'] = false;
-$widget['collapsible'] = false;
 $widget['name'] = 'Logs';
 $username = $userObject->getUserDetails($user_id)[0]['username'];
 $widget['title'] = "Log events";
 $widget['filter'] = true;
 $widget['scope'] = $scope;
 $widget['has_system_access'] = $has_system_access;
+
 if (!empty($logs['records'])) {
     $widget['full'] = true;
-    $widget['table_headers'] = array_keys($logs['records'][0]);
     $widget['table_records'] = $logs['records'];
 }
 $widget['pagination'] = true;
