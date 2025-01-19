@@ -209,30 +209,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             break;
 
-        case 'endpoint':
-            // TODO ad here endpoints options
-            echo 'under construction';
-//            switch ($action) {
-//                case 'add-agent':
-//                    $jilo_agent_types = $agentObject->getAgentTypes();
-//                    $jilo_agents_in_platform = $agentObject->getPlatformAgentTypes($platform_id);
-//                    $jilo_agent_types_in_platform = array_column($jilo_agents_in_platform, 'agent_type_id');
-//                    include '../app/templates/config-add-agent.php';
-//                    break;
-//                case 'edit':
-//                    if (isset($_GET['agent'])) {
-//                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-//                        $jilo_agent_types = $agentObject->getAgentTypes();
-//                        include '../app/templates/config-edit-agent.php';
-//                    }
-//                    break;
-//                case 'delete':
-//                    if (isset($_GET['agent'])) {
-//                        $agentDetails = $agentObject->getAgentDetails($platform_id, $agent);
-//                        include '../app/templates/config-delete-agent.php';
-//                    }
-//                    break;
-//            }
+        case 'agent':
+            if (isset($action) && $action === 'add') {
+                $jilo_agent_types = $agentObject->getAgentTypes();
+                $platform_id = $_REQUEST['platform'] ?? '';
+                if (!empty($platform_id)) {
+                    $jilo_agents_in_platform = $agentObject->getPlatformAgentTypes($platform_id);
+                    $jilo_agent_types_in_platform = array_column($jilo_agents_in_platform, 'agent_type_id');
+                    include '../app/templates/config-agent-add.php';
+                } else {
+                    $_SESSION['error'] = "Platform ID is required to add an agent.";
+                    header("Location: $app_root?page=config");
+                    exit();
+                }
+            } elseif (isset($action) && $action === 'edit') {
+                if (isset($_REQUEST['agent'])) {
+                    $platform_id = $_REQUEST['platform'] ?? '';
+                    $agentDetails = $agentObject->getAgentDetails($platform_id, $agent)['0'];
+                    $jilo_agent_types = $agentObject->getAgentTypes();
+                    include '../app/templates/config-agent-edit.php';
+                }
+            } elseif (isset($action) && $action === 'delete') {
+                if (isset($_REQUEST['agent'])) {
+                    $platform_id = $_REQUEST['platform'] ?? '';
+                    $agentDetails = $agentObject->getAgentDetails($platform_id, $agent)['0'];
+                    include '../app/templates/config-agent-delete.php';
+                }
+            } else {
+                if ($userObject->hasRight($user_id, 'view config file')) {
+                    include '../app/templates/config-agent.php';
+                } else {
+                    include '../app/templates/error-unauthorized.php';
+                }
+            }
             break;
 
         case 'config_file':
