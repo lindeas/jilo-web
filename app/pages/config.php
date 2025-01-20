@@ -115,18 +115,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
     // an update to an existing host
-    } elseif (isset($_POST['host'])) {
+    } elseif (isset($_POST['item']) && $_POST['item'] === 'host') {
+        $host_id = $_POST['host'];
+        $platform_id = $_POST['platform'];
         $updatedHost = [
-            'id'        => $host,
-            'address'   => $address,
-            'port'      => $port,
-            'name'      => $name,
+            'id'      => $host_id,
+            'address' => $_POST['address'],
+            'name'    => $_POST['name']
         ];
         $result = $hostObject->editHost($platform_id, $updatedHost);
-        if ($result === true) {
-            $_SESSION['notice'] = "Host \"{$_REQUEST['address']}:{$_REQUEST['port']}\" edited.";
+
+        // Check if it's an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            
+            // Clear any output buffers to ensure clean JSON
+            while (ob_get_level()) ob_end_clean();
+            
+            header('Content-Type: application/json');
+            if ($result === true) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Editing the host failed. Error: $result"
+                ]);
+            }
+            exit();
         } else {
-            $_SESSION['error'] = "Editing the host failed. Error: $result";
+            // Regular form submission
+            if ($result === true) {
+                $_SESSION['notice'] = "Host edited.";
+            } else {
+                $_SESSION['error'] = "Editing the host failed. Error: $result";
+            }
+            header("Location: $app_root?page=config&item=$item");
+            exit();
         }
 
     // an update to an existing agent
@@ -147,19 +171,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // an update to an existing platform
     } else {
-        $platform = $_POST['platform'];
+        $platform = $_POST['platform_id']; 
         $updatedPlatform = [
-            'name'		    => $name,
-            'jitsi_url'		=> $_POST['jitsi_url'],
-            'jilo_database'	=> $_POST['jilo_database'],
+            'name'          => $_POST['name'],
+            'jitsi_url'     => $_POST['jitsi_url'],
+            'jilo_database' => $_POST['jilo_database']
         ];
         $result = $platformObject->editPlatform($platform, $updatedPlatform);
-        if ($result === true) {
-            $_SESSION['notice'] = "Platform \"{$_REQUEST['name']}\" edited.";
+        
+        // Check if it's an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            
+            // Clear any output buffers to ensure clean JSON
+            while (ob_get_level()) ob_end_clean();
+            
+            header('Content-Type: application/json');
+            if ($result === true) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Editing the platform failed. Error: $result"
+                ]);
+            }
+            exit();
         } else {
-            $_SESSION['error'] = "Editing the platform failed. Error: $result";
+            // Regular form submission
+            if ($result === true) {
+                $_SESSION['notice'] = "Platform edited.";
+            } else {
+                $_SESSION['error'] = "Editing the platform failed. Error: $result";
+            }
+            header("Location: $app_root?page=config&item=$item");
+            exit();
         }
-
     }
 
 // FIXME the new file is not loaded on first page load
@@ -219,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     include '../app/templates/config-agent-add.php';
                 } else {
                     $_SESSION['error'] = "Platform ID is required to add an agent.";
-                    header("Location: $app_root?page=config");
+                    header("Location: $app_root?page=config&item=agent");
                     exit();
                 }
             } elseif (isset($action) && $action === 'edit') {
