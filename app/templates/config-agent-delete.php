@@ -3,7 +3,7 @@
     <p class="h4 card-header">Delete Jilo agent</p>
     <div class="card-body">
         <p class="card-text">Are you sure you want to delete this agent?</p>
-        
+
         <div class="mb-3">
             <strong>Agent ID:</strong> <?= htmlspecialchars($agentDetails['id']) ?><br>
             <strong>Type:</strong> <?= htmlspecialchars($agentDetails['agent_description']) ?><br>
@@ -19,7 +19,7 @@
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-danger">Delete Agent</button>
-                <a href="<?= htmlspecialchars($app_root) ?>?page=config" class="btn btn-secondary">Cancel</a>
+                <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
