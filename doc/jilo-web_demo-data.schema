@@ -23,5 +23,6 @@ INSERT INTO jilo_agents VALUES(4,1,2,'https://meet.lindeas.com:8081','mysecretke
 INSERT INTO jilo_agents VALUES(7,1,3,'http://meet.lindeas.com:8081','mysecretkey',5);
 INSERT INTO jilo_agents VALUES(8,1,4,'http://meet.lindeas.com:8081','mysecretkey',5);
 
-INSERT INTO hosts VALUES(1,'meet.lindeas.com',8888,2,'main machine');
-INSERT INTO hosts VALUES(2,'meet.example.com',9191,2,'test');
+INSERT INTO hosts VALUES(1,'meet.lindeas.com',2,'main machine');
+INSERT INTO hosts VALUES(2,'meet.example.com',2,'test');
+

@@ -34,7 +34,6 @@ class Host {
         $sql = 'SELECT
                     id,
                     address,
-                    port,
                     platform_id,
                     name
                 FROM
@@ -73,14 +72,13 @@ class Host {
     public function addHost($newHost) {
         try {
             $sql = 'INSERT INTO hosts
-                    (address, port, platform_id, name)
+                    (address, platform_id, name)
                     VALUES
-                    (:address, :port, :platform_id, :name)';
+                    (:address, :platform_id, :name)';
 
             $query = $this->db->prepare($sql);
             $query->execute([
                 ':address'          => $newHost['address'],
-                ':port'             => $newHost['port'],
                 ':platform_id'		=> $newHost['platform_id'],
                 ':name'             => $newHost['name'],
             ]);
@@ -99,24 +97,27 @@ class Host {
      * @param string $platform_id The platform ID to which the host belongs.
      * @param array $updatedHost An associative array containing the updated details of the host.
      *
-     * @return bool True if the host was updated successfully, otherwise false.
+     * @return bool|string True if the host was updated successfully, otherwise error message.
      */
     public function editHost($platform_id, $updatedHost) {
         try {
             $sql = 'UPDATE hosts SET
                         address = :address,
-                        port = :port,
                         name = :name
                     WHERE
-                        id = :id';
+                        id = :id AND platform_id = :platform_id';
 
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':id'       => $updatedHost['id'],
-                ':address'  => $updatedHost['address'],
-                ':port'     => $updatedHost['port'],
-                ':name'     => $updatedHost['name'],
+                ':id'           => $updatedHost['id'],
+                ':platform_id'  => $platform_id,
+                ':address'      => $updatedHost['address'],
+                ':name'         => $updatedHost['name']
             ]);
+
+            if ($query->rowCount() === 0) {
+                return "No host found with ID {$updatedHost['id']} in platform $platform_id";
+            }
 
             return true;
 
