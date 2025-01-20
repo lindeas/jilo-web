@@ -3,7 +3,7 @@
     <div class="row mb-4">
         <div class="col">
             <h2>Security settings</h2>
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs mt-5">
                 <?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit whitelist')) { ?>
                 <li class="nav-item">
                     <a class="nav-link <?= $section === 'whitelist' ? 'active' : '' ?>" href="?page=security&section=whitelist">IP whitelist</a>
