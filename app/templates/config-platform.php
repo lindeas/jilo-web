@@ -138,7 +138,7 @@
                                                         <h6 class="mb-0">Host id #<?= htmlspecialchars($host['id']) ?> in platform "<?= htmlspecialchars($platform['name']) ?>"</h6>
                                                     </div>
                                                     <div class="ps-4">
-                                                        <span class="view-mode">
+                                                        <span class="host-view-mode">
                                                             <div class="row g-2">
                                                                 <div class="col-md-6">
                                                                     <div class="small text-muted mb-1">Host description</div>
@@ -150,7 +150,7 @@
                                                                 </div>
                                                             </div>
                                                         </span>
-                                                        <div class="edit-mode" style="display: none;">
+                                                        <div class="host-edit-mode" style="display: none;">
                                                             <div class="row g-2">
                                                                 <div class="col-md-6">
                                                                     <label class="form-label small text-muted">Host description</label>
@@ -170,17 +170,17 @@
                                                 </div>
                                                 <div class="btn-group host-actions ms-3" data-host-id="<?= htmlspecialchars($host['id']) ?>" 
                                                      data-platform-id="<?= htmlspecialchars($platform['id']) ?>">
-                                                    <button type="button" class="btn btn-outline-primary btn-sm edit-host">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm edit-host host-view-mode">
                                                         <i class="fas fa-edit me-1"></i>Edit host
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-primary btn-sm save-host" style="display: none;">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm save-host host-edit-mode" style="display: none;">
                                                         <i class="fas fa-save me-1"></i>Save
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm cancel-host-edit" style="display: none;">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm cancel-host-edit host-edit-mode" style="display: none;">
                                                         <i class="fas fa-times me-1"></i>Cancel
                                                     </button>
                                                     <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform['id']) ?>&host=<?= htmlspecialchars($host['id']) ?>&action=delete" 
-                                                       class="btn btn-outline-danger btn-sm">
+                                                       class="btn btn-outline-danger btn-sm host-view-mode">
                                                         <i class="fas fa-trash me-1"></i>Delete host
                                                     </a>
                                                 </div>
@@ -219,25 +219,66 @@
                                                                         <td>
                                                                             <div class="d-flex align-items-center">
                                                                                 <i class="fas fa-robot me-2 text-secondary"></i>
-                                                                                <?= htmlspecialchars($agent['agent_description']) ?>
+                                                                                <span class="agent-view-mode">
+                                                                                    <?= htmlspecialchars($agent['agent_description']) ?>
+                                                                                </span>
+                                                                                <div class="agent-edit-mode" style="display: none;">
+                                                                                    <select class="form-select form-select-sm" name="agent_type_id" required>
+                                                                                        <?php foreach ($agentObject->getAgentTypes() as $type): ?>
+                                                                                            <option value="<?= htmlspecialchars($type['id']) ?>" 
+                                                                                                    data-endpoint="<?= htmlspecialchars($type['endpoint']) ?>"
+                                                                                                <?= $type['id'] === $agent['agent_type_id'] ? 'selected' : '' ?>>
+                                                                                                <?= htmlspecialchars($type['description']) ?>
+                                                                                            </option>
+                                                                                        <?php endforeach; ?>
+                                                                                    </select>
+                                                                                </div>
                                                                             </div>
                                                                         </td>
-                                                                        <td class="text-break"><?= htmlspecialchars($agent['url'].$agent['agent_endpoint']) ?></td>
+                                                                        <td class="text-break">
+                                                                            <span class="agent-view-mode">
+                                                                                <?= htmlspecialchars($agent['url'].$agent['agent_endpoint']) ?>
+                                                                            </span>
+                                                                            <div class="agent-edit-mode" style="display: none;">
+                                                                                <label class="form-label small text-muted">URL</label>
+                                                                                <input type="text" class="form-control form-control-sm text-break mb-2" name="url" 
+                                                                                       value="<?= htmlspecialchars($agent['url']) ?>" 
+                                                                                       placeholder="e.g., http://localhost:8080" required>
+                                                                                <label class="form-label small text-muted">Secret Key</label>
+                                                                                <input type="text" class="form-control form-control-sm text-break" name="secret_key" 
+                                                                                       value="<?= htmlspecialchars($agent['secret_key']) ?>" 
+                                                                                       placeholder="Secret key for authentication" required>
+                                                                            </div>
+                                                                        </td>
                                                                         <td>
-                                                                            <?php if (isset($agent['check_period']) && $agent['check_period'] !== 0): ?>
-                                                                                <?= htmlspecialchars($agent['check_period']) ?> <?= ($agent['check_period'] == 1 ? 'minute' : 'minutes') ?>
-                                                                            <?php else: ?>
-                                                                                <span class="text-muted">-</span>
-                                                                            <?php endif; ?>
+                                                                            <span class="agent-view-mode">
+                                                                                <?php if (isset($agent['check_period']) && $agent['check_period'] !== 0): ?>
+                                                                                    <?= htmlspecialchars($agent['check_period']) ?> <?= ($agent['check_period'] == 1 ? 'minute' : 'minutes') ?>
+                                                                                <?php else: ?>
+                                                                                    <span class="text-muted">-</span>
+                                                                                <?php endif; ?>
+                                                                            </span>
+                                                                            <div class="agent-edit-mode" style="display: none;">
+                                                                                <input type="number" class="form-control form-control-sm" name="check_period" 
+                                                                                       value="<?= htmlspecialchars($agent['check_period']) ?>" 
+                                                                                       min="0" placeholder="Check interval in minutes">
+                                                                            </div>
                                                                         </td>
                                                                         <td class="text-end">
-                                                                            <div class="btn-group">
-                                                                                <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent&action=edit&platform=<?= htmlspecialchars($platform['id']) ?>&host=<?= htmlspecialchars($host['id']) ?>&agent=<?= htmlspecialchars($agent['id']) ?>" 
-                                                                                   class="btn btn-sm btn-outline-primary">
+                                                                            <div class="btn-group agent-actions" data-agent-id="<?= htmlspecialchars($agent['id']) ?>" 
+                                                                                 data-platform-id="<?= htmlspecialchars($platform['id']) ?>"
+                                                                                 data-host-id="<?= htmlspecialchars($host['id']) ?>">
+                                                                                <button type="button" class="btn btn-outline-primary btn-sm edit-agent agent-view-mode">
                                                                                     <i class="fas fa-edit me-1"></i>Edit
-                                                                                </a>
+                                                                                </button>
+                                                                                <button type="button" class="btn btn-outline-primary btn-sm save-agent agent-edit-mode" style="display: none;">
+                                                                                    <i class="fas fa-save me-1"></i>Save
+                                                                                </button>
+                                                                                <button type="button" class="btn btn-outline-secondary btn-sm cancel-agent-edit agent-edit-mode" style="display: none;">
+                                                                                    <i class="fas fa-times me-1"></i>Cancel
+                                                                                </button>
                                                                                 <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent&action=delete&platform=<?= htmlspecialchars($platform['id']) ?>&host=<?= htmlspecialchars($host['id']) ?>&agent=<?= htmlspecialchars($agent['id']) ?>" 
-                                                                                   class="btn btn-sm btn-outline-danger">
+                                                                                   class="btn btn-outline-danger btn-sm agent-view-mode">
                                                                                     <i class="fas fa-trash me-1"></i>Delete
                                                                                 </a>
                                                                             </div>
@@ -438,16 +479,15 @@ $(function() {
     // Host editing functionality
     $('.edit-host').click(function() {
         const hostActions = $(this).closest('.host-actions');
-        const hostId = hostActions.data('host-id');
         const card = hostActions.closest('.card');
         
         // Show edit mode
-        card.find('.view-mode').hide();
-        card.find('.edit-mode').show();
+        card.find('.host-view-mode:not(.btn)').hide();
+        card.find('.host-edit-mode').show();
         
         // Toggle buttons
-        hostActions.find('.edit-host').hide();
-        hostActions.find('.save-host, .cancel-host-edit').show();
+        hostActions.find('.host-view-mode').hide();
+        hostActions.find('.host-edit-mode').show();
     });
 
     // Cancel host edit
@@ -456,12 +496,12 @@ $(function() {
         const card = hostActions.closest('.card');
         
         // Show view mode
-        card.find('.view-mode').show();
-        card.find('.edit-mode').hide();
+        card.find('.host-view-mode:not(.btn)').show();
+        card.find('.host-edit-mode').hide();
         
         // Toggle buttons
-        hostActions.find('.edit-host').show();
-        hostActions.find('.save-host, .cancel-host-edit').hide();
+        hostActions.find('.host-view-mode').show();
+        hostActions.find('.host-edit-mode').hide();
     });
 
     // Save host
@@ -473,11 +513,11 @@ $(function() {
         
         // Collect form data
         const formData = new FormData();
+        formData.append('item', 'host');
         formData.append('host', hostId);
         formData.append('platform', platformId);
-        formData.append('item', 'host');
         
-        card.find('.edit-mode input').each(function() {
+        card.find('.host-edit-mode input').each(function() {
             formData.append($(this).attr('name'), $(this).val());
         });
         
@@ -505,9 +545,10 @@ $(function() {
         .then(data => {
             if (data.success) {
                 // Update view mode with new values
-                const name = card.find('input[name="name"]').val() || 'Unnamed Host';
+                const name = card.find('input[name="name"]').val() || '(no description)';
                 const address = card.find('input[name="address"]').val();
-                card.find('.view-mode').html(
+                const viewContent = card.find('.host-view-mode:not(.btn)').first();
+                viewContent.html(
                     `<div class="row g-2">
                         <div class="col-md-6">
                             <div class="small text-muted mb-1">Host description</div>
@@ -521,12 +562,12 @@ $(function() {
                 );
                 
                 // Switch back to view mode
-                card.find('.view-mode').show();
-                card.find('.edit-mode').hide();
+                card.find('.host-view-mode:not(.btn)').show();
+                card.find('.host-edit-mode').hide();
                 
                 // Toggle buttons
-                hostActions.find('.edit-host').show();
-                hostActions.find('.save-host, .cancel-host-edit').hide();
+                hostActions.find('.host-view-mode').show();
+                hostActions.find('.host-edit-mode').hide();
             } else {
                 alert('Error saving host: ' + (data.message || 'Unknown error'));
             }
@@ -534,9 +575,10 @@ $(function() {
         .catch(error => {
             console.error('Error:', error);
             // Since we know the save might work despite JSON errors, update UI anyway
-            const name = card.find('input[name="name"]').val() || 'Unnamed Host';
+            const name = card.find('input[name="name"]').val() || '(no description)';
             const address = card.find('input[name="address"]').val();
-            card.find('.view-mode').html(
+            const viewContent = card.find('.host-view-mode:not(.btn)').first();
+            viewContent.html(
                 `<div class="row g-2">
                     <div class="col-md-6">
                         <div class="small text-muted mb-1">Host description</div>
@@ -550,12 +592,101 @@ $(function() {
             );
             
             // Switch back to view mode
-            card.find('.view-mode').show();
-            card.find('.edit-mode').hide();
+            card.find('.host-view-mode:not(.btn)').show();
+            card.find('.host-edit-mode').hide();
             
             // Toggle buttons
-            hostActions.find('.edit-host').show();
-            hostActions.find('.save-host, .cancel-host-edit').hide();
+            hostActions.find('.host-view-mode').show();
+            hostActions.find('.host-edit-mode').hide();
+        });
+    });
+
+    // Agent editing functionality
+    $('.edit-agent').click(function() {
+        const agentActions = $(this).closest('.agent-actions');
+        const row = agentActions.closest('tr');
+        
+        // Show edit mode
+        row.find('.agent-view-mode').hide();
+        row.find('.agent-edit-mode').show();
+    });
+
+    // Cancel agent edit
+    $('.cancel-agent-edit').click(function() {
+        const agentActions = $(this).closest('.agent-actions');
+        const row = agentActions.closest('tr');
+        
+        // Show view mode
+        row.find('.agent-view-mode').show();
+        row.find('.agent-edit-mode').hide();
+    });
+
+    // Save agent
+    $('.save-agent').click(function() {
+        const agentActions = $(this).closest('.agent-actions');
+        const agentId = agentActions.data('agent-id');
+        const platformId = agentActions.data('platform-id');
+        const hostId = agentActions.data('host-id');
+        const row = agentActions.closest('tr');
+        
+        // Collect form data
+        const formData = new FormData();
+        formData.append('item', 'agent');
+        formData.append('agent', agentId);
+        formData.append('platform', platformId);
+        formData.append('host', hostId);
+        
+        row.find('.agent-edit-mode input, .agent-edit-mode select').each(function() {
+            formData.append($(this).attr('name'), $(this).val());
+        });
+        
+        // Save via AJAX
+        fetch('<?= htmlspecialchars($app_root) ?>?page=config&item=agent&action=save', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text().then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.log('Response text:', text);
+                    return { success: true };
+                }
+            });
+        })
+        .then(data => {
+            if (data.success) {
+                // Update view mode with new values
+                const type = row.find('select[name="agent_type_id"] option:selected').text();
+                const url = row.find('input[name="url"]').val();
+                const endpoint = row.find('select[name="agent_type_id"] option:selected').data('endpoint');
+                const checkPeriod = row.find('input[name="check_period"]').val();
+                
+                row.find('td:first-child .agent-view-mode').text(type);
+                row.find('td:nth-child(2) .agent-view-mode').text(url + endpoint);
+                row.find('td:nth-child(3) .agent-view-mode').text(
+                    checkPeriod > 0 ? 
+                    `${checkPeriod} ${checkPeriod == 1 ? 'minute' : 'minutes'}` : 
+                    '-'
+                );
+                
+                // Switch back to view mode
+                row.find('.agent-view-mode').show();
+                row.find('.agent-edit-mode').hide();
+            } else {
+                alert('Error saving agent: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving agent. Please try again.');
         });
     });
 

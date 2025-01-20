@@ -154,19 +154,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
     // an update to an existing agent
-    } elseif (isset($_POST['agent'])) {
+    } elseif (isset($_POST['item']) && $_POST['item'] === 'agent') {
+        $agent_id = $_POST['agent'];
+        $platform_id = $_POST['platform'];
         $updatedAgent = [
-            'id'            => $agent,
-            'agent_type_id' => $type,
-            'url'           => $url,
-            'secret_key'	=> $secret_key,
-            'check_period'  => $check_period,
+            'id'            => $agent_id,
+            'agent_type_id' => $_POST['agent_type_id'],
+            'url'           => $_POST['url'],
+            'secret_key'    => $_POST['secret_key'],
+            'check_period'  => $_POST['check_period']
         ];
         $result = $agentObject->editAgent($platform_id, $updatedAgent);
-        if ($result === true) {
-            $_SESSION['notice'] = "Agent id \"{$_REQUEST['agent']}\" edited.";
+
+        // Check if it's an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            
+            // Clear any output buffers to ensure clean JSON
+            while (ob_get_level()) ob_end_clean();
+            
+            header('Content-Type: application/json');
+            if ($result === true) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Editing the agent failed. Error: $result"
+                ]);
+            }
+            exit();
         } else {
-            $_SESSION['error'] = "Editing the agent failed. Error: $result";
+            // Regular form submission
+            if ($result === true) {
+                $_SESSION['notice'] = "Agent edited.";
+            } else {
+                $_SESSION['error'] = "Editing the agent failed. Error: $result";
+            }
+            header("Location: $app_root?page=config&item=$item");
+            exit();
         }
 
     // an update to an existing platform
