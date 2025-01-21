@@ -6,9 +6,9 @@
             <h2>Jitsi Meet platforms configuration</h2>
         </div>
         <div class="col-md-6 text-end">
-            <a class="btn btn-primary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform&action=add">
+            <button type="button" class="btn btn-primary" onclick="showAddPlatformModal()">
                 <i class="fas fa-plus me-2"></i>Add new platform
-            </a>
+            </button>
         </div>
         <div class="row mb-4">
             <?php if (!empty($platformsAll)): ?>
@@ -47,23 +47,17 @@
                                     </span>
                                 </div>
                                 <div class="btn-group platform-actions" data-platform-id="<?= htmlspecialchars($platform['id']) ?>">
-                                    <button type="button" class="btn btn-outline-primary edit-platform">
+                                    <button type="button" class="btn btn-outline-primary edit-platform platform-view-mode">
                                         <i class="fas fa-edit me-1"></i>Edit platform
                                     </button>
-                                    <button type="button" class="btn btn-outline-primary save-platform" style="display: none;">
+                                    <button type="button" class="btn btn-outline-primary save-platform platform-edit-mode" style="display: none;">
                                         <i class="fas fa-save me-1"></i>Save
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary cancel-edit" style="display: none;">
+                                    <button type="button" class="btn btn-outline-secondary cancel-edit platform-edit-mode" style="display: none;">
                                         <i class="fas fa-times me-1"></i>Cancel
                                     </button>
-                                    <?php if (count($platformsAll) <= 1): ?>
-                                        <button class="btn btn-outline-secondary" disabled 
-                                                data-toggle="tooltip" data-placement="top" 
-                                                title="Can't delete the last platform">
-                                            <i class="fas fa-trash me-1"></i>Delete platform
-                                        </button>
-                                    <?php else: ?>
-                                        <button type="button" class="btn btn-outline-danger delete-platform">
+                                    <?php if ($userObject->hasRight($user_id, 'delete platform')): ?>
+                                        <button type="button" class="btn btn-outline-danger platform-view-mode" onclick="showDeletePlatformModal(<?= htmlspecialchars($platform['id']) ?>, '<?= htmlspecialchars(addslashes($platform['name'])) ?>', '<?= htmlspecialchars(addslashes($platform['jitsi_url'])) ?>', '<?= htmlspecialchars(addslashes($platform['jilo_database'])) ?>')">
                                             <i class="fas fa-trash me-1"></i>Delete platform
                                         </button>
                                     <?php endif; ?>
@@ -108,7 +102,7 @@
                                 </table>
                             </div>
 
-                            <!-- Hosts Section -->
+                            <!-- Hosts section -->
                             <div class="mt-4">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <div class="d-flex align-items-center">
@@ -118,9 +112,9 @@
                                             for platform "<?= htmlspecialchars($platform['name']) ?>"
                                         </span>
                                     </div>
-                                    <a class="btn btn-primary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&action=add&platform=<?= htmlspecialchars($platform['id']) ?>">
+                                    <button class="btn btn-primary" onclick="showAddHostModal(<?= htmlspecialchars($platform['id']) ?>)">
                                         <i class="fas fa-plus me-2"></i>Add new host
-                                    </a>
+                                    </button>
                                 </div>
 
                                 <?php if (!empty($hosts)): ?>
@@ -130,7 +124,7 @@
                                             return isset($agent['host_id']) && $agent['host_id'] === $host['id'];
                                         });
                                         ?>
-                                        <div class="card mt-5">
+                                        <div class="card mt-5 host-details" data-host-id="<?= htmlspecialchars($host['id']) ?>">
                                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex align-items-center mb-2">
@@ -179,15 +173,14 @@
                                                     <button type="button" class="btn btn-outline-secondary btn-sm cancel-host-edit host-edit-mode" style="display: none;">
                                                         <i class="fas fa-times me-1"></i>Cancel
                                                     </button>
-                                                    <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host&platform=<?= htmlspecialchars($platform['id']) ?>&host=<?= htmlspecialchars($host['id']) ?>&action=delete" 
-                                                       class="btn btn-outline-danger btn-sm host-view-mode">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm host-view-mode" onclick="showDeleteHostModal(<?= htmlspecialchars($platform['id']) ?>, <?= htmlspecialchars($host['id']) ?>, '<?= htmlspecialchars(addslashes($host['name'])) ?>', '<?= htmlspecialchars(addslashes($host['address'])) ?>')">
                                                         <i class="fas fa-trash me-1"></i>Delete host
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             </div>
 
                                             <div class="card-body">
-                                                <!-- Agents Section -->
+                                                <!-- Agents section -->
                                                 <?php $hostAgents = $agentObject->getAgentDetails($platform['id']); ?>
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <div class="d-flex align-items-center">
@@ -197,9 +190,9 @@
                                                             for this host
                                                         </span>
                                                     </div>
-                                                    <a class="btn btn-sm btn-primary" href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent&action=add&platform=<?= htmlspecialchars($platform['id']) ?>&host=<?= htmlspecialchars($host['id']) ?>">
+                                                    <button class="btn btn-sm btn-primary" onclick="showAddAgentModal(<?= htmlspecialchars($platform['id']) ?>, <?= htmlspecialchars($host['id']) ?>)">
                                                         <i class="fas fa-plus me-2"></i>Add new agent
-                                                    </a>
+                                                    </button>
                                                 </div>
 
                                                 <?php if (!empty($hostAgents)): ?>
@@ -207,7 +200,7 @@
                                                         <table class="table table-hover align-middle mb-0">
                                                             <thead class="table-light">
                                                                 <tr>
-                                                                    <th>Agent Type</th>
+                                                                    <th>Agent type</th>
                                                                     <th>Endpoint URL</th>
                                                                     <th>Check period (minutes)</th>
                                                                     <th class="text-end">Actions</th>
@@ -215,7 +208,7 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php foreach ($hostAgents as $agent): ?>
-                                                                    <tr>
+                                                                    <tr class="agent-details" data-agent-id="<?= htmlspecialchars($agent['id']) ?>">
                                                                         <td>
                                                                             <div class="d-flex align-items-center">
                                                                                 <i class="fas fa-robot me-2 text-secondary"></i>
@@ -244,7 +237,7 @@
                                                                                 <input type="text" class="form-control form-control-sm text-break mb-2" name="url" 
                                                                                        value="<?= htmlspecialchars($agent['url']) ?>" 
                                                                                        placeholder="e.g., http://localhost:8080" required>
-                                                                                <label class="form-label small text-muted">Secret Key</label>
+                                                                                <label class="form-label small text-muted">Secret key</label>
                                                                                 <input type="text" class="form-control form-control-sm text-break" name="secret_key" 
                                                                                        value="<?= htmlspecialchars($agent['secret_key']) ?>" 
                                                                                        placeholder="Secret key for authentication" required>
@@ -277,10 +270,9 @@
                                                                                 <button type="button" class="btn btn-outline-secondary btn-sm cancel-agent-edit agent-edit-mode" style="display: none;">
                                                                                     <i class="fas fa-times me-1"></i>Cancel
                                                                                 </button>
-                                                                                <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent&action=delete&platform=<?= htmlspecialchars($platform['id']) ?>&host=<?= htmlspecialchars($host['id']) ?>&agent=<?= htmlspecialchars($agent['id']) ?>" 
-                                                                                   class="btn btn-outline-danger btn-sm agent-view-mode">
+                                                                                <button type="button" class="btn btn-outline-danger btn-sm agent-view-mode" onclick="showDeleteAgentModal(<?= htmlspecialchars($platform['id']) ?>, <?= htmlspecialchars($host['id']) ?>, <?= htmlspecialchars($agent['id']) ?>, '<?= htmlspecialchars(addslashes($agent['agent_description'])) ?>')">
                                                                                     <i class="fas fa-trash me-1"></i>Delete
-                                                                                </a>
+                                                                                </button>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -317,56 +309,278 @@
     </div>
 </div>
 
+<!-- Add platform modal -->
+<div class="modal" id="addPlatformModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPlatformModalLabel">Add new Jitsi platform</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="addPlatformForm">
+                <input type="hidden" name="item" value="platform">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="platformName" class="form-label">Platform name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="platformName" name="name" required>
+                        <small class="form-text text-muted">Descriptive name for the platform</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="platformJitsiUrl" class="form-label">Jitsi URL <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" id="platformJitsiUrl" name="jitsi_url" value="https://" required>
+                        <small class="form-text text-muted">URL of the Jitsi Meet (used for checks and for loading config.js)</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="platformDatabase" class="form-label">Jilo database <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="platformDatabase" name="jilo_database" required>
+                        <small class="form-text text-muted">Path to Jilo database file</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add platform</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add host modal -->
+<div class="modal" id="addHostModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addHostModalLabel">Add new host</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="addHostForm">
+                <input type="hidden" name="item" value="host">
+                <input type="hidden" name="platform" id="hostPlatformId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="hostAddress" class="form-label">Address <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="hostAddress" name="address" required>
+                        <small class="form-text text-muted">DNS name or IP address of the machine</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hostName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="hostName" name="name">
+                        <small class="form-text text-muted">Description or name of the host (optional)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add host</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add agent modal -->
+<div class="modal" id="addAgentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAgentModalLabel">Add new Jilo agent</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="addAgentForm">
+                <input type="hidden" name="item" value="agent">
+                <input type="hidden" name="platform" id="agentPlatformId">
+                <input type="hidden" name="host" id="agentHostId">
+                <input type="hidden" name="new" value="true">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="agentType" class="form-label">Agent type <span class="text-danger">*</span></label>
+                        <select class="form-select form-control" id="agentType" name="type" required>
+                            <option value="">Select agent type</option>
+                            <?php foreach ($jilo_agent_types as $type): ?>
+                                <option value="<?= htmlspecialchars($type['id']) ?>"><?= htmlspecialchars($type['description']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="agentUrl" class="form-label">URL <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="agentUrl" name="url" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="agentSecretKey" class="form-label">Secret key <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="agentSecretKey" name="secret_key" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="agentCheckPeriod" class="form-label">Check period (minutes) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="agentCheckPeriod" name="check_period" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add agent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete platform modal -->
+<div class="modal fade" id="deletePlatformModal" tabindex="-1" role="dialog" aria-labelledby="deletePlatformModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePlatformModalLabel">Delete platform</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="deletePlatformForm">
+                <input type="hidden" name="item" value="platform">
+                <input type="hidden" name="platform" id="deletePlatformId">
+                <input type="hidden" name="delete" value="true">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <h6>Are you sure you want to delete this platform?</h6>
+                        <div id="deletePlatformWarning"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Platform name</label>
+                        <div id="deletePlatformName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jitsi URL</label>
+                        <div id="deletePlatformUrl" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Database</label>
+                        <div id="deletePlatformDatabase" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type 'delete' to confirm</label>
+                        <input type="text" class="form-control" id="deletePlatformConfirm" placeholder="delete">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger" id="deletePlatformButton" disabled>Delete platform</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete host modal -->
+<div class="modal fade" id="deleteHostModal" tabindex="-1" role="dialog" aria-labelledby="deleteHostModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteHostModalLabel">Delete host</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="deleteHostForm">
+                <input type="hidden" name="item" value="host">
+                <input type="hidden" name="platform" id="deleteHostPlatformId">
+                <input type="hidden" name="host" id="deleteHostId">
+                <input type="hidden" name="delete" value="true">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <h6>Are you sure you want to delete this host?</h6>
+                        <div id="deleteHostWarning"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Host name</label>
+                        <div id="deleteHostName" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <div id="deleteHostAddress" class="form-control-plaintext"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type 'delete' to confirm</label>
+                        <input type="text" class="form-control" id="deleteHostConfirm" placeholder="delete">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger" id="deleteHostButton" disabled>Delete host</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete agent modal -->
+<div class="modal fade" id="deleteAgentModal" tabindex="-1" role="dialog" aria-labelledby="deleteAgentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAgentModalLabel">Delete agent</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="deleteAgentForm">
+                <input type="hidden" name="item" value="agent">
+                <input type="hidden" name="platform" id="deleteAgentPlatformId">
+                <input type="hidden" name="host" id="deleteAgentHostId">
+                <input type="hidden" name="agent" id="deleteAgentId">
+                <input type="hidden" name="delete" value="true">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <h6>Are you sure you want to delete this agent?</h6>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Agent type</label>
+                        <div id="deleteAgentType" class="form-control-plaintext"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete agent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 $(function() {
     // Edit platform
     $('.edit-platform').click(function() {
         const platformId = $(this).closest('.platform-actions').data('platform-id');
         const platformTable = $(`.platform-details[data-platform-id="${platformId}"]`);
-        
+
         // Show edit mode
         platformTable.find('.view-mode').hide();
         platformTable.find('.edit-mode').show();
-        
+
         // Toggle buttons
         const actions = $(this).closest('.platform-actions');
-        actions.find('.edit-platform').hide();
-        actions.find('.save-platform, .cancel-edit').show();
+        actions.find('.platform-view-mode').hide();
+        actions.find('.platform-edit-mode').show();
     });
 
-    // Cancel edit
+    // Cancel platform edit
     $('.cancel-edit').click(function() {
         const platformId = $(this).closest('.platform-actions').data('platform-id');
         const platformTable = $(`.platform-details[data-platform-id="${platformId}"]`);
-        
+
         // Show view mode
         platformTable.find('.view-mode').show();
         platformTable.find('.edit-mode').hide();
-        
-        // Reset form values to original
-        platformTable.find('.edit-mode input').each(function() {
-            const originalValue = platformTable.find(`.view-mode:eq(${$(this).closest('tr').index()})`).text().trim();
-            $(this).val(originalValue);
-        });
-        
+
         // Toggle buttons
         const actions = $(this).closest('.platform-actions');
-        actions.find('.edit-platform').show();
-        actions.find('.save-platform, .cancel-edit').hide();
+        actions.find('.platform-view-mode').show();
+        actions.find('.platform-edit-mode').hide();
     });
 
     // Save platform
     $('.save-platform').click(function() {
         const platformId = $(this).closest('.platform-actions').data('platform-id');
         const platformTable = $(`.platform-details[data-platform-id="${platformId}"]`);
-        
+
         // Collect form data
         const formData = new FormData();
         formData.append('platform_id', platformId);
         platformTable.find('.edit-mode input').each(function() {
             formData.append($(this).attr('name'), $(this).val());
         });
-        
+
         // Save via AJAX
         fetch('<?= htmlspecialchars($app_root) ?>?page=config&item=platform&action=save', {
             method: 'POST',
@@ -384,8 +598,6 @@ $(function() {
                     return JSON.parse(text);
                 } catch (e) {
                     console.log('Response text:', text);
-                    // If we can't parse JSON but the request was successful,
-                    // we'll treat it as a success since we know the save worked
                     return { success: true };
                 }
             });
@@ -404,15 +616,15 @@ $(function() {
                         viewCell.text(value);
                     }
                 });
-                
+
                 // Switch back to view mode
                 platformTable.find('.view-mode').show();
                 platformTable.find('.edit-mode').hide();
-                
+
                 // Toggle buttons
                 const actions = $(this).closest('.platform-actions');
-                actions.find('.edit-platform').show();
-                actions.find('.save-platform, .cancel-edit').hide();
+                actions.find('.platform-view-mode').show();
+                actions.find('.platform-edit-mode').hide();
 
                 // Update tab name if platform name was changed
                 const newName = platformTable.find('input[name="name"]').val();
@@ -435,15 +647,15 @@ $(function() {
                     viewCell.text(value);
                 }
             });
-            
+
             // Switch back to view mode
             platformTable.find('.view-mode').show();
             platformTable.find('.edit-mode').hide();
-            
+
             // Toggle buttons
             const actions = $(this).closest('.platform-actions');
-            actions.find('.edit-platform').show();
-            actions.find('.save-platform, .cancel-edit').hide();
+            actions.find('.platform-view-mode').show();
+            actions.find('.platform-edit-mode').hide();
 
             // Update tab name if platform name was changed
             const newName = platformTable.find('input[name="name"]').val();
@@ -456,9 +668,9 @@ $(function() {
         if (!confirm('Are you sure you want to delete this platform?')) {
             return;
         }
-        
+
         const platformId = $(this).closest('.platform-actions').data('platform-id');
-        
+
         fetch('<?= htmlspecialchars($app_root) ?>?page=config&item=platform&action=delete&platform=' + platformId, {
             method: 'POST'
         })
@@ -480,11 +692,11 @@ $(function() {
     $('.edit-host').click(function() {
         const hostActions = $(this).closest('.host-actions');
         const card = hostActions.closest('.card');
-        
+
         // Show edit mode
         card.find('.host-view-mode:not(.btn)').hide();
         card.find('.host-edit-mode').show();
-        
+
         // Toggle buttons
         hostActions.find('.host-view-mode').hide();
         hostActions.find('.host-edit-mode').show();
@@ -494,11 +706,11 @@ $(function() {
     $('.cancel-host-edit').click(function() {
         const hostActions = $(this).closest('.host-actions');
         const card = hostActions.closest('.card');
-        
+
         // Show view mode
         card.find('.host-view-mode:not(.btn)').show();
         card.find('.host-edit-mode').hide();
-        
+
         // Toggle buttons
         hostActions.find('.host-view-mode').show();
         hostActions.find('.host-edit-mode').hide();
@@ -510,17 +722,17 @@ $(function() {
         const hostId = hostActions.data('host-id');
         const platformId = hostActions.data('platform-id');
         const card = hostActions.closest('.card');
-        
+
         // Collect form data
         const formData = new FormData();
         formData.append('item', 'host');
         formData.append('host', hostId);
         formData.append('platform', platformId);
-        
+
         card.find('.host-edit-mode input').each(function() {
             formData.append($(this).attr('name'), $(this).val());
         });
-        
+
         // Save via AJAX
         fetch('<?= htmlspecialchars($app_root) ?>?page=config&item=host&action=save', {
             method: 'POST',
@@ -560,11 +772,11 @@ $(function() {
                         </div>
                     </div>`
                 );
-                
+
                 // Switch back to view mode
                 card.find('.host-view-mode:not(.btn)').show();
                 card.find('.host-edit-mode').hide();
-                
+
                 // Toggle buttons
                 hostActions.find('.host-view-mode').show();
                 hostActions.find('.host-edit-mode').hide();
@@ -590,11 +802,11 @@ $(function() {
                     </div>
                 </div>`
             );
-            
+
             // Switch back to view mode
             card.find('.host-view-mode:not(.btn)').show();
             card.find('.host-edit-mode').hide();
-            
+
             // Toggle buttons
             hostActions.find('.host-view-mode').show();
             hostActions.find('.host-edit-mode').hide();
@@ -605,7 +817,7 @@ $(function() {
     $('.edit-agent').click(function() {
         const agentActions = $(this).closest('.agent-actions');
         const row = agentActions.closest('tr');
-        
+
         // Show edit mode
         row.find('.agent-view-mode').hide();
         row.find('.agent-edit-mode').show();
@@ -615,7 +827,7 @@ $(function() {
     $('.cancel-agent-edit').click(function() {
         const agentActions = $(this).closest('.agent-actions');
         const row = agentActions.closest('tr');
-        
+
         // Show view mode
         row.find('.agent-view-mode').show();
         row.find('.agent-edit-mode').hide();
@@ -628,18 +840,18 @@ $(function() {
         const platformId = agentActions.data('platform-id');
         const hostId = agentActions.data('host-id');
         const row = agentActions.closest('tr');
-        
+
         // Collect form data
         const formData = new FormData();
         formData.append('item', 'agent');
         formData.append('agent', agentId);
         formData.append('platform', platformId);
         formData.append('host', hostId);
-        
+
         row.find('.agent-edit-mode input, .agent-edit-mode select').each(function() {
             formData.append($(this).attr('name'), $(this).val());
         });
-        
+
         // Save via AJAX
         fetch('<?= htmlspecialchars($app_root) ?>?page=config&item=agent&action=save', {
             method: 'POST',
@@ -668,7 +880,7 @@ $(function() {
                 const url = row.find('input[name="url"]').val();
                 const endpoint = row.find('select[name="agent_type_id"] option:selected').data('endpoint');
                 const checkPeriod = row.find('input[name="check_period"]').val();
-                
+
                 row.find('td:first-child .agent-view-mode').text(type);
                 row.find('td:nth-child(2) .agent-view-mode').text(url + endpoint);
                 row.find('td:nth-child(3) .agent-view-mode').text(
@@ -676,7 +888,7 @@ $(function() {
                     `${checkPeriod} ${checkPeriod == 1 ? 'minute' : 'minutes'}` : 
                     '-'
                 );
-                
+
                 // Switch back to view mode
                 row.find('.agent-view-mode').show();
                 row.find('.agent-edit-mode').hide();
@@ -690,8 +902,186 @@ $(function() {
         });
     });
 
+    // Delete Platform Modal
+    function showDeletePlatformModal(platformId, name, url, database) {
+        document.getElementById('deletePlatformId').value = platformId;
+        document.getElementById('deletePlatformName').textContent = name;
+        document.getElementById('deletePlatformUrl').textContent = url;
+        document.getElementById('deletePlatformDatabase').textContent = database;
+
+        // Get hosts and agents for this platform
+        const platformPane = document.getElementById(`platform-${platformId}`);
+        if (!platformPane) {
+            document.getElementById('deletePlatformWarning').innerHTML = '<p class="mb-0">Error: Platform not found.</p>';
+            $('#deletePlatformModal').modal();
+            return;
+        }
+
+        const hosts = platformPane.querySelectorAll('.host-details');
+        let warningText = '<p>This will delete the following items:</p>';
+
+        if (hosts.length > 0) {
+            warningText += '<ul class="mb-0">';
+            hosts.forEach(host => {
+                const hostNameEl = host.querySelector('.card-header h6');
+                const hostName = hostNameEl ? hostNameEl.textContent.trim() : 'Unknown host';
+                const agents = host.querySelectorAll('.agent-details');
+                warningText += `<li>Host: ${hostName}`;
+
+                if (agents.length > 0) {
+                    warningText += '<ul>';
+                    agents.forEach(agent => {
+                        const agentType = agent.querySelector('td:first-child span');
+                        const agentName = agentType ? agentType.textContent.trim() : 'Unknown agent';
+                        warningText += `<li>Agent: ${agentName}</li>`;
+                    });
+                    warningText += '</ul>';
+                }
+                warningText += '</li>';
+            });
+            warningText += '</ul>';
+        } else {
+            warningText = '<p class="mb-0">This platform has no hosts or agents.</p>';
+        }
+
+        document.getElementById('deletePlatformWarning').innerHTML = warningText;
+        $('#deletePlatformModal').modal();
+    }
+
+    // Delete host modal
+    function showDeleteHostModal(platformId, hostId, name, address) {
+        document.getElementById('deleteHostPlatformId').value = platformId;
+        document.getElementById('deleteHostId').value = hostId;
+        document.getElementById('deleteHostName').textContent = name || '(no description)';
+        document.getElementById('deleteHostAddress').textContent = address;
+
+        // Get agents for this host
+        const platformPane = document.getElementById(`platform-${platformId}`);
+        if (!platformPane) {
+            document.getElementById('deleteHostWarning').innerHTML = '<p class="mb-0">Error: Platform not found.</p>';
+            $('#deleteHostModal').modal();
+            return;
+        }
+
+        const hostCard = platformPane.querySelector(`.host-details[data-host-id="${hostId}"]`);
+        let warningText = '<p>This will delete the following items:</p>';
+
+        if (hostCard) {
+            const agents = hostCard.querySelectorAll('.agent-details');
+            if (agents.length > 0) {
+                warningText += '<ul class="mb-0">';
+                agents.forEach(agent => {
+                    const agentType = agent.querySelector('td:first-child span');
+                    const agentName = agentType ? agentType.textContent.trim() : 'Unknown agent';
+                    warningText += `<li>Agent: ${agentName}</li>`;
+                });
+                warningText += '</ul>';
+            } else {
+                warningText = '<p class="mb-0">This host has no agents.</p>';
+            }
+        } else {
+            warningText = '<p class="mb-0">Error: Host not found.</p>';
+        }
+
+        document.getElementById('deleteHostWarning').innerHTML = warningText;
+        $('#deleteHostModal').modal();
+    }
+
+    // Delete agent modal
+    function showDeleteAgentModal(platformId, hostId, agentId, type) {
+        document.getElementById('deleteAgentPlatformId').value = platformId;
+        document.getElementById('deleteAgentHostId').value = hostId;
+        document.getElementById('deleteAgentId').value = agentId;
+        document.getElementById('deleteAgentType').textContent = type;
+        $('#deleteAgentModal').modal();
+    }
+
+    // Handle confirmation inputs
+    $('#deletePlatformConfirm').on('input', function() {
+        document.getElementById('deletePlatformButton').disabled = this.value !== 'delete';
+    });
+
+    $('#deleteHostConfirm').on('input', function() {
+        document.getElementById('deleteHostButton').disabled = this.value !== 'delete';
+    });
+
+    // Reset confirmation on modal close
+    $('#deletePlatformModal').on('hidden.bs.modal', function() {
+        document.getElementById('deletePlatformConfirm').value = '';
+        document.getElementById('deletePlatformButton').disabled = true;
+    });
+
+    $('#deleteHostModal').on('hidden.bs.modal', function() {
+        document.getElementById('deleteHostConfirm').value = '';
+        document.getElementById('deleteHostButton').disabled = true;
+    });
+
+    // Make functions globally available
+    window.showDeletePlatformModal = showDeletePlatformModal;
+    window.showDeleteHostModal = showDeleteHostModal;
+    window.showDeleteAgentModal = showDeleteAgentModal;
+
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
 });
+
+// Platform modal
+function showAddPlatformModal() {
+    $('#addPlatformModal').modal('show');
+}
+
+// Host modal
+function showAddHostModal(platformId) {
+    document.getElementById('hostPlatformId').value = platformId;
+    document.getElementById('addHostModalLabel').textContent = 'Add new host to platform #' + platformId;
+    $('#addHostModal').modal('show');
+}
+
+// Agent modal
+function showAddAgentModal(platformId, hostId) {
+    document.getElementById('agentPlatformId').value = platformId;
+    document.getElementById('agentHostId').value = hostId;
+    document.getElementById('addAgentModalLabel').textContent = 'Add new agent to host #' + hostId;
+
+    // Filter agent types that are not yet in this host
+    const existingTypes = Array.from(document.querySelectorAll(`[data-host-id="${hostId}"] [data-agent-type-id]`))
+        .map(el => el.dataset.agentTypeId);
+
+    const agentTypeSelect = document.getElementById('agentType');
+    Array.from(agentTypeSelect.options).forEach(option => {
+        if (option.value && existingTypes.includes(option.value)) {
+            option.disabled = true;
+        } else {
+            option.disabled = false;
+        }
+    });
+
+    $('#addAgentModal').modal('show');
+}
+
+// Remove the old platform button creation since we have it in the HTML now
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Host buttons for each platform
+    document.querySelectorAll('.platform-card').forEach(card => {
+        const platformId = card.dataset.platformId;
+        const addHostBtn = document.createElement('button');
+        addHostBtn.className = 'btn btn-outline-primary btn-sm ms-2';
+        addHostBtn.innerHTML = '<i class="fas fa-plus me-1"></i>Add host';
+        addHostBtn.onclick = () => showAddHostModal(platformId);
+        card.querySelector('.card-header').appendChild(addHostBtn);
+    });
+
+    // Add Agent buttons for each host
+    document.querySelectorAll('.host-card').forEach(card => {
+        const platformId = card.closest('.platform-card').dataset.platformId;
+        const hostId = card.dataset.hostId;
+        const addAgentBtn = document.createElement('button');
+        addAgentBtn.className = 'btn btn-outline-primary btn-sm ms-2';
+        addAgentBtn.innerHTML = '<i class="fas fa-plus me-1"></i>Add agent';
+        addAgentBtn.onclick = () => showAddAgentModal(platformId, hostId);
+        card.querySelector('.card-header').appendChild(addAgentBtn);
+    });
+});
 </script>
+
 <!-- "jilo configuration" -->
