@@ -122,17 +122,40 @@ class Platform {
      */
     public function deletePlatform($platform_id) {
         try {
-            $sql = 'DELETE FROM platforms
-                    WHERE
-                    id = :platform_id';
+            $this->db->beginTransaction();
 
+            // First, get all hosts in this platform
+            $sql = 'SELECT id FROM hosts WHERE platform_id = :platform_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':platform_id', $platform_id);
-
             $query->execute();
+            $hosts = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            // Delete all agents for each host
+            foreach ($hosts as $host) {
+                $sql = 'DELETE FROM jilo_agents WHERE host_id = :host_id';
+                $query = $this->db->prepare($sql);
+                $query->bindParam(':host_id', $host['id']);
+                $query->execute();
+            }
+
+            // Delete all hosts in this platform
+            $sql = 'DELETE FROM hosts WHERE platform_id = :platform_id';
+            $query = $this->db->prepare($sql);
+            $query->bindParam(':platform_id', $platform_id);
+            $query->execute();
+
+            // Finally, delete the platform
+            $sql = 'DELETE FROM platforms WHERE id = :platform_id';
+            $query = $this->db->prepare($sql);
+            $query->bindParam(':platform_id', $platform_id);
+            $query->execute();
+
+            $this->db->commit();
             return true;
 
         } catch (Exception $e) {
+            $this->db->rollBack();
             return $e->getMessage();
         }
     }
