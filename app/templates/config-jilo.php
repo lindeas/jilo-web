@@ -127,14 +127,14 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <i class="fas fa-network-wired me-2 text-secondary"></i>
-                                                        <h6 class="mb-0">Host "<?= htmlspecialchars($host['name']) ?>" (#<?= htmlspecialchars($host['id']) ?>) in platform "<?= htmlspecialchars($platform['name']) ?>"</h6>
+                                                        <h6 class="mb-0">Host "<?= htmlspecialchars($host['name'] ?: $host['address']) ?>" (#<?= htmlspecialchars($host['id']) ?>) in platform "<?= htmlspecialchars($platform['name']) ?>"</h6>
                                                     </div>
                                                     <div class="ps-4">
                                                         <span class="host-view-mode">
                                                             <div class="row g-2">
                                                                 <div class="col-md-6">
                                                                     <div class="small text-muted mb-1">Host description</div>
-                                                                    <div class="text-break"><strong><?= htmlspecialchars($host['name'] ?: '(no description)') ?></strong></div>
+                                                                    <div class="text-break"><strong><?= htmlspecialchars($host['name'] ?: $host['address']) ?></strong></div>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <div class="small text-muted mb-1">DNS name or IP</div>
@@ -148,7 +148,7 @@
                                                                     <label class="form-label small text-muted">Host description</label>
                                                                     <input type="text" class="form-control form-control-sm text-break" name="name"
                                                                             value="<?= htmlspecialchars($host['name']) ?>"
-                                                                            placeholder="Optional description">
+                                                                            placeholder="(defaults to DNS name or IP)">
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <label class="form-label small text-muted">DNS name or IP</label>
@@ -233,7 +233,7 @@
                                                                             <div class="agent-edit-mode" style="display: none;">
                                                                                 <input type="text" name="url" class="form-control"
                                                                                         value="<?= htmlspecialchars($agent['url']) ?>"
-                                                                                        placeholder="https://address[:port]">
+                                                                                        placeholder="https://address[:port]" required>
                                                                             </div>
                                                                         </td>
                                                                         <td>
@@ -759,6 +759,16 @@ $(function() {
         const platformId = hostActions.data('platform-id');
         const card = hostActions.closest('.card');
 
+        // Get form inputs
+        const hostAddress = card.find('input[name="address"]');
+
+        // Validate required fields
+        if (!hostAddress.val().trim()) {
+            showValidationTooltip(hostAddress, 'Please enter a DNS name or IP address');
+            hostAddress.focus();
+            return;
+        }
+
         // Collect form data
         const formData = new FormData();
         formData.append('item', 'host');
@@ -793,10 +803,10 @@ $(function() {
         .then(data => {
             if (data.success) {
                 // Update view mode with new values
-                const name = card.find('input[name="name"]').val() || '(no description)';
+                const name = card.find('input[name="name"]').val() || card.find('input[name="address"]').val();
                 const address = card.find('input[name="address"]').val();
-                const viewContent = card.find('.host-view-mode:not(.btn)').first();
-                viewContent.html(
+
+                card.find('.host-view-mode:not(.btn)').first().html(
                     `<div class="row g-2">
                         <div class="col-md-6">
                             <div class="small text-muted mb-1">Host description</div>
@@ -823,10 +833,10 @@ $(function() {
         .catch(error => {
             console.error('Error:', error);
             // Since we know the save might work despite JSON errors, update UI anyway
-            const name = card.find('input[name="name"]').val() || '(no description)';
+            const name = card.find('input[name="name"]').val() || card.find('input[name="name"]').val();
             const address = card.find('input[name="address"]').val();
-            const viewContent = card.find('.host-view-mode:not(.btn)').first();
-            viewContent.html(
+
+            card.find('.host-view-mode:not(.btn)').first().html(
                 `<div class="row g-2">
                     <div class="col-md-6">
                         <div class="small text-muted mb-1">Host description</div>
@@ -875,6 +885,16 @@ $(function() {
         const agentId = agentActions.data('agent-id');
         const hostId = agentActions.data('host-id');
         const row = agentActions.closest('tr');
+
+        // Get form inputs
+        const agentUrl = row.find('input[name="url"]');
+
+        // Validate required fields
+        if (!agentUrl.val().trim()) {
+            showValidationTooltip(agentUrl, 'Please enter an endpoint URL');
+            agentUrl.focus();
+            return;
+        }
 
         // Collect form data
         const formData = new FormData();
@@ -987,7 +1007,9 @@ $(function() {
                     agents.forEach(agent => {
                         const agentType = agent.querySelector('td:first-child span');
                         const agentName = agentType ? agentType.textContent.trim() : 'Unknown agent';
-                        warningText += `<li>Agent: ${agentName}</li>`;
+                        const agentUrl = agent.querySelector('td:nth-child(2) .agent-view-mode');
+                        const url = agentUrl ? agentUrl.textContent.trim() : 'Unknown URL';
+                        warningText += `<li>Agent ${agentName} at ${url}</li>`;
                     });
                     warningText += '</ul>';
                 }
@@ -1029,10 +1051,13 @@ $(function() {
             const agents = hostCard.querySelectorAll('.agent-details');
             if (agents.length > 0) {
                 warningText += '<ul class="mb-0">';
+
                 agents.forEach(agent => {
                     const agentType = agent.querySelector('td:first-child span');
                     const agentName = agentType ? agentType.textContent.trim() : 'Unknown agent';
-                    warningText += `<li>Agent: ${agentName}</li>`;
+                    const agentUrl = agent.querySelector('td:nth-child(2) .agent-view-mode');
+                    const url = agentUrl ? agentUrl.textContent.trim() : 'Unknown URL';
+                    warningText += `<li>Agent ${agentName} at ${url}</li>`;
                 });
                 warningText += '</ul>';
                 document.getElementById('deleteHostButton').disabled = true;
@@ -1086,6 +1111,28 @@ $(function() {
 
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
+
+    // Helper function to show validation tooltip
+    function showValidationTooltip(input, message) {
+        const tooltip = $(input)
+            .tooltip({
+                title: message,
+                placement: 'top',
+                trigger: 'manual',
+                template: '<div class="tooltip tooltip-danger" role="tooltip"><div class="arrow"></div><div class="tooltip-inner bg-danger"></div></div>'
+            })
+            .tooltip('show');
+
+        // Hide tooltip when input changes
+        input.one('input', function() {
+            $(this).tooltip('dispose');
+        });
+
+        // Hide tooltip after 3 seconds
+        setTimeout(() => {
+            $(input).tooltip('dispose');
+        }, 3000);
+    }
 });
 
 // Show add platform modal

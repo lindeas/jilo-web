@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $newHost = [
                 'address'       => $_POST['address'],
                 'platform_id'   => $_POST['platform'],
-                'name'          => $_POST['name'],
+                'name'          => empty($_POST['name']) ? $_POST['address'] : $_POST['name'],
             ];
             $result = $hostObject->addHost($newHost);
             if ($result === true) {
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $updatedHost = [
                 'id'      => $host_id,
                 'address' => $_POST['address'],
-                'name'    => $_POST['name'],
+                'name'    => empty($_POST['name']) ? $_POST['address'] : $_POST['name'],
             ];
             $result = $hostObject->editHost($platform_id, $updatedHost);
             if ($result === true) {
