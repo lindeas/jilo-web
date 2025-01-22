@@ -127,7 +127,7 @@
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <i class="fas fa-network-wired me-2 text-secondary"></i>
-                                                        <h6 class="mb-0">Host id #<?= htmlspecialchars($host['id']) ?> in platform "<?= htmlspecialchars($platform['name']) ?>"</h6>
+                                                        <h6 class="mb-0">Host "<?= htmlspecialchars($host['name']) ?>" (#<?= htmlspecialchars($host['id']) ?>) in platform "<?= htmlspecialchars($platform['name']) ?>"</h6>
                                                     </div>
                                                     <div class="ps-4">
                                                         <span class="host-view-mode">
@@ -419,18 +419,18 @@
                         <div id="deletePlatformWarning"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Platform name</label>
+                        <label class="form-label small text-muted">Platform name</label>
                         <div id="deletePlatformName" class="form-control-plaintext"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Jitsi URL</label>
+                        <label class="form-label small text-muted">Jitsi URL</label>
                         <div id="deletePlatformUrl" class="form-control-plaintext"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Database</label>
+                        <label class="form-label small text-muted">Database</label>
                         <div id="deletePlatformDatabase" class="form-control-plaintext"></div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" id="deletePlatformConfirmBlock">
                         <label class="form-label">Type 'delete' to confirm</label>
                         <input type="text" class="form-control" id="deletePlatformConfirm" placeholder="delete">
                     </div>
@@ -470,7 +470,7 @@
                         <label class="form-label small text-muted">Address</label>
                         <div id="deleteHostAddress" class="form-control-plaintext"></div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" id="deleteHostConfirmBlock">
                         <label class="form-label">Type 'delete' to confirm</label>
                         <input type="text" class="form-control" id="deleteHostConfirm" placeholder="delete">
                     </div>
@@ -887,6 +887,7 @@ $(function() {
         document.getElementById('deletePlatformName').textContent = name;
         document.getElementById('deletePlatformUrl').textContent = url;
         document.getElementById('deletePlatformDatabase').textContent = database;
+        document.getElementById('deletePlatformModalLabel').textContent = `Delete platform "${name}"`;
 
         // Get hosts and agents for this platform
         const platformPane = document.getElementById(`platform-${platformId}`);
@@ -897,15 +898,14 @@ $(function() {
         }
 
         const hosts = platformPane.querySelectorAll('.host-details');
-        let warningText = '<p>This will delete the following items:</p>';
-
         if (hosts.length > 0) {
+            let warningText = '<p>This will <strong>also</strong> delete the following items:</p>';
             warningText += '<ul class="mb-0">';
             hosts.forEach(host => {
                 const hostNameEl = host.querySelector('.card-header h6');
                 const hostName = hostNameEl ? hostNameEl.textContent.trim() : 'Unknown host';
                 const agents = host.querySelectorAll('.agent-details');
-                warningText += `<li>Host: ${hostName}`;
+                warningText += `<li>${hostName}`;
 
                 if (agents.length > 0) {
                     warningText += '<ul>';
@@ -919,11 +919,15 @@ $(function() {
                 warningText += '</li>';
             });
             warningText += '</ul>';
+            document.getElementById('deletePlatformWarning').innerHTML = warningText;
+            document.getElementById('deletePlatformConfirmBlock').style.display = '';
+            document.getElementById('deletePlatformButton').disabled = true;
         } else {
-            warningText = '<p class="mb-0">This platform has no hosts or agents.</p>';
+            document.getElementById('deletePlatformWarning').innerHTML = '';
+            document.getElementById('deletePlatformConfirmBlock').style.display = 'none';
+            document.getElementById('deletePlatformButton').disabled = false;
         }
 
-        document.getElementById('deletePlatformWarning').innerHTML = warningText;
         $('#deletePlatformModal').modal();
     }
 
@@ -943,7 +947,7 @@ $(function() {
         }
 
         const hostCard = platformPane.querySelector(`.host-details[data-host-id="${hostId}"]`);
-        let warningText = '<p>This will delete the following items:</p>';
+        let warningText = '<p>This will <strong>also</strong> delete the following items:</p>';
 
         if (hostCard) {
             const agents = hostCard.querySelectorAll('.agent-details');
@@ -955,8 +959,13 @@ $(function() {
                     warningText += `<li>Agent: ${agentName}</li>`;
                 });
                 warningText += '</ul>';
+                document.getElementById('deleteHostButton').disabled = true;
+                document.getElementById('deleteHostConfirm').value = '';
+                document.getElementById('deleteHostConfirmBlock').style.display = '';
             } else {
-                warningText = '<p class="mb-0">This host has no agents.</p>';
+                warningText = '';
+                document.getElementById('deleteHostButton').disabled = false;
+                document.getElementById('deleteHostConfirmBlock').style.display = 'none';
             }
         } else {
             warningText = '<p class="mb-0">Error: Host not found.</p>';
