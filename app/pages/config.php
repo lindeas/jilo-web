@@ -97,23 +97,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'secret_key'    => $_POST['secret_key'],
                 'check_period'  => $_POST['check_period'],
             ];
-            $result = $agentObject->addAgent($_POST['platform'], $newAgent);
+            $result = $agentObject->addAgent($_POST['host'], $newAgent);
             if ($result === true) {
-                $_SESSION['notice'] = "New Jilo Agent added.";
+                $_SESSION['notice'] = "New Jilo agent added.";
             } else {
                 $_SESSION['error'] = "Adding the agent failed. Error: $result";
             }
         } else { // This is an edit of existing agent
             $agent_id = $_POST['agent'];
-            $platform_id = $_POST['platform'];
             $updatedAgent = [
-                'id'            => $agent_id,
-                'agent_type_id' => $_POST['agent_type_id'],
                 'url'           => $_POST['url'],
                 'secret_key'    => $_POST['secret_key'],
-                'check_period'  => $_POST['check_period']
+                'check_period'  => $_POST['check_period'],
             ];
-            $result = $agentObject->editAgent($platform_id, $updatedAgent);
+            $result = $agentObject->editAgent($agent_id, $updatedAgent);
             if ($result === true) {
                 $_SESSION['notice'] = "Agent edited.";
             } else {

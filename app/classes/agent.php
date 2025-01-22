@@ -24,29 +24,32 @@ class Agent {
 
 
     /**
-     * Retrieves details of a specified agent ID (or all agents) in a specified platform.
+     * Retrieves details of agents for a specified host.
      *
-     * @param int $platform_id The platform ID to filter agents by.
-     * @param int $agent_id The agent ID to filter by. If empty, all agents are returned.
+     * @param int $host_id The host ID to filter agents by.
+     * @param int $agent_id Optional agent ID to filter by.
      *
      * @return array The list of agent details.
      */
-    public function getAgentDetails($platform_id, $agent_id = '') {
+    public function getAgentDetails($host_id, $agent_id = '') {
         $sql = 'SELECT
                     ja.id,
-                    ja.platform_id,
+                    ja.host_id,
                     ja.agent_type_id,
                     ja.url,
                     ja.secret_key,
                     ja.check_period,
                     jat.description AS agent_description,
-                    jat.endpoint AS agent_endpoint
+                    jat.endpoint AS agent_endpoint,
+                    h.platform_id
                 FROM
                     jilo_agents ja
                 JOIN
                     jilo_agent_types jat ON ja.agent_type_id = jat.id
+                JOIN
+                    hosts h ON ja.host_id = h.id
                 WHERE
-                    platform_id = :platform_id';
+                    ja.host_id = :host_id';
 
         if ($agent_id !== '') {
             $sql .= ' AND ja.id = :agent_id';
@@ -54,7 +57,7 @@ class Agent {
 
         $query = $this->db->prepare($sql);
 
-        $query->bindParam(':platform_id', $platform_id);
+        $query->bindParam(':host_id', $host_id);
         if ($agent_id !== '') {
             $query->bindParam(':agent_id', $agent_id);
         }
@@ -75,17 +78,20 @@ class Agent {
     public function getAgentIDDetails($agent_id) {
         $sql = 'SELECT
                     ja.id,
-                    ja.platform_id,
+                    ja.host_id,
                     ja.agent_type_id,
                     ja.url,
                     ja.secret_key,
                     ja.check_period,
                     jat.description AS agent_description,
-                    jat.endpoint AS agent_endpoint
+                    jat.endpoint AS agent_endpoint,
+                    h.platform_id
                 FROM
                     jilo_agents ja
                 JOIN
                     jilo_agent_types jat ON ja.agent_type_id = jat.id
+                JOIN
+                    hosts h ON ja.host_id = h.id
                 WHERE
                     ja.id = :agent_id';
 
@@ -114,22 +120,22 @@ class Agent {
 
 
     /**
-     * Retrieves agent types already configured for a specific platform.
+     * Retrieves agent types already configured for a specific host.
      *
-     * @param int $platform_id The platform ID to filter agents by.
+     * @param int $host_id The host ID to filter agents by.
      *
-     * @return array List of agent types configured for the platform.
+     * @return array List of agent types configured for the host.
      */
-    public function getPlatformAgentTypes($platform_id) {
+    public function getHostAgentTypes($host_id) {
         $sql = 'SELECT
                     id,
                     agent_type_id
                 FROM
                     jilo_agents
                 WHERE
-                    platform_id = :platform_id';
+                    host_id = :host_id';
         $query = $this->db->prepare($sql);
-        $query->bindParam(':platform_id', $platform_id);
+        $query->bindParam(':host_id', $host_id);
         $query->execute();
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -137,27 +143,27 @@ class Agent {
 
 
     /**
-     * Adds a new agent to the platform.
+     * Add a new agent to the database.
      *
-     * @param int $platform_id The platform ID where the agent is to be added.
-     * @param array $newAgent The new agent details to add.
+     * @param int $host_id The host ID to add the agent to.
+     * @param array $newAgent An associative array containing the details of the agent to be added.
      *
-     * @return bool|string Returns true on success or an error message on failure.
+     * @return bool|string True if the agent was added successfully, otherwise error message.
      */
-    public function addAgent($platform_id, $newAgent) {
+    public function addAgent($host_id, $newAgent) {
         try {
             $sql = 'INSERT INTO jilo_agents
-                    (platform_id, agent_type_id, url, secret_key, check_period)
+                    (host_id, agent_type_id, url, secret_key, check_period)
                     VALUES
-                    (:platform_id, :agent_type_id, :url, :secret_key, :check_period)';
+                    (:host_id, :agent_type_id, :url, :secret_key, :check_period)';
 
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':platform_id'		=> $platform_id,
-                ':agent_type_id'	=> $newAgent['type_id'],
-                ':url'			=> $newAgent['url'],
-                ':secret_key'		=> $newAgent['secret_key'],
-                ':check_period'     => $newAgent['check_period'],
+                ':host_id'       => $host_id,
+                ':agent_type_id' => $newAgent['type_id'],
+                ':url'          => $newAgent['url'],
+                ':secret_key'   => $newAgent['secret_key'],
+                ':check_period' => $newAgent['check_period'],
             ]);
 
             return true;
@@ -169,33 +175,29 @@ class Agent {
 
 
     /**
-     * Edits an existing agent's details.
+     * Edit an existing agent in the database.
      *
-     * @param int $platform_id The platform ID where the agent exists.
-     * @param array $updatedAgent The updated agent details.
+     * @param int $agent_id The ID of the agent to edit.
+     * @param array $updatedAgent An associative array containing the updated details of the agent.
      *
-     * @return bool|string Returns true on success or an error message on failure.
+     * @return bool|string True if the agent was updated successfully, otherwise error message.
      */
-    public function editAgent($platform_id, $updatedAgent) {
+    public function editAgent($agent_id, $updatedAgent) {
         try {
-            $sql = 'UPDATE jilo_agents SET
-                        agent_type_id = :agent_type_id,
+            $sql = 'UPDATE jilo_agents
+                    SET
                         url = :url,
                         secret_key = :secret_key,
                         check_period = :check_period
                     WHERE
-                        id = :agent_id
-                    AND
-                        platform_id = :platform_id';
+                        id = :agent_id';
 
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':agent_type_id'	=> $updatedAgent['agent_type_id'],
-                ':url'			=> $updatedAgent['url'],
-                ':secret_key'		=> $updatedAgent['secret_key'],
+                ':agent_id'     => $agent_id,
+                ':url'          => $updatedAgent['url'],
+                ':secret_key'   => $updatedAgent['secret_key'],
                 ':check_period' => $updatedAgent['check_period'],
-                ':agent_id'		=> $updatedAgent['id'],
-                ':platform_id'		=> $platform_id,
             ]);
 
             return true;
@@ -207,7 +209,7 @@ class Agent {
 
 
     /**
-     * Deletes an agent from the platform.
+     * Deletes an agent from the database.
      *
      * @param int $agent_id The agent ID to delete.
      *
@@ -398,15 +400,15 @@ class Agent {
     }
 
     /**
-     * Retrieves the latest stored data for a specific platform, agent type, and metric type.
+     * Retrieves the latest stored data for a specific host, agent type, and metric type.
      *
-     * @param int $platform_id The platform ID.
+     * @param int $host_id The host ID.
      * @param string $agent_type The agent type.
      * @param string $metric_type The metric type to filter by.
      *
      * @return mixed The latest stored data.
      */
-    public function getLatestData($platform_id, $agent_type, $metric_type) {
+    public function getLatestData($host_id, $agent_type, $metric_type) {
         $sql = 'SELECT
                     jac.timestamp,
                     jac.response_content,
@@ -418,8 +420,10 @@ class Agent {
                     jilo_agents ja ON jac.agent_id = ja.id
                 JOIN
                     jilo_agent_types jat ON ja.agent_type_id = jat.id
+                JOIN
+                    hosts h ON ja.host_id = h.id
                 WHERE
-                    ja.platform_id = :platform_id
+                    h.id = :host_id
                     AND jat.description = :agent_type
                     AND jac.status_code = 200
                 ORDER BY
@@ -428,7 +432,7 @@ class Agent {
 
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':platform_id' => $platform_id,
+            ':host_id' => $host_id,
             ':agent_type' => $agent_type
         ]);
 
@@ -497,14 +501,14 @@ class Agent {
     /**
      * Gets historical data for a specific metric from agent checks
      *
-     * @param int $platform_id The platform ID
+     * @param int $host_id The host ID
      * @param string $agent_type The type of agent (e.g., 'jvb', 'jicofo')
      * @param string $metric_type The type of metric to retrieve
      * @param string $from_time Start time in Y-m-d format
      * @param string $until_time End time in Y-m-d format
      * @return array Array with the dataset from agent checks
      */
-    public function getHistoricalData($platform_id, $agent_type, $metric_type, $from_time, $until_time) {
+    public function getHistoricalData($host_id, $agent_type, $metric_type, $from_time, $until_time) {
         // Get data from agent checks
         $sql = 'SELECT
                     DATE(jac.timestamp) as date,
@@ -516,8 +520,10 @@ class Agent {
                     jilo_agents ja ON jac.agent_id = ja.id
                 JOIN
                     jilo_agent_types jat ON ja.agent_type_id = jat.id
+                JOIN
+                    hosts h ON ja.host_id = h.id
                 WHERE
-                    ja.platform_id = :platform_id
+                    h.id = :host_id
                     AND jat.description = :agent_type
                     AND jac.status_code = 200
                     AND DATE(jac.timestamp) BETWEEN :from_time AND :until_time
@@ -528,7 +534,7 @@ class Agent {
 
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':platform_id' => $platform_id,
+            ':host_id' => $host_id,
             ':agent_type' => $agent_type,
             ':from_time' => $from_time,
             ':until_time' => $until_time

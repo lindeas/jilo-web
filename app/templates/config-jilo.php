@@ -120,9 +120,7 @@
                                 <?php if (!empty($hosts)): ?>
                                     <?php foreach ($hosts as $host): ?>
                                         <?php 
-                                        $hostAgents = array_filter($agents, function($agent) use ($host) {
-                                            return isset($agent['host_id']) && $agent['host_id'] === $host['id'];
-                                        });
+                                        $hostAgents = $agentObject->getAgentDetails($host['id']); 
                                         ?>
                                         <div class="card mt-5 host-details" data-host-id="<?= htmlspecialchars($host['id']) ?>">
                                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -181,16 +179,17 @@
 
                                             <div class="card-body">
                                                 <!-- Agents section -->
-                                                <?php $hostAgents = $agentObject->getAgentDetails($platform['id']); ?>
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <div class="d-flex align-items-center">
                                                         <i class="fas fa-robot me-2 text-secondary"></i>
                                                         <span class="text-secondary">
-                                                            <?= htmlspecialchars(count($hostAgents)) ?> <?= count($hostAgents) === 1 ? 'agent' : 'agents' ?>
-                                                            for this host
+                                                            <?php 
+                                                            $hostAgents = $agentObject->getAgentDetails($host['id']); 
+                                                            echo count($hostAgents) . ' ' . (count($hostAgents) === 1 ? 'agent' : 'agents') . ' for host "' . htmlspecialchars($host['name']) . '"';
+                                                            ?>
                                                         </span>
                                                     </div>
-                                                    <button class="btn btn-sm btn-primary" onclick="showAddAgentModal(<?= htmlspecialchars($platform['id']) ?>, <?= htmlspecialchars($host['id']) ?>)">
+                                                    <button class="btn btn-primary" onclick="showAddAgentModal(<?= htmlspecialchars($host['id']) ?>)">
                                                         <i class="fas fa-plus me-2"></i>Add new agent
                                                     </button>
                                                 </div>
@@ -202,8 +201,8 @@
                                                                 <tr>
                                                                     <th>Agent type</th>
                                                                     <th>Endpoint URL</th>
-                                                                    <th>Check period (minutes)</th>
-                                                                    <th class="text-end">Actions</th>
+                                                                    <th>Check period</th>
+                                                                    <th>Actions</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -215,32 +214,14 @@
                                                                                 <span class="agent-view-mode">
                                                                                     <?= htmlspecialchars($agent['agent_description']) ?>
                                                                                 </span>
-                                                                                <div class="agent-edit-mode" style="display: none;">
-                                                                                    <select class="form-select form-select-sm" name="agent_type_id" required>
-                                                                                        <?php foreach ($agentObject->getAgentTypes() as $type): ?>
-                                                                                            <option value="<?= htmlspecialchars($type['id']) ?>" 
-                                                                                                    data-endpoint="<?= htmlspecialchars($type['endpoint']) ?>"
-                                                                                                <?= $type['id'] === $agent['agent_type_id'] ? 'selected' : '' ?>>
-                                                                                                <?= htmlspecialchars($type['description']) ?>
-                                                                                            </option>
-                                                                                        <?php endforeach; ?>
-                                                                                    </select>
-                                                                                </div>
                                                                             </div>
                                                                         </td>
-                                                                        <td class="text-break">
+                                                                        <td>
                                                                             <span class="agent-view-mode">
-                                                                                <?= htmlspecialchars($agent['url'].$agent['agent_endpoint']) ?>
+                                                                                <?= htmlspecialchars($agent['url']) ?>
                                                                             </span>
                                                                             <div class="agent-edit-mode" style="display: none;">
-                                                                                <label class="form-label small text-muted">URL</label>
-                                                                                <input type="text" class="form-control form-control-sm text-break mb-2" name="url" 
-                                                                                       value="<?= htmlspecialchars($agent['url']) ?>" 
-                                                                                       placeholder="e.g., http://localhost:8080" required>
-                                                                                <label class="form-label small text-muted">Secret key</label>
-                                                                                <input type="text" class="form-control form-control-sm text-break" name="secret_key" 
-                                                                                       value="<?= htmlspecialchars($agent['secret_key']) ?>" 
-                                                                                       placeholder="Secret key for authentication" required>
+                                                                                <input type="text" class="form-control" name="url" value="<?= htmlspecialchars($agent['url']) ?>" required>
                                                                             </div>
                                                                         </td>
                                                                         <td>
@@ -248,30 +229,28 @@
                                                                                 <?php if (isset($agent['check_period']) && $agent['check_period'] !== 0): ?>
                                                                                     <?= htmlspecialchars($agent['check_period']) ?> <?= ($agent['check_period'] == 1 ? 'minute' : 'minutes') ?>
                                                                                 <?php else: ?>
-                                                                                    <span class="text-muted">-</span>
+                                                                                    Not monitored
                                                                                 <?php endif; ?>
                                                                             </span>
                                                                             <div class="agent-edit-mode" style="display: none;">
-                                                                                <input type="number" class="form-control form-control-sm" name="check_period" 
-                                                                                       value="<?= htmlspecialchars($agent['check_period']) ?>" 
-                                                                                       min="0" placeholder="Check interval in minutes">
+                                                                                <input type="number" class="form-control" name="check_period" value="<?= htmlspecialchars($agent['check_period']) ?>" min="0">
                                                                             </div>
                                                                         </td>
-                                                                        <td class="text-end">
+                                                                        <td>
                                                                             <div class="btn-group agent-actions" data-agent-id="<?= htmlspecialchars($agent['id']) ?>" 
-                                                                                 data-platform-id="<?= htmlspecialchars($platform['id']) ?>"
                                                                                  data-host-id="<?= htmlspecialchars($host['id']) ?>">
                                                                                 <button type="button" class="btn btn-outline-primary btn-sm edit-agent agent-view-mode">
-                                                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                                                    <i class="fas fa-edit me-1"></i>Edit agent
                                                                                 </button>
-                                                                                <button type="button" class="btn btn-outline-primary btn-sm save-agent agent-edit-mode" style="display: none;">
+                                                                                <button type="button" class="btn btn-outline-danger btn-sm delete-agent agent-view-mode"
+                                                                                        onclick="showDeleteAgentModal(<?= htmlspecialchars($agent['id']) ?>, '<?= htmlspecialchars($agent['agent_description']) ?>', '<?= htmlspecialchars($agent['url']) ?>')">
+                                                                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                                                                </button>
+                                                                                <button type="button" class="btn btn-outline-success btn-sm save-agent agent-edit-mode" style="display: none;">
                                                                                     <i class="fas fa-save me-1"></i>Save
                                                                                 </button>
                                                                                 <button type="button" class="btn btn-outline-secondary btn-sm cancel-agent-edit agent-edit-mode" style="display: none;">
                                                                                     <i class="fas fa-times me-1"></i>Cancel
-                                                                                </button>
-                                                                                <button type="button" class="btn btn-outline-danger btn-sm agent-view-mode" onclick="showDeleteAgentModal(<?= htmlspecialchars($platform['id']) ?>, <?= htmlspecialchars($host['id']) ?>, <?= htmlspecialchars($agent['id']) ?>, '<?= htmlspecialchars(addslashes($agent['agent_description'])) ?>')">
-                                                                                    <i class="fas fa-trash me-1"></i>Delete
                                                                                 </button>
                                                                             </div>
                                                                         </td>
@@ -484,11 +463,11 @@
                         <div id="deleteHostWarning"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Host name</label>
+                        <label class="form-label small text-muted">Host name</label>
                         <div id="deleteHostName" class="form-control-plaintext"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Address</label>
+                        <label class="form-label small text-muted">Address</label>
                         <div id="deleteHostAddress" class="form-control-plaintext"></div>
                     </div>
                     <div class="mb-3">
@@ -902,7 +881,7 @@ $(function() {
         });
     });
 
-    // Delete Platform Modal
+    // Run the delete platform modal
     function showDeletePlatformModal(platformId, name, url, database) {
         document.getElementById('deletePlatformId').value = platformId;
         document.getElementById('deletePlatformName').textContent = name;
@@ -948,7 +927,7 @@ $(function() {
         $('#deletePlatformModal').modal();
     }
 
-    // Delete host modal
+    // run the delete host modal
     function showDeleteHostModal(platformId, hostId, name, address) {
         document.getElementById('deleteHostPlatformId').value = platformId;
         document.getElementById('deleteHostId').value = hostId;
@@ -987,7 +966,7 @@ $(function() {
         $('#deleteHostModal').modal();
     }
 
-    // Delete agent modal
+    // Run the delete agent modal
     function showDeleteAgentModal(platformId, hostId, agentId, type) {
         document.getElementById('deleteAgentPlatformId').value = platformId;
         document.getElementById('deleteAgentHostId').value = hostId;
@@ -1025,21 +1004,20 @@ $(function() {
     $('[data-toggle="tooltip"]').tooltip();
 });
 
-// Platform modal
+// Show add platform modal
 function showAddPlatformModal() {
     $('#addPlatformModal').modal('show');
 }
 
-// Host modal
+// Show add host modal
 function showAddHostModal(platformId) {
     document.getElementById('hostPlatformId').value = platformId;
     document.getElementById('addHostModalLabel').textContent = 'Add new host to platform #' + platformId;
     $('#addHostModal').modal('show');
 }
 
-// Agent modal
-function showAddAgentModal(platformId, hostId) {
-    document.getElementById('agentPlatformId').value = platformId;
+// Show add agent modal
+function showAddAgentModal(hostId) {
     document.getElementById('agentHostId').value = hostId;
     document.getElementById('addAgentModalLabel').textContent = 'Add new agent to host #' + hostId;
 
@@ -1073,12 +1051,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add Agent buttons for each host
     document.querySelectorAll('.host-card').forEach(card => {
-        const platformId = card.closest('.platform-card').dataset.platformId;
         const hostId = card.dataset.hostId;
         const addAgentBtn = document.createElement('button');
         addAgentBtn.className = 'btn btn-outline-primary btn-sm ms-2';
         addAgentBtn.innerHTML = '<i class="fas fa-plus me-1"></i>Add agent';
-        addAgentBtn.onclick = () => showAddAgentModal(platformId, hostId);
+        addAgentBtn.onclick = () => showAddAgentModal(hostId);
         card.querySelector('.card-header').appendChild(addAgentBtn);
     });
 });
