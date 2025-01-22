@@ -28,6 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      * Handles form submissions from editing
      */
 
+    // Get hash from URL if present
+    $hash = parse_url($_SERVER['REQUEST_URI'], PHP_URL_FRAGMENT) ?? '';
+    $redirectUrl = htmlspecialchars($app_root) . '?page=config';
+    if ($hash) {
+        $redirectUrl .= '#' . $hash;
+    }
+
     // editing the config file
     if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
         // check if file is writable
@@ -41,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the config file failed. Error: $result";
             }
         }
+        header('Location: ' . $redirectUrl);
+        exit;
 
     // host operations
     } elseif (isset($_POST['item']) && $_POST['item'] === 'host') {
@@ -79,6 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the host failed. Error: $result";
             }
         }
+        header('Location: ' . $redirectUrl);
+        exit;
 
     // agent operations
     } elseif (isset($_POST['item']) && $_POST['item'] === 'agent') {
@@ -94,8 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $newAgent = [
                 'type_id'       => $_POST['type'],
                 'url'           => $_POST['url'],
-                'secret_key'    => $_POST['secret_key'],
-                'check_period'  => $_POST['check_period'],
+                'secret_key'    => empty($_POST['secret_key']) ? null : $_POST['secret_key'],
+                'check_period'  => empty($_POST['check_period']) ? 0 : $_POST['check_period'],
             ];
             $result = $agentObject->addAgent($_POST['host'], $newAgent);
             if ($result === true) {
@@ -106,9 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else { // This is an edit of existing agent
             $agent_id = $_POST['agent'];
             $updatedAgent = [
-                'url'           => $_POST['url'],
-                'secret_key'    => $_POST['secret_key'],
-                'check_period'  => $_POST['check_period'],
+                'agent_type_id' => $_POST['agent_type_id'],
+                'url'          => $_POST['url'],
+                'secret_key'   => empty($_POST['secret_key']) ? null : $_POST['secret_key'],
+                'check_period' => empty($_POST['check_period']) ? 0 : $_POST['check_period'],
             ];
             $result = $agentObject->editAgent($agent_id, $updatedAgent);
             if ($result === true) {
@@ -117,6 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the agent failed. Error: $result";
             }
         }
+        header('Location: ' . $redirectUrl);
+        exit;
 
     // platform operations
     } elseif (isset($_POST['item']) && $_POST['item'] === 'platform') {
@@ -155,11 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the platform failed. Error: $result";
             }
         }
+        header('Location: ' . $redirectUrl);
+        exit;
     }
-
-    // After any POST operation, redirect back to the main config page
-    header("Location: $app_root?page=config");
-    exit();
 
 } else {
     /**
@@ -182,6 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         default:
             if ($userObject->hasRight($user_id, 'view config file')) {
+                $jilo_agent_types = $agentObject->getAgentTypes();
                 include '../app/templates/config-jilo.php';
             } else {
                 include '../app/templates/error-unauthorized.php';

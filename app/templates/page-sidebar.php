@@ -67,19 +67,9 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jitsi platforms config</small></p></li>
 
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=platform">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'platform') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-sitemap" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="platforms config"></i>platforms
-                            </li>
-                        </a>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=host">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'host') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-laptop" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="hosts config"></i>hosts
-                            </li>
-                        </a>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=agent">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'agent') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-stethoscope" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="agents config"></i>agents
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config">
+                            <li class="list-group-item<?php if ($page === 'config') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-cog" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo config"></i>config
                             </li>
                         </a>
 

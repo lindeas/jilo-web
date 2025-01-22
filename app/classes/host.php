@@ -136,17 +136,28 @@ class Host {
      */
     public function deleteHost($host_id) {
         try {
-            $sql = 'DELETE FROM hosts
-                    WHERE
-                    id = :host_id';
+            // Start transaction
+            $this->db->beginTransaction();
 
+            // First delete all agents associated with this host
+            $sql = 'DELETE FROM jilo_agents WHERE host_id = :host_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':host_id', $host_id);
-
             $query->execute();
+
+            // Then delete the host
+            $sql = 'DELETE FROM hosts WHERE id = :host_id';
+            $query = $this->db->prepare($sql);
+            $query->bindParam(':host_id', $host_id);
+            $query->execute();
+
+            // Commit transaction
+            $this->db->commit();
             return true;
 
         } catch (Exception $e) {
+            // Rollback transaction on error
+            $this->db->rollBack();
             return $e->getMessage();
         }
     }

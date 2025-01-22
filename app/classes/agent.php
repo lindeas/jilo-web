@@ -186,18 +186,23 @@ class Agent {
         try {
             $sql = 'UPDATE jilo_agents
                     SET
+                        agent_type_id = :agent_type_id,
                         url = :url,
                         secret_key = :secret_key,
                         check_period = :check_period
                     WHERE
                         id = :agent_id';
 
+            // Convert empty secret key to NULL
+            $secretKey = !empty($updatedAgent['secret_key']) ? $updatedAgent['secret_key'] : null;
+
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':agent_id'     => $agent_id,
-                ':url'          => $updatedAgent['url'],
-                ':secret_key'   => $updatedAgent['secret_key'],
-                ':check_period' => $updatedAgent['check_period'],
+                ':agent_id'      => $agent_id,
+                ':agent_type_id' => $updatedAgent['agent_type_id'],
+                ':url'           => $updatedAgent['url'],
+                ':secret_key'    => $secretKey,
+                ':check_period'  => $updatedAgent['check_period'],
             ]);
 
             return true;

@@ -50,7 +50,7 @@
                                     <button type="button" class="btn btn-outline-primary edit-platform platform-view-mode">
                                         <i class="fas fa-edit me-1"></i>Edit platform
                                     </button>
-                                    <button type="button" class="btn btn-outline-primary save-platform platform-edit-mode" style="display: none;">
+                                    <button type="button" class="btn btn-outline-success save-platform platform-edit-mode" style="display: none;">
                                         <i class="fas fa-save me-1"></i>Save
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary cancel-edit platform-edit-mode" style="display: none;">
@@ -146,15 +146,15 @@
                                                             <div class="row g-2">
                                                                 <div class="col-md-6">
                                                                     <label class="form-label small text-muted">Host description</label>
-                                                                    <input type="text" class="form-control form-control-sm text-break" name="name" 
-                                                                           value="<?= htmlspecialchars($host['name']) ?>" 
-                                                                           placeholder="Optional description">
+                                                                    <input type="text" class="form-control form-control-sm text-break" name="name"
+                                                                            value="<?= htmlspecialchars($host['name']) ?>"
+                                                                            placeholder="Optional description">
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <label class="form-label small text-muted">DNS name or IP</label>
-                                                                    <input type="text" class="form-control form-control-sm text-break" name="address" 
-                                                                           value="<?= htmlspecialchars($host['address']) ?>" 
-                                                                           placeholder="e.g., server.example.com or 192.168.1.100" required>
+                                                                    <input type="text" class="form-control form-control-sm text-break" name="address"
+                                                                            value="<?= htmlspecialchars($host['address']) ?>"
+                                                                            placeholder="e.g., server.example.com or 192.168.1.100" required>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -165,7 +165,7 @@
                                                     <button type="button" class="btn btn-outline-primary btn-sm edit-host host-view-mode">
                                                         <i class="fas fa-edit me-1"></i>Edit host
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-primary btn-sm save-host host-edit-mode" style="display: none;">
+                                                    <button type="button" class="btn btn-outline-success btn-sm save-host host-edit-mode" style="display: none;">
                                                         <i class="fas fa-save me-1"></i>Save
                                                     </button>
                                                     <button type="button" class="btn btn-outline-secondary btn-sm cancel-host-edit host-edit-mode" style="display: none;">
@@ -201,6 +201,7 @@
                                                                 <tr>
                                                                     <th>Agent type</th>
                                                                     <th>Endpoint URL</th>
+                                                                    <th>Secret key</th>
                                                                     <th>Check period</th>
                                                                     <th>Actions</th>
                                                                 </tr>
@@ -214,6 +215,15 @@
                                                                                 <span class="agent-view-mode">
                                                                                     <?= htmlspecialchars($agent['agent_description']) ?>
                                                                                 </span>
+                                                                                <div class="agent-edit-mode" style="display: none;">
+                                                                                    <select name="agent_type_id" class="form-select">
+                                                                                        <?php foreach ($jilo_agent_types as $type): ?>
+                                                                                            <option value="<?= htmlspecialchars($type['id']) ?>" <?= $type['id'] == $agent['agent_type_id'] ? 'selected' : '' ?>>
+                                                                                                <?= htmlspecialchars($type['description']) ?>
+                                                                                            </option>
+                                                                                        <?php endforeach; ?>
+                                                                                    </select>
+                                                                                </div>
                                                                             </div>
                                                                         </td>
                                                                         <td>
@@ -221,19 +231,32 @@
                                                                                 <?= htmlspecialchars($agent['url']) ?>
                                                                             </span>
                                                                             <div class="agent-edit-mode" style="display: none;">
-                                                                                <input type="text" class="form-control" name="url" value="<?= htmlspecialchars($agent['url']) ?>" required>
+                                                                                <input type="text" name="url" class="form-control"
+                                                                                        value="<?= htmlspecialchars($agent['url']) ?>"
+                                                                                        placeholder="https://address[:port]">
                                                                             </div>
                                                                         </td>
                                                                         <td>
                                                                             <span class="agent-view-mode">
-                                                                                <?php if (isset($agent['check_period']) && $agent['check_period'] !== 0): ?>
-                                                                                    <?= htmlspecialchars($agent['check_period']) ?> <?= ($agent['check_period'] == 1 ? 'minute' : 'minutes') ?>
-                                                                                <?php else: ?>
-                                                                                    Not monitored
-                                                                                <?php endif; ?>
+                                                                                <?= isset($agent['secret_key']) ? '••••••' : '' ?>
                                                                             </span>
                                                                             <div class="agent-edit-mode" style="display: none;">
-                                                                                <input type="number" class="form-control" name="check_period" value="<?= htmlspecialchars($agent['check_period']) ?>" min="0">
+                                                                                <input type="text" name="secret_key" class="form-control"
+                                                                                        value="<?= isset($agent['secret_key']) ? htmlspecialchars($agent['secret_key']) : '' ?>">
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <span class="agent-view-mode">
+                                                                                <?= $agent['check_period'] > 0 ?
+                                                                                    htmlspecialchars($agent['check_period']) . ' ' .
+                                                                                    ($agent['check_period'] == 1 ? 'minute' : 'minutes') :
+                                                                                    'Not monitored' ?>
+                                                                            </span>
+                                                                            <div class="agent-edit-mode" style="display: none;">
+                                                                                <input type="number" name="check_period" class="form-control form-control-sm" style="width: 80px;"
+                                                                                        value="<?= htmlspecialchars($agent['check_period']) ?>"
+                                                                                        min="0" max="9999" maxlength="4"
+                                                                                        placeholder="">
                                                                             </div>
                                                                         </td>
                                                                         <td>
@@ -384,12 +407,12 @@
                         <input type="text" class="form-control" id="agentUrl" name="url" required>
                     </div>
                     <div class="mb-3">
-                        <label for="agentSecretKey" class="form-label">Secret key <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="agentSecretKey" name="secret_key" required>
+                        <label for="agentSecretKey" class="form-label">Secret key</label>
+                        <input type="text" class="form-control" id="agentSecretKey" name="secret_key">
                     </div>
                     <div class="mb-3">
-                        <label for="agentCheckPeriod" class="form-label">Check period (minutes) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="agentCheckPeriod" name="check_period" min="1" required>
+                        <label for="agentCheckPeriod" class="form-label">Check period in minutes (0 to disable)</label>
+                        <input type="number" class="form-control" id="agentCheckPeriod" name="check_period" min="0">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -492,24 +515,26 @@
                 <h5 class="modal-title" id="deleteAgentModalLabel">Delete agent</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=config" id="deleteAgentForm">
+            <form id="deleteAgentForm" method="post">
                 <input type="hidden" name="item" value="agent">
-                <input type="hidden" name="platform" id="deleteAgentPlatformId">
-                <input type="hidden" name="host" id="deleteAgentHostId">
-                <input type="hidden" name="agent" id="deleteAgentId">
                 <input type="hidden" name="delete" value="true">
+                <input type="hidden" name="agent" id="deleteAgentId">
                 <div class="modal-body">
                     <div class="alert alert-danger">
                         <h6>Are you sure you want to delete this agent?</h6>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Agent type</label>
-                        <div id="deleteAgentType" class="form-control-plaintext"></div>
+                        <label class="form-label small text-muted">Agent type</label>
+                        <div class="form-control-plaintext"><span id="deleteAgentType"></span></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Endpoint URL</label>
+                        <div class="form-control-plaintext"><span id="deleteAgentUrl"></span></div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete agent</button>
+                    <button type="submit" form="deleteAgentForm" class="btn btn-danger">Delete</button>
                 </div>
             </form>
         </div>
@@ -518,6 +543,38 @@
 
 <script>
 $(function() {
+    // Handle platform tab changes
+    $('#platformTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        e.preventDefault();
+        const platformId = $(e.target).attr('href');
+        // Update hash without triggering scroll
+        history.replaceState(null, null, platformId);
+    });
+
+    // On page load, activate tab from URL hash if present
+    if (window.location.hash) {
+        const hash = window.location.hash;
+        const tab = $(`#platformTabs a[href="${hash}"]`);
+        if (tab.length) {
+            tab.tab('show');
+            // Prevent scroll on page load
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 1);
+        }
+    }
+
+    // Add platform ID to form actions to maintain tab after submit
+    $('form').submit(function() {
+        const currentHash = window.location.hash;
+        if (currentHash) {
+            const action = $(this).attr('action');
+            if (action && action.indexOf('#') === -1) {
+                $(this).attr('action', action + currentHash);
+            }
+        }
+    });
+
     // Edit platform
     $('.edit-platform').click(function() {
         const platformId = $(this).closest('.platform-actions').data('platform-id');
@@ -816,7 +873,6 @@ $(function() {
     $('.save-agent').click(function() {
         const agentActions = $(this).closest('.agent-actions');
         const agentId = agentActions.data('agent-id');
-        const platformId = agentActions.data('platform-id');
         const hostId = agentActions.data('host-id');
         const row = agentActions.closest('tr');
 
@@ -824,7 +880,6 @@ $(function() {
         const formData = new FormData();
         formData.append('item', 'agent');
         formData.append('agent', agentId);
-        formData.append('platform', platformId);
         formData.append('host', hostId);
 
         row.find('.agent-edit-mode input, .agent-edit-mode select').each(function() {
@@ -857,20 +912,27 @@ $(function() {
                 // Update view mode with new values
                 const type = row.find('select[name="agent_type_id"] option:selected').text();
                 const url = row.find('input[name="url"]').val();
-                const endpoint = row.find('select[name="agent_type_id"] option:selected').data('endpoint');
                 const checkPeriod = row.find('input[name="check_period"]').val();
+                const secretKey = row.find('input[name="secret_key"]').val();
 
                 row.find('td:first-child .agent-view-mode').text(type);
-                row.find('td:nth-child(2) .agent-view-mode').text(url + endpoint);
-                row.find('td:nth-child(3) .agent-view-mode').text(
+                row.find('td:nth-child(2) .agent-view-mode').text(url);
+                row.find('td:nth-child(3) .agent-view-mode').text(secretKey ? '••••••' : '');
+                row.find('td:nth-child(4) .agent-view-mode').text(
                     checkPeriod > 0 ? 
                     `${checkPeriod} ${checkPeriod == 1 ? 'minute' : 'minutes'}` : 
-                    '-'
+                    'Not monitored'
                 );
 
                 // Switch back to view mode
                 row.find('.agent-view-mode').show();
                 row.find('.agent-edit-mode').hide();
+
+                // Show success message
+                const alert = $('<div class="alert alert-success alert-dismissible fade show" role="alert">')
+                    .text('Agent updated successfully')
+                    .append('<button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>');
+                $('.content-wrapper').prepend(alert);
             } else {
                 alert('Error saving agent: ' + (data.message || 'Unknown error'));
             }
@@ -879,6 +941,19 @@ $(function() {
             console.error('Error:', error);
             alert('Error saving agent. Please try again.');
         });
+    });
+
+    // Delete agent
+    $('.delete-agent').click(function() {
+        const row = $(this).closest('tr');
+        const agentId = row.data('agent-id');
+        const agentType = row.find('td:first-child .agent-view-mode').text().trim();
+        const agentUrl = row.find('td:nth-child(2) .agent-view-mode').text().trim();
+
+        $('#deleteAgentId').val(agentId);
+        $('#deleteAgentType').text(agentType);
+        $('#deleteAgentUrl').text(agentUrl);
+        $('#deleteAgentModal').modal('show');
     });
 
     // Run the delete platform modal
@@ -937,6 +1012,7 @@ $(function() {
         document.getElementById('deleteHostId').value = hostId;
         document.getElementById('deleteHostName').textContent = name || '(no description)';
         document.getElementById('deleteHostAddress').textContent = address;
+        document.getElementById('deleteHostModalLabel').textContent = `Delete host "${name}"`;
 
         // Get agents for this host
         const platformPane = document.getElementById(`platform-${platformId}`);
@@ -976,12 +1052,11 @@ $(function() {
     }
 
     // Run the delete agent modal
-    function showDeleteAgentModal(platformId, hostId, agentId, type) {
-        document.getElementById('deleteAgentPlatformId').value = platformId;
-        document.getElementById('deleteAgentHostId').value = hostId;
-        document.getElementById('deleteAgentId').value = agentId;
-        document.getElementById('deleteAgentType').textContent = type;
-        $('#deleteAgentModal').modal();
+    function showDeleteAgentModal(agentId, type, url) {
+        $('#deleteAgentId').val(agentId);
+        $('#deleteAgentType').text(type);
+        $('#deleteAgentUrl').text(url);
+        $('#deleteAgentModal').modal('show');
     }
 
     // Handle confirmation inputs
