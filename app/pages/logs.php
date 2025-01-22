@@ -3,8 +3,9 @@
 /**
  * Logs listings
  *
- * This page ("logs") retrieves and displays logs for a specified user within a time range.
- * It supports pagination and filtering, and generates a widget to display the logs.
+ * This page ("logs") retrieves and displays logs within a time range
+ * either for a specified user or for all users.
+ * It supports pagination and filtering.
  */
 
 // Get any new messages
@@ -103,22 +104,9 @@ if (!empty($search)) {
     }
 }
 
-// prepare the widget
-$widget['full'] = false;
-$widget['name'] = 'Logs';
 $username = $userObject->getUserDetails($user_id)[0]['username'];
-$widget['title'] = "Log events";
-$widget['filter'] = true;
-$widget['scope'] = $scope;
-$widget['has_system_access'] = $has_system_access;
 
-if (!empty($logs['records'])) {
-    $widget['full'] = true;
-    $widget['table_records'] = $logs['records'];
-}
-$widget['pagination'] = true;
-
-// display the widget
-include '../app/templates/logs-list.php';
+// Load the template
+include '../app/templates/logs.php';
 
 ?>
