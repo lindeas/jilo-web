@@ -46,7 +46,7 @@ CREATE TABLE platforms (
 );
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGET NOT NULL,
+    user_id INTEGER NOT NULL,
     time TEXT DEFAULT (DATETIME('now')),
     scope TEXT NOT NULL,
     message TEXT NOT NULL,
@@ -74,14 +74,14 @@ CREATE TABLE jilo_agent_checks (
 );
 CREATE TABLE IF NOT EXISTS "jilo_agents" (
 	"id"	INTEGER,
-	"platform_id"	INTEGER NOT NULL,
+	"host_id"	INTEGER NOT NULL,
 	"agent_type_id"	INTEGER NOT NULL,
 	"url"	TEXT NOT NULL,
 	"secret_key"	TEXT,
 	"check_period"	INTEGER DEFAULT 0,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY("agent_type_id") REFERENCES "jilo_agent_types"("id"),
-	FOREIGN KEY("platform_id") REFERENCES "platforms"("id")
+	FOREIGN KEY("host_id") REFERENCES "hosts"("id")
 );
 CREATE TABLE IF NOT EXISTS "hosts" (
 	"id"	INTEGER NOT NULL,
