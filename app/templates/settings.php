@@ -69,7 +69,7 @@
                                     <tbody>
                                         <?php foreach ($platform as $key => $value): ?>
                                             <?php if ($key === 'id') continue; ?>
-                                            <tr>
+                                            <tr data-key="<?= htmlspecialchars($key) ?>">
                                                 <th style="width: 200px;"><?= htmlspecialchars($key) ?></th>
                                                 <td>
                                                     <div class="view-mode">
@@ -612,10 +612,11 @@ $(function() {
 
         // Collect form data
         const formData = new FormData();
-        formData.append('platform_id', platformId);
-        platformTable.find('.edit-mode input').each(function() {
-            formData.append($(this).attr('name'), $(this).val());
-        });
+        formData.append('item', 'platform');
+        formData.append('platform', platformId);
+        formData.append('name', platformTable.find('input[name="name"]').val());
+        formData.append('jitsi_url', platformTable.find('input[name="jitsi_url"]').val());
+        formData.append('jilo_database', platformTable.find('input[name="jilo_database"]').val());
 
         // Save via AJAX
         fetch('<?= htmlspecialchars($app_root) ?>?page=settings&item=platform&action=save', {
@@ -633,7 +634,6 @@ $(function() {
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    console.log('Response text:', text);
                     return { success: true };
                 }
             });
@@ -795,7 +795,6 @@ $(function() {
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    console.log('Response text:', text);
                     return { success: true };
                 }
             });
@@ -805,6 +804,10 @@ $(function() {
                 // Update view mode with new values
                 const name = card.find('input[name="name"]').val() || card.find('input[name="address"]').val();
                 const address = card.find('input[name="address"]').val();
+                const platformName = $('#platformTabs .nav-link.active').text().trim();
+
+                // Update card header
+                card.find('.card-header h6').html(`Host "${name || address}" (#${hostId}) in platform "${platformName}"`);
 
                 card.find('.host-view-mode:not(.btn)').first().html(
                     `<div class="row g-2">
@@ -835,6 +838,9 @@ $(function() {
             // Since we know the save might work despite JSON errors, update UI anyway
             const name = card.find('input[name="name"]').val() || card.find('input[name="name"]').val();
             const address = card.find('input[name="address"]').val();
+
+            // Update card header
+            card.find('.card-header h6').html(`<i class="fas fa-network-wired me-2 text-secondary"></i>Host "${name}" (#${hostId})`);
 
             card.find('.host-view-mode:not(.btn)').first().html(
                 `<div class="row g-2">
@@ -922,7 +928,6 @@ $(function() {
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    console.log('Response text:', text);
                     return { success: true };
                 }
             });

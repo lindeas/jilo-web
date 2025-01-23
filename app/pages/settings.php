@@ -139,12 +139,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else { // This is an edit of existing platform
             $platform_id = $_POST['platform'];
             $updatedPlatform = [
-                'id'            => $platform_id,
                 'name'          => $_POST['name'],
                 'jitsi_url'     => $_POST['jitsi_url'],
                 'jilo_database' => $_POST['jilo_database'],
             ];
-            $result = $platformObject->editPlatform($updatedPlatform);
+            $result = $platformObject->editPlatform($platform_id, $updatedPlatform);
             if ($result === true) {
                 $_SESSION['notice'] = "Platform edited.";
             } else {
