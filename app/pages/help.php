@@ -4,6 +4,6 @@
 include '../app/includes/messages.php';
 include '../app/includes/messages-show.php';
 
-include '../app/templates/help-main.php';
+include '../app/templates/help.php';
 
 ?>
