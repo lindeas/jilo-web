@@ -65,20 +65,20 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jitsi platforms config</small></p></li>
+                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jitsi platforms settings</small></p></li>
 
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config">
-                            <li class="list-group-item<?php if ($page === 'config') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-cog" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo config"></i>config
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=settings">
+                            <li class="list-group-item<?php if ($page === 'settings') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-cog" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo settings"></i>settings
                             </li>
                         </a>
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>system</small></p></li>
 
 <?php if ($userObject->hasRight($user_id, 'view config file')) {?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config&item=config_file">
-                            <li class="list-group-item<?php if ($page === 'config' && $item === 'config_file') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="configuration"></i>config file
+                        <a href="<?= htmlspecialchars($app_root) ?>?page=config">
+                            <li class="list-group-item<?php if ($page === 'config') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
+                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="app config"></i>config
                             </li>
                         </a>
 <?php } ?>

@@ -46,11 +46,14 @@ $allowed_urls = [
 
     'agents',
 
-    'profile',
     'config',
+
+    'profile',
+
+    'settings',
+    'security',
     'status',
     'logs',
-    'security',
     'help',
 
     'login',
