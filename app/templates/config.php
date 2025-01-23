@@ -5,6 +5,9 @@
     <div class="row mb-4">
         <div class="col-12 mb-4">
             <h2>Configuration</h2>
+            <?php if ($configMessage): ?>
+                <?= $configMessage ?>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -16,7 +19,7 @@
             </h5>
             <?php if ($userObject->hasRight($user_id, 'edit config file')): ?>
             <div>
-                <button type="button" class="btn btn-outline-primary btn-sm toggle-edit">
+                <button type="button" class="btn btn-outline-primary btn-sm toggle-edit" <?= !$isWritable ? 'disabled' : '' ?>>
                     <i class="fas fa-edit me-2"></i>Edit
                 </button>
                 <div class="edit-controls d-none">
@@ -109,7 +112,7 @@
 <script>
 $(function() {
     function showMessage(messageData) {
-        const dismissClass = messageData.dismissible ? ' alert-dismissible fade show' : '';
+        const dismissClass = messageData.dismissible ? ' alert-dismissible fade' : '';
         const dismissButton = messageData.dismissible ? 
             `<button type="button" class="btn-close${messageData.small ? ' btn-close-sm' : ''}" data-bs-dismiss="alert" aria-label="Close"></button>` : '';
         const smallClass = messageData.small ? ' alert-sm' : '';
@@ -119,12 +122,22 @@ $(function() {
             .attr('role', 'alert')
             .html(`${messageData.message}${dismissButton}`);
 
-        $('#messages-container').html($alert);
+        // Remove any existing alerts
+        $('#messages-container').empty().append($alert);
+
+        // Trigger reflow to ensure transition works
+        $alert[0].offsetHeight;
+
+        // Show the alert with transition
+        $alert.addClass('show');
 
         if (messageData.dismissible) {
             setTimeout(() => {
-                $alert.alert('close');
-            }, 5000);
+                $alert.removeClass('show');
+                setTimeout(() => {
+                    $alert.remove();
+                }, 200); // Same as transition duration
+            }, 1500);
         }
     }
 
@@ -179,6 +192,12 @@ $(function() {
         })
         .then(response => response.json())
         .then(response => {
+            // Show message first
+            if (response.messageData) {
+                showMessage(response.messageData);
+            }
+
+            // Only update UI if save was successful
             if (response.success) {
                 // Update view mode values
                 Object.entries(data).forEach(([key, value]) => {
@@ -217,11 +236,6 @@ $(function() {
                 $('.edit-controls').addClass('d-none');
                 $('.view-mode').show();
                 $('.edit-mode').addClass('d-none');
-            }
-
-            // Show message
-            if (response.messageData) {
-                showMessage(response.messageData);
             }
 
             $btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>Save');

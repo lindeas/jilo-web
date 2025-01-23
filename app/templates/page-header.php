@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/messages.css">
 <?php if ($page === 'logs') { ?>
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/logs.css">
 <?php } ?>

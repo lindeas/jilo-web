@@ -18,6 +18,13 @@ $configObject = new Config();
 $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
+// Check if file is writable
+$isWritable = is_writable($config_file);
+$configMessage = '';
+if (!$isWritable) {
+    $configMessage = Messages::render('ERROR', 'DEFAULT', 'Config file is not writable', false);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ensure no output before this point
     ob_clean();
@@ -35,16 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode([
                 'success' => false,
                 'message' => 'Invalid JSON data received'
-            ]);
-            exit;
-        }
-
-        // Check if file is writable
-        if (!is_writable($config_file)) {
-            Messages::flash('ERROR', 'DEFAULT', 'Config file is not writable', true);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Config file is not writable'
             ]);
             exit;
         }
@@ -70,15 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Handle non-AJAX POST
-    if (!is_writable($config_file)) {
-        Messages::flash('ERROR', 'DEFAULT', 'Config file is not writable', true);
+    $result = $configObject->editConfigFile($_POST, $config_file);
+    if ($result === true) {
+        Messages::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
     } else {
-        $result = $configObject->editConfigFile($_POST, $config_file);
-        if ($result === true) {
-            Messages::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
-        } else {
-            Messages::flash('ERROR', 'DEFAULT', "Error updating config file: $result", true);
-        }
+        Messages::flash('ERROR', 'DEFAULT', "Error updating config file: $result", true);
     }
 
     header('Location: ' . htmlspecialchars($app_root) . '?page=config');
