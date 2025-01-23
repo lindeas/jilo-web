@@ -146,6 +146,21 @@ class Messages {
     }
 
     /**
+     * Get message data for JavaScript
+     */
+    public static function getMessageData($category, $key, $customMessage = null, $dismissible = null, $small = false) {
+        $config = self::get($category, $key);
+        if (!$config) return null;
+
+        return [
+            'type' => $config['type'],
+            'message' => $customMessage ?? $config['message'],
+            'dismissible' => $dismissible ?? $config['dismissible'] ?? false,
+            'small' => $small
+        ];
+    }
+
+    /**
      * Store message in session for display after redirect
      */
     // Usage: Messages::flash('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
