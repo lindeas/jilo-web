@@ -1,205 +1,92 @@
 <?php
 
 /**
- * Configuration management.
+ * Config management.
  *
- * This page ("config") handles configuration by adding, editing, and deleting platforms,
- * hosts, agents, and the configuration file itself.
+ * This page handles the config file.
  */
 
 // Get any new messages
 include '../app/includes/messages.php';
 include '../app/includes/messages-show.php';
 
-$action = $_REQUEST['action'] ?? '';
-$agent = $_REQUEST['agent'] ?? '';
-$host = $_REQUEST['host'] ?? '';
-
 require '../app/classes/config.php';
-require '../app/classes/host.php';
-require '../app/classes/agent.php';
 
 $configObject = new Config();
-$hostObject = new Host($dbWeb);
-$agentObject = new Agent($dbWeb);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    /**
-     * Handles form submissions from editing
-     */
+// For AJAX requests
+$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
-    // Get hash from URL if present
-    $hash = parse_url($_SERVER['REQUEST_URI'], PHP_URL_FRAGMENT) ?? '';
-    $redirectUrl = htmlspecialchars($app_root) . '?page=config';
-    if ($hash) {
-        $redirectUrl .= '#' . $hash;
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Ensure no output before this point
+    ob_clean();
 
-    // editing the config file
-    if (isset($_POST['item']) && $_POST['item'] === 'config_file') {
-        // check if file is writable
+    // For AJAX requests, get JSON data
+    if ($isAjax) {
+        header('Content-Type: application/json');
+
+        // Get raw input
+        $jsonData = file_get_contents('php://input');
+        $postData = json_decode($jsonData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Messages::flash('ERROR', 'DEFAULT', 'Invalid JSON data received', true);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid JSON data received'
+            ]);
+            exit;
+        }
+
+        // Check if file is writable
         if (!is_writable($config_file)) {
-            $_SESSION['error'] = "Configuration file is not writable.";
+            Messages::flash('ERROR', 'DEFAULT', 'Config file is not writable', true);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Config file is not writable'
+            ]);
+            exit;
+        }
+
+        // Try to update config file
+        $result = $configObject->editConfigFile($postData, $config_file);
+        if ($result === true) {
+            $messageData = Messages::getMessageData('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Config file updated successfully',
+                'messageData' => $messageData
+            ]);
         } else {
-            $result = $configObject->editConfigFile($_POST, $config_file);
-            if ($result === true) {
-                $_SESSION['notice'] = "The config file is edited.";
-            } else {
-                $_SESSION['error'] = "Editing the config file failed. Error: $result";
-            }
+            $messageData = Messages::getMessageData('ERROR', 'DEFAULT', "Error updating config file: $result", true);
+            echo json_encode([
+                'success' => false,
+                'message' => "Error updating config file: $result",
+                'messageData' => $messageData
+            ]);
         }
-        header('Location: ' . $redirectUrl);
-        exit;
-
-    // host operations
-    } elseif (isset($_POST['item']) && $_POST['item'] === 'host') {
-        if (isset($_POST['delete']) && $_POST['delete'] === 'true') { // This is a host delete
-            $host_id = $_POST['host'];
-            $result = $hostObject->deleteHost($host_id);
-            if ($result === true) {
-                $_SESSION['notice'] = "Host deleted successfully.";
-            } else {
-                $_SESSION['error'] = "Deleting the host failed. Error: $result";
-            }
-        } else if (!isset($_POST['host'])) { // This is a new host
-            $newHost = [
-                'address'       => $_POST['address'],
-                'platform_id'   => $_POST['platform'],
-                'name'          => empty($_POST['name']) ? $_POST['address'] : $_POST['name'],
-            ];
-            $result = $hostObject->addHost($newHost);
-            if ($result === true) {
-                $_SESSION['notice'] = "New Jilo host added.";
-            } else {
-                $_SESSION['error'] = "Adding the host failed. Error: $result";
-            }
-        } else { // This is an edit of existing host
-            $host_id = $_POST['host'];
-            $platform_id = $_POST['platform'];
-            $updatedHost = [
-                'id'      => $host_id,
-                'address' => $_POST['address'],
-                'name'    => empty($_POST['name']) ? $_POST['address'] : $_POST['name'],
-            ];
-            $result = $hostObject->editHost($platform_id, $updatedHost);
-            if ($result === true) {
-                $_SESSION['notice'] = "Host edited.";
-            } else {
-                $_SESSION['error'] = "Editing the host failed. Error: $result";
-            }
-        }
-        header('Location: ' . $redirectUrl);
-        exit;
-
-    // agent operations
-    } elseif (isset($_POST['item']) && $_POST['item'] === 'agent') {
-        if (isset($_POST['delete']) && $_POST['delete'] === 'true') { // This is an agent delete
-            $agent_id = $_POST['agent'];
-            $result = $agentObject->deleteAgent($agent_id);
-            if ($result === true) {
-                $_SESSION['notice'] = "Agent deleted successfully.";
-            } else {
-                $_SESSION['error'] = "Deleting the agent failed. Error: $result";
-            }
-        } else if (isset($_POST['new']) && $_POST['new'] === 'true') { // This is a new agent
-            $newAgent = [
-                'type_id'       => $_POST['type'],
-                'url'           => $_POST['url'],
-                'secret_key'    => empty($_POST['secret_key']) ? null : $_POST['secret_key'],
-                'check_period'  => empty($_POST['check_period']) ? 0 : $_POST['check_period'],
-            ];
-            $result = $agentObject->addAgent($_POST['host'], $newAgent);
-            if ($result === true) {
-                $_SESSION['notice'] = "New Jilo agent added.";
-            } else {
-                $_SESSION['error'] = "Adding the agent failed. Error: $result";
-            }
-        } else { // This is an edit of existing agent
-            $agent_id = $_POST['agent'];
-            $updatedAgent = [
-                'agent_type_id' => $_POST['agent_type_id'],
-                'url'          => $_POST['url'],
-                'secret_key'   => empty($_POST['secret_key']) ? null : $_POST['secret_key'],
-                'check_period' => empty($_POST['check_period']) ? 0 : $_POST['check_period'],
-            ];
-            $result = $agentObject->editAgent($agent_id, $updatedAgent);
-            if ($result === true) {
-                $_SESSION['notice'] = "Agent edited.";
-            } else {
-                $_SESSION['error'] = "Editing the agent failed. Error: $result";
-            }
-        }
-        header('Location: ' . $redirectUrl);
-        exit;
-
-    // platform operations
-    } elseif (isset($_POST['item']) && $_POST['item'] === 'platform') {
-        if (isset($_POST['delete']) && $_POST['delete'] === 'true') { // This is a platform delete
-            $platform_id = $_POST['platform'];
-            $result = $platformObject->deletePlatform($platform_id);
-            if ($result === true) {
-                $_SESSION['notice'] = "Platform deleted successfully.";
-            } else {
-                $_SESSION['error'] = "Deleting the platform failed. Error: $result";
-            }
-        } else if (!isset($_POST['platform'])) { // This is a new platform
-            $newPlatform = [
-                'name'          => $_POST['name'],
-                'jitsi_url'     => $_POST['jitsi_url'],
-                'jilo_database' => $_POST['jilo_database'],
-            ];
-            $result = $platformObject->addPlatform($newPlatform);
-            if ($result === true) {
-                $_SESSION['notice'] = "New Jitsi platform added.";
-            } else {
-                $_SESSION['error'] = "Adding the platform failed. Error: $result";
-            }
-        } else { // This is an edit of existing platform
-            $platform_id = $_POST['platform'];
-            $updatedPlatform = [
-                'id'            => $platform_id,
-                'name'          => $_POST['name'],
-                'jitsi_url'     => $_POST['jitsi_url'],
-                'jilo_database' => $_POST['jilo_database'],
-            ];
-            $result = $platformObject->editPlatform($updatedPlatform);
-            if ($result === true) {
-                $_SESSION['notice'] = "Platform edited.";
-            } else {
-                $_SESSION['error'] = "Editing the platform failed. Error: $result";
-            }
-        }
-        header('Location: ' . $redirectUrl);
         exit;
     }
 
-} else {
-    /**
-     * Handles GET requests to display templates.
-     */
-
-    switch ($item) {
-
-        case 'config_file':
-            if (isset($action) && $action === 'edit') {
-                include '../app/templates/config-configfile-edit.php';
-            } else {
-                if ($userObject->hasRight($user_id, 'view config file')) {
-                    include '../app/templates/config-configfile.php';
-                } else {
-                    include '../app/templates/error-unauthorized.php';
-                }
-            }
-            break;
-
-        default:
-            if ($userObject->hasRight($user_id, 'view config file')) {
-                $jilo_agent_types = $agentObject->getAgentTypes();
-                include '../app/templates/config-jilo.php';
-            } else {
-                include '../app/templates/error-unauthorized.php';
-            }
+    // Handle non-AJAX POST
+    if (!is_writable($config_file)) {
+        Messages::flash('ERROR', 'DEFAULT', 'Config file is not writable', true);
+    } else {
+        $result = $configObject->editConfigFile($_POST, $config_file);
+        if ($result === true) {
+            Messages::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+        } else {
+            Messages::flash('ERROR', 'DEFAULT', "Error updating config file: $result", true);
+        }
     }
+
+    header('Location: ' . htmlspecialchars($app_root) . '?page=config');
+    exit;
 }
 
+// Only include template for non-AJAX requests
+if (!$isAjax) {
+    include '../app/templates/config.php';
+}
 ?>
