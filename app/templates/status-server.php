@@ -1,8 +1,11 @@
+
 <!-- jilo status -->
 <div class="container-fluid mt-2">
-    <div class="row mb-5">
-        <div class="col">
+    <div class="row mb-4">
+        <div class="col-md-6 mb-5">
             <h2>Jilo status</h2>
+        </div>
+        <div class="row mb-4">
 
             <!-- jilo status -->
             <div class="card mt-3">

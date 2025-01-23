@@ -11,7 +11,7 @@ return [
     // subfolder for the web app, if any
     'folder'			=> '/jilo-web/',
     // set to false to disable new registrations
-    'registration_enabled'	=> true,
+    'registration_enabled'	=> '1',
     // will be displayed on login screen
     'login_message'		=> '',
 
