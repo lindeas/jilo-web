@@ -7,11 +7,11 @@ include '../app/includes/messages-show.php';
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 
-require '../app/classes/config.php';
+require '../app/classes/settings.php';
 require '../app/classes/agent.php';
 require '../app/classes/conference.php';
 
-$configObject = new Config();
+$settingsObject = new Settings();
 $agentObject = new Agent($dbWeb);
 
 // connect to Jilo database
@@ -188,14 +188,14 @@ if ($response['db'] === null) {
         case 'configjs':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
-            $platformConfigjs = $configObject->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
+            $platformConfigjs = $settingsObject->getPlatformConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include '../app/templates/data-configjs.php';
             break;
 
         case 'interfaceconfigjs':
             $mode = $_REQUEST['mode'] ?? '';
             $raw = ($mode === 'raw');
-            $platformInterfaceConfigjs = $configObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
+            $platformInterfaceConfigjs = $settingsObject->getPlatformInterfaceConfigjs($platformDetails[0]['jitsi_url'], $raw);
             include '../app/templates/data-interfaceconfigjs.php';
             break;
 
