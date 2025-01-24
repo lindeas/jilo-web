@@ -12,13 +12,12 @@
 
     </div>
 
-    <script src="static/sidebar.js"></script>
+<script src="static/sidebar.js"></script>
 <script>
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
-
 
 <script>
 // dismissible messages
@@ -38,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 
 </body>
 

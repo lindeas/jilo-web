@@ -286,7 +286,7 @@ class Agent {
         $base64Url_payload = $this->base64UrlEncode($payload);
 
         // signature
-        $signature = hash_hmac('sha256', $base64Url_header . "." . $base64Url_payload, $secret_key, true);
+        $signature = hash_hmac('sha256', $base64Url_header . "." . $base64Url_payload, $secret_key ?? '', true);
         $base64Url_signature = $this->base64UrlEncode($signature);
 
         // build the JWT

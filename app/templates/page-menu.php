@@ -10,7 +10,7 @@
                     </div>
                 </div>
 
-<li class="font-weight-light text-uppercase" style="font-size: 0.5em; color: whitesmoke; margin-right: 70px; align-content: center;">version&nbsp;<?= htmlspecialchars($config['version']) ?></li>
+                <li class="font-weight-light text-uppercase" style="font-size: 0.5em; color: whitesmoke; margin-right: 70px; align-content: center;">version&nbsp;<?= htmlspecialchars($config['version']) ?></li>
 
 <?php if ( isset($_SESSION['username']) ) { ?>
 
