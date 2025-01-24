@@ -126,7 +126,9 @@
                                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex align-items-center mb-2">
-                                                        <i class="fas fa-network-wired me-2 text-secondary"></i>
+                                                        <a id="platform-<?= htmlspecialchars($platform['id']) ?>host-<?= htmlspecialchars($host['id']) ?>">
+                                                            <i class="fas fa-network-wired me-2 text-secondary"></i>
+                                                        </a>
                                                         <h6 class="mb-0">Host "<?= htmlspecialchars($host['name'] ?: $host['address']) ?>" (#<?= htmlspecialchars($host['id']) ?>) in platform "<?= htmlspecialchars($platform['name']) ?>"</h6>
                                                     </div>
                                                     <div class="ps-4">
@@ -211,7 +213,9 @@
                                                                     <tr class="agent-details" data-agent-id="<?= htmlspecialchars($agent['id']) ?>">
                                                                         <td>
                                                                             <div class="d-flex align-items-center">
-                                                                                <i class="fas fa-robot me-2 text-secondary"></i>
+                                                                                <a id="platform-<?= htmlspecialchars($platform['id']) ?>agent-<?= htmlspecialchars($agent['id']) ?>">
+                                                                                    <i class="fas fa-robot me-2 text-secondary"></i>
+                                                                                </a>
                                                                                 <span class="agent-view-mode">
                                                                                     <?= htmlspecialchars($agent['agent_description']) ?>
                                                                                 </span>
@@ -543,6 +547,53 @@
 
 <script>
 $(function() {
+    // Handle platform tab changes
+    $('#platformTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        e.preventDefault();
+    });
+
+    // Handle hash changes
+    function handleHash() {
+        if (location.hash) {
+            // Remove any existing highlights
+            $('.bg-info').removeClass('bg-info');
+
+            const match = location.hash.match(/platform-(\d+)/);
+            if (match) {
+                const platformId = match[1];
+                // Show tab content directly without triggering URL change
+                $('.tab-pane').removeClass('show active');
+                $(`#platform-${platformId}`).addClass('show active');
+                // Update tab state
+                $('#platformTabs a[data-toggle="tab"]').removeClass('active');
+                $(`#platform-${platformId}-tab`).addClass('active');
+
+                // Check for host or agent in URL
+                const hostMatch = location.hash.match(/platform-\d+host-(\d+)/);
+                const agentMatch = location.hash.match(/platform-\d+agent-(\d+)/);
+
+                if (hostMatch) {
+                    const hostId = hostMatch[1];
+                    $(`.card[data-host-id="${hostId}"] .card-header .flex-grow-1`).addClass('bg-info');
+                } else if (agentMatch) {
+                    const agentId = agentMatch[1];
+                    $(`.agent-details[data-agent-id="${agentId}"] td:lt(4)`).addClass('bg-info');
+                }
+
+                // Scroll if it's a host or agent link
+                if (hostMatch || agentMatch) {
+                    setTimeout(() => {
+                        const element = document.getElementById(location.hash.substring(1));
+                        if (element) element.scrollIntoView();
+                    }, 150);
+                }
+            }
+        }
+    }
+    // Handle hash on page load and changes
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+
     // Handle platform tab changes
     $('#platformTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         e.preventDefault();
