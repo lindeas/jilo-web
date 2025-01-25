@@ -2,6 +2,7 @@
                                 <!-- jilo agent status -->
                                 <div class="d-flex align-items-center flex-wrap border-top p-3">
                                     <div class="d-flex align-items-center me-4">
+                                        <i class="fas fa-robot me-2 text-secondary"></i>
                                         <span class="me-2">Jilo agent 
                                             <a href="<?= htmlspecialchars($app_root) ?>?page=settings#platform-<?= htmlspecialchars($platform['id']) ?>agent-<?= htmlspecialchars($agent['id']) ?>" class="text-decoration-none">
                                                 <?= htmlspecialchars($agent['agent_description']) ?>

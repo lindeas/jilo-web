@@ -61,7 +61,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                         </a>
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=agents">
                             <li class="list-group-item<?php if ($page === 'agents') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-mask" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo agents"></i>jilo agents
+                                <i class="fas fa-robot" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo agents"></i>jilo agents
                             </li>
                         </a>
 

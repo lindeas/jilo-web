@@ -206,7 +206,7 @@ function saveResultToSession(result, agent_id) {
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log("Data saved to session successfully.");
+//DEBUG            console.log("Data saved to session successfully.");
         }
     };
 
