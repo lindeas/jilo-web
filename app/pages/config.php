@@ -35,13 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Get raw input
         $jsonData = file_get_contents('php://input');
-//DEBUG        error_log("Received JSON data: " . $jsonData);
 
         $postData = json_decode($jsonData, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $error = json_last_error_msg();
-//DEBUG            error_log("JSON decode error: " . $error);
 
             Messages::flash('ERROR', 'DEFAULT', 'Invalid JSON data received: ' . $error, true);
             echo json_encode([
@@ -55,14 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $configObject->editConfigFile($postData, $config_file);
         if ($result === true) {
             $messageData = Messages::getMessageData('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
-//DEBUG            error_log("Config updated successfully");
             echo json_encode([
                 'success' => true,
                 'message' => 'Config file updated successfully',
                 'messageData' => $messageData
             ]);
         } else {
-//DEBUG            error_log("Config update error: " . $result);
             $messageData = Messages::getMessageData('ERROR', 'DEFAULT', "Error updating config file: $result", true);
             echo json_encode([
                 'success' => false,
@@ -87,6 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Only include template for non-AJAX requests
 if (!$isAjax) {
-    include '../app/templates/config.php';
+    /**
+     * Handles GET requests to display templates.
+     */
+
+    if ($userObject->hasRight($user_id, 'view config file')) {
+        include '../app/templates/config.php';
+    } else {
+        $logObject->insertLog($user_id, "Unauthorized: User \"$currentUser\" tried to access \"config\" page. IP: $user_IP", 'system');
+        include '../app/templates/error-unauthorized.php';
+    }
 }
 ?>
