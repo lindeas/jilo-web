@@ -79,6 +79,7 @@ foreach ($config_file_locations as $location) {
 }
 // if found, use it
 if ($config_file) {
+    $localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
     $config = require $config_file;
 } else {
     die('Config file not found');
