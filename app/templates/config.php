@@ -152,7 +152,7 @@ $(function() {
             success: function(response) {
                 // Show message first
                 if (response.messageData) {
-                    JsMessages.show(response.messageData);
+                    JsMessages.success(response.messageData['message']);
                 }
 
                 // Only update UI if save was successful

@@ -691,6 +691,7 @@ $(function() {
         })
         .then(data => {
             if (data.success) {
+                JsMessages.success('Successfully edited the platform.');
                 // Update view mode with new values
                 platformTable.find('.edit-mode input').each(function() {
                     const value = $(this).val();
@@ -852,6 +853,7 @@ $(function() {
         })
         .then(data => {
             if (data.success) {
+                JsMessages.success('Successfully edited the host.');
                 // Update view mode with new values
                 const name = card.find('input[name="name"]').val() || card.find('input[name="address"]').val();
                 const address = card.find('input[name="address"]').val();
@@ -985,6 +987,7 @@ $(function() {
         })
         .then(data => {
             if (data.success) {
+                JsMessages.success('Successfully edited the agent.');
                 // Update view mode with new values
                 const type = row.find('select[name="agent_type_id"] option:selected').text();
                 const url = row.find('input[name="url"]').val();
