@@ -24,8 +24,9 @@
             }
         })();
     </script>
+    <script src="<?= htmlspecialchars($app_root) ?>static/js/messages.js"></script>
 <?php if ($page === 'agents') { ?>
-    <script src="<?= htmlspecialchars($app_root) ?>static/agents.js"></script>
+    <script src="<?= htmlspecialchars($app_root) ?>static/js/agents.js"></script>
 <?php } ?>
 <?php if ($page === 'data' && $item === 'graphs') { ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -38,6 +39,7 @@
 </head>
 
 <body>
+    <div id="messages-container" class="container-fluid mt-2"></div>
     <div class="container-fluid">
         <div class="row">
             <div class="col">
