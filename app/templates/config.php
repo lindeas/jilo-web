@@ -1,7 +1,6 @@
 
                 <!-- config file -->
                 <div class="container-fluid mt-2">
-                    <div id="messages-container"></div>
                     <div class="row mb-4">
                         <div class="col-12 mb-4">
                             <h2>Configuration</h2>
@@ -101,36 +100,6 @@ function renderConfigItem($key, $value, $path = '') {
 
 <script>
 $(function() {
-    function showMessage(messageData) {
-        const dismissClass = messageData.dismissible ? ' alert-dismissible fade' : '';
-        const dismissButton = messageData.dismissible ? 
-            `<button type="button" class="btn-close${messageData.small ? ' btn-close-sm' : ''}" data-bs-dismiss="alert" aria-label="Close"></button>` : '';
-        const smallClass = messageData.small ? ' alert-sm' : '';
-
-        const $alert = $('<div>')
-            .addClass(`alert alert-${messageData.type}${dismissClass}${smallClass}`)
-            .attr('role', 'alert')
-            .html(`${messageData.message}${dismissButton}`);
-
-        // Remove any existing alerts
-        $('#messages-container').empty().append($alert);
-
-        // Trigger reflow to ensure transition works
-        $alert[0].offsetHeight;
-
-        // Show the alert with transition
-        $alert.addClass('show');
-
-        if (messageData.dismissible) {
-            setTimeout(() => {
-                $alert.removeClass('show');
-                setTimeout(() => {
-                    $alert.remove();
-                }, 200); // Same as transition duration
-            }, 1500);
-        }
-    }
-
     // Toggle edit mode
     $('.toggle-edit').click(function() {
         $(this).hide();
@@ -181,11 +150,11 @@ $(function() {
                 'X-Requested-With': 'XMLHttpRequest'
             },
             success: function(response) {
-//DEBUG                console.log('Response:', response);
                 // Show message first
                 if (response.messageData) {
-                    showMessage(response.messageData);
+                    JsMessages.show(response.messageData);
                 }
+
                 // Only update UI if save was successful
                 if (response.success) {
                     // Update view mode values
@@ -227,13 +196,7 @@ $(function() {
                 }
             },
             error: function(xhr, status, error) {
-//DEBUG                console.error('AJAX Error:', status, error);
-//DEBUG                console.error('Response:', xhr.responseText);
-                showMessage({
-                    type: 'danger',
-                    message: 'Error saving config: ' + error,
-                    dismissible: true
-                });
+                JsMessages.error('Error saving config: ' + error);
             },
             complete: function() {
                 $btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>Save');
