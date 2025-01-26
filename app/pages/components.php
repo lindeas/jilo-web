@@ -25,8 +25,34 @@ if ($response['db'] === null) {
 } else {
     $db = $response['db'];
 
+    // Get current page for pagination
+    $currentPage = $_REQUEST['page_num'] ?? 1;
+    $currentPage = (int)$currentPage;
+
     // specify time range
     include '../app/helpers/time_range.php';
+
+    // Build params for pagination
+    $params = '';
+    if (!empty($_REQUEST['from_time'])) {
+        $params .= '&from_time=' . urlencode($_REQUEST['from_time']);
+    }
+    if (!empty($_REQUEST['until_time'])) {
+        $params .= '&until_time=' . urlencode($_REQUEST['until_time']);
+    }
+    if (!empty($_REQUEST['name'])) {
+        $params .= '&name=' . urlencode($_REQUEST['name']);
+    }
+    if (!empty($_REQUEST['id'])) {
+        $params .= '&id=' . urlencode($_REQUEST['id']);
+    }
+    if (isset($_REQUEST['event'])) {
+        $params .= '&event=' . urlencode($_REQUEST['event']);
+    }
+
+    // pagination variables
+    $items_per_page = 15;
+    $offset = ($currentPage -1) * $items_per_page;
 
     // jitsi component events list
     // we use $_REQUEST, so that both links and forms work
@@ -44,11 +70,6 @@ if ($response['db'] === null) {
     // list of all component events (default)
     $componentObject = new Component($db);
 
-    // pagination variables
-    $items_per_page = 15;
-    $browse_page = $_REQUEST['p'] ?? 1;
-    $browse_page = (int)$browse_page;
-    $offset = ($browse_page -1) * $items_per_page;
 
     // prepare the result
     $search = $componentObject->jitsiComponents($jitsi_component, $component_id, $event_type, $from_time, $until_time, $offset, $items_per_page);
@@ -57,7 +78,7 @@ if ($response['db'] === null) {
     if (!empty($search)) {
         // we get total items and number of pages
         $item_count = count($search_all);
-        $page_count = ceil($item_count / $items_per_page);
+        $totalPages = ceil($item_count / $items_per_page);
 
         $components = array();
         $components['records'] = array();
@@ -78,11 +99,11 @@ if ($response['db'] === null) {
         }
     }
 
-    // prepare the widget
-    $widget['full'] = false;
-    $widget['name'] = 'AllComponents';
-    $widget['filter'] = true;
-    $widget['pagination'] = true;
+//    // prepare the widget
+//    $widget['full'] = false;
+//    $widget['name'] = 'AllComponents';
+//    $widget['filter'] = true;
+//    $widget['pagination'] = true;
 
     // widget title
     if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
@@ -92,15 +113,15 @@ if ($response['db'] === null) {
     } else {
         $widget['title'] = 'Jitsi events for&nbsp;<strong>all components</strong>';
     }
-    // widget records
-    if (!empty($components['records'])) {
-        $widget['full'] = true;
-        $widget['table_headers'] = array_keys($components['records'][0]);
-        $widget['table_records'] = $components['records'];
-    }
+//    // widget records
+//    if (!empty($components['records'])) {
+//        $widget['full'] = true;
+//        $widget['table_headers'] = array_keys($components['records'][0]);
+//        $widget['table_records'] = $components['records'];
+//    }
 
     // display the widget
-    include '../app/templates/event-list-components.php';
+    include '../app/templates/components.php';
 
 }
 
