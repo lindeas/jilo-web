@@ -35,13 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Get raw input
         $jsonData = file_get_contents('php://input');
+//DEBUG        error_log("Received JSON data: " . $jsonData);
+
         $postData = json_decode($jsonData, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            Messages::flash('ERROR', 'DEFAULT', 'Invalid JSON data received', true);
+            $error = json_last_error_msg();
+//DEBUG            error_log("JSON decode error: " . $error);
+
+            Messages::flash('ERROR', 'DEFAULT', 'Invalid JSON data received: ' . $error, true);
             echo json_encode([
                 'success' => false,
-                'message' => 'Invalid JSON data received'
+                'message' => 'Invalid JSON data received: ' . $error
             ]);
             exit;
         }
@@ -50,12 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $configObject->editConfigFile($postData, $config_file);
         if ($result === true) {
             $messageData = Messages::getMessageData('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+//DEBUG            error_log("Config updated successfully");
             echo json_encode([
                 'success' => true,
                 'message' => 'Config file updated successfully',
                 'messageData' => $messageData
             ]);
         } else {
+//DEBUG            error_log("Config update error: " . $result);
             $messageData = Messages::getMessageData('ERROR', 'DEFAULT', "Error updating config file: $result", true);
             echo json_encode([
                 'success' => false,
