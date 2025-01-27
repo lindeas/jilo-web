@@ -12,7 +12,7 @@
 
     </div>
 
-<script src="static/sidebar.js"></script>
+<script src="static/js/sidebar.js"></script>
 <script>
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();

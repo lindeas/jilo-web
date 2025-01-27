@@ -48,7 +48,6 @@
                         <?= Messages::render($msg['category'], $msg['key'], $msg['custom_message'] ?? null) ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
-
             </div>
         </div>
     </div>

@@ -561,12 +561,28 @@ $(function() {
             const match = location.hash.match(/platform-(\d+)/);
             if (match) {
                 const platformId = match[1];
+                const platformTab = $(`#platform-${platformId}-tab`);
+
+                // Check if this is a newly created platform
+                const newPlatformId = sessionStorage.getItem('newPlatformId');
+                if (newPlatformId === platformId) {
+                    sessionStorage.removeItem('newPlatformId');
+                    window.location.reload();
+                    return;
+                }
+
+                // If platform doesn't exist (old or incorrect link) - redirect to base settings page
+                if (!platformTab.length) {
+                    window.location.href = '<?= htmlspecialchars($app_root) ?>?page=settings';
+                    return;
+                }
+
                 // Show tab content directly without triggering URL change
                 $('.tab-pane').removeClass('show active');
                 $(`#platform-${platformId}`).addClass('show active');
                 // Update tab state
                 $('#platformTabs a[data-toggle="tab"]').removeClass('active');
-                $(`#platform-${platformId}-tab`).addClass('active');
+                platformTab.addClass('active');
 
                 // Check for host or agent in URL
                 const hostMatch = location.hash.match(/platform-\d+host-(\d+)/);
@@ -587,6 +603,15 @@ $(function() {
                         if (element) element.scrollIntoView();
                     }, 150);
                 }
+            }
+        } else {
+            // No hash - show first tab
+            const firstTab = $('#platformTabs a[data-toggle="tab"]').first();
+            if (firstTab.length) {
+                $('.tab-pane').removeClass('show active');
+                $(firstTab.attr('href')).addClass('show active');
+                $('#platformTabs a[data-toggle="tab"]').removeClass('active');
+                firstTab.addClass('active');
             }
         }
     }
@@ -773,6 +798,68 @@ $(function() {
         .catch(error => {
             console.error('Error:', error);
             alert('Error deleting platform');
+        });
+    });
+
+    // Delete platform form submission
+    $('#deletePlatformForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true);
+
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                // If the platform is deleted, we switch to the first tab (no platform in URL)
+                $('#deletePlatformModal').modal('hide');
+                setTimeout(function() {
+                    window.location.href = '<?= htmlspecialchars($app_root) ?>?page=settings';
+                }, 500);
+                JsMessages.success('Successfully deleted the platform.');
+            },
+            error: function() {
+                JsMessages.error('Failed to delete platform. Please try again.');
+                submitBtn.prop('disabled', false);
+            }
+        });
+    });
+
+    // Add platform form submission
+    $('#addPlatformForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true);
+
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                // Get the last added platform ID from the page content
+                const lastPlatformTab = $(response).find('#platformTabs a[data-toggle="tab"]').last();
+                if (lastPlatformTab.length) {
+                    const platformId = lastPlatformTab.attr('href').replace('#platform-', '');
+                    // Store the new platform ID so that the check for non-existant tab knows about it
+                    sessionStorage.setItem('newPlatformId', platformId);
+                    $('#addPlatformModal').modal('hide');
+                    JsMessages.success('Successfully added the platform.');
+                    setTimeout(function() {
+                        // We switch to the tab of the newly created platform
+                        document.location = '<?= htmlspecialchars($app_root) ?>?page=settings#platform-' + platformId;
+                    }, 500);
+                } else {
+                    JsMessages.error('Failed to get platform ID. Please refresh the page.');
+                    submitBtn.prop('disabled', false);
+                }
+            },
+            error: function() {
+                JsMessages.error('Failed to add platform. Please try again.');
+                submitBtn.prop('disabled', false);
+            }
         });
     });
 
