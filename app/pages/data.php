@@ -10,9 +10,11 @@ $agent = $_REQUEST['agent'] ?? '';
 require '../app/classes/settings.php';
 require '../app/classes/agent.php';
 require '../app/classes/conference.php';
+require '../app/classes/host.php';
 
 $settingsObject = new Settings();
 $agentObject = new Agent($dbWeb);
+$hostObject = new Host($dbWeb);
 
 // connect to Jilo database
 $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
@@ -125,7 +127,6 @@ if ($response['db'] === null) {
                     'jibri_detector.available' => ['label' => 'Jibri idle'],
                     'jibri.live_streaming_active' => ['label' => 'Jibri active streaming'],
                     'jibri.recording_active' => ['label' => 'Jibri active recording'],
-
                 ],
                 'System stats' => [
                     'threads' => ['label' => 'Threads'],
@@ -134,54 +135,74 @@ if ($response['db'] === null) {
                 ]
             ];
 
-            // Get latest data for all the agents
-            $agents = ['jvb', 'jicofo', 'jibri', 'prosody', 'nginx'];
-            $widget['records'] = [];
+            // Get all hosts for this platform
+            $hosts = $hostObject->getHostDetails($platform_id);
+            $hostsData = [];
 
-            // Initialize records for each agent
-            foreach ($agents as $agent) {
-                $record = [
-                    'table_headers' => strtoupper($agent),
-                    'metrics' => [],
-                    'timestamp' => null
+            // For each host, get its agents and their metrics
+            foreach ($hosts as $host) {
+                $hostData = [
+                    'id' => $host['id'],
+                    'name' => $host['name'] ?: $host['address'],
+                    'address' => $host['address'],
+                    'agents' => []
                 ];
 
-                // Fetch all metrics for this agent
-                foreach ($metrics as $section => $section_metrics) {
-                    foreach ($section_metrics as $metric => $metricConfig) {
-                        $data = $agentObject->getLatestData($platform_id, $agent, $metric);
-                        if ($data !== null) {
-                            $record['metrics'][$section][$metric] = [
-                                'value' => $data['value'],
-                                'label' => $metricConfig['label'],
-                                'link' => isset($metricConfig['link']) ? $metricConfig['link'] : null
-                            ];
-                            // Use the most recent timestamp
-                            if ($record['timestamp'] === null || strtotime($data['timestamp']) > strtotime($record['timestamp'])) {
-                                $record['timestamp'] = $data['timestamp'];
+                // Get agents for this host
+                $hostAgents = $agentObject->getAgentDetails($host['id']);
+                foreach ($hostAgents as $agent) {
+                    $agentData = [
+                        'id' => $agent['id'],
+                        'type' => $agent['agent_description'],
+                        'name' => strtoupper($agent['agent_description']),
+                        'metrics' => [],
+                        'timestamp' => null
+                    ];
+
+                    // Fetch all metrics for this agent
+                    foreach ($metrics as $section => $section_metrics) {
+                        foreach ($section_metrics as $metric => $metricConfig) {
+                            // Get latest data
+                            $latestData = $agentObject->getLatestData($host['id'], $agent['agent_description'], $metric);
+                            
+                            if ($latestData !== null) {
+                                // Get the previous record
+                                $previousData = $agentObject->getPreviousRecord(
+                                    $host['id'], 
+                                    $agent['agent_description'], 
+                                    $metric,
+                                    $latestData['timestamp']
+                                );
+                                
+                                $agentData['metrics'][$section][$metric] = [
+                                    'latest' => [
+                                        'value' => $latestData['value'],
+                                        'timestamp' => $latestData['timestamp']
+                                    ],
+                                    'previous' => $previousData,
+                                    'label' => $metricConfig['label'],
+                                    'link' => isset($metricConfig['link']) ? $metricConfig['link'] : null
+                                ];
+                                
+                                // Use the most recent timestamp for the agent
+                                if ($agentData['timestamp'] === null || strtotime($latestData['timestamp']) > strtotime($agentData['timestamp'])) {
+                                    $agentData['timestamp'] = $latestData['timestamp'];
+                                }
                             }
                         }
                     }
+
+                    if (!empty($agentData['metrics'])) {
+                        $hostData['agents'][] = $agentData;
+                    }
                 }
 
-                if (!empty($record['metrics'])) {
-                    $widget['records'][] = $record;
+                if (!empty($hostData['agents'])) {
+                    $hostsData[] = $hostData;
                 }
             }
 
-            // prepare the widget
-            $widget['full'] = false;
-            $widget['name'] = 'LatestData';
-            $widget['title'] = 'Latest data from Jilo Agents';
-            $widget['collapsible'] = false;
-            $widget['collapsed'] = false;
-            $widget['filter'] = false;
-            $widget['metrics'] = $metrics; // Pass metrics configuration to template
-            if (!empty($widget['records'])) {
-                $widget['full'] = true;
-            }
-            $widget['pagination'] = false;
-
+            // Load the template
             include '../app/templates/latest-data.php';
             break;
 

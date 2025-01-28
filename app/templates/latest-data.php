@@ -1,53 +1,111 @@
 
                 <div class="row">
-                    <div class="card w-auto bg-light border-light card-body" style="flex-direction: row;"><?= $widget['title'] ?></div>
+                    <div class="card w-auto bg-light border-light card-body" style="flex-direction: row;">Latest data from Jilo Agents</div>
                 </div>
 
-                <div class="collapse show" id="collapse<?= htmlspecialchars($widget['name']) ?>">
+                <div class="collapse show">
                     <div class="mb-5">
-<?php if ($widget['full'] === true) { ?>
-                        <table class="table table-results table-striped table-hover table-bordered">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th scope="col">Metric</th>
-<?php     foreach ($widget['records'] as $record) { ?>
-                                    <th scope="col">
-                                        <?= htmlspecialchars($record['table_headers']) ?>
-                                        <?php if ($record['timestamp']) { ?>
-                                            <br>
-                                            <small class="text-muted">as of <?= date('Y-m-d H:i:s', strtotime($record['timestamp'])) ?></small>
-                                        <?php } ?>
-                                    </th>
-<?php     } ?>
-                                </tr>
-                            </thead>
-                            <tbody>
-<?php     foreach ($widget['metrics'] as $section => $section_metrics) { ?>
-                                <tr class="table-secondary">
-                                    <th colspan="<?= count($widget['records']) + 1 ?>"><?= htmlspecialchars($section) ?></th>
-                                </tr>
-<?php         foreach ($section_metrics as $metric => $metricConfig) { ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($metricConfig['label']) ?></td>
-<?php             foreach ($widget['records'] as $record) { ?>
-                                    <td>
-                                        <?php if (isset($record['metrics'][$section][$metric])) { 
-                                            $metric_data = $record['metrics'][$section][$metric];
-                                            if ($metric_data['link']) { ?>
-                                                <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=<?= htmlspecialchars($metric_data['link']) ?>&from_time=<?= htmlspecialchars($record['timestamp']) ?>&until_time=<?= htmlspecialchars($record['timestamp']) ?>"><?= htmlspecialchars($metric_data['value']) ?></a>
-                                            <?php } else { ?>
-                                                <?= htmlspecialchars($metric_data['value']) ?>
-                                            <?php }
-                                        } else { ?>
-                                            <span class="text-muted">No data</span>
-                                        <?php } ?>
-                                    </td>
-<?php             } ?>
-                                </tr>
-<?php         } ?>
-<?php     } ?>
-                            </tbody>
-                        </table>
+<?php if (!empty($hostsData)) { ?>
+    <?php foreach ($hostsData as $host) { ?>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-network-wired me-2"></i>
+                                    <?= htmlspecialchars($host['name']) ?>
+                                    <small class="text-muted">(<?= htmlspecialchars($host['address']) ?>)</small>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+        <?php foreach ($host['agents'] as $agent) { ?>
+                                <div class="mb-4">
+                                    <h6 class="border-bottom pb-2">
+                                        <i class="fas fa-robot me-2"></i>
+                                        <?= htmlspecialchars($agent['name']) ?> agent
+                                    </h6>
+                                    <table class="table table-results table-striped table-hover table-bordered">
+                                        <thead class="align-top">
+                                            <tr>
+                                                <th>Metric</th>
+                                                <th>
+                                                    Latest value
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <?= date('d M Y H:i:s', strtotime($agent['timestamp'])) ?>
+                                                    </small>
+                                                </th>
+                                                <th>
+                                                    Previous value
+                                                    <?php 
+                                                    // Find first metric with previous data to get timestamp
+                                                    $prevTimestamp = null;
+                                                    foreach ($metrics as $m_section => $m_metrics) {
+                                                        foreach ($m_metrics as $m_metric => $m_config) {
+                                                            if (isset($agent['metrics'][$m_section][$m_metric]['previous'])) {
+                                                                $prevTimestamp = $agent['metrics'][$m_section][$m_metric]['previous']['timestamp'];
+                                                                break 2;
+                                                            }
+                                                        }
+                                                    }
+                                                    if ($prevTimestamp) { ?>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            <?= date('d M Y H:i:s', strtotime($prevTimestamp)) ?>
+                                                        </small>
+                                                    <?php } ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+            <?php foreach ($metrics as $section => $section_metrics) { ?>
+                <?php 
+                    // Check if this section has any data for this agent
+                    $hasData = false;
+                    foreach ($section_metrics as $metric => $metricConfig) {
+                        if (isset($agent['metrics'][$section][$metric])) {
+                            $hasData = true;
+                            break;
+                        }
+                    }
+                    if (!$hasData) continue;
+                ?>
+                                            <tr class="table-secondary">
+                                                <th colspan="3"><?= htmlspecialchars($section) ?></th>
+                                            </tr>
+                <?php foreach ($section_metrics as $metric => $metricConfig) { ?>
+                    <?php if (isset($agent['metrics'][$section][$metric])) { 
+                        $metric_data = $agent['metrics'][$section][$metric];
+                    ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($metricConfig['label']) ?></td>
+                                                <td>
+                                                    <?php if ($metric_data['link']) { ?>
+                                                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=<?= htmlspecialchars($metric_data['link']) ?>&from_time=<?= htmlspecialchars($metric_data['latest']['timestamp']) ?>&until_time=<?= htmlspecialchars($metric_data['latest']['timestamp']) ?>"><?= htmlspecialchars($metric_data['latest']['value']) ?></a>
+                                                    <?php } else { ?>
+                                                        <?= htmlspecialchars($metric_data['latest']['value']) ?>
+                                                    <?php } ?>
+                                                </td>
+                                                <td>
+                                                    <?php if ($metric_data['previous']) { ?>
+                                                        <?php if ($metric_data['link']) { ?>
+                                                            <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=<?= htmlspecialchars($metric_data['link']) ?>&from_time=<?= htmlspecialchars($metric_data['previous']['timestamp']) ?>&until_time=<?= htmlspecialchars($metric_data['previous']['timestamp']) ?>"><?= htmlspecialchars($metric_data['previous']['value']) ?></a>
+                                                        <?php } else { ?>
+                                                            <?= htmlspecialchars($metric_data['previous']['value']) ?>
+                                                        <?php } ?>
+                                                    <?php } else { ?>
+                                                        <span class="text-muted">No previous data</span>
+                                                    <?php } ?>
+                                                </td>
+                                            </tr>
+                    <?php } ?>
+                <?php } ?>
+            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+        <?php } ?>
+                            </div>
+                        </div>
+    <?php } ?>
 <?php } else { ?>
                         <div class="alert alert-info m-3" role="alert">
                             No data available from any agents. Please check agent configuration and connectivity.
@@ -55,4 +113,4 @@
 <?php } ?>
                     </div>
                 </div>
-                <!-- /widget "<?= htmlspecialchars($widget['name']) ?>" -->
+                <!-- /latest data -->

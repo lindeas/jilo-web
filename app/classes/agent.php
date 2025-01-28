@@ -576,6 +576,74 @@ class Agent {
 
         return $data;
     }
+
+    /**
+     * Gets the previous record for a specific metric
+     *
+     * @param int $host_id The host ID
+     * @param string $agent_type The type of agent (e.g., 'jvb', 'jicofo')
+     * @param string $metric_type The type of metric to retrieve
+     * @param string $current_timestamp Current record's timestamp to get data before this
+     * @return array|null Previous record data or null if not found
+     */
+    public function getPreviousRecord($host_id, $agent_type, $metric_type, $current_timestamp) {
+        $sql = 'SELECT
+                    jac.timestamp,
+                    jac.response_content
+                FROM
+                    jilo_agent_checks jac
+                JOIN
+                    jilo_agents ja ON jac.agent_id = ja.id
+                JOIN
+                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                JOIN
+                    hosts h ON ja.host_id = h.id
+                WHERE
+                    h.id = :host_id
+                    AND jat.description = :agent_type
+                    AND jac.status_code = 200
+                    AND jac.timestamp < :current_timestamp
+                ORDER BY
+                    jac.timestamp DESC
+                LIMIT 1';
+
+        $query = $this->db->prepare($sql);
+        $query->execute([
+            ':host_id' => $host_id,
+            ':agent_type' => $agent_type,
+            ':current_timestamp' => $current_timestamp
+        ]);
+
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $json_data = json_decode($result['response_content'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $api_data = [];
+                if ($agent_type === 'jvb') {
+                    $api_data = $json_data['jvb_api_data'] ?? [];
+                } elseif ($agent_type === 'jicofo') {
+                    $api_data = $json_data['jicofo_api_data'] ?? [];
+                } elseif ($agent_type === 'jigasi') {
+                    $api_data = $json_data['jigasi_api_data'] ?? [];
+                } elseif ($agent_type === 'prosody') {
+                    $api_data = $json_data['prosody_api_data'] ?? [];
+                } elseif ($agent_type === 'nginx') {
+                    $api_data = $json_data['nginx_api_data'] ?? [];
+                }
+
+                $value = $this->getNestedValue($api_data, $metric_type);
+                if ($value !== null) {
+                    return [
+                        'value' => $value,
+                        'timestamp' => $result['timestamp']
+                    ];
+                }
+            }
+        }
+
+        return null;
+    }
 }
 
 ?>
