@@ -3,8 +3,8 @@
 <div class="container-fluid mt-2">
     <div class="row mb-4">
         <div class="col-12 mb-4">
-            <h2 class="mb-0">Jilo Agents on platform <?= htmlspecialchars($platform_id) ?> (<?= htmlspecialchars($platformDetails[0]['name']) ?>)</h2>
-            <small>Manage and monitor agents on this platform.</small>
+            <h2 class="mb-0">Jilo Agents status</h2>
+            <small>manage and monitor agents on platform <?= htmlspecialchars($platform_id) ?> (<?= htmlspecialchars($platformDetails[0]['name']) ?>).</small>
         </div>
     </div>
 
