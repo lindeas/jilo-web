@@ -40,9 +40,9 @@ $allowed_urls = [
     'participants',
     'components',
 
-    'data',
-
+    'graphs',
     'latest',
+    'livejs',
 
     'agents',
 
