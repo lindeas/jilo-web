@@ -8,12 +8,6 @@
  * Supports pagination.
  */
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
-
-require '../app/classes/component.php';
-
 // connect to database
 $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
 
@@ -66,8 +60,7 @@ if ($response['db'] === null) {
     // Component events listings
     //
 
-
-    // list of all component events (default)
+    require '../app/classes/component.php';
     $componentObject = new Component($db);
 
 
@@ -99,26 +92,17 @@ if ($response['db'] === null) {
         }
     }
 
-//    // prepare the widget
-//    $widget['full'] = false;
-//    $widget['name'] = 'AllComponents';
-//    $widget['filter'] = true;
-//    $widget['pagination'] = true;
-
-    // widget title
+    // filter message
+    $filterMessage = array();
     if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-        $widget['title'] = 'Jitsi events for component&nbsp;<strong>' . $_REQUEST['name'] . '</strong>';
+        array_push($filterMessage, 'Jitsi events for component&nbsp;"<strong>' . $_REQUEST['name'] . '</strong>"');
     } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-        $widget['title'] = 'Jitsi events for component ID&nbsp;<strong>' . $_REQUEST['id'] . '</strong>';
-    } else {
-        $widget['title'] = 'Jitsi events for&nbsp;<strong>all components</strong>';
+        array_push($filterMessage, 'Jitsi events for component ID&nbsp;"<strong>' . $_REQUEST['id'] . '</strong>"');
     }
-//    // widget records
-//    if (!empty($components['records'])) {
-//        $widget['full'] = true;
-//        $widget['table_headers'] = array_keys($components['records'][0]);
-//        $widget['table_records'] = $components['records'];
-//    }
+
+    // Get any new messages
+    include '../app/includes/messages.php';
+    include '../app/includes/messages-show.php';
 
     // display the widget
     include '../app/templates/components.php';

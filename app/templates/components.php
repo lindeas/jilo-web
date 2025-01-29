@@ -43,11 +43,20 @@
                             <!-- /component events filter -->
 
                             <!-- component events -->
-<?php if ($time_range_specified) { ?>
+<?php if ($time_range_specified || count($filterMessage)) { ?>
                             <div class="alert alert-info m-0 mb-3 small">
-                                <i class="fas fa-calendar-alt me-2"></i>Time period: <strong><?= htmlspecialchars($from_time) ?> - <?= htmlspecialchars($until_time) ?></strong>
+<?php   if ($time_range_specified) { ?>
+                                <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Time period: <strong><?= htmlspecialchars($from_time) ?> - <?= htmlspecialchars($until_time) ?></strong></p>
+<?php   } ?>
+<?php   if (count($filterMessage)) {
+          foreach ($filterMessage as $message) { ?>
+                                <p class="mb-0"><i class="fas fa-users me-2"></i><?= $message ?></strong></p>
+<?php     } ?>
+<?php   } ?>
                             </div>
 <?php } ?>
+
+
                             <div class="mb-5">
 <?php if (!empty($components['records'])) { ?>
                                 <div class="table-responsive border">
