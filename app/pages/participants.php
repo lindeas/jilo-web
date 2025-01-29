@@ -8,12 +8,6 @@
  * Supports pagination.
  */
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
-
-require '../app/classes/participant.php';
-
 // connect to database
 $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
 
@@ -74,6 +68,7 @@ if ($response['db'] === null) {
     // Participant listings
     //
 
+    require '../app/classes/participant.php';
     $participantObject = new Participant($db);
 
     // pagination variables
@@ -167,12 +162,16 @@ if ($response['db'] === null) {
     // filter message
     $filterMessage = array();
     if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-        array_push($filterMessage, 'Conferences with participant name (stats_id) matching "<strong>' . $_REQUEST['name'] . '"</strong>');
+        array_push($filterMessage, 'Conferences with participant name (stats_id) matching "<strong>' . $_REQUEST['name'] . '</strong>"');
     } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-        array_push($filterMessage, 'Conferences with participant ID matching "<strong>' . $_REQUEST['id'] . '"</strong>');
+        array_push($filterMessage, 'Conferences with participant ID matching "<strong>' . $_REQUEST['id'] . '</strong>"');
     } elseif (isset($participantIp)) {
-        array_push($filterMessage, 'Conferences with participant IP matching "<strong>' . $participantIp . '"</strong>');
+        array_push($filterMessage, 'Conferences with participant IP matching "<strong>' . $participantIp . '</strong>"');
     }
+
+    // Get any new messages
+    include '../app/includes/messages.php';
+    include '../app/includes/messages-show.php';
 
     // display the widget
     include '../app/templates/participants.php';
