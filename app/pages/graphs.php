@@ -3,12 +3,10 @@
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 
-require '../app/classes/settings.php';
 require '../app/classes/agent.php';
 require '../app/classes/conference.php';
 require '../app/classes/host.php';
 
-$settingsObject = new Settings();
 $agentObject = new Agent($dbWeb);
 $hostObject = new Host($dbWeb);
 
