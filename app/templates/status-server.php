@@ -3,7 +3,8 @@
                 <div class="container-fluid mt-2">
                     <div class="row mb-4">
                         <div class="col-md-6 mb-5">
-                            <h2>Jilo status</h2>
+                            <h2 class="mb-0">Jilo status</h2>
+                            <small>status checks of the whole Jilo monitoring platform</small>
                         </div>
                         <div class="row mb-4">
 

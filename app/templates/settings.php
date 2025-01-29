@@ -3,7 +3,8 @@
 <div class="container-fluid mt-2">
     <div class="row mb-4">
         <div class="col-md-6 mb-5">
-            <h2>Jitsi Meet platforms settings</h2>
+            <h2 class="mb-0">Jitsi Meet platforms settings</h2>
+            <small>manage the monitored platforms and their hosts and agents</small>
         </div>
         <div class="col-md-6 text-end">
             <button type="button" class="btn btn-primary" onclick="showAddPlatformModal()">
