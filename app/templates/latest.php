@@ -4,7 +4,7 @@
                     <div class="row mb-4">
                         <div class="col-12 mb-4">
                             <h2 class="mb-0">Latest data from Jilo Agents</h2>
-                            <small>gathered for platform <?= htmlspecialchars($platform_id) ?> (<?= htmlspecialchars($platformDetails[0]['name']) ?>)</small>
+                            <small>gathered for platform <strong><?= htmlspecialchars($platformDetails[0]['name']) ?></strong></small>
                         </div>
                     </div>
 

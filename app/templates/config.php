@@ -3,7 +3,7 @@
                 <div class="container-fluid mt-2">
                     <div class="row mb-4">
                         <div class="col-12 mb-4">
-                            <h2>Configuration</h2>
+                            <h2 class="mb-0">Configuration</h2>
                             <small>Jilo Web configuration file: <em><?= htmlspecialchars($localConfigPath) ?></em></small>
 <?php if ($configMessage) { ?>
                                 <?= $configMessage ?>

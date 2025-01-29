@@ -3,7 +3,8 @@
                 <div class="container-fluid mt-2">
                     <div class="row mb-4">
                         <div class="col-md-6 mb-5">
-                            <h2>Log events</h2>
+                            <h2 class="mb-0">Log events</h2>
+                            <small>events recorded in the Jilo monitoring platform</small>
                         </div>
                         <div class="row mb-4">
                             <ul class="nav nav-tabs mb-3">
