@@ -25,8 +25,30 @@ if ($response['db'] === null) {
 } else {
     $db = $response['db'];
 
+    // Get current page for pagination
+    $currentPage = $_REQUEST['page_num'] ?? 1;
+    $currentPage = (int)$currentPage;
+
     // specify time range
     include '../app/helpers/time_range.php';
+
+    // Build params for pagination
+    $params = '';
+    if (!empty($_REQUEST['from_time'])) {
+        $params .= '&from_time=' . urlencode($_REQUEST['from_time']);
+    }
+    if (!empty($_REQUEST['until_time'])) {
+        $params .= '&until_time=' . urlencode($_REQUEST['until_time']);
+    }
+    if (!empty($_REQUEST['name'])) {
+        $params .= '&name=' . urlencode($_REQUEST['name']);
+    }
+    if (!empty($_REQUEST['id'])) {
+        $params .= '&id=' . urlencode($_REQUEST['id']);
+    }
+    if (isset($_REQUEST['event'])) {
+        $params .= '&ip=' . urlencode($_REQUEST['ip']);
+    }
 
     // participant id/name/IP are specified when searching specific participant(s)
     // participant name - this is 'stats_id' in the db
@@ -56,9 +78,7 @@ if ($response['db'] === null) {
 
     // pagination variables
     $items_per_page = 15;
-    $browse_page = $_REQUEST['p'] ?? 1;
-    $browse_page = (int)$browse_page;
-    $offset = ($browse_page -1) * $items_per_page;
+    $offset = ($currentPage -1) * $items_per_page;
 
     // search and list specific participant ID
     if (isset($participantId)) {
@@ -82,7 +102,7 @@ if ($response['db'] === null) {
     if (!empty($search)) {
         // we get total items and number of pages
         $item_count = count($search_all);
-        $page_count = ceil($item_count / $items_per_page);
+        $totalPages = ceil($item_count / $items_per_page);
 
         $participants = array();
         $participants['records'] = array();
@@ -144,33 +164,18 @@ if ($response['db'] === null) {
         }
     }
 
-    // prepare the widget
-    $widget['full'] = false;
-    $widget['name'] = 'Participants';
-    $widget['collapsible'] = false;
-    $widget['collapsed'] = false;
-    $widget['filter'] = true;
-    $widget['pagination'] = true;
-
-    // widget title
+    // filter message
+    $filterMessage = array();
     if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-        $widget['title'] = 'Conferences with participant name (stats_id) matching "<strong>' . $_REQUEST['name'] . '"</strong>';
+        array_push($filterMessage, 'Conferences with participant name (stats_id) matching "<strong>' . $_REQUEST['name'] . '"</strong>');
     } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-        $widget['title'] = 'Conference with participant ID matching "<strong>' . $_REQUEST['id'] . '"</strong>';
+        array_push($filterMessage, 'Conferences with participant ID matching "<strong>' . $_REQUEST['id'] . '"</strong>');
     } elseif (isset($participantIp)) {
-        $widget['title'] = 'Conference with participant IP matching "<strong>' . $participantIp . '"</strong>';
-    } else {
-        $widget['title'] = 'All participants';
-    }
-    // widget records
-    if (!empty($participants['records'])) {
-        $widget['full'] = true;
-        $widget['table_headers'] = array_keys($participants['records'][0]);
-        $widget['table_records'] = $participants['records'];
+        array_push($filterMessage, 'Conferences with participant IP matching "<strong>' . $participantIp . '"</strong>');
     }
 
     // display the widget
-    include '../app/templates/widget.php';
+    include '../app/templates/participants.php';
 
 }
 
