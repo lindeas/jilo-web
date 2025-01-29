@@ -19,30 +19,8 @@ if ($response['db'] === null) {
 } else {
     $db = $response['db'];
 
-    // Get current page for pagination
-    $currentPage = $_REQUEST['page_num'] ?? 1;
-    $currentPage = (int)$currentPage;
-
     // specify time range
     include '../app/helpers/time_range.php';
-
-    // Build params for pagination
-    $params = '';
-    if (!empty($_REQUEST['from_time'])) {
-        $params .= '&from_time=' . urlencode($_REQUEST['from_time']);
-    }
-    if (!empty($_REQUEST['until_time'])) {
-        $params .= '&until_time=' . urlencode($_REQUEST['until_time']);
-    }
-    if (!empty($_REQUEST['name'])) {
-        $params .= '&name=' . urlencode($_REQUEST['name']);
-    }
-    if (!empty($_REQUEST['id'])) {
-        $params .= '&id=' . urlencode($_REQUEST['id']);
-    }
-    if (isset($_REQUEST['event'])) {
-        $params .= '&ip=' . urlencode($_REQUEST['ip']);
-    }
 
     // participant id/name/IP are specified when searching specific participant(s)
     // participant name - this is 'stats_id' in the db
@@ -71,9 +49,31 @@ if ($response['db'] === null) {
     require '../app/classes/participant.php';
     $participantObject = new Participant($db);
 
+    // get current page for pagination
+    $currentPage = $_REQUEST['page_num'] ?? 1;
+    $currentPage = (int)$currentPage;
+
     // pagination variables
     $items_per_page = 20;
     $offset = ($currentPage -1) * $items_per_page;
+
+    // Build params for pagination
+    $params = '';
+    if (!empty($_REQUEST['from_time'])) {
+        $params .= '&from_time=' . urlencode($_REQUEST['from_time']);
+    }
+    if (!empty($_REQUEST['until_time'])) {
+        $params .= '&until_time=' . urlencode($_REQUEST['until_time']);
+    }
+    if (!empty($_REQUEST['name'])) {
+        $params .= '&name=' . urlencode($_REQUEST['name']);
+    }
+    if (!empty($_REQUEST['id'])) {
+        $params .= '&id=' . urlencode($_REQUEST['id']);
+    }
+    if (isset($_REQUEST['event'])) {
+        $params .= '&ip=' . urlencode($_REQUEST['ip']);
+    }
 
     // search and list specific participant ID
     if (isset($participantId)) {

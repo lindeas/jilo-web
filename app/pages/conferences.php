@@ -8,12 +8,6 @@
  * Supports pagination.
  */
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
-
-require '../app/classes/conference.php';
-
 // connect to database
 $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
 
@@ -52,13 +46,31 @@ if ($response['db'] === null) {
     // Conference listings
     //
 
+    require '../app/classes/conference.php';
     $conferenceObject = new Conference($db);
 
+    // get current page for pagination
+    $currentPage = $_REQUEST['page_num'] ?? 1;
+    $currentPage = (int)$currentPage;
+
     // pagination variables
-    $items_per_page = 15;
-    $browse_page = $_REQUEST['p'] ?? 1;
-    $browse_page = (int)$browse_page;
-    $offset = ($browse_page -1) * $items_per_page;
+    $items_per_page = 20;
+    $offset = ($currentPage -1) * $items_per_page;
+
+    // Build params for pagination
+    $params = '';
+    if (!empty($_REQUEST['from_time'])) {
+        $params .= '&from_time=' . urlencode($_REQUEST['from_time']);
+    }
+    if (!empty($_REQUEST['until_time'])) {
+        $params .= '&until_time=' . urlencode($_REQUEST['until_time']);
+    }
+    if (!empty($_REQUEST['name'])) {
+        $params .= '&name=' . urlencode($_REQUEST['name']);
+    }
+    if (!empty($_REQUEST['id'])) {
+        $params .= '&id=' . urlencode($_REQUEST['id']);
+    }
 
     // search and list specific conference ID
     if (isset($conferenceId)) {
@@ -77,7 +89,7 @@ if ($response['db'] === null) {
     if (!empty($search)) {
         // we get total items and number of pages
         $item_count = count($search_all);
-        $page_count = ceil($item_count / $items_per_page);
+        $totalPages = ceil($item_count / $items_per_page);
 
         $conferences = array();
         $conferences['records'] = array();
@@ -139,31 +151,20 @@ if ($response['db'] === null) {
         }
     }
 
-    // prepare the widget
-    $widget['full'] = false;
-    $widget['name'] = 'Conferences';
-    $widget['collapsible'] = false;
-    $widget['collapsed'] = false;
-    $widget['filter'] = true;
-    $widget['pagination'] = true;
-
-    // widget title
+    // filter message
+    $filterMessage = array();
     if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-        $widget['title'] = 'Conferences with name matching "<strong>' . $_REQUEST['name'] . '"</strong>';
+        array_push($filterMessage, 'Conferences with name matching "<strong>' . $_REQUEST['name'] . '</strong>"');
     } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-        $widget['title'] = 'Conference with ID "<strong>' . $_REQUEST['id'] . '"</strong>';
-    } else {
-        $widget['title'] = 'All conferences';
+        array_push($filterMessage, 'Conferences with ID "<strong>' . $_REQUEST['id'] . '</strong>"');
     }
-    // widget records
-    if (!empty($conferences['records'])) {
-        $widget['full'] = true;
-        $widget['table_headers'] = array_keys($conferences['records'][0]);
-        $widget['table_records'] = $conferences['records'];
-    }
+
+    // Get any new messages
+    include '../app/includes/messages.php';
+    include '../app/includes/messages-show.php';
 
     // display the widget
-    include '../app/templates/event-list-conferences.php';
+    include '../app/templates/conferences.php';
 
 }
 
