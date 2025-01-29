@@ -72,7 +72,7 @@ if ($response['db'] === null) {
     $participantObject = new Participant($db);
 
     // pagination variables
-    $items_per_page = 15;
+    $items_per_page = 20;
     $offset = ($currentPage -1) * $items_per_page;
 
     // search and list specific participant ID

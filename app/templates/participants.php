@@ -100,9 +100,8 @@
 <?php               } elseif ($key === 'component') { ?>
                                                 <td><a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=components&name=<?= htmlspecialchars($column ?? '') ?>"><?= htmlspecialchars($column ?? '') ?></a></td>
 <?php
-                    // in general listings we don't show seconds and miliseconds
-                    } elseif ($key === 'start' || $key === 'end') { ?>
-                                                <td><?= htmlspecialchars(substr($column ?? '', 0, -7)) ?></td>
+                    } elseif ($key === 'time' || $key === 'start' || $key === 'end') { ?>
+                                                <td><?= date('d M Y H:i:s',strtotime($column)) ?></td>
 <?php               } else { ?>
                                                 <td><?= htmlspecialchars($column ?? '') ?></td>
 <?php               }

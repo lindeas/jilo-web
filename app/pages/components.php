@@ -45,7 +45,7 @@ if ($response['db'] === null) {
     }
 
     // pagination variables
-    $items_per_page = 15;
+    $items_per_page = 20;
     $offset = ($currentPage -1) * $items_per_page;
 
     // jitsi component events list

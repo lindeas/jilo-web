@@ -80,7 +80,7 @@
                                                     </a>
                                                 </td>
                                                 <td><?= htmlspecialchars($row['loglevel']) ?></td>
-                                                <td><span class="text-muted"><?= date('d M Y H:i', strtotime($row['time'])) ?></span></td>
+                                                <td><span class="text-muted"><?= date('d M Y H:i:s', strtotime($row['time'])) ?></span></td>
                                                 <td>
                                                     <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=components&id=<?= htmlspecialchars($row['component ID'] ?? '') ?>">
                                                         <?= htmlspecialchars($row['component ID'] ?? '') ?>
