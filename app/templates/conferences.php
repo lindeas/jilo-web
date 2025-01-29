@@ -46,7 +46,11 @@
 <?php if ($time_range_specified || count($filterMessage)) { ?>
                             <div class="alert alert-info m-0 mb-3 small">
 <?php   if ($time_range_specified) { ?>
-                                <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Time period: <strong><?= htmlspecialchars($from_time) ?> - <?= htmlspecialchars($until_time) ?></strong></p>
+                                <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Time period:
+                                    <strong>
+                                        <?= $from_time == '0000-01-01' ? 'beginning' : date('d M Y', strtotime($from_time)) ?> - <?= $until_time == '9999-12-31' ? 'now' : date('d M Y', strtotime($until_time)) ?>
+                                    </strong>
+                                </p>
 <?php   } ?>
 <?php   if (count($filterMessage)) {
           foreach ($filterMessage as $message) { ?>
@@ -72,43 +76,40 @@
                                             <tr>
 <?php       foreach ($row as $key => $column) {
                     if ($key === 'conference ID' && isset($conferenceId) && $conferenceId === $column) { ?>
-<td class="text-nowrap">
-    <strong 
-        <?= (strlen($column ?? '') > 20) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
-        <?= htmlspecialchars(strlen($column ?? '') > 20 ? substr($column, 0, 20) . '...' : $column ?? '') ?>
-    </strong>
-</td>
+                                                <td class="text-nowrap">
+                                                    <strong <?= (strlen($column ?? '') > 20) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 20 ? substr($column, 0, 20) . '...' : $column ?? '') ?>
+                                                    </strong>
+                                                </td>
 <?php               } elseif ($key === 'conference ID') { ?>
-<td class="text-nowrap">
-    <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences&id=<?= htmlspecialchars($column ?? '') ?>"
-       <?= (strlen($column ?? '') > 16) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
-        <?= htmlspecialchars(strlen($column ?? '') > 16 ? substr($column, 0, 16) . '...' : $column ?? '') ?>
-    </a>
-</td>
+                                                <td class="text-nowrap">
+                                                    <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences&id=<?= htmlspecialchars($column ?? '') ?>"
+                                                       <?= (strlen($column ?? '') > 16) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 16 ? substr($column, 0, 16) . '...' : $column ?? '') ?>
+                                                    </a>
+                                                </td>
 <?php               } elseif ($key === 'conference name' && isset($conferenceName) && $conferenceName === $column) { ?>
-<td class="text-nowrap">
-    <strong 
-        <?= (strlen($column ?? '') > 20) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
-        <?= htmlspecialchars(strlen($column ?? '') > 20 ? substr($column, 0, 20) . '...' : $column ?? '') ?>
-    </strong>
-</td>
+                                                <td class="text-nowrap">
+                                                    <strong <?= (strlen($column ?? '') > 20) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 20 ? substr($column, 0, 20) . '...' : $column ?? '') ?>
+                                                    </strong>
+                                                </td>
 <?php               } elseif ($key === 'conference name') { ?>
-<td class="text-nowrap">
-    <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"
-       <?= (strlen($column ?? '') > 16) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
-        <?= htmlspecialchars(strlen($column ?? '') > 16 ? substr($column, 0, 16) . '...' : $column ?? '') ?>
-    </a>
-</td>
+                                                <td class="text-nowrap">
+                                                    <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences&name=<?= htmlspecialchars($column ?? '') ?>"
+                                                       <?= (strlen($column ?? '') > 16) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 16 ? substr($column, 0, 16) . '...' : $column ?? '') ?>
+                                                    </a>
+                                                </td>
 <?php               } elseif ($key === 'conference host') { ?>
-<td class="text-nowrap">
-    <strong 
-        <?= (strlen($column ?? '') > 30) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
-        <?= htmlspecialchars(strlen($column ?? '') > 30 ? substr($column, 0, 30) . '...' : $column ?? '') ?>
-    </strong>
-</td>
+                                                <td class="text-nowrap">
+                                                    <span <?= (strlen($column ?? '') > 30) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 30 ? substr($column, 0, 30) . '...' : $column ?? '') ?>
+                                                    </span>
+                                                </td>
 <?php
                     } elseif ($key === 'time' || $key === 'start' || $key === 'end') { ?>
-                                                <td class="text-nowrap"><?= !empty($column) ? date('d M Y H:i:s',strtotime($column)) : 'n/a' ?></td>
+                                                <td class="text-nowrap"><?= !empty($column) ? date('d M Y H:i:s',strtotime($column)) : '<small class="text-muted">n/a</small>' ?></td>
 <?php               } else { ?>
                                                 <td><?= htmlspecialchars($column ?? '') ?></td>
 <?php               }

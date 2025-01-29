@@ -46,7 +46,11 @@
 <?php if ($time_range_specified || count($filterMessage)) { ?>
                             <div class="alert alert-info m-0 mb-3 small">
 <?php   if ($time_range_specified) { ?>
-                                <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Time period: <strong><?= htmlspecialchars($from_time) ?> - <?= htmlspecialchars($until_time) ?></strong></p>
+                              <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Time period:
+                                  <strong>
+                                      <?= $from_time == '0000-01-01' ? 'beginning' : date('d M Y', strtotime($from_time)) ?> - <?= $until_time == '9999-12-31' ? 'now' : date('d M Y', strtotime($until_time)) ?>
+                                  </strong>
+                              </p>
 <?php   } ?>
 <?php   if (count($filterMessage)) {
           foreach ($filterMessage as $message) { ?>
