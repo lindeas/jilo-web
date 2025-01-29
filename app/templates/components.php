@@ -1,10 +1,10 @@
 
-                <!-- "jitsi components events" -->
+                <!-- jitsi components events -->
                 <div class="container-fluid mt-2">
                     <div class="row mb-4">
                         <div class="col-md-6 mb-5">
-                            <h2>Jitsi components events</h2>
-                            <small>Log events related to Jitsi Meet components like Jicofo, Videobridge, Jigasi, etc.</small>
+                            <h2 class="mb-0">Jitsi components events</h2>
+                            <small>log events related to Jitsi Meet components like Jicofo, Videobridge, Jigasi, etc.</small>
                         </div>
                         <div class="row mb-4">
 
@@ -94,4 +94,4 @@
                         </div>
                     </div>
                 </div>
-                <!-- "/jitsi components events" -->
+                <!-- /jitsi components events -->
