@@ -44,22 +44,22 @@
 
                             <!-- component events -->
 <?php if ($time_range_specified) { ?>
-                            <div class="alert alert-info m-3">
+                            <div class="alert alert-info m-0 mb-3 small">
                                 <i class="fas fa-calendar-alt me-2"></i>Time period: <strong><?= htmlspecialchars($from_time) ?> - <?= htmlspecialchars($until_time) ?></strong>
                             </div>
 <?php } ?>
                             <div class="mb-5">
 <?php if (!empty($components['records'])) { ?>
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
+                                <div class="table-responsive border">
+                                    <table class="table table-results table-hover mb-0">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>Component</th>
-                                                <th>LogLevel</th>
-                                                <th>Time</th>
-                                                <th>Component ID</th>
-                                                <th>Event</th>
-                                                <th>Parameter</th>
+                                                <th>component</th>
+                                                <th>log level</th>
+                                                <th>time</th>
+                                                <th>component ID</th>
+                                                <th>event</th>
+                                                <th>parameter</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -86,7 +86,7 @@
                                 </div>
 <?php include '../app/templates/pagination.php'; ?>
 <?php } else { ?>
-                                <div class="alert alert-info m-3">
+                                <div class="alert alert-danger m-0">
                                     <i class="fas fa-info-circle me-2"></i>No component events found for the specified criteria.
                                 </div>
 <?php } ?>
