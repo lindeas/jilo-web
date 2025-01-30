@@ -6,12 +6,12 @@
                 <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=login">
 <?php include 'csrf_token.php'; ?>
                     <div class="form-group mb-3">
-                        <input type="text" class="form-control" name="username" placeholder="Username".
+                        <input type="text" class="form-control w-50 mx-auto" name="username" placeholder="Username".
                             pattern="[a-zA-Z0-9_-]{3,20}" title="3-20 characters, letters, numbers, - and _"
                             required autofocus />
                     </div>
                     <div class="form-group mb-3">
-                        <input type="password" class="form-control" name="password" placeholder="Password".
+                        <input type="password" class="form-control w-50 mx-auto" name="password" placeholder="Password".
                             pattern=".{2,}" title="Eight or more characters"
                             required />
                     </div>
