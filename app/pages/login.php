@@ -27,6 +27,29 @@ try {
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         try {
+            // Validate form data
+            $security = SecurityHelper::getInstance();
+            $formData = $security->sanitizeArray($_POST, ['username', 'password', 'remember_me', 'csrf_token']);
+
+            $validationRules = [
+                'username' => [
+                    'type' => 'string',
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 20
+                ],
+                'password' => [
+                    'type' => 'string',
+                    'required' => true,
+                    'min' => 2
+                ]
+            ];
+
+            $errors = $security->validateFormData($formData, $validationRules);
+            if (!empty($errors)) {
+                throw new Exception("Invalid input: " . implode(", ", $errors));
+            }
+
             $username = $_POST['username'];
             $password = $_POST['password'];
 

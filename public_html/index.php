@@ -18,6 +18,17 @@ ob_start();
 // sanitize all input vars that may end up in URLs or forms
 require '../app/includes/sanitize.php';
 
+session_name('jilo');
+session_start();
+
+// Initialize security middleware
+require_once '../app/includes/csrf_middleware.php';
+require_once '../app/helpers/securityhelper.php';
+$security = SecurityHelper::getInstance();
+
+// Verify CSRF token for POST requests
+verifyCsrfToken();
+
 // Initialize message system
 require_once '../app/classes/messages.php';
 $messages = [];
@@ -87,9 +98,6 @@ if ($config_file) {
 
 $app_root = $config['folder'];
 
-session_name('jilo');
-session_start();
-
 // check if logged in
 unset($currentUser);
 if (isset($_COOKIE['username'])) {
@@ -151,14 +159,19 @@ $userObject = new User($dbWeb);
 
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
+    // get user info before destroying session
+    $user_id = $userObject->getUserId($currentUser)[0]['id'];
 
     // clean up session
     session_unset();
     session_destroy();
+
+    // start new session for the login page
+    session_start();
+
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
     // Log successful logout
-    $user_id = $userObject->getUserId($currentUser)[0]['id'];
     $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
 
     // Set success message
