@@ -9,7 +9,7 @@
  */
 
 // registration is allowed, go on
-if ($config['registration_enabled'] === true) {
+if ($config['registration_enabled'] == true) {
 
     try {
 
