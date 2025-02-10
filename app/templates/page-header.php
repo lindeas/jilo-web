@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/main.css">
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/messages.css">
     <script src="<?= htmlspecialchars($app_root) ?>static/js/messages.js"></script>
+<?php  if (isset($currentUser)) { ?>
     <script>
     // restore sidebar state before the page is rendered
         (function () {
@@ -19,6 +20,7 @@
             }
         })();
     </script>
+<?php } ?>
 <?php if ($page === 'logs') { ?>
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/logs.css">
 <?php } ?>

@@ -12,12 +12,16 @@
 
     </div>
 
-<script src="static/js/sidebar.js"></script>
+<?php if (isset($currentUser) && $page !== 'logout') { ?>
+    <script src="static/js/sidebar.js"></script>
+<?php } ?>
+
 <script>
 $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
+
 
 <script>
 // dismissible messages

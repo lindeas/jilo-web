@@ -180,6 +180,7 @@ if ($page == 'logout') {
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
     include '../app/pages/login.php';
+    include '../app/templates/page-footer.php';
 
 } else {
 
@@ -223,9 +224,8 @@ if ($page == 'logout') {
         // the page is not in allowed urls, loading "not found" page
         include '../app/templates/error-notfound.php';
     }
+    include '../app/templates/page-footer.php';
 }
-// end with the footer
-include '../app/templates/page-footer.php';
 
 // flush the output buffer and show the page
 ob_end_flush();
