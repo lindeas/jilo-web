@@ -7,6 +7,8 @@
                     <input type="text" name="username" placeholder="Username" required autofocus />
                     <br />
                     <input type="password" name="password" placeholder="Password" required />
+                    <br />
+                    <input type="password" name="confirm_password" placeholder="Confirm password" required />
                     <br />&nbsp;<br />
                     <input type="submit" class="btn btn-primary" value="Register" />
                 </form>

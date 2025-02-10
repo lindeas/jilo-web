@@ -17,21 +17,47 @@ if ($config['registration_enabled'] == true) {
         $dbWeb = connectDB($config);
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-            $username = $_POST['username'];
-            $password = $_POST['password'];
+            require_once '../app/classes/validator.php';
 
-            // registering
-            $result = $userObject->register($username, $password);
+            $validator = new Validator($_POST);
+            $rules = [
+                'username' => [
+                    'required' => true,
+                    'min' => 3,
+                    'max' => 20
+                ],
+                'password' => [
+                    'required' => true,
+                    'min' => 8,
+                    'max' => 100
+                ],
+                'confirm_password' => [
+                    'required' => true,
+                    'matches' => 'password'
+                ]
+            ];
 
-            // redirect to login
-            if ($result === true) {
-                Messages::flash('NOTICE', 'DEFAULT', "Registration successful.<br />You can log in now.");
-                header('Location: ' . htmlspecialchars($app_root));
-                exit();
-            // registration fail, redirect to login
+            if ($validator->validate($rules)) {
+                $username = $_POST['username'];
+                $password = $_POST['password'];
+
+                // registering
+                $result = $userObject->register($username, $password);
+
+                // redirect to login
+                if ($result === true) {
+                    Messages::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
+                    header('Location: ' . htmlspecialchars($app_root));
+                    exit();
+                // registration fail, redirect to login
+                } else {
+                    Messages::flash('ERROR', 'DEFAULT', "Registration failed. $result");
+                    header('Location: ' . htmlspecialchars($app_root));
+                    exit();
+                }
             } else {
-                Messages::flash('ERROR', 'DEFAULT', "Registration failed. $result");
-                header('Location: ' . htmlspecialchars($app_root));
+                Messages::flash('ERROR', 'DEFAULT', $validator->getFirstError());
+                header('Location: ' . htmlspecialchars($app_root . '?page=register'));
                 exit();
             }
         }

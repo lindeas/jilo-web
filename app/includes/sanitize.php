@@ -2,7 +2,7 @@
 
 // sanitize all input vars that may end up in URLs or forms
 
-$platform_id = htmlspecialchars($_REQUEST['platform']);
+$platform_id = htmlspecialchars($_REQUEST['platform'] ?? '');
 if (isset($_REQUEST['page'])) {
     $page = htmlspecialchars($_REQUEST['page']);
 } else {
