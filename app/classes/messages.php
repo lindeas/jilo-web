@@ -96,6 +96,36 @@ class Messages {
         ]
     ];
 
+    const REGISTER = [
+        'SUCCESS' => [
+            'type' => self::TYPE_SUCCESS,
+            'dismissible' => true
+        ],
+        'FAILED' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => true
+        ],
+        'DISABLED' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => false
+        ],
+    ];
+
+    const SYSTEM = [
+        'DB_ERROR' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => false
+        ],
+        'DB_CONNECT_ERROR' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => false
+        ],
+        'DB_UNKNOWN_TYPE' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => false
+        ],
+    ];
+
     private static $strings = null;
 
     /**
