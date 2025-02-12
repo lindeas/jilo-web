@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (!$rateLimiter->addToWhitelist($_POST['ip_address'], $is_network, $_POST['description'] ?? '', $currentUser, $user_id)) {
                         throw new Exception('Failed to add IP to whitelist');
                     }
-                    Messages::flash('SECURITY', 'WHITELIST_ADD_SUCCESS', 'IP address added to whitelist');
+                    Messages::flash('SECURITY', 'WHITELIST_ADD_SUCCESS');
                 } else {
                     Messages::flash('SECURITY', 'WHITELIST_ADD_ERROR', $validator->getFirstError());
                 }
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (!$rateLimiter->removeFromWhitelist($_POST['ip_address'], $currentUser, $user_id)) {
                         throw new Exception('Failed to remove IP from whitelist');
                     }
-                    Messages::flash('SECURITY', 'WHITELIST_REMOVE_SUCCESS', 'IP address removed from whitelist');
+                    Messages::flash('SECURITY', 'WHITELIST_REMOVE_SUCCESS');
                 } else {
                     Messages::flash('SECURITY', 'WHITELIST_REMOVE_ERROR', $validator->getFirstError());
                 }
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (!$rateLimiter->addToBlacklist($_POST['ip_address'], $is_network, $_POST['reason'], $currentUser, $user_id, $expiry_hours)) {
                         throw new Exception('Failed to add IP to blacklist');
                     }
-                    Messages::flash('SECURITY', 'BLACKLIST_ADD_SUCCESS', 'IP address added to blacklist');
+                    Messages::flash('SECURITY', 'BLACKLIST_ADD_SUCCESS');
                 } else {
                     Messages::flash('SECURITY', 'BLACKLIST_ADD_ERROR', $validator->getFirstError());
                 }
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (!$rateLimiter->removeFromBlacklist($_POST['ip_address'], $currentUser, $user_id)) {
                         throw new Exception('Failed to remove IP from blacklist');
                     }
-                    Messages::flash('SECURITY', 'BLACKLIST_REMOVE_SUCCESS', 'IP address removed from blacklist');
+                    Messages::flash('SECURITY', 'BLACKLIST_REMOVE_SUCCESS');
                 } else {
                     Messages::flash('SECURITY', 'BLACKLIST_REMOVE_ERROR', $validator->getFirstError());
                 }
