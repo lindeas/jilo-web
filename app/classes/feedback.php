@@ -1,13 +1,13 @@
 <?php
 
-class Messages {
-    // Message types
+class Feedback {
+    // Feedback types
     const TYPE_SUCCESS = 'success';
     const TYPE_ERROR = 'danger';
     const TYPE_INFO = 'info';
     const TYPE_WARNING = 'warning';
 
-    // Default message configurations
+    // Default feedback message configurations
     const NOTICE = [
         'DEFAULT' => [
             'type' => self::TYPE_INFO,
@@ -129,17 +129,17 @@ class Messages {
     private static $strings = null;
 
     /**
-     * Get message strings
+     * Get feedback message strings
      */
     private static function getStrings() {
         if (self::$strings === null) {
-            self::$strings = require __DIR__ . '/../includes/messages-strings.php';
+            self::$strings = require __DIR__ . '/../includes/strings.php';
         }
         return self::$strings;
     }
 
     /**
-     * Get message configuration by key
+     * Get feedback message configuration by key
      */
     public static function get($category, $key) {
         $config = constant("self::$category")[$key] ?? null;
@@ -152,9 +152,9 @@ class Messages {
     }
 
     /**
-     * Render message HTML
+     * Render feedback message HTML
      */
-    // Usage: echo Messages::render('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
+    // Usage: echo Feedback::render('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
     public static function render($category, $key, $customMessage = null, $dismissible = null, $small = false, $sanitize = true) {
         $config = self::get($category, $key);
         if (!$config) return '';
@@ -176,7 +176,7 @@ class Messages {
     }
 
     /**
-     * Get message data for JavaScript
+     * Get feedback message data for JavaScript
      */
     public static function getMessageData($category, $key, $customMessage = null, $dismissible = null, $small = false) {
         $config = self::get($category, $key);
@@ -191,15 +191,15 @@ class Messages {
     }
 
     /**
-     * Store message in session for display after redirect
+     * Store feedback message in session for display after redirect
      */
-    // Usage: Messages::flash('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
+    // Usage: Feedback::flash('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
     public static function flash($category, $key, $customMessage = null, $dismissible = null, $small = false) {
         if (!isset($_SESSION['flash_messages'])) {
             $_SESSION['flash_messages'] = [];
         }
 
-        // Get the message configuration
+        // Get the feedback message configuration
         $config = self::get($category, $key);
         $isDismissible = $dismissible ?? $config['dismissible'] ?? false;
 
@@ -213,11 +213,11 @@ class Messages {
     }
 
     /**
-     * Get and clear all flash messages
+     * Get and clear all flash feedback messages
      */
     public static function getFlash() {
-        $messages = $_SESSION['flash_messages'] ?? [];
+        $system_messages = $_SESSION['flash_messages'] ?? [];
         unset($_SESSION['flash_messages']);
-        return $messages;
+        return $system_messages;
     }
 }
