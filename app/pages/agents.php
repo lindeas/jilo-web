@@ -49,7 +49,7 @@ function isCacheExpired($agentId) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate agent ID for POST operations
     if ($agentId === false || $agentId === null) {
-        Messages::flash('ERROR', 'DEFAULT', 'Invalid agent ID format');
+        Feedback::flash('ERROR', 'DEFAULT', 'Invalid agent ID format');
         echo json_encode(['status' => 'error', 'message' => 'Invalid agent ID format']);
         exit;
     }
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Read and validate JSON data
     $jsonData = file_get_contents("php://input");
     if ($jsonData === false) {
-        Messages::flash('ERROR', 'DEFAULT', 'Failed to read input data');
+        Feedback::flash('ERROR', 'DEFAULT', 'Failed to read input data');
         echo json_encode(['status' => 'error', 'message' => 'Failed to read input data']);
         exit;
     }
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION[$cacheKey]);
         unset($_SESSION[$timeKey]);
 
-        Messages::flash('SUCCESS', 'DEFAULT', "Cache for agent {$agentId} is cleared.");
+        Feedback::flash('SUCCESS', 'DEFAULT', "Cache for agent {$agentId} is cleared.");
         echo json_encode([
             'status' => 'success',
             'message' => "Cache for agent {$agentId} is cleared."
@@ -86,14 +86,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION[$cacheKey] = $data;
         $_SESSION[$timeKey] = time();
 
-        Messages::flash('SUCCESS', 'DEFAULT', "Cache for agent {$agentId} is stored.");
+        Feedback::flash('SUCCESS', 'DEFAULT', "Cache for agent {$agentId} is stored.");
         echo json_encode([
             'status' => 'success',
             'message' => "Cache for agent {$agentId} is stored."
         ]);
     }
     else {
-        Messages::flash('ERROR', 'DEFAULT', 'Invalid data format');
+        Feedback::flash('ERROR', 'DEFAULT', 'Invalid data format');
         echo json_encode(['status' => 'error', 'message' => 'Invalid data format']);
     }
 
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate platform_id is set
     if (!isset($platform_id)) {
-        Messages::flash('ERROR', 'DEFAULT', 'Platform ID is not set');
+        Feedback::flash('ERROR', 'DEFAULT', 'Platform ID is not set');
     }
 
     // Get host details for this platform

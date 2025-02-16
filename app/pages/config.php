@@ -22,7 +22,7 @@ $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
 $isWritable = is_writable($config_file);
 $configMessage = '';
 if (!$isWritable) {
-    $configMessage = Messages::render('ERROR', 'DEFAULT', 'Config file is not writable', false);
+    $configMessage = Feedback::render('ERROR', 'DEFAULT', 'Config file is not writable', false);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (json_last_error() !== JSON_ERROR_NONE) {
             $error = json_last_error_msg();
 
-            Messages::flash('ERROR', 'DEFAULT', 'Invalid JSON data received: ' . $error, true);
+            Feedback::flash('ERROR', 'DEFAULT', 'Invalid JSON data received: ' . $error, true);
             echo json_encode([
                 'success' => false,
                 'message' => 'Invalid JSON data received: ' . $error
@@ -52,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Try to update config file
         $result = $configObject->editConfigFile($postData, $config_file);
         if ($result === true) {
-            $messageData = Messages::getMessageData('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+            $messageData = Feedback::getMessageData('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
             echo json_encode([
                 'success' => true,
                 'message' => 'Config file updated successfully',
                 'messageData' => $messageData
             ]);
         } else {
-            $messageData = Messages::getMessageData('ERROR', 'DEFAULT', "Error updating config file: $result", true);
+            $messageData = Feedback::getMessageData('ERROR', 'DEFAULT', "Error updating config file: $result", true);
             echo json_encode([
                 'success' => false,
                 'message' => "Error updating config file: $result",
@@ -72,9 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle non-AJAX POST
     $result = $configObject->editConfigFile($_POST, $config_file);
     if ($result === true) {
-        Messages::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+        Feedback::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
     } else {
-        Messages::flash('ERROR', 'DEFAULT', "Error updating config file: $result", true);
+        Feedback::flash('ERROR', 'DEFAULT', "Error updating config file: $result", true);
     }
 
     header('Location: ' . htmlspecialchars($app_root) . '?page=config');

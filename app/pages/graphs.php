@@ -13,7 +13,7 @@ $hostObject = new Host($dbWeb);
 // Connect to Jilo database for log data
 $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
 if ($response['db'] === null) {
-    Messages::flash('ERROR', 'DEFAULT', $response['error']);
+    Feedback::flash('ERROR', 'DEFAULT', $response['error']);
 } else {
     $db = $response['db'];
 }

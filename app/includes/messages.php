@@ -1,7 +1,7 @@
 <?php
 
 // Get any flash messages from previous request
-$flash_messages = Messages::getFlash();
+$flash_messages = Feedback::getFlash();
 if (!empty($flash_messages)) {
     $messages = array_merge($messages, array_map(function($flash) {
         return [

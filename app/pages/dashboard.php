@@ -21,7 +21,7 @@ $response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $pl
 
 // if DB connection has error, display it and stop here
 if ($response['db'] === null) {
-    Messages::flash('ERROR', 'DEFAULT', $response['error']);
+    Feedback::flash('ERROR', 'DEFAULT', $response['error']);
 
 // otherwise if DB connection is OK, go on
 } else {

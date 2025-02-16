@@ -47,7 +47,7 @@
             <div class="col">
                 <?php if (isset($messages) && is_array($messages)): ?>
                     <?php foreach ($messages as $msg): ?>
-                        <?= Messages::render($msg['category'], $msg['key'], $msg['custom_message'] ?? null) ?>
+                        <?= Feedback::render($msg['category'], $msg['key'], $msg['custom_message'] ?? null) ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>

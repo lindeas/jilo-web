@@ -55,14 +55,14 @@ try {
 
             // Check if IP is blacklisted
             if ($rateLimiter->isIpBlacklisted($user_IP)) {
-                throw new Exception(Messages::get('LOGIN', 'IP_BLACKLISTED')['message']);
+                throw new Exception(Feedback::get('LOGIN', 'IP_BLACKLISTED')['message']);
             }
 
             // Check rate limiting (but skip if IP is whitelisted)
             if (!$rateLimiter->isIpWhitelisted($user_IP)) {
                 $attempts = $rateLimiter->getRecentAttempts($user_IP);
                 if ($attempts >= $rateLimiter->maxAttempts) {
-                    throw new Exception(Messages::get('LOGIN', 'LOGIN_BLOCKED')['message']);
+                    throw new Exception(Feedback::get('LOGIN', 'LOGIN_BLOCKED')['message']);
                 }
             }
 
@@ -97,15 +97,15 @@ try {
                 $logObject->insertLog($user_id, "Login: User \"$username\" logged in. IP: $user_IP", 'user');
 
                 // Set success message and redirect
-                Messages::flash('LOGIN', 'LOGIN_SUCCESS', null, true);
+                Feedback::flash('LOGIN', 'LOGIN_SUCCESS', null, true);
                 header('Location: ' . htmlspecialchars($app_root));
                 exit();
             } else {
-                throw new Exception(Messages::get('LOGIN', 'LOGIN_FAILED')['message']);
+                throw new Exception(Feedback::get('LOGIN', 'LOGIN_FAILED')['message']);
             }
         } catch (Exception $e) {
             // Log the failed attempt
-            Messages::flash('ERROR', 'DEFAULT', $e->getMessage());
+            Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
             if (isset($username)) {
                 $user_id = $userObject->getUserId($username)[0]['id'] ?? 0;
                 $logObject->insertLog($user_id, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", 'user');
@@ -113,12 +113,12 @@ try {
         }
     }
 } catch (Exception $e) {
-    Messages::flash('ERROR', 'DEFAULT', 'There was an unexpected error. Please try again.');
+    Feedback::flash('ERROR', 'DEFAULT', 'There was an unexpected error. Please try again.');
 }
 
 // Show configured login message if any
 if (!empty($config['login_message'])) {
-    echo Messages::render('NOTICE', 'DEFAULT', $config['login_message'], false, false, false);
+    echo Feedback::render('NOTICE', 'DEFAULT', $config['login_message'], false, false, false);
 }
 
 // Get any new messages

@@ -123,7 +123,7 @@ try {
     }
     $dbWeb = $response['db'];
 } catch (Exception $e) {
-    Messages::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
+    Feedback::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
     include '../app/templates/page-header.php';
     include '../app/includes/messages.php';
     include '../app/includes/messages-show.php';
@@ -175,7 +175,7 @@ if ($page == 'logout') {
     $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
 
     // Set success message
-    Messages::flash('LOGIN', 'LOGOUT_SUCCESS');
+    Feedback::flash('LOGIN', 'LOGOUT_SUCCESS');
 
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
@@ -207,7 +207,7 @@ if ($page == 'logout') {
         $server_endpoint = '/health';
         $server_status = $serverObject->getServerStatus($server_host, $server_port, $server_endpoint);
         if (!$server_status) {
-            Messages::flash('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false, true);
+            Feedback::flash('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false, true);
         }
     }
 

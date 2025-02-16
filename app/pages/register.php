@@ -46,23 +46,23 @@ if ($config['registration_enabled'] == true) {
 
                 // redirect to login
                 if ($result === true) {
-                    Messages::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
+                    Feedback::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
                     header('Location: ' . htmlspecialchars($app_root));
                     exit();
                 // registration fail, redirect to login
                 } else {
-                    Messages::flash('ERROR', 'DEFAULT', "Registration failed. $result");
+                    Feedback::flash('ERROR', 'DEFAULT', "Registration failed. $result");
                     header('Location: ' . htmlspecialchars($app_root));
                     exit();
                 }
             } else {
-                Messages::flash('ERROR', 'DEFAULT', $validator->getFirstError());
+                Feedback::flash('ERROR', 'DEFAULT', $validator->getFirstError());
                 header('Location: ' . htmlspecialchars($app_root . '?page=register'));
                 exit();
             }
         }
     } catch (Exception $e) {
-        Messages::flash('ERROR', 'DEFAULT', $e->getMessage());
+        Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
     }
 
     // Get any new messages
@@ -74,7 +74,7 @@ if ($config['registration_enabled'] == true) {
 
 // registration disabled
 } else {
-    echo Messages::render('NOTICE', 'DEFAULT', 'Registration is disabled', false);
+    echo Feedback::render('NOTICE', 'DEFAULT', 'Registration is disabled', false);
 }
 
 ?>
