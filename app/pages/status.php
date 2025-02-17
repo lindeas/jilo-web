@@ -8,9 +8,9 @@
  * It generates output for each platform and agent.
  */
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
+// Get any new feedback messages
+include '../app/includes/feedback-get.php';
+include '../app/includes/feedback-show.php';
 
 require '../app/classes/agent.php';
 require '../app/classes/host.php';

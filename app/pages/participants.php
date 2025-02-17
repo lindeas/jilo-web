@@ -169,9 +169,9 @@ if ($response['db'] === null) {
         array_push($filterMessage, 'Conferences with participant IP matching "<strong>' . $participantIp . '</strong>"');
     }
 
-    // Get any new messages
-    include '../app/includes/messages.php';
-    include '../app/includes/messages-show.php';
+    // Get any new feedback messages
+    include '../app/includes/feedback-get.php';
+    include '../app/includes/feedback-show.php';
 
     // display the widget
     include '../app/templates/participants.php';

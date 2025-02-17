@@ -125,8 +125,8 @@ try {
 } catch (Exception $e) {
     Feedback::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
     include '../app/templates/page-header.php';
-    include '../app/includes/messages.php';
-    include '../app/includes/messages-show.php';
+    include '../app/includes/feedback-get.php';
+    include '../app/includes/feedback-show.php';
     include '../app/templates/page-footer.php';
     exit();
 }

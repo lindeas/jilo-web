@@ -100,9 +100,9 @@ if ($response['db'] === null) {
         array_push($filterMessage, 'Jitsi events for component ID&nbsp;"<strong>' . $_REQUEST['id'] . '</strong>"');
     }
 
-    // Get any new messages
-    include '../app/includes/messages.php';
-    include '../app/includes/messages-show.php';
+    // Get any new feedback messages
+    include '../app/includes/feedback-get.php';
+    include '../app/includes/feedback-show.php';
 
     // display the widget
     include '../app/templates/components.php';

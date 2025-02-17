@@ -121,9 +121,9 @@ if (!empty($config['login_message'])) {
     echo Feedback::render('NOTICE', 'DEFAULT', $config['login_message'], false, false, false);
 }
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
+// Get any new feedback messages
+include '../app/includes/feedback-get.php';
+include '../app/includes/feedback-show.php';
 
 // Load the template
 include '../app/templates/form-login.php';

@@ -8,9 +8,9 @@
  * It supports pagination and filtering.
  */
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
+// Get any new feedback messages
+include '../app/includes/feedback-get.php';
+include '../app/includes/feedback-show.php';
 
 // Check for rights; user or system
 $has_system_access = ($userObject->hasRight($user_id, 'superuser') ||

@@ -65,9 +65,9 @@ if ($config['registration_enabled'] == true) {
         Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
     }
 
-    // Get any new messages
-    include '../app/includes/messages.php';
-    include '../app/includes/messages-show.php';
+    // Get any new feedback messages
+    include '../app/includes/feedback-get.php';
+    include '../app/includes/feedback-show.php';
 
     // Load the template
     include '../app/templates/form-register.php';

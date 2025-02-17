@@ -6,9 +6,9 @@
  * This page handles the config file.
  */
 
-// Get any new messages
-include '../app/includes/messages.php';
-include '../app/includes/messages-show.php';
+// Get any new feedback messages
+include '../app/includes/feedback-get.php';
+include '../app/includes/feedback-show.php';
 
 require '../app/classes/config.php';
 
