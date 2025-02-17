@@ -43,9 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $result = $userObject->removeAvatar($user_id, $config['avatars_path'].$userDetails[0]['avatar']);
         if ($result === true) {
-            $_SESSION['notice'] .= "Avatar for user \"{$userDetails[0]['username']}\" is removed. ";
+            Feedback::flash('NOTICE', 'DEFAULT', "Avatar for user \"{$userDetails[0]['username']}\" is removed.");
         } else {
-            $_SESSION['error'] .= "Removing the avatar failed. Error: $result ";
+            Feedback::flash('ERROR', 'DEFAULT', "Removing the avatar failed. Error: $result");
         }
 
         header("Location: $app_root?page=profile");
@@ -84,9 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     ];
     $result = $userObject->editUser($user_id, $updatedUser);
     if ($result === true) {
-        $_SESSION['notice'] .= "User details for \"{$updatedUser['name']}\" are edited. ";
+        Feedback::flash('NOTICE', 'DEFAULT', "User details for \"{$updatedUser['name']}\" are edited.");
     } else {
-        $_SESSION['error'] .= "Editing the user details failed. Error: $result ";
+        Feedback::flash('ERROR', 'DEFAULT', "Editing the user details failed. Error: $result");
     }
 
     // update the rights
