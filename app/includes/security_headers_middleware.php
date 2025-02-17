@@ -32,9 +32,9 @@ if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
 $csp = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Required for Bootstrap and jQuery
-    "style-src 'self' 'unsafe-inline'", // Required for Bootstrap
+    "style-src 'self' 'unsafe-inline' https://use.fontawesome.com", // Allow FontAwesome CSS
     "img-src 'self' data:", // Allow data: URLs for images
-    "font-src 'self'",
+    "font-src 'self' https://use.fontawesome.com", // Allow FontAwesome fonts
     "connect-src 'self'",
     "frame-ancestors 'none'", // Equivalent to X-Frame-Options: DENY
     "form-action 'self'",

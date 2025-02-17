@@ -17,7 +17,7 @@ class SecurityHelper {
 
     public static function getInstance() {
         if (self::$instance === null) {
-            self::$instance = new Security();
+            self::$instance = new SecurityHelper();
         }
         return self::$instance;
     }
