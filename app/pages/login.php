@@ -82,6 +82,16 @@ try {
                     $gc_maxlifetime = 1440;
                 }
 
+                // Configure secure session settings
+                ini_set('session.cookie_httponly', 1);
+                ini_set('session.use_only_cookies', 1);
+                ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) ? 1 : 0);
+                ini_set('session.cookie_samesite', 'Strict');
+                ini_set('session.gc_maxlifetime', $gc_maxlifetime);
+
+                // Regenerate session ID to prevent session fixation
+                session_regenerate_id(true);
+
                 // set session lifetime and cookies
                 setcookie('username', $username, [
                     'expires'	=> $setcookie_lifetime,
@@ -91,6 +101,14 @@ try {
                     'httponly'	=> true,
                     'samesite'	=> 'Strict'
                 ]);
+
+                // Set session variables
+                $_SESSION['USER_ID'] = $userObject->getUserId($username)[0]['id'];
+                $_SESSION['USERNAME'] = $username;
+                $_SESSION['LAST_ACTIVITY'] = time();
+                if (isset($formData['remember_me'])) {
+                    $_SESSION['REMEMBER_ME'] = true;
+                }
 
                 // Log successful login
                 $user_id = $userObject->getUserId($username)[0]['id'];

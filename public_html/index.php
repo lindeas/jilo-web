@@ -29,11 +29,9 @@ $security = SecurityHelper::getInstance();
 // Verify CSRF token for POST requests
 verifyCsrfToken();
 
-// Initialize message system
-require_once '../app/classes/messages.php';
-$messages = [];
-
-//include '../app/includes/messages.php';
+// Initialize feedback message system
+require_once '../app/classes/feedback.php';
+$system_messages = [];
 
 require '../app/includes/errors.php';
 
@@ -209,6 +207,14 @@ if ($page == 'logout') {
         if (!$server_status) {
             Feedback::flash('ERROR', 'DEFAULT', 'The Jilo Server is not running. Some data may be old and incorrect.', false, true);
         }
+    }
+
+    // List of pages that don't require authentication
+    $public_pages = ['login', 'register'];
+
+    // Check if the requested page requires authentication
+    if (!in_array($page, $public_pages)) {
+        require_once '../app/includes/session_middleware.php';
     }
 
     // page building
