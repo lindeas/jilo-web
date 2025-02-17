@@ -15,6 +15,9 @@
 // flush it later only when there is no redirect
 ob_start();
 
+// Apply security headers
+require_once '../app/includes/security_headers_middleware.php';
+
 // sanitize all input vars that may end up in URLs or forms
 require '../app/includes/sanitize.php';
 
