@@ -8,8 +8,19 @@ class RateLimiter {
     public $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
     public $autoBlacklistDuration = 24;  // Hours to blacklist for
     public $authRatelimitTable = 'login_attempts';
+    public $pagesRatelimitTable = 'pages_rate_limits';
     public $whitelistTable = 'ip_whitelist';
     public $blacklistTable = 'ip_blacklist';
+    private $pageLimits = [
+        // Default rate limits per minute
+        'default' => 60,
+        'admin' => 120,
+        'message' => 20,
+        'contact' => 30,
+        'call' => 30,
+        'register' => 5,
+        'config' => 10
+    ];
 
     public function __construct($database) {
         $this->db = $database->getConnection();
@@ -19,12 +30,21 @@ class RateLimiter {
 
     // Database preparation
     private function createTablesIfNotExist() {
-        // Login attempts table
+        // Authentication attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->authRatelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ip_address TEXT NOT NULL UNIQUE,
             username TEXT NOT NULL,
             attempted_at TEXT DEFAULT (DATETIME('now'))
+        )";
+        $this->db->exec($sql);
+
+        // Pages rate limits table
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->pagesRatelimitTable} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip_address TEXT NOT NULL,
+            endpoint TEXT NOT NULL,
+            request_time DATETIME DEFAULT CURRENT_TIMESTAMP
         )";
         $this->db->exec($sql);
 
@@ -453,5 +473,122 @@ class RateLimiter {
 
     public function getDecayMinutes() {
         return $this->decayMinutes;
+    }
+
+    /**
+     * Check if a page request is allowed
+     */
+    public function isPageRequestAllowed($ipAddress, $endpoint, $userId = null) {
+        // First check if IP is blacklisted
+        if ($this->isIpBlacklisted($ipAddress)) {
+            return false;
+        }
+
+        // Then check if IP is whitelisted
+        if ($this->isIpWhitelisted($ipAddress)) {
+            return true;
+        }
+
+        // Clean old requests
+        $this->cleanOldPageRequests();
+
+        // Get limit based on endpoint type and user role
+        $limit = $this->getPageLimitForEndpoint($endpoint, $userId);
+
+        // Count recent requests
+        $sql = "SELECT COUNT(*) as request_count
+                FROM {$this->pagesRatelimitTable}
+                WHERE ip_address = :ip
+                AND endpoint = :endpoint
+                AND request_time > DATETIME('now', '-1 minute')";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':ip' => $ipAddress,
+            ':endpoint' => $endpoint
+        ]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['request_count'] < $limit;
+    }
+
+    /**
+     * Record a page request
+     */
+    public function recordPageRequest($ipAddress, $endpoint) {
+        $sql = "INSERT INTO {$this->pagesRatelimitTable} (ip_address, endpoint)
+                VALUES (:ip, :endpoint)";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':ip' => $ipAddress,
+            ':endpoint' => $endpoint
+        ]);
+    }
+
+    /**
+     * Clean old page requests
+     */
+    private function cleanOldPageRequests() {
+        $sql = "DELETE FROM {$this->pagesRatelimitTable} 
+                WHERE request_time < DATETIME('now', '-1 minute')";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+    }
+
+    /**
+     * Get page rate limit for endpoint
+     */
+    private function getPageLimitForEndpoint($endpoint, $userId = null) {
+        // Admin users get higher limits
+        if ($userId) {
+            $userObj = new User($this->db);
+            if ($userObj->hasRight($userId, 'admin')) {
+                return $this->pageLimits['admin'];
+            }
+        }
+
+        // Get endpoint type from the endpoint path
+        $endpointType = $this->getEndpointType($endpoint);
+
+        // Return specific limit if exists, otherwise default
+        return isset($this->pageLimits[$endpointType])
+            ? $this->pageLimits[$endpointType]
+            : $this->pageLimits['default'];
+    }
+
+    /**
+     * Get endpoint type from path
+     */
+    private function getEndpointType($endpoint) {
+        if (strpos($endpoint, 'message') !== false) return 'message';
+        if (strpos($endpoint, 'contact') !== false) return 'contact';
+        if (strpos($endpoint, 'call') !== false) return 'call';
+        if (strpos($endpoint, 'register') !== false) return 'register';
+        if (strpos($endpoint, 'config') !== false) return 'config';
+        return 'default';
+    }
+
+    /**
+     * Get remaining page requests
+     */
+    public function getRemainingPageRequests($ipAddress, $endpoint, $userId = null) {
+        $limit = $this->getPageLimitForEndpoint($endpoint, $userId);
+
+        $sql = "SELECT COUNT(*) as request_count
+                FROM {$this->pagesRatelimitTable}
+                WHERE ip_address = :ip
+                AND endpoint = :endpoint
+                AND request_time > DATETIME('now', '-1 minute')";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':ip' => $ipAddress,
+            ':endpoint' => $endpoint
+        ]);
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return max(0, $limit - $result['request_count']);
     }
 }
