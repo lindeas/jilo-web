@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../helpers/securityhelper.php';
+require_once __DIR__ . '/../helpers/security.php';
 
 function verifyCsrfToken() {
     $security = SecurityHelper::getInstance();

@@ -71,8 +71,7 @@ if ($config['registration_enabled'] == true) {
     }
 
     // Get any new feedback messages
-    include '../app/includes/feedback-get.php';
-    include '../app/includes/feedback-show.php';
+    include '../app/helpers/feedback.php';
 
     // Load the template
     include '../app/templates/form-register.php';

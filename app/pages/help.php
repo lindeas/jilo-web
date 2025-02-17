@@ -1,8 +1,7 @@
 <?php
 
 // Get any new feedback messages
-include '../app/includes/feedback-get.php';
-include '../app/includes/feedback-show.php';
+include '../app/helpers/feedback.php';
 
 include '../app/templates/help.php';
 

@@ -167,8 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Get any new feedback messages
-    include '../app/includes/feedback-get.php';
-    include '../app/includes/feedback-show.php';
+    include '../app/helpers/feedback.php';
 
     // Load the template
     include '../app/templates/agents.php';

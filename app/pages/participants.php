@@ -170,8 +170,7 @@ if ($response['db'] === null) {
     }
 
     // Get any new feedback messages
-    include '../app/includes/feedback-get.php';
-    include '../app/includes/feedback-show.php';
+    include '../app/helpers/feedback.php';
 
     // display the widget
     include '../app/templates/participants.php';

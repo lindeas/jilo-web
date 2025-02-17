@@ -9,8 +9,7 @@
  */
 
 // Get any new feedback messages
-include '../app/includes/feedback-get.php';
-include '../app/includes/feedback-show.php';
+include '../app/helpers/feedback.php';
 
 require '../app/classes/agent.php';
 require '../app/classes/host.php';

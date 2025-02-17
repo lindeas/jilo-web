@@ -1,7 +1,11 @@
 <?php
 
-// Security helper, to be used with all the forms in the app
-
+/**
+ * Security Helper
+ * 
+ * Security helper, to be used with all the forms in the app.
+ * Implements singleton pattern for consistent state management.
+ */
 class SecurityHelper {
     private static $instance = null;
     private $session;
@@ -13,7 +17,7 @@ class SecurityHelper {
 
     public static function getInstance() {
         if (self::$instance === null) {
-            self::$instance = new SecurityHelper();
+            self::$instance = new Security();
         }
         return self::$instance;
     }

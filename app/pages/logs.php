@@ -9,8 +9,7 @@
  */
 
 // Get any new feedback messages
-include '../app/includes/feedback-get.php';
-include '../app/includes/feedback-show.php';
+include '../app/helpers/feedback.php';
 
 // Check for rights; user or system
 $has_system_access = ($userObject->hasRight($user_id, 'superuser') ||

@@ -26,7 +26,7 @@ session_start();
 
 // Initialize security middleware
 require_once '../app/includes/csrf_middleware.php';
-require_once '../app/helpers/securityhelper.php';
+require_once '../app/helpers/security.php';
 $security = SecurityHelper::getInstance();
 
 // Verify CSRF token for POST requests
@@ -126,8 +126,7 @@ try {
 } catch (Exception $e) {
     Feedback::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
     include '../app/templates/page-header.php';
-    include '../app/includes/feedback-get.php';
-    include '../app/includes/feedback-show.php';
+    include '../app/helpers/feedback.php';
     include '../app/templates/page-footer.php';
     exit();
 }

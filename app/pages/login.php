@@ -144,8 +144,7 @@ if (!empty($config['login_message'])) {
 }
 
 // Get any new feedback messages
-include '../app/includes/feedback-get.php';
-include '../app/includes/feedback-show.php';
+include '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/form-login.php';
