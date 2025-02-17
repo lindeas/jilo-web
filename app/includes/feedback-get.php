@@ -3,7 +3,7 @@
 // Get any flash messages from previous request
 $flash_messages = Feedback::getFlash();
 if (!empty($flash_messages)) {
-    $messages = array_merge($messages, array_map(function($flash) {
+    $system_messages = array_merge($system_messages, array_map(function($flash) {
         return [
             'category' => $flash['category'],
             'key' => $flash['key'],
