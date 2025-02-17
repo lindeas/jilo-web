@@ -45,8 +45,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col">
-                <?php if (isset($messages) && is_array($messages)): ?>
-                    <?php foreach ($messages as $msg): ?>
+                <?php if (isset($system_messages) && is_array($system_messages)): ?>
+                    <?php foreach ($system_messages as $msg): ?>
                         <?= Feedback::render($msg['category'], $msg['key'], $msg['custom_message'] ?? null) ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
