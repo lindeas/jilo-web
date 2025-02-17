@@ -26,6 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      * Handles form submissions from editing
      */
 
+    // Apply rate limiting for profile operations
+    require_once '../app/includes/rate_limit_middleware.php';
+    checkRateLimit($dbWeb, 'profile', $user_id);
+
     // Get hash from URL if present
     $hash = parse_url($_SERVER['REQUEST_URI'], PHP_URL_FRAGMENT) ?? '';
     $redirectUrl = htmlspecialchars($app_root) . '?page=settings';

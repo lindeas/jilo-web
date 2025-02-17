@@ -24,6 +24,11 @@ $rateLimiter = new RateLimiter($dbWeb);
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     require_once '../app/classes/validator.php';
+
+    // Apply rate limiting for security operations
+    require_once '../app/includes/rate_limit_middleware.php';
+    checkRateLimit($dbWeb, 'security', $user_id);
+
     $action = $_POST['action'];
     $validator = new Validator($_POST);
 
@@ -147,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 // Always show rate limit info message for rate limiting section
 if ($section === 'ratelimit') {
-    $messages[] = ['category' => 'SECURITY', 'key' => 'RATE_LIMIT_INFO'];
+    $system_messages[] = ['category' => 'SECURITY', 'key' => 'RATE_LIMIT_INFO'];
 }
 
 // Get current lists

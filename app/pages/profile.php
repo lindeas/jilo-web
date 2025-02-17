@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting for profile operations
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($db, 'profile', $user_id);
+    checkRateLimit($dbWeb, 'profile', $user_id);
 
     $item = $_REQUEST['item'] ?? '';
 

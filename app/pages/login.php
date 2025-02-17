@@ -27,6 +27,10 @@ try {
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         try {
+            // apply page rate limiting
+            require_once '../app/includes/rate_limit_middleware.php';
+            checkRateLimit($dbWeb, 'login', null); // null since user is not logged in yet
+
             // Validate form data
             $security = SecurityHelper::getInstance();
             $formData = $security->sanitizeArray($_POST, ['username', 'password', 'remember_me', 'csrf_token']);

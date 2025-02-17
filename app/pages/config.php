@@ -11,8 +11,9 @@ include '../app/includes/feedback-get.php';
 include '../app/includes/feedback-show.php';
 
 require '../app/classes/config.php';
-
 $configObject = new Config();
+
+require '../app/includes/rate_limit_middleware.php';
 
 // For AJAX requests
 $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
@@ -26,6 +27,9 @@ if (!$isWritable) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Apply rate limiting
+    checkRateLimit($dbWeb, 'config', $user_id);
+
     // Ensure no output before this point
     ob_clean();
 

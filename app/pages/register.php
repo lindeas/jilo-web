@@ -17,6 +17,11 @@ if ($config['registration_enabled'] == true) {
         $dbWeb = connectDB($config);
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+
+            // Apply rate limiting
+            require '../app/includes/rate_limit_middleware.php';
+            checkRateLimit($dbWeb, 'register');
+
             require_once '../app/classes/validator.php';
 
             $validator = new Validator($_POST);
