@@ -129,6 +129,47 @@ class Database {
         return $this->pdo;
     }
 
+    /**
+     * Executes an SQL query with optional parameters.
+     *
+     * @param string $query The SQL query to execute
+     * @param array $params Optional parameters for the query
+     * @return PDOStatement|false The result of the query execution
+     * @throws Exception If the query fails
+     */
+    public function execute($query, $params = []) {
+        if (!$this->pdo) {
+            throw new Exception('No database connection.');
+        }
+
+        try {
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            throw new Exception('Query execution failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Prepares an SQL statement for execution.
+     *
+     * @param string $query The SQL query to prepare
+     * @return PDOStatement The prepared statement
+     * @throws Exception If the preparation fails
+     */
+    public function prepare($query) {
+        if (!$this->pdo) {
+            throw new Exception('No database connection.');
+        }
+
+        try {
+            return $this->pdo->prepare($query);
+        } catch (PDOException $e) {
+            throw new Exception('Statement preparation failed: ' . $e->getMessage());
+        }
+    }
+
 }
 
 ?>
