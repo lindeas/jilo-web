@@ -170,6 +170,56 @@ class Database {
         }
     }
 
+    /**
+     * Begins a database transaction.
+     *
+     * @throws Exception If starting the transaction fails
+     */
+    public function beginTransaction() {
+        if (!$this->pdo) {
+            throw new Exception('No database connection.');
+        }
+
+        try {
+            return $this->pdo->beginTransaction();
+        } catch (PDOException $e) {
+            throw new Exception('Failed to start transaction: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Commits the current database transaction.
+     *
+     * @throws Exception If committing the transaction fails
+     */
+    public function commit() {
+        if (!$this->pdo) {
+            throw new Exception('No database connection.');
+        }
+
+        try {
+            return $this->pdo->commit();
+        } catch (PDOException $e) {
+            throw new Exception('Failed to commit transaction: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Rolls back the current database transaction.
+     *
+     * @throws Exception If rolling back the transaction fails
+     */
+    public function rollBack() {
+        if (!$this->pdo) {
+            throw new Exception('No database connection.');
+        }
+
+        try {
+            return $this->pdo->rollBack();
+        } catch (PDOException $e) {
+            throw new Exception('Failed to rollback transaction: ' . $e->getMessage());
+        }
+    }
 }
 
 ?>
