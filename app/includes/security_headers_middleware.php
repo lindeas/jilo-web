@@ -2,7 +2,7 @@
 
 /**
  * Security Headers Middleware
- * 
+ *
  * Sets various security headers to protect against common web vulnerabilities:
  * - HSTS: Force HTTPS connections
  * - CSP: Content Security Policy to prevent XSS and other injection attacks
@@ -14,7 +14,7 @@
 
 function applySecurityHeaders($testMode = false) {
     $headers = [];
-    
+
     // Get current page
     $current_page = $_GET['page'] ?? 'dashboard';
 

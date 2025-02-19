@@ -11,11 +11,11 @@ class DatabaseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Set development environment for detailed errors
         global $config;
         $config['environment'] = 'development';
-        
+
         $this->config = [
             'type' => 'sqlite',
             'dbFile' => ':memory:'
@@ -39,7 +39,7 @@ class DatabaseTest extends TestCase
             'user' => 'test',
             'password' => 'test'
         ];
-        
+
         $mariadbConfig = [
             'type' => 'mariadb',
             'host' => 'invalid-host',
@@ -48,11 +48,11 @@ class DatabaseTest extends TestCase
             'user' => 'test',
             'password' => 'test'
         ];
-        
+
         // Both should fail to connect and return null
         $mysqlDb = new Database($mysqlConfig);
         $this->assertNull($mysqlDb->getConnection());
-        
+
         $mariaDb = new Database($mariadbConfig);
         $this->assertNull($mariaDb->getConnection());
     }
@@ -67,7 +67,7 @@ class DatabaseTest extends TestCase
             'user' => 'test',
             'password' => 'test'
         ];
-        
+
         $invalidDb = new Database($invalidConfig);
         $this->assertNull($invalidDb->getConnection());
     }

@@ -56,7 +56,7 @@ class LogTest extends TestCase
         $stmt = $this->db->getConnection()->prepare("SELECT * FROM logs WHERE scope = ?");
         $stmt->execute(['test']);
         $log = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         $this->assertEquals(1, $log['user_id']);
         $this->assertEquals('Test message', $log['message']);
         $this->assertEquals('test', $log['scope']);
@@ -67,7 +67,7 @@ class LogTest extends TestCase
         // Insert test logs
         $this->log->insertLog(1, 'Test message 1', 'user');
         $this->log->insertLog(1, 'Test message 2', 'user');
-        
+
         $logs = $this->log->readLog(1, 'user');
         $this->assertCount(2, $logs);
         $this->assertEquals('Test message 1', $logs[0]['message']);
@@ -80,15 +80,15 @@ class LogTest extends TestCase
         $this->log->insertLog(1, 'Old message', 'user');
         sleep(1); // Ensure different timestamps
         $this->log->insertLog(1, 'New message', 'user');
-        
+
         $now = date('Y-m-d H:i:s');
         $oneHourAgo = date('Y-m-d H:i:s', strtotime('-1 hour'));
-        
+
         $logs = $this->log->readLog(1, 'user', 0, '', [
             'from_time' => $oneHourAgo,
             'until_time' => $now
         ]);
-        
+
         $this->assertCount(2, $logs);
     }
 
@@ -98,11 +98,11 @@ class LogTest extends TestCase
         $this->log->insertLog(1, 'Message 1', 'user');
         $this->log->insertLog(1, 'Message 2', 'user');
         $this->log->insertLog(1, 'Message 3', 'user');
-        
+
         // Test with limit
         $logs = $this->log->readLog(1, 'user', 0, 2);
         $this->assertCount(2, $logs);
-        
+
         // Test with offset
         $logs = $this->log->readLog(1, 'user', 2, 2);
         $this->assertCount(1, $logs);
@@ -113,11 +113,11 @@ class LogTest extends TestCase
         // Insert test logs
         $this->log->insertLog(1, 'Test message', 'user');
         $this->log->insertLog(1, 'Another message', 'user');
-        
+
         $logs = $this->log->readLog(1, 'user', 0, '', [
             'message' => 'Test'
         ]);
-        
+
         $this->assertCount(1, $logs);
         $this->assertEquals('Test message', $logs[0]['message']);
     }
@@ -127,11 +127,11 @@ class LogTest extends TestCase
         // Insert test logs for different users
         $this->log->insertLog(1, 'User 1 message', 'user');
         $this->log->insertLog(2, 'User 2 message', 'user');
-        
+
         $logs = $this->log->readLog(1, 'user', 0, '', [
             'id' => 1
         ]);
-        
+
         $this->assertCount(1, $logs);
         $this->assertEquals('User 1 message', $logs[0]['message']);
     }

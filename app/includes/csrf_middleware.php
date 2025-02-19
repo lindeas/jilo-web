@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../helpers/security.php';
 
-function verifyCsrfToken() {
+function applyCsrfMiddleware() {
     $security = SecurityHelper::getInstance();
 
     // Skip CSRF check for GET requests

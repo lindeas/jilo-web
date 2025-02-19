@@ -67,7 +67,7 @@ class PlatformTest extends TestCase
         $stmt = $this->db->getConnection()->prepare('SELECT * FROM platforms WHERE name = ?');
         $stmt->execute([$data['name']]);
         $platform = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         $this->assertNotNull($platform);
         $this->assertEquals($data['name'], $platform['name']);
         $this->assertEquals($data['jitsi_url'], $platform['jitsi_url']);

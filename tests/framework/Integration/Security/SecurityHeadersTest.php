@@ -20,7 +20,7 @@ class SecurityHeadersTest extends TestCase
     {
         // Apply security headers in test mode
         $headers = \applySecurityHeaders(true);
-        
+
         // Check security headers
         $this->assertContains('X-Frame-Options: DENY', $headers);
         $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
@@ -32,7 +32,7 @@ class SecurityHeadersTest extends TestCase
     {
         // Apply security headers in test mode
         $headers = \applySecurityHeaders(true);
-        
+
         // Get CSP header
         $cspHeader = '';
         foreach ($headers as $header) {
@@ -138,10 +138,10 @@ class SecurityHeadersTest extends TestCase
     public function testPermissionsPolicyForMediaEnabledPages()
     {
         $_SERVER['REQUEST_URI'] = '/media/upload';
-        
+
         // Apply security headers in test mode
         $headers = \applySecurityHeaders(true);
-        
+
         // Get Permissions-Policy header
         $permissionsHeader = '';
         foreach ($headers as $header) {

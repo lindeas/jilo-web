@@ -107,7 +107,7 @@ class AgentTest extends TestCase
             'secret_key' => 'test_secret',
             'check_period' => 60
         ];
-        
+
         $this->agent->addAgent($hostId, $data);
 
         // Test getting agent details
@@ -127,7 +127,7 @@ class AgentTest extends TestCase
             'secret_key' => 'test_secret',
             'check_period' => 60
         ];
-        
+
         $this->agent->addAgent($hostId, $data);
 
         // Get agent ID
@@ -167,7 +167,7 @@ class AgentTest extends TestCase
             'secret_key' => 'test_secret',
             'check_period' => 60
         ];
-        
+
         $this->agent->addAgent($hostId, $data);
 
         // Get agent ID
@@ -197,7 +197,7 @@ class AgentTest extends TestCase
             'secret_key' => 'test_secret',
             'check_period' => 60
         ];
-        
+
         $this->agent->addAgent($hostId, $data);
 
         // Get agent ID
@@ -210,7 +210,7 @@ class AgentTest extends TestCase
             ->setConstructorArgs([$this->db])
             ->onlyMethods(['fetchAgent'])
             ->getMock();
-        
+
         $mockResponse = json_encode([
             'status' => 'ok',
             'metrics' => [
@@ -226,7 +226,7 @@ class AgentTest extends TestCase
 
         $response = $mockAgent->fetchAgent($agentId);
         $this->assertJson($response);
-        
+
         $data = json_decode($response, true);
         $this->assertEquals('ok', $data['status']);
     }

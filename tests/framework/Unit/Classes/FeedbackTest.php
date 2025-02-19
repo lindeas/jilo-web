@@ -9,12 +9,12 @@ class FeedbackTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Start session for flash messages
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
-        
+
         // Initialize session variables
         $_SESSION = [];
         $_SESSION['flash_messages'] = [];
@@ -34,10 +34,10 @@ class FeedbackTest extends TestCase
         // Add a test message
         Feedback::flash('LOGIN', 'LOGIN_SUCCESS', 'Test message');
         $messages = $_SESSION['flash_messages'];
-        
+
         $this->assertIsArray($messages);
         $this->assertCount(1, $messages);
-        
+
         $message = $messages[0];
         $this->assertEquals('LOGIN', $message['category']);
         $this->assertEquals('LOGIN_SUCCESS', $message['key']);
@@ -67,7 +67,7 @@ class FeedbackTest extends TestCase
     public function testGetMessageData()
     {
         $data = Feedback::getMessageData('LOGIN', 'LOGIN_SUCCESS', 'Test message');
-        
+
         $this->assertIsArray($data);
         $this->assertEquals(Feedback::TYPE_SUCCESS, $data['type']);
         $this->assertEquals('Test message', $data['message']);
