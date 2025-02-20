@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__, 4) . '/app/includes/session_middleware.php';
+require_once dirname(__DIR__, 3) . '/app/includes/session_middleware.php';
 
 use PHPUnit\Framework\TestCase;
 

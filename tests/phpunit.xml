@@ -8,17 +8,20 @@
         <testsuite name="Unit">
             <directory suffix="Test.php">./Unit</directory>
         </testsuite>
-        <testsuite name="Integration">
-            <directory suffix="Test.php">./Integration</directory>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./Feature</directory>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory suffix="Test.php">./Functional</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">../../app</directory>
+            <directory suffix=".php">../app</directory>
         </include>
         <exclude>
-            <directory>../../app/templates</directory>
-            <directory>../../app/includes</directory>
+            <directory>../app/templates</directory>
+            <directory>../app/includes</directory>
         </exclude>
     </coverage>
     <php>

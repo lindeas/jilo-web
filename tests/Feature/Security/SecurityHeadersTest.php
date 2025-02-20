@@ -4,7 +4,7 @@ namespace Tests\Framework\Integration\Security;
 
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(__DIR__, 4) . '/app/includes/security_headers_middleware.php';
+require_once dirname(__DIR__, 3) . '/app/includes/security_headers_middleware.php';
 
 class SecurityHeadersTest extends TestCase
 {

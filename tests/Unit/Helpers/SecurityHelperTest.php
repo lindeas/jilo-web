@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__, 4) . '/app/helpers/security.php';
+require_once dirname(__DIR__, 3) . '/app/helpers/security.php';
 
 use PHPUnit\Framework\TestCase;
 

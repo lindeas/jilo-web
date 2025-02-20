@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(__DIR__, 4) . '/app/classes/database.php';
-require_once dirname(__DIR__, 4) . '/app/classes/ratelimiter.php';
-require_once dirname(__DIR__, 4) . '/app/includes/rate_limit_middleware.php';
+require_once dirname(__DIR__, 3) . '/app/classes/database.php';
+require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
+require_once dirname(__DIR__, 3) . '/app/includes/rate_limit_middleware.php';
 
 use PHPUnit\Framework\TestCase;
 

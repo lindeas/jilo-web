@@ -12,21 +12,21 @@
     },
     "autoload": {
         "files": [
-            "../../app/includes/errors.php",
-            "../../app/classes/database.php",
-            "../../app/classes/agent.php",
-            "../../app/classes/host.php",
-            "../../app/classes/platform.php",
-            "../../app/classes/server.php",
-            "../../app/classes/log.php",
-            "../../app/classes/feedback.php",
-            "../../app/classes/settings.php",
-            "../../app/classes/validator.php",
-            "../../app/classes/router.php",
-            "../../app/classes/ratelimiter.php",
-            "../../app/classes/user.php",
-            "../../app/helpers/security.php",
-            "../../app/includes/errors.php"
+            "../app/includes/errors.php",
+            "../app/classes/database.php",
+            "../app/classes/agent.php",
+            "../app/classes/host.php",
+            "../app/classes/platform.php",
+            "../app/classes/server.php",
+            "../app/classes/log.php",
+            "../app/classes/feedback.php",
+            "../app/classes/settings.php",
+            "../app/classes/validator.php",
+            "../app/classes/router.php",
+            "../app/classes/ratelimiter.php",
+            "../app/classes/user.php",
+            "../app/helpers/security.php",
+            "../app/includes/errors.php"
         ],
         "classmap": [
             "TestCase.php"

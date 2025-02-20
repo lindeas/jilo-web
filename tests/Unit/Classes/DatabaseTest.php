@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__, 4) . '/app/classes/database.php';
+require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 
 use PHPUnit\Framework\TestCase;
 
