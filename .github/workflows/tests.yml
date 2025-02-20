@@ -1,0 +1,30 @@
+name: PHP Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: pdo, pdo_sqlite
+
+    - name: Install dependencies
+      run: |
+        cd tests
+        composer install
+
+    - name: Run test suite
+      run: |
+        cd tests
+        ./vendor/bin/phpunit
