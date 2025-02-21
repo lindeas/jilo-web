@@ -156,7 +156,7 @@ if ($response['db'] === null) {
     if (isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
         array_push($filterMessage, 'Conferences with name matching "<strong>' . $_REQUEST['name'] . '</strong>"');
     } elseif (isset($_REQUEST['id']) && $_REQUEST['id'] != '') {
-        array_push($filterMessage, 'Conferences with ID "<strong>' . $_REQUEST['id'] . '</strong>"');
+        array_push($filterMessage, 'Conference with ID "<strong>' . $_REQUEST['id'] . '</strong>"');
     }
 
     // Get any new feedback messages

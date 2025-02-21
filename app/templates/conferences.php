@@ -107,8 +107,21 @@
                                                         <?= htmlspecialchars(strlen($column ?? '') > 30 ? substr($column, 0, 30) . '...' : $column ?? '') ?>
                                                     </span>
                                                 </td>
-<?php
-                    } elseif ($key === 'time' || $key === 'start' || $key === 'end') { ?>
+<?php               } elseif ($key === 'participant ID') { ?>
+                                                <td class="text-nowrap">
+                                                    <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=participants&id=<?= htmlspecialchars($column ?? '') ?>"
+                                                       <?= (strlen($column ?? '') > 16) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 16 ? substr($column, 0, 16) . '...' : $column ?? '') ?>
+                                                    </a>
+                                                </td>
+<?php               } elseif ($key === 'component') { ?>
+                                                <td class="text-nowrap">
+                                                    <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=components&name=<?= htmlspecialchars($column ?? '') ?>"
+                                                       <?= (strlen($column ?? '') > 16) ? 'data-toggle="tooltip" title="' . htmlspecialchars($column) . '"' : '' ?>>
+                                                        <?= htmlspecialchars(strlen($column ?? '') > 16 ? substr($column, 0, 16) . '...' : $column ?? '') ?>
+                                                    </a>
+                                                </td>
+<?php               } elseif ($key === 'time' || $key === 'start' || $key === 'end') { ?>
                                                 <td class="text-nowrap"><?= !empty($column) ? date('d M Y H:i:s',strtotime($column)) : '<small class="text-muted">n/a</small>' ?></td>
 <?php               } else { ?>
                                                 <td><?= htmlspecialchars($column ?? '') ?></td>
