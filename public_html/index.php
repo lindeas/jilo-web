@@ -30,7 +30,7 @@ require_once '../app/helpers/security.php';
 $security = SecurityHelper::getInstance();
 
 // Verify CSRF token for POST requests
-verifyCsrfToken();
+applyCsrfMiddleware();
 
 // Initialize feedback message system
 require_once '../app/classes/feedback.php';

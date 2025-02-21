@@ -14,7 +14,7 @@ if ($config['registration_enabled'] == true) {
     try {
 
         // connect to database
-        $dbWeb = connectDB($config);
+        $dbWeb = connectDB($config)['db'];
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 

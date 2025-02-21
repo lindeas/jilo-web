@@ -123,7 +123,20 @@ class RateLimiter {
      */
     public function isIpBlacklisted($ip) {
         // First check if IP is explicitly blacklisted or in a blacklisted range
-        $stmt = $this->db->prepare("SELECT ip_address, is_network, expiry_time FROM {$this->blacklistTable}");
+        $stmt = $this->db->prepare("SELECT ip_address, is_network, expiry_time FROM {$this->blacklistTable} WHERE ip_address = ?");
+        $stmt->execute([$ip]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            // Skip expired entries
+            if ($row['expiry_time'] !== null && strtotime($row['expiry_time']) < time()) {
+                return false;
+            }
+            return true;
+        }
+
+        // Check network ranges
+        $stmt = $this->db->prepare("SELECT ip_address, expiry_time FROM {$this->blacklistTable} WHERE is_network = 1");
         $stmt->execute();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -132,14 +145,8 @@ class RateLimiter {
                 continue;
             }
 
-            if ($row['is_network']) {
-                if ($this->ipInRange($ip, $row['ip_address'])) {
-                    return true;
-                }
-            } else {
-                if ($ip === $row['ip_address']) {
-                    return true;
-                }
+            if ($this->ipInRange($ip, $row['ip_address'])) {
+                return true;
             }
         }
 
@@ -307,6 +314,7 @@ class RateLimiter {
 
             // Remove the IP
             $stmt = $this->db->prepare("DELETE FROM {$this->blacklistTable} WHERE ip_address = ?");
+
             $result = $stmt->execute([$ip]);
 
             if ($result && $ipDetails) {
@@ -495,12 +503,12 @@ class RateLimiter {
         // Get limit based on endpoint type and user role
         $limit = $this->getPageLimitForEndpoint($endpoint, $userId);
 
-        // Count recent requests
+        // Count recent requests, including this one
         $sql = "SELECT COUNT(*) as request_count
                 FROM {$this->pagesRatelimitTable}
                 WHERE ip_address = :ip
                 AND endpoint = :endpoint
-                AND request_time > DATETIME('now', '-1 minute')";
+                AND request_time >= DATETIME('now', '-1 minute')";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([

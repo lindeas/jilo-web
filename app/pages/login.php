@@ -19,11 +19,11 @@ unset($error);
 try {
 
     // connect to database
-    $dbWeb = connectDB($config);
+    $dbWeb = connectDB($config)['db'];
 
     // Initialize RateLimiter
     require_once '../app/classes/ratelimiter.php';
-    $rateLimiter = new RateLimiter($dbWeb['db']);
+    $rateLimiter = new RateLimiter($dbWeb);
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         try {
@@ -54,8 +54,8 @@ try {
                 throw new Exception("Invalid input: " . implode(", ", $errors));
             }
 
-            $username = $_POST['username'];
-            $password = $_POST['password'];
+            $username = $formData['username'];
+            $password = $formData['password'];
 
             // Check if IP is blacklisted
             if ($rateLimiter->isIpBlacklisted($user_IP)) {
@@ -73,7 +73,7 @@ try {
             // login successful
             if ( $userObject->login($username, $password) ) {
                 // if remember_me is checked, max out the session
-                if (isset($_POST['remember_me'])) {
+                if (isset($formData['remember_me'])) {
                     // 30*24*60*60 = 30 days
                     $cookie_lifetime = 30 * 24 * 60 * 60;
                     $setcookie_lifetime = time() + 30 * 24 * 60 * 60;
@@ -119,7 +119,7 @@ try {
                 $logObject->insertLog($user_id, "Login: User \"$username\" logged in. IP: $user_IP", 'user');
 
                 // Set success message and redirect
-                Feedback::flash('LOGIN', 'LOGIN_SUCCESS', null, true);
+                Feedback::flash('LOGIN', 'LOGIN_SUCCESS');
                 header('Location: ' . htmlspecialchars($app_root));
                 exit();
             } else {
@@ -140,7 +140,7 @@ try {
 
 // Show configured login message if any
 if (!empty($config['login_message'])) {
-    echo Feedback::render('NOTICE', 'DEFAULT', $config['login_message'], false, false, false);
+    echo Feedback::render('NOTICE', 'DEFAULT', $config['login_message'], false);
 }
 
 // Get any new feedback messages

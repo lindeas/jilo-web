@@ -12,7 +12,7 @@ require_once __DIR__ . '/../classes/ratelimiter.php';
  */
 function checkRateLimit($database, $endpoint, $userId = null) {
     $isTest = defined('PHPUNIT_RUNNING');
-    $rateLimiter = new RateLimiter($database['db']);
+    $rateLimiter = new RateLimiter($database);
     $ipAddress = $_SERVER['REMOTE_ADDR'];
 
     // Check if request is allowed

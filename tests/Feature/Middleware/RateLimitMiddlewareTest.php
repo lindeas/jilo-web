@@ -2,6 +2,7 @@
 
 require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
+require_once dirname(__DIR__, 3) . '/app/classes/log.php';
 require_once dirname(__DIR__, 3) . '/app/includes/rate_limit_middleware.php';
 
 use PHPUnit\Framework\TestCase;
@@ -75,7 +76,7 @@ class RateLimitMiddlewareTest extends TestCase
     {
         // Test multiple requests
         for ($i = 1; $i <= 5; $i++) {
-            $result = checkRateLimit(['db' => $this->db], '/login');
+            $result = checkRateLimit($this->db, '/login');
 
             if ($i <= 5) {
                 // First 5 requests should pass
@@ -91,7 +92,7 @@ class RateLimitMiddlewareTest extends TestCase
     {
         // Test AJAX request bypass
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-        $result = checkRateLimit(['db' => $this->db], '/login');
+        $result = checkRateLimit($this->db, '/login');
         $this->assertTrue($result);
     }
 
@@ -99,14 +100,14 @@ class RateLimitMiddlewareTest extends TestCase
     {
         // Use up the rate limit
         for ($i = 0; $i < 5; $i++) {
-            checkRateLimit(['db' => $this->db], '/login');
+            checkRateLimit($this->db, '/login');
         }
 
         // Wait for rate limit to reset (use a short window for testing)
         sleep(2);
 
         // Should be able to make request again
-        $result = checkRateLimit(['db' => $this->db], '/login');
+        $result = checkRateLimit($this->db, '/login');
         $this->assertTrue($result);
     }
 
@@ -114,11 +115,11 @@ class RateLimitMiddlewareTest extends TestCase
     {
         // Use up rate limit for login
         for ($i = 0; $i < 5; $i++) {
-            checkRateLimit(['db' => $this->db], '/login');
+            checkRateLimit($this->db, '/login');
         }
 
         // Should still be able to access different endpoint
-        $result = checkRateLimit(['db' => $this->db], '/dashboard');
+        $result = checkRateLimit($this->db, '/dashboard');
         $this->assertTrue($result);
     }
 
@@ -127,12 +128,12 @@ class RateLimitMiddlewareTest extends TestCase
         // Use up rate limit for first IP
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         for ($i = 0; $i < 5; $i++) {
-            checkRateLimit(['db' => $this->db], '/login');
+            checkRateLimit($this->db, '/login');
         }
 
         // Different IP should not be affected
         $_SERVER['REMOTE_ADDR'] = '127.0.0.2';
-        $result = checkRateLimit(['db' => $this->db], '/login');
+        $result = checkRateLimit($this->db, '/login');
         $this->assertTrue($result);
     }
 
@@ -146,7 +147,7 @@ class RateLimitMiddlewareTest extends TestCase
 
         // Should be able to make more requests than limit
         for ($i = 0; $i < 10; $i++) {
-            $result = checkRateLimit(['db' => $this->db], '/login');
+            $result = checkRateLimit($this->db, '/login');
             $this->assertTrue($result);
         }
     }
@@ -160,7 +161,7 @@ class RateLimitMiddlewareTest extends TestCase
         );
 
         // Should be blocked immediately
-        $result = checkRateLimit(['db' => $this->db], '/login');
+        $result = checkRateLimit($this->db, '/login');
         $this->assertFalse($result);
     }
 
@@ -168,7 +169,7 @@ class RateLimitMiddlewareTest extends TestCase
     {
         // Use up some of the rate limit
         for ($i = 0; $i < 2; $i++) {
-            checkRateLimit(['db' => $this->db], '/login');
+            checkRateLimit($this->db, '/login');
         }
 
         // Destroy and restart session
@@ -176,7 +177,7 @@ class RateLimitMiddlewareTest extends TestCase
         //session_start();
 
         // Should still count previous requests
-        $result = checkRateLimit(['db' => $this->db], '/login');
+        $result = checkRateLimit($this->db, '/login');
         $this->assertTrue($result);
     }
 }
