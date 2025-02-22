@@ -161,10 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the platform failed. Error: $result";
             }
         }
-        if (!$isAjax) {
-            header('Location: ' . $redirectUrl);
-            exit;
-        }
+        header('Location: ' . $redirectUrl);
+        exit;
     }
 
 } else {
