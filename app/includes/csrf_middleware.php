@@ -23,7 +23,8 @@ function applyCsrfMiddleware() {
         if (!$security->verifyCsrfToken($token)) {
             // Log CSRF attempt
             error_log("CSRF attempt detected from IP: " . $_SERVER['REMOTE_ADDR']);
-            $logObject->insertLog(0, "CSRF attempt detected from IP: " . $_SERVER['REMOTE_ADDR'], 'system');
+//FIXME log class not loaded
+//            $logObject->insertLog(0, "CSRF attempt detected from IP: " . $_SERVER['REMOTE_ADDR'], 'system');
 
             // Return error message
             http_response_code(403);
