@@ -326,6 +326,7 @@
             </div>
             <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=settings" id="addPlatformForm">
                 <input type="hidden" name="item" value="platform">
+                <input type="hidden" name="csrf_token" value="<?= $security->generateCsrfToken() ?>">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="platformName" class="form-label">Platform name <span class="text-danger">*</span></label>
@@ -363,6 +364,7 @@
             <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=settings" id="addHostForm">
                 <input type="hidden" name="item" value="host">
                 <input type="hidden" name="platform" id="hostPlatformId">
+                <input type="hidden" name="csrf_token" value="<?= $security->generateCsrfToken() ?>">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="hostAddress" class="form-label">Address <span class="text-danger">*</span></label>
@@ -397,6 +399,7 @@
                 <input type="hidden" name="platform" id="agentPlatformId">
                 <input type="hidden" name="host" id="agentHostId">
                 <input type="hidden" name="new" value="true">
+                <input type="hidden" name="csrf_token" value="<?= $security->generateCsrfToken() ?>">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="agentType" class="form-label">Agent type <span class="text-danger">*</span></label>
@@ -441,6 +444,7 @@
                 <input type="hidden" name="item" value="platform">
                 <input type="hidden" name="platform" id="deletePlatformId">
                 <input type="hidden" name="delete" value="true">
+                <input type="hidden" name="csrf_token" value="<?= $security->generateCsrfToken() ?>">
                 <div class="modal-body">
                     <div class="alert alert-danger">
                         <h6>Are you sure you want to delete this platform?</h6>
@@ -485,6 +489,7 @@
                 <input type="hidden" name="platform" id="deleteHostPlatformId">
                 <input type="hidden" name="host" id="deleteHostId">
                 <input type="hidden" name="delete" value="true">
+                <input type="hidden" name="csrf_token" value="<?= $security->generateCsrfToken() ?>">
                 <div class="modal-body">
                     <div class="alert alert-danger">
                         <h6>Are you sure you want to delete this host?</h6>
@@ -524,6 +529,7 @@
                 <input type="hidden" name="item" value="agent">
                 <input type="hidden" name="delete" value="true">
                 <input type="hidden" name="agent" id="deleteAgentId">
+                <input type="hidden" name="csrf_token" value="<?= $security->generateCsrfToken() ?>">
                 <div class="modal-body">
                     <div class="alert alert-danger">
                         <h6>Are you sure you want to delete this agent?</h6>
