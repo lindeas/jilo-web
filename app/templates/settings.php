@@ -691,6 +691,7 @@ $(function() {
         const formData = new FormData();
         formData.append('item', 'platform');
         formData.append('platform', platformId);
+        formData.append('csrf_token', '<?= $security->generateCsrfToken() ?>');
         formData.append('name', platformTable.find('input[name="name"]').val());
         formData.append('jitsi_url', platformTable.find('input[name="jitsi_url"]').val());
         formData.append('jilo_database', platformTable.find('input[name="jilo_database"]').val());
@@ -914,6 +915,7 @@ $(function() {
         formData.append('item', 'host');
         formData.append('host', hostId);
         formData.append('platform', platformId);
+        formData.append('csrf_token', '<?= $security->generateCsrfToken() ?>');
 
         card.find('.host-edit-mode input').each(function() {
             formData.append($(this).attr('name'), $(this).val());
@@ -1048,6 +1050,7 @@ $(function() {
         formData.append('item', 'agent');
         formData.append('agent', agentId);
         formData.append('host', hostId);
+        formData.append('csrf_token', '<?= $security->generateCsrfToken() ?>');
 
         row.find('.agent-edit-mode input, .agent-edit-mode select').each(function() {
             formData.append($(this).attr('name'), $(this).val());

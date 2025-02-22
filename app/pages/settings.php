@@ -7,6 +7,10 @@
  * adding, editing, and deleting platforms, hosts, agents.
  */
 
+// Check if this is an AJAX request
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
 // Get any new feedback messages
 include '../app/helpers/feedback.php';
 
@@ -73,8 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the host failed. Error: $result";
             }
         }
-        header('Location: ' . $redirectUrl);
-        exit;
+        if (!$isAjax) {
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
 
     // agent operations
     } elseif (isset($_POST['item']) && $_POST['item'] === 'agent') {
@@ -114,8 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the agent failed. Error: $result";
             }
         }
-        header('Location: ' . $redirectUrl);
-        exit;
+        if (!$isAjax) {
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
 
     // platform operations
     } elseif (isset($_POST['item']) && $_POST['item'] === 'platform') {
@@ -153,8 +161,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['error'] = "Editing the platform failed. Error: $result";
             }
         }
-        header('Location: ' . $redirectUrl);
-        exit;
+        if (!$isAjax) {
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
     }
 
 } else {
