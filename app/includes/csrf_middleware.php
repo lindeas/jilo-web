@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../helpers/security.php';
 
 function applyCsrfMiddleware() {
+    global $dbWeb, $logObject;
     $security = SecurityHelper::getInstance();
 
     // Skip CSRF check for GET requests
@@ -22,9 +23,13 @@ function applyCsrfMiddleware() {
         $token = $_POST['csrf_token'] ?? '';
         if (!$security->verifyCsrfToken($token)) {
             // Log CSRF attempt
-            error_log("CSRF attempt detected from IP: " . $_SERVER['REMOTE_ADDR']);
-//FIXME log class not loaded
-//            $logObject->insertLog(0, "CSRF attempt detected from IP: " . $_SERVER['REMOTE_ADDR'], 'system');
+            $logMessage = sprintf(
+                "CSRF attempt detected - IP: %s, Page: %s, User: %s",
+                $_SERVER['REMOTE_ADDR'],
+                $_GET['page'] ?? 'unknown',
+                $_SESSION['username'] ?? 'anonymous'
+            );
+            $logObject->insertLog(0, $logMessage);
 
             // Return error message
             http_response_code(403);

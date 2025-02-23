@@ -70,7 +70,7 @@ class Component {
             }
 
             $stmt = $this->db->prepare($sql);
-            
+
             // Bind parameters only if they're not default values
             if ($jitsi_component !== 'jitsi_component') {
                 $stmt->bindValue(':jitsi_component', trim($jitsi_component, "'"));
@@ -92,7 +92,7 @@ class Component {
 
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
+
             if (!empty($result)) {
                 $logObject->insertLog(0, "Retrieved " . count($result) . " Jitsi component events");
             }
