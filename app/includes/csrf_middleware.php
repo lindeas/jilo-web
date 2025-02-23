@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../helpers/security.php';
 
 function applyCsrfMiddleware() {
-    global $dbWeb, $logObject;
     $security = SecurityHelper::getInstance();
 
     // Skip CSRF check for GET requests
@@ -11,9 +10,10 @@ function applyCsrfMiddleware() {
         return true;
     }
 
-    // Skip CSRF check for initial login attempt
+    // Skip CSRF check for initial login and registration attempts
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
-        isset($_GET['page']) && $_GET['page'] === 'login' && 
+        isset($_GET['page']) && 
+        in_array($_GET['page'], ['login', 'register']) && 
         !isset($_SESSION['username'])) {
         return true;
     }
@@ -29,7 +29,7 @@ function applyCsrfMiddleware() {
                 $_GET['page'] ?? 'unknown',
                 $_SESSION['username'] ?? 'anonymous'
             );
-            $logObject->insertLog(0, $logMessage);
+            $logObject->insertLog(0, $logMessage, 'system');
 
             // Return error message
             http_response_code(403);

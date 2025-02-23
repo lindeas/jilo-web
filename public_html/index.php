@@ -24,14 +24,6 @@ require '../app/includes/sanitize.php';
 session_name('jilo');
 session_start();
 
-// Initialize security middleware
-require_once '../app/includes/csrf_middleware.php';
-require_once '../app/helpers/security.php';
-$security = SecurityHelper::getInstance();
-
-// Verify CSRF token for POST requests
-applyCsrfMiddleware();
-
 // Initialize feedback message system
 require_once '../app/classes/feedback.php';
 $system_messages = [];
@@ -136,6 +128,14 @@ require '../app/classes/log.php';
 include '../app/helpers/logs.php';
 $logObject = new Log($dbWeb);
 $user_IP = getUserIP();
+
+// Initialize security middleware
+require_once '../app/includes/csrf_middleware.php';
+require_once '../app/helpers/security.php';
+$security = SecurityHelper::getInstance();
+
+// Verify CSRF token for POST requests
+applyCsrfMiddleware();
 
 // init rate limiter
 require '../app/classes/ratelimiter.php';
