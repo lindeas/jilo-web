@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../helpers/security.php';
+require_once __DIR__ . '/../helpers/logs.php';
 
 function applyCsrfMiddleware() {
     $security = SecurityHelper::getInstance();
@@ -23,9 +24,10 @@ function applyCsrfMiddleware() {
         $token = $_POST['csrf_token'] ?? '';
         if (!$security->verifyCsrfToken($token)) {
             // Log CSRF attempt
+            $ipAddress = getUserIP();
             $logMessage = sprintf(
                 "CSRF attempt detected - IP: %s, Page: %s, User: %s",
-                $_SERVER['REMOTE_ADDR'],
+                $ipAddress,
                 $_GET['page'] ?? 'unknown',
                 $_SESSION['username'] ?? 'anonymous'
             );
