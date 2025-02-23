@@ -9,12 +9,13 @@ require_once __DIR__ . '/../helpers/logs.php';
  * @param Database $database Database connection
  * @param string $endpoint The endpoint being accessed
  * @param int|null $userId Current user ID if authenticated
+ * @param RateLimiter|null $existingRateLimiter Optional existing RateLimiter instance
  * @return bool True if request is allowed, false if rate limited
  */
-function checkRateLimit($database, $endpoint, $userId = null) {
+function checkRateLimit($database, $endpoint, $userId = null, $existingRateLimiter = null) {
     global $app_root;
     $isTest = defined('PHPUNIT_RUNNING');
-    $rateLimiter = new RateLimiter($database);
+    $rateLimiter = $existingRateLimiter ?? new RateLimiter($database);
     $ipAddress = getUserIP();
 
     // Check if request is allowed

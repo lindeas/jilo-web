@@ -25,12 +25,11 @@ try {
     require_once '../app/classes/ratelimiter.php';
     $rateLimiter = new RateLimiter($dbWeb);
 
+    // Get user IP
+    $user_IP = getUserIP();
+
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         try {
-            // apply page rate limiting
-            require_once '../app/includes/rate_limit_middleware.php';
-            checkRateLimit($dbWeb, 'login', null); // null since user is not logged in yet
-
             // Validate form data
             $security = SecurityHelper::getInstance();
             $formData = $security->sanitizeArray($_POST, ['username', 'password', 'remember_me', 'csrf_token']);
@@ -57,17 +56,20 @@ try {
             $username = $formData['username'];
             $password = $formData['password'];
 
-            // Check if IP is blacklisted
-            if ($rateLimiter->isIpBlacklisted($user_IP)) {
-                throw new Exception(Feedback::get('LOGIN', 'IP_BLACKLISTED')['message']);
-            }
-
-            // Check rate limiting (but skip if IP is whitelisted)
+            // Skip all checks if IP is whitelisted
             if (!$rateLimiter->isIpWhitelisted($user_IP)) {
-                $attempts = $rateLimiter->getRecentAttempts($user_IP);
-                if ($attempts >= $rateLimiter->maxAttempts) {
+                // Check if IP is blacklisted
+                if ($rateLimiter->isIpBlacklisted($user_IP)) {
+                    throw new Exception(Feedback::get('LOGIN', 'IP_BLACKLISTED')['message']);
+                }
+
+                // Check rate limiting before recording attempt
+                if ($rateLimiter->tooManyAttempts($username, $user_IP)) {
                     throw new Exception(Feedback::get('LOGIN', 'LOGIN_BLOCKED')['message']);
                 }
+
+                // Record this attempt
+                $rateLimiter->attempt($username, $user_IP);
             }
 
             // login successful
@@ -77,21 +79,11 @@ try {
                     // 30*24*60*60 = 30 days
                     $cookie_lifetime = 30 * 24 * 60 * 60;
                     $setcookie_lifetime = time() + 30 * 24 * 60 * 60;
-                    $gc_maxlifetime = 30 * 24 * 60 * 60;
                 } else {
                     // 0 - session end on browser close
-                    // 1440 - 24 minutes (default)
                     $cookie_lifetime = 0;
                     $setcookie_lifetime = 0;
-                    $gc_maxlifetime = 1440;
                 }
-
-                // Configure secure session settings
-                ini_set('session.cookie_httponly', 1);
-                ini_set('session.use_only_cookies', 1);
-                ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) ? 1 : 0);
-                ini_set('session.cookie_samesite', 'Strict');
-                ini_set('session.gc_maxlifetime', $gc_maxlifetime);
 
                 // Regenerate session ID to prevent session fixation
                 session_regenerate_id(true);

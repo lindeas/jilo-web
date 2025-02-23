@@ -7,8 +7,8 @@ class RateLimiter {
     public $decayMinutes = 15;         // Time window in minutes
     public $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
     public $autoBlacklistDuration = 24;  // Hours to blacklist for
-    public $authRatelimitTable = 'login_attempts';
-    public $pagesRatelimitTable = 'pages_rate_limits';
+    public $authRatelimitTable = 'login_attempts';  // For username/password attempts
+    public $pagesRatelimitTable = 'pages_rate_limits';  // For page requests
     public $whitelistTable = 'ip_whitelist';
     public $blacklistTable = 'ip_blacklist';
     private $pageLimits = [
@@ -33,7 +33,7 @@ class RateLimiter {
         // Authentication attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->authRatelimitTable} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL UNIQUE,
+            ip_address TEXT NOT NULL,
             username TEXT NOT NULL,
             attempted_at TEXT DEFAULT (DATETIME('now'))
         )";
@@ -157,17 +157,22 @@ class RateLimiter {
      * Check if an IP is whitelisted
      */
     public function isIpWhitelisted($ip) {
-        // Check exact IP match and CIDR ranges
-        $stmt = $this->db->prepare("SELECT ip_address, is_network FROM {$this->whitelistTable}");
-        $stmt->execute();
+        // Check exact IP match first
+        $stmt = $this->db->prepare("SELECT ip_address FROM {$this->whitelistTable} WHERE ip_address = ?");
+        $stmt->execute([$ip]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            return true;
+        }
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if ($row['is_network']) {
+        // Only check ranges for IPv4 addresses
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            // Check network ranges
+            $stmt = $this->db->prepare("SELECT ip_address FROM {$this->whitelistTable} WHERE is_network = 1");
+            $stmt->execute();
+
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 if ($this->ipInRange($ip, $row['ip_address'])) {
-                    return true;
-                }
-            } else {
-                if ($ip === $row['ip_address']) {
                     return true;
                 }
             }
@@ -177,7 +182,17 @@ class RateLimiter {
     }
 
     private function ipInRange($ip, $cidr) {
+        // Only work with IPv4 addresses
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            return false;
+        }
+
         list($subnet, $bits) = explode('/', $cidr);
+
+        // Make sure subnet is IPv4
+        if (!filter_var($subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            return false;
+        }
 
         $ip = ip2long($ip);
         $subnet = ip2long($subnet);
@@ -412,21 +427,12 @@ class RateLimiter {
         // Record this attempt
         $sql = "INSERT INTO {$this->authRatelimitTable} (ip_address, username) VALUES (:ip, :username)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            ':ip'           => $ipAddress,
-            ':username'     => $username
-        ]);
-
-        // Auto-blacklist if too many attempts
-        if (!$this->isAllowed($username, $ipAddress)) {
-            $this->addToBlacklist(
-                $ipAddress,
-                false,
-                'Auto-blacklisted due to excessive login attempts',
-                'system',
-                null,
-                $this->autoBlacklistDuration
-            );
+        try {
+            $stmt->execute([
+                ':ip'           => $ipAddress,
+                ':username'     => $username
+            ]);
+        } catch (PDOException $e) {
             return false;
         }
 
@@ -448,6 +454,13 @@ class RateLimiter {
         ]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Also check what's in the table
+        $sql = "SELECT * FROM {$this->authRatelimitTable} WHERE ip_address = :ip";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':ip' => $ipAddress]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         return $result['attempts'] >= $this->maxAttempts;
     }
 
