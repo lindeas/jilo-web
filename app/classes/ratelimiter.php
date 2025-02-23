@@ -461,7 +461,21 @@ class RateLimiter {
         $stmt->execute([':ip' => $ipAddress]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $result['attempts'] >= $this->maxAttempts;
+        $tooMany = $result['attempts'] >= $this->maxAttempts;
+
+        // Auto-blacklist if too many attempts
+        if ($tooMany) {
+            $this->addToBlacklist(
+                $ipAddress,
+                false,
+                'Auto-blacklisted due to excessive login attempts',
+                'system',
+                null,
+                $this->autoBlacklistDuration
+            );
+        }
+
+        return $tooMany;
     }
 
     public function clearOldAttempts() {
