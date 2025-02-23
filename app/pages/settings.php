@@ -46,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $host_id = $_POST['host'];
             $result = $hostObject->deleteHost($host_id);
             if ($result === true) {
-                $_SESSION['notice'] = "Host deleted successfully.";
+                Feedback::flash('NOTICE', 'DEFAULT', "Host deleted successfully.", true);
             } else {
-                $_SESSION['error'] = "Deleting the host failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Deleting the host failed. Error: $result", true);
             }
         } else if (!isset($_POST['host'])) { // This is a new host
             $newHost = [
@@ -58,9 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ];
             $result = $hostObject->addHost($newHost);
             if ($result === true) {
-                $_SESSION['notice'] = "New Jilo host added.";
+                Feedback::flash('NOTICE', 'DEFAULT', "New Jilo host added.", true);
             } else {
-                $_SESSION['error'] = "Adding the host failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Adding the host failed. Error: $result", true);
             }
         } else { // This is an edit of existing host
             $host_id = $_POST['host'];
@@ -72,9 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ];
             $result = $hostObject->editHost($platform_id, $updatedHost);
             if ($result === true) {
-                $_SESSION['notice'] = "Host edited.";
+                Feedback::flash('NOTICE', 'DEFAULT', "Host edited.", true);
             } else {
-                $_SESSION['error'] = "Editing the host failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Editing the host failed. Error: $result", true);
             }
         }
         if (!$isAjax) {
@@ -88,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $agent_id = $_POST['agent'];
             $result = $agentObject->deleteAgent($agent_id);
             if ($result === true) {
-                $_SESSION['notice'] = "Agent deleted successfully.";
+                Feedback::flash('NOTICE', 'DEFAULT', "Agent deleted successfully.", true);
             } else {
-                $_SESSION['error'] = "Deleting the agent failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Deleting the agent failed. Error: $result", true);
             }
         } else if (isset($_POST['new']) && $_POST['new'] === 'true') { // This is a new agent
             $newAgent = [
@@ -101,9 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ];
             $result = $agentObject->addAgent($_POST['host'], $newAgent);
             if ($result === true) {
-                $_SESSION['notice'] = "New Jilo agent added.";
+                Feedback::flash('NOTICE', 'DEFAULT', "New Jilo agent added.", true);
             } else {
-                $_SESSION['error'] = "Adding the agent failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Adding the agent failed. Error: $result", true);
             }
         } else { // This is an edit of existing agent
             $agent_id = $_POST['agent'];
@@ -115,9 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ];
             $result = $agentObject->editAgent($agent_id, $updatedAgent);
             if ($result === true) {
-                $_SESSION['notice'] = "Agent edited.";
+                Feedback::flash('NOTICE', 'DEFAULT', "Agent edited.", true);
             } else {
-                $_SESSION['error'] = "Editing the agent failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Editing the agent failed. Error: $result", true);
             }
         }
         if (!$isAjax) {
@@ -131,9 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $platform_id = $_POST['platform'];
             $result = $platformObject->deletePlatform($platform_id);
             if ($result === true) {
-                $_SESSION['notice'] = "Platform deleted successfully.";
+                Feedback::flash('NOTICE', 'DEFAULT', "Platform deleted successfully.", true);
             } else {
-                $_SESSION['error'] = "Deleting the platform failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Deleting the platform failed. Error: $result", true);
             }
         } else if (!isset($_POST['platform'])) { // This is a new platform
             $newPlatform = [
@@ -143,9 +143,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ];
             $result = $platformObject->addPlatform($newPlatform);
             if ($result === true) {
-                $_SESSION['notice'] = "New Jitsi platform added.";
+                Feedback::flash('NOTICE', 'DEFAULT', "New Jitsi platform added.", true);
             } else {
-                $_SESSION['error'] = "Adding the platform failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Adding the platform failed. Error: $result", true);
             }
         } else { // This is an edit of existing platform
             $platform_id = $_POST['platform'];
@@ -156,9 +156,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             ];
             $result = $platformObject->editPlatform($platform_id, $updatedPlatform);
             if ($result === true) {
-                $_SESSION['notice'] = "Platform edited.";
+                Feedback::flash('NOTICE', 'DEFAULT', "Platform edited.", true);
             } else {
-                $_SESSION['error'] = "Editing the platform failed. Error: $result";
+                Feedback::flash('ERROR', 'DEFAULT', "Editing the platform failed. Error: $result", true);
             }
         }
         header('Location: ' . $redirectUrl);
@@ -177,5 +177,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         include '../app/templates/error-unauthorized.php';
     }
 }
-
-?>
