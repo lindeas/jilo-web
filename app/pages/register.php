@@ -12,9 +12,7 @@
 if ($config['registration_enabled'] == true) {
 
     try {
-
-        // connect to database
-        $dbWeb = connectDB($config)['db'];
+        global $dbWeb, $logObject, $userObject;
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
@@ -42,8 +40,9 @@ if ($config['registration_enabled'] == true) {
                 ]
             ];
 
+            $username = $_POST['username'] ?? 'unknown';
+
             if ($validator->validate($rules)) {
-                $username = $_POST['username'];
                 $password = $_POST['password'];
 
                 // registering
@@ -51,22 +50,29 @@ if ($config['registration_enabled'] == true) {
 
                 // redirect to login
                 if ($result === true) {
+                    // Get the new user's ID for logging
+                    $user_id = $userObject->getUserId($username)[0]['id'];
+                    $logObject->insertLog($user_id, "Registration: New user \"$username\" registered successfully. IP: $user_IP", 'user');
                     Feedback::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
                     header('Location: ' . htmlspecialchars($app_root));
                     exit();
                 // registration fail, redirect to login
                 } else {
+                    $logObject->insertLog(0, "Registration: Failed registration attempt for user \"$username\". IP: $user_IP. Reason: $result", 'system');
                     Feedback::flash('ERROR', 'DEFAULT', "Registration failed. $result");
                     header('Location: ' . htmlspecialchars($app_root));
                     exit();
                 }
             } else {
-                Feedback::flash('ERROR', 'DEFAULT', $validator->getFirstError());
+                $error = $validator->getFirstError();
+                $logObject->insertLog(0, "Registration: Failed validation for user \"" . ($username ?? 'unknown') . "\". IP: $user_IP. Reason: $error", 'system');
+                Feedback::flash('ERROR', 'DEFAULT', $error);
                 header('Location: ' . htmlspecialchars($app_root . '?page=register'));
                 exit();
             }
         }
     } catch (Exception $e) {
+        $logObject->insertLog(0, "Registration: System error. IP: $user_IP. Error: " . $e->getMessage(), 'system');
         Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
     }
 
