@@ -21,8 +21,18 @@ if ($config['registration_enabled'] == true) {
             checkRateLimit($dbWeb, 'register');
 
             require_once '../app/classes/validator.php';
+            require_once '../app/helpers/security.php';
+            $security = SecurityHelper::getInstance();
 
-            $validator = new Validator($_POST);
+            // Sanitize input
+            $formData = $security->sanitizeArray($_POST, ['username', 'password', 'confirm_password', 'csrf_token']);
+
+            // Validate CSRF token
+            if (!$security->verifyCsrfToken($formData['csrf_token'] ?? '')) {
+                throw new Exception(Feedback::get('ERROR', 'CSRF_INVALID')['message']);
+            }
+
+            $validator = new Validator($formData);
             $rules = [
                 'username' => [
                     'required' => true,
@@ -40,10 +50,10 @@ if ($config['registration_enabled'] == true) {
                 ]
             ];
 
-            $username = $_POST['username'] ?? 'unknown';
+            $username = $formData['username'] ?? 'unknown';
 
             if ($validator->validate($rules)) {
-                $password = $_POST['password'];
+                $password = $formData['password'];
 
                 // registering
                 $result = $userObject->register($username, $password);
