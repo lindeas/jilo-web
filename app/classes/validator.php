@@ -74,6 +74,14 @@ class Validator {
                     $this->addError($field, "Does not match $parameter field");
                 }
                 break;
+            case 'ip':
+                if (!empty($value)) {
+                    // Support both IPv4 and IPv6
+                    if (!filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) {
+                        $this->addError($field, "Invalid IP address format");
+                    }
+                }
+                break;
         }
     }
 
