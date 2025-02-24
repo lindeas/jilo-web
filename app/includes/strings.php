@@ -2,6 +2,11 @@
 
 // Message strings for translation
 return [
+    'ERROR' => [
+        'CSRF_INVALID' => 'Invalid security token. Please try again.',
+        'INVALID_ACTION' => 'Invalid action requested.',
+        'DEFAULT' => 'An error occurred. Please try again.',
+    ],
     'LOGIN' => [
         'LOGIN_SUCCESS' => 'Login successful.',
         'LOGIN_FAILED' => 'Login failed. Please check your credentials.',
@@ -12,13 +17,15 @@ return [
     ],
     'SECURITY' => [
         'WHITELIST_ADD_SUCCESS' => 'IP address successfully added to whitelist.',
-        'WHITELIST_ADD_ERROR' => 'Failed to add IP to whitelist. Please check the IP format.',
+        'WHITELIST_ADD_FAILED' => 'Failed to add IP to whitelist.',
+        'WHITELIST_ADD_ERROR_IP' => 'Failed to add IP to whitelist. Please check the IP format.',
         'WHITELIST_REMOVE_SUCCESS' => 'IP address successfully removed from whitelist.',
-        'WHITELIST_REMOVE_ERROR' => 'Failed to remove IP from whitelist.',
+        'WHITELIST_REMOVE_FAILED' => 'Failed to remove IP from whitelist.',
         'BLACKLIST_ADD_SUCCESS' => 'IP address successfully added to blacklist.',
-        'BLACKLIST_ADD_ERROR' => 'Failed to add IP to blacklist. Please check the IP format.',
+        'BLACKLIST_ADD_FAILED' => 'Failed to add IP to blacklist.',
+        'BLACKLIST_ADD_ERROR_IP' => 'Failed to add IP to blacklist. Please check the IP format.',
         'BLACKLIST_REMOVE_SUCCESS' => 'IP address successfully removed from blacklist.',
-        'BLACKLIST_REMOVE_ERROR' => 'Failed to remove IP from blacklist.',
+        'BLACKLIST_REMOVE_FAILED' => 'Failed to remove IP from blacklist.',
         'RATE_LIMIT_INFO' => 'Rate limiting is active. This helps protect against brute force attacks.',
         'PERMISSION_DENIED' => 'Permission denied. You do not have the required rights.',
         'IP_REQUIRED' => 'IP address is required.',

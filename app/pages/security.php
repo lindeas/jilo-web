@@ -36,15 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         switch ($action) {
             case 'add_whitelist':
                 if (!$userObject->hasRight($user_id, 'superuser') && !$userObject->hasRight($user_id, 'edit whitelist')) {
-                    throw new Exception('Unauthorized action');
+                    Feedback::flash('SECURITY', 'PERMISSION_DENIED');
+                    break;
                 }
 
                 $rules = [
                     'ip_address' => [
                         'required' => true,
-                        'max' => 45 // IPv6 max length
+                        'max' => 45, // Max length for IPv6
+                        'ip' => true
                     ],
                     'description' => [
+                        'required' => true,
                         'max' => 255
                     ]
                 ];
@@ -52,45 +55,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if ($validator->validate($rules)) {
                     $is_network = isset($_POST['is_network']) && $_POST['is_network'] === 'on';
                     if (!$rateLimiter->addToWhitelist($_POST['ip_address'], $is_network, $_POST['description'] ?? '', $currentUser, $user_id)) {
-                        throw new Exception('Failed to add IP to whitelist');
+                        Feedback::flash('SECURITY', 'WHITELIST_ADD_FAILED');
+                    } else {
+                        Feedback::flash('SECURITY', 'WHITELIST_ADD_SUCCESS');
                     }
-                    Feedback::flash('SECURITY', 'WHITELIST_ADD_SUCCESS');
                 } else {
-                    Feedback::flash('SECURITY', 'WHITELIST_ADD_ERROR', $validator->getFirstError());
+                    Feedback::flash('SECURITY', 'WHITELIST_ADD_ERROR_IP', $validator->getFirstError());
                 }
                 break;
 
             case 'remove_whitelist':
                 if (!$userObject->hasRight($user_id, 'superuser') && !$userObject->hasRight($user_id, 'edit whitelist')) {
-                    throw new Exception('Unauthorized action');
+                    Feedback::flash('SECURITY', 'PERMISSION_DENIED');
+                    break;
                 }
 
                 $rules = [
                     'ip_address' => [
                         'required' => true,
-                        'max' => 45
+                        'max' => 45,
+                        'ip' => true
                     ]
                 ];
 
                 if ($validator->validate($rules)) {
                     if (!$rateLimiter->removeFromWhitelist($_POST['ip_address'], $currentUser, $user_id)) {
-                        throw new Exception('Failed to remove IP from whitelist');
+                        Feedback::flash('SECURITY', 'WHITELIST_REMOVE_FAILED');
+                    } else {
+                        Feedback::flash('SECURITY', 'WHITELIST_REMOVE_SUCCESS');
                     }
-                    Feedback::flash('SECURITY', 'WHITELIST_REMOVE_SUCCESS');
                 } else {
-                    Feedback::flash('SECURITY', 'WHITELIST_REMOVE_ERROR', $validator->getFirstError());
+                    Feedback::flash('SECURITY', 'WHITELIST_REMOVE_FAILED', $validator->getFirstError());
                 }
                 break;
 
             case 'add_blacklist':
                 if (!$userObject->hasRight($user_id, 'superuser') && !$userObject->hasRight($user_id, 'edit blacklist')) {
-                    throw new Exception('Unauthorized action');
+                    Feedback::flash('SECURITY', 'PERMISSION_DENIED');
+                    break;
                 }
 
                 $rules = [
                     'ip_address' => [
                         'required' => true,
-                        'max' => 45
+                        'max' => 45,
+                        'ip' => true
                     ],
                     'reason' => [
                         'required' => true,
@@ -108,41 +117,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $expiry_hours = !empty($_POST['expiry_hours']) ? (int)$_POST['expiry_hours'] : null;
 
                     if (!$rateLimiter->addToBlacklist($_POST['ip_address'], $is_network, $_POST['reason'], $currentUser, $user_id, $expiry_hours)) {
-                        throw new Exception('Failed to add IP to blacklist');
+                        Feedback::flash('SECURITY', 'BLACKLIST_ADD_FAILED');
+                    } else {
+                        Feedback::flash('SECURITY', 'BLACKLIST_ADD_SUCCESS');
                     }
-                    Feedback::flash('SECURITY', 'BLACKLIST_ADD_SUCCESS');
                 } else {
-                    Feedback::flash('SECURITY', 'BLACKLIST_ADD_ERROR', $validator->getFirstError());
+                    Feedback::flash('SECURITY', 'BLACKLIST_ADD_ERROR_IP', $validator->getFirstError());
                 }
                 break;
 
             case 'remove_blacklist':
                 if (!$userObject->hasRight($user_id, 'superuser') && !$userObject->hasRight($user_id, 'edit blacklist')) {
-                    throw new Exception('Unauthorized action');
+                    Feedback::flash('SECURITY', 'PERMISSION_DENIED');
+                    break;
                 }
 
                 $rules = [
                     'ip_address' => [
                         'required' => true,
-                        'max' => 45
+                        'max' => 45,
+                        'ip' => true
                     ]
                 ];
 
                 if ($validator->validate($rules)) {
                     if (!$rateLimiter->removeFromBlacklist($_POST['ip_address'], $currentUser, $user_id)) {
-                        throw new Exception('Failed to remove IP from blacklist');
+                        Feedback::flash('SECURITY', 'BLACKLIST_REMOVE_FAILED');
+                    } else {
+                        Feedback::flash('SECURITY', 'BLACKLIST_REMOVE_SUCCESS');
                     }
-                    Feedback::flash('SECURITY', 'BLACKLIST_REMOVE_SUCCESS');
                 } else {
-                    Feedback::flash('SECURITY', 'BLACKLIST_REMOVE_ERROR', $validator->getFirstError());
+                    Feedback::flash('SECURITY', 'BLACKLIST_REMOVE_FAILED', $validator->getFirstError());
                 }
                 break;
 
             default:
-                throw new Exception('Invalid action');
+                Feedback::flash('ERROR', 'INVALID_ACTION');
         }
     } catch (Exception $e) {
-        Feedback::flash('SECURITY', 'ERROR', $e->getMessage());
+        Feedback::flash('ERROR', $e->getMessage());
     }
 
     // Redirect back to the appropriate section

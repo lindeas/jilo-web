@@ -65,7 +65,7 @@ try {
 
                 // Check rate limiting before recording attempt
                 if ($rateLimiter->tooManyAttempts($username, $user_IP)) {
-                    throw new Exception(Feedback::get('LOGIN', 'LOGIN_BLOCKED')['message']);
+                    throw new Exception(Feedback::get('LOGIN', 'TOO_MANY_ATTEMPTS')['message']);
                 }
 
                 // Record this attempt
@@ -127,7 +127,7 @@ try {
         }
     }
 } catch (Exception $e) {
-    Feedback::flash('ERROR', 'DEFAULT', 'There was an unexpected error. Please try again.');
+    Feedback::flash('ERROR', 'DEFAULT');
 }
 
 // Show configured login message if any
