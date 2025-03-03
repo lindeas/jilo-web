@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - Added authentication rate limiting to login and registration
 - Added unit tests
 - Added integration/feature tests
+- Added testing workflow for github
 
 ### Changed
 - Made the config editing in-place with AJAX
