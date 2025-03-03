@@ -12,9 +12,8 @@ class TestCase extends PHPUnit\Framework\TestCase
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         $_SERVER['HTTP_USER_AGENT'] = 'PHPUnit Test Browser';
 
-        // Include common app files
-        require_once dirname(__DIR__, 2) . '/app/includes/config.php';
-        require_once dirname(__DIR__, 2) . '/app/includes/functions.php';
+        // Include common app files (if there are any, we don't have for now)
+        //require_once dirname(__DIR__, 2) . '/app/includes/config.php';
 
         // Clean up any existing session
         if (session_status() === PHP_SESSION_ACTIVE) {

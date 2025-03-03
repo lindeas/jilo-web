@@ -13,10 +13,27 @@ All notable changes to this project will be documented in this file.
 - gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.3...HEAD
 
 ### Added
+- Added proper pagination
+- Added agents managemet pages
+- Added javascript-based feedback messages
+- Added description to each page
+- Added CSRF checks
+- Added validator class for all forms
+- Added rate limiting to all pages
+- Added authentication rate limiting to login and registration
+- Added unit tests
+- Added integration/feature tests
 
 ### Changed
+- Made the config editing in-place with AJAX
+- Redesigned the help page
+- Moved graphs and latest data to their own pages
+- Moved live config.js to its own page
+- Redesigned the messages system and renamed them to feedback messages
 
 ### Fixed
+- Fixed logs search
+- Removed hardcoded messages, changed to feedback messages
 
 ---
 
