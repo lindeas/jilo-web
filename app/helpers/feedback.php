@@ -32,5 +32,3 @@ if (isset($system_messages) && is_array($system_messages)) {
         );
     }
 }
-
-?>

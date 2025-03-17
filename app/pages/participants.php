@@ -176,5 +176,3 @@ if ($response['db'] === null) {
     include '../app/templates/participants.php';
 
 }
-
-?>

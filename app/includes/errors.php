@@ -38,5 +38,3 @@ function renderMessage(&$message, $type, $unset = false) {
         }
     }
 }
-
-?>

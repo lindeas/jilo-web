@@ -159,5 +159,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             include '../app/templates/profile.php';
     }
 }
-
-?>

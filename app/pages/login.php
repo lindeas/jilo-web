@@ -140,5 +140,3 @@ include '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/form-login.php';
-
-?>

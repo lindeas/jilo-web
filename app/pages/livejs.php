@@ -14,5 +14,3 @@ include '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/livejs.php';
-
-?>

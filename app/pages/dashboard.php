@@ -227,5 +227,3 @@ if ($response['db'] === null) {
     include '../app/templates/widget.php';
 
 }
-
-?>

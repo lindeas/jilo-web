@@ -70,7 +70,7 @@ if (isset($_REQUEST['tab'])) {
 
 // prepare the result
 $search = $logObject->readLog($user_id, $scope, $offset, $items_per_page, $filters);
-$search_all = $logObject->readLog($user_id, $scope, '', '', $filters);
+$search_all = $logObject->readLog($user_id, $scope, 0, 0, $filters);
 
 if (!empty($search)) {
     // we get total items and number of pages
@@ -107,5 +107,3 @@ $username = $userObject->getUserDetails($user_id)[0]['username'];
 
 // Load the template
 include '../app/templates/logs.php';
-
-?>

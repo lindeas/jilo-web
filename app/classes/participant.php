@@ -372,5 +372,3 @@ AND pe.event_type = 'participant joining'";
     }
 
 }
-
-?>

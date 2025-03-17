@@ -4,5 +4,3 @@
 include '../app/helpers/feedback.php';
 
 include '../app/templates/help.php';
-
-?>

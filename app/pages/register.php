@@ -96,5 +96,3 @@ if ($config['registration_enabled'] == true) {
 } else {
     echo Feedback::render('NOTICE', 'DEFAULT', 'Registration is disabled', false);
 }
-
-?>

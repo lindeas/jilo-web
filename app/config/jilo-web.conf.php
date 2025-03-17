@@ -36,5 +36,3 @@ return [
     'environment'		=> 'development',
 
 ];
-
-?>

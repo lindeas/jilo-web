@@ -645,5 +645,3 @@ class Agent {
         return null;
     }
 }
-
-?>

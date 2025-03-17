@@ -241,5 +241,3 @@ ob_end_flush();
 // clear errors and notices before next page just in case
 unset($_SESSION['error']);
 unset($_SESSION['notice']);
-
-?>

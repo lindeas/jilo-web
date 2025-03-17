@@ -18,5 +18,3 @@ function getUserIP() {
 
     return trim($ip);
 }
-
-?>

@@ -59,6 +59,3 @@ if (isset($_POST['check_period'])) {
 if (isset($_POST['name'])) {
     $name = htmlspecialchars($_POST['name']);
 }
-
-
-?>

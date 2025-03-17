@@ -44,5 +44,3 @@ function switchPlatform($platform_id) {
     // return the new URL with the new platform_id
     return $new_url;
 }
-
-?>

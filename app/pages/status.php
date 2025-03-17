@@ -79,5 +79,3 @@ foreach ($platformsAll as $platform) {
 echo "\n\t\t\t\t\t\t</div>";
 echo "\n\t\t\t\t\t</div>";
 echo "\n\t\t\t\t</div>";
-
-?>

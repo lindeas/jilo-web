@@ -97,4 +97,3 @@ if (!$isAjax) {
         include '../app/templates/error-unauthorized.php';
     }
 }
-?>

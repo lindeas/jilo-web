@@ -89,5 +89,3 @@ include '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/graphs.php';
-
-?>

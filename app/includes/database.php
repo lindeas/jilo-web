@@ -59,4 +59,3 @@ function connectDB($config, $database = '', $dbFile = '', $platformId = '') {
     }
 
 }
-?>

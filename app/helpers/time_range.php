@@ -11,5 +11,3 @@ if (!isset($until_time) || (isset($until_time) && $until_time == '')) {
 } else {
     $time_range_specified = true;
 }
-
-?>
