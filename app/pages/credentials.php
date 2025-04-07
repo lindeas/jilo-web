@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($db, 'credentials', $user_id);
+    checkRateLimit($dbWeb, 'credentials', $user_id);
 
     switch ($item) {
         case '2fa':
