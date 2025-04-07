@@ -46,6 +46,23 @@ CREATE TABLE platforms (
     jitsi_url TEXT NOT NULL,
     jilo_database TEXT NOT NULL
 );
+CREATE TABLE user_2fa (
+  user_id INTEGER NOT NULL PRIMARY KEY,
+  secret_key TEXT NOT NULL,
+  backup_codes TEXT,
+  enabled INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  last_used TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE TABLE user_2fa_temp (
+  user_id INTEGER NOT NULL,
+  code TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, code),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
