@@ -13,17 +13,24 @@
  */
 
 $action = $_REQUEST['action'] ?? '';
+$item = $_REQUEST['item'] ?? '';
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validate CSRF token
+    require_once '../app/helpers/security.php';
+    $security = SecurityHelper::getInstance();
+    if (!$security->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        Feedback::flash('ERROR', 'DEFAULT', 'Invalid security token. Please try again.');
+        header("Location: $app_root?page=profile");
+        exit();
+    }
 
     require_once '../app/classes/validator.php';
 
     // Apply rate limiting for profile operations
     require_once '../app/includes/rate_limit_middleware.php';
     checkRateLimit($dbWeb, 'profile', $user_id);
-
-    $item = $_REQUEST['item'] ?? '';
 
     // avatar removal
     if ($item === 'avatar' && $action === 'remove') {
@@ -136,8 +143,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $avatar = !empty($userDetails[0]['avatar']) ? $config['avatars_path'] . $userDetails[0]['avatar'] : $config['default_avatar'];
     $default_avatar = empty($userDetails[0]['avatar']) ? true : false;
 
-    switch ($action) {
+    // Generate CSRF token if not exists
+    require_once '../app/helpers/security.php';
+    $security = SecurityHelper::getInstance();
+    $security->generateCsrfToken();
 
+    switch ($action) {
         case 'edit':
             $allRights = $userObject->getAllRights();
             $allTimezones = timezone_identifiers_list();
