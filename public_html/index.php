@@ -53,6 +53,7 @@ $allowed_urls = [
     'config',
 
     'profile',
+    'credentials',
 
     'settings',
     'security',
