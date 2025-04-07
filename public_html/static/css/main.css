@@ -44,6 +44,57 @@ html, body {
 .menu-left li a:hover, .menu-right li a:hover {
     background-color: #111;
 }
+/* Dropdown menu styles */
+.dropdown-menu {
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.175);
+    margin-top: 0;
+    min-width: 200px;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #333;
+    padding: 8px 16px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #16181b;
+    text-decoration: none;
+}
+
+.dropdown-menu .dropdown-item i {
+    width: 16px;
+    text-align: center;
+    color: #666;
+}
+
+.dropdown-menu .dropdown-item:hover i {
+    color: #16181b;
+}
+
+.dropdown-divider {
+    margin: 4px 0;
+    border-top: 1px solid #e9ecef;
+}
+
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+    content: "";
+    border-top: 4px solid;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
 /* /menu */
 
 .error {

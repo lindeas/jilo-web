@@ -35,8 +35,24 @@
 
             <ul class="menu-right">
 <?php if ( isset($_SESSION['username']) ) { ?>
-                <li><a href="<?= htmlspecialchars($app_root) ?>?page=profile"><?= htmlspecialchars($currentUser) ?></a></li>
-                <li><a href="<?= htmlspecialchars($app_root) ?>?page=logout">logout</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <h6 class="dropdown-header"><?= htmlspecialchars($currentUser) ?></h6>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=profile">
+                            <i class="fas fa-id-card"></i>Profile details
+                        </a>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=credentials">
+                            <i class="fas fa-shield-alt"></i>Login credentials
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=logout">
+                            <i class="fas fa-sign-out-alt"></i>Logout
+                        </a>
+                    </div>
+                </li>
 <?php } else { ?>
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=login">login</a></li>
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=register">register</a></li>
