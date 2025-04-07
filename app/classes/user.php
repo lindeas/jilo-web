@@ -11,6 +11,7 @@ class User {
      */
     private $db;
     private $rateLimiter;
+    private $twoFactorAuth;
 
     /**
      * User constructor.
@@ -19,8 +20,16 @@ class User {
      * @param object $database The database object to initialize the connection.
      */
     public function __construct($database) {
-        $this->db = $database->getConnection();
+        if ($database instanceof PDO) {
+            $this->db = $database;
+        } else {
+            $this->db = $database->getConnection();
+        }
+        require_once __DIR__ . '/ratelimiter.php';
+        require_once __DIR__ . '/twoFactorAuth.php';
+
         $this->rateLimiter = new RateLimiter($database);
+        $this->twoFactorAuth = new TwoFactorAuthentication($database);
     }
 
 
@@ -86,10 +95,11 @@ class User {
      *
      * @param string $username The username of the user.
      * @param string $password The password of the user.
+     * @param string $twoFactorCode Optional. The 2FA code if 2FA is enabled.
      *
-     * @return bool True if login is successful, false otherwise.
+     * @return array Login result with status and any necessary data
      */
-    public function login($username, $password) {
+    public function login($username, $password, $twoFactorCode = null) {
         // Get user's IP address
         require_once __DIR__ . '/../helpers/logs.php';
         $ipAddress = getUserIP();
@@ -110,14 +120,41 @@ class User {
 
         $user = $query->fetch(PDO::FETCH_ASSOC);
         if ($user && password_verify($password, $user['password'])) {
+            // Check if 2FA is enabled
+            if ($this->twoFactorAuth->isEnabled($user['id'])) {
+                if ($twoFactorCode === null) {
+                    return [
+                        'status' => 'requires_2fa',
+                        'user_id' => $user['id'],
+                        'username' => $user['username']
+                    ];
+                }
+
+                // Verify 2FA code
+                if (!$this->twoFactorAuth->verify($user['id'], $twoFactorCode)) {
+                    return [
+                        'status' => 'invalid_2fa',
+                        'message' => 'Invalid 2FA code'
+                    ];
+                }
+            }
+
+            // Login successful
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            return true;
+            return [
+                'status' => 'success',
+                'user_id' => $user['id'],
+                'username' => $user['username']
+            ];
         }
 
         // Get remaining attempts AFTER this failed attempt
         $remainingAttempts = $this->rateLimiter->getRemainingAttempts($username, $ipAddress);
-        throw new Exception("Invalid credentials. {$remainingAttempts} attempts remaining.");
+        return [
+            'status' => 'failed',
+            'message' => "Invalid credentials. {$remainingAttempts} attempts remaining."
+        ];
     }
 
 
@@ -450,4 +487,97 @@ class User {
         }
     }
 
+    /**
+     * Get all users for messaging
+     *
+     * @return array List of users with their IDs and usernames
+     */
+    public function getUsers() {
+        $sql = "SELECT id, username
+                FROM users
+                ORDER BY username ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Enable two-factor authentication for a user
+     *
+     * @param int $userId User ID
+     * @return array Result of enabling 2FA
+     */
+    public function enableTwoFactor($userId) {
+        return $this->twoFactorAuth->enable($userId);
+    }
+
+    /**
+     * Disable two-factor authentication for a user
+     *
+     * @param int $userId User ID
+     * @return bool True if disabled successfully
+     */
+    public function disableTwoFactor($userId) {
+        return $this->twoFactorAuth->disable($userId);
+    }
+
+    /**
+     * Verify a two-factor authentication code
+     *
+     * @param int $userId User ID
+     * @param string $code The verification code
+     * @return bool True if verified
+     */
+    public function verifyTwoFactor($userId, $code) {
+        return $this->twoFactorAuth->verify($userId, $code);
+    }
+
+    /**
+     * Check if two-factor authentication is enabled for a user
+     *
+     * @param int $userId User ID
+     * @return bool True if enabled
+     */
+    public function isTwoFactorEnabled($userId) {
+        return $this->twoFactorAuth->isEnabled($userId);
+    }
+
+    /**
+     * Change a user's password
+     *
+     * @param int $userId User ID
+     * @param string $currentPassword Current password for verification
+     * @param string $newPassword New password to set
+     * @return bool True if password was changed successfully
+     */
+    public function changePassword($userId, $currentPassword, $newPassword) {
+        try {
+            // First verify the current password
+            $sql = "SELECT password FROM users WHERE id = :user_id";
+            $query = $this->db->prepare($sql);
+            $query->execute([':user_id' => $userId]);
+            $user = $query->fetch(PDO::FETCH_ASSOC);
+
+            if (!$user || !password_verify($currentPassword, $user['password'])) {
+                return false;
+            }
+
+            // Hash the new password
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            // Update the password
+            $sql = "UPDATE users SET password = :password WHERE id = :user_id";
+            $query = $this->db->prepare($sql);
+            return $query->execute([
+                ':password' => $hashedPassword,
+                ':user_id' => $userId
+            ]);
+
+        } catch (Exception $e) {
+            error_log("Error changing password: " . $e->getMessage());
+            return false;
+        }
+    }
 }
