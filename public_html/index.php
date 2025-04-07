@@ -11,7 +11,7 @@
  * Version: 0.3
  */
 
-// we start output buffering and.
+// we start output buffering and
 // flush it later only when there is no redirect
 ob_start();
 
@@ -195,8 +195,7 @@ if ($page == 'logout') {
         $user_id = $userObject->getUserId($currentUser)[0]['id'];
         $userDetails = $userObject->getUserDetails($user_id);
         $userRights = $userObject->getUserRights($user_id);
-        $userTimezone = isset($userDetails[0]['timezone']) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set
-
+        $userTimezone = (!empty($userDetails[0]['timezone'])) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set (or is missing)
 
         // check if the Jilo Server is running
         require '../app/classes/server.php';

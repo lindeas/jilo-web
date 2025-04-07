@@ -47,7 +47,7 @@
                                         <label class="form-label"><small>timezone:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-<?php if (isset($userDetails[0]['timezone'])) { ?>
+<?php if (!empty($userDetails[0]['timezone'])) { ?>
                                         <?= htmlspecialchars($userDetails[0]['timezone']) ?>&nbsp;&nbsp;<span style="font-size: 0.66em;">(<?= htmlspecialchars(getUTCOffset($userDetails[0]['timezone'])) ?>)</span>
 <?php } ?>
                                     </div>
