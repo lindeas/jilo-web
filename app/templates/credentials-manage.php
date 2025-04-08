@@ -77,7 +77,7 @@
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i> two-factor authentication is not enabled
                         </div>
-                        <form method="post" action="?page=credentials&item=2fa&action=edit">
+                        <form method="post" action="?page=credentials&item=2fa&action=setup">
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                             <button type="submit" class="btn btn-primary">
                                 set up two-factor authentication

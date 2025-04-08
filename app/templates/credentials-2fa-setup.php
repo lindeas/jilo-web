@@ -22,7 +22,7 @@
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($setupData)): ?>
+                    <?php if (isset($setupData) && is_array($setupData)): ?>
                         <div class="setup-steps">
                             <h4>1. Install an authenticator app</h4>
                             <p>If you haven't already, install an authenticator app on your mobile device:</p>
@@ -46,7 +46,7 @@
                             <h4 class="mt-4">3. Verify setup</h4>
                             <p>Enter the 6-digit code from your authenticator app to verify the setup:</p>
 
-                            <form method="post" action="?page=credentials&action=setup" class="mt-3">
+                            <form method="post" action="?page=credentials&item=2fa&action=setup" class="mt-3">
                                 <div class="form-group">
                                     <input type="text" 
                                            name="code" 
@@ -58,6 +58,7 @@
                                 </div>
 
                                 <input type="hidden" name="secret" value="<?php echo htmlspecialchars($setupData['secret']); ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
                                 <button type="submit" class="btn btn-primary mt-3">
                                     Verify and enable 2FA
@@ -82,12 +83,10 @@
                             </div>
                         </div>
                     <?php else: ?>
-                        <form method="post" action="?page=credentials&action=setup" class="mt-3">
-                            <p>Click the button below to begin setting up two-factor authentication:</p>
-                            <button type="submit" class="btn btn-primary">
-                                Begin setup
-                            </button>
-                        </form>
+                        <div class="alert alert-danger">
+                            Failed to generate 2FA setup data. Please try again.
+                        </div>
+                        <a href="?page=credentials" class="btn btn-primary">Back to credentials</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -95,7 +94,7 @@
     </div>
 </div>
 
-<?php if (!empty($setupData)): ?>
+<?php if (isset($setupData) && is_array($setupData)): ?>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

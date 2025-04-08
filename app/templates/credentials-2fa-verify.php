@@ -20,7 +20,7 @@
 
                     <p>Enter the 6-digit code from your authenticator app:</p>
 
-                    <form method="post" action="?page=credentials&action=verify" class="mt-3">
+                    <form method="post" action="?page=login&action=verify" class="mt-3">
                         <div class="form-group">
                             <input type="text" 
                                    name="code" 
@@ -50,7 +50,7 @@
                         </p>
 
                         <div class="collapse mt-3" id="backupCodeForm">
-                            <form method="post" action="?page=credentials&action=verify" class="mt-3">
+                            <form method="post" action="?page=login&action=verify" class="mt-3">
                                 <div class="form-group">
                                     <label>Enter backup code:</label>
                                     <input type="text" 
