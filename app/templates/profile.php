@@ -29,7 +29,7 @@
                                         <label class="form-label"><small>name:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <?= htmlspecialchars($userDetails[0]['name']) ?>
+                                        <?= htmlspecialchars($userDetails[0]['name'] ?? '') ?>
                                     </div>
                                 </div>
 
@@ -38,7 +38,7 @@
                                         <label class="form-label"><small>email:</small></label>
                                     </div>
                                     <div class="col-md-8 text-start bg-light">
-                                        <?= htmlspecialchars($userDetails[0]['email']) ?>
+                                        <?= htmlspecialchars($userDetails[0]['email'] ?? '') ?>
                                     </div>
                                 </div>
 
