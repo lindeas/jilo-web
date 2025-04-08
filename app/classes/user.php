@@ -142,6 +142,8 @@ class User {
             // Login successful
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['CREATED'] = time();
+            $_SESSION['LAST_ACTIVITY'] = time();
             return [
                 'status' => 'success',
                 'user_id' => $user['id'],
@@ -151,10 +153,7 @@ class User {
 
         // Get remaining attempts AFTER this failed attempt
         $remainingAttempts = $this->rateLimiter->getRemainingAttempts($username, $ipAddress);
-        return [
-            'status' => 'failed',
-            'message' => "Invalid credentials. {$remainingAttempts} attempts remaining."
-        ];
+        throw new Exception("Invalid credentials. {$remainingAttempts} attempts remaining.");
     }
 
 

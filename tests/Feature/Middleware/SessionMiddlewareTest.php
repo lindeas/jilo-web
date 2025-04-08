@@ -24,6 +24,14 @@ class SessionMiddlewareTest extends TestCase
             'domain' => 'localhost'
         ];
         $this->app_root = 'https://localhost/app';
+
+        // Initialize session variables
+        $_SESSION = [
+            'user_id' => 1,
+            'username' => 'testuser',
+            'CREATED' => time(),
+            'LAST_ACTIVITY' => time()
+        ];
     }
 
     protected function tearDown(): void
@@ -33,78 +41,65 @@ class SessionMiddlewareTest extends TestCase
 
     public function testSessionStart()
     {
-        $_SESSION = ['USER_ID' => 1];
         $result = applySessionMiddleware($this->config, $this->app_root);
 
         $this->assertTrue($result);
         $this->assertArrayHasKey('LAST_ACTIVITY', $_SESSION);
         $this->assertArrayHasKey('CREATED', $_SESSION);
-        $this->assertArrayHasKey('USER_ID', $_SESSION);
-        $this->assertEquals(1, $_SESSION['USER_ID']);
+        $this->assertArrayHasKey('user_id', $_SESSION);
+        $this->assertEquals(1, $_SESSION['user_id']);
     }
 
     public function testSessionTimeout()
     {
-        $_SESSION = [
-            'USER_ID' => 1,
-            'LAST_ACTIVITY' => time() - 1500 // 25 minutes ago
-        ];
+        $_SESSION['LAST_ACTIVITY'] = time() - 1500; // 25 minutes ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 
         $this->assertFalse($result);
-        $this->assertArrayNotHasKey('USER_ID', $_SESSION, 'Session should be cleared after timeout');
+        $this->assertArrayNotHasKey('user_id', $_SESSION, 'Session should be cleared after timeout');
     }
 
     public function testSessionRegeneration()
     {
         $now = time();
-        $_SESSION = [
-            'USER_ID' => 1,
-            'CREATED' => $now - 1900 // 31+ minutes ago
-        ];
+        $_SESSION['CREATED'] = $now - 1900; // 31+ minutes ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 
         $this->assertTrue($result);
-        $this->assertEquals(1, $_SESSION['USER_ID']);
+        $this->assertEquals(1, $_SESSION['user_id']);
         $this->assertGreaterThanOrEqual($now - 1900, $_SESSION['CREATED']);
         $this->assertLessThanOrEqual($now + 10, $_SESSION['CREATED']);
     }
 
     public function testRememberMe()
     {
-        $_SESSION = [
-            'USER_ID' => 1,
-            'REMEMBER_ME' => true,
-            'LAST_ACTIVITY' => time() - 86500 // More than 24 hours ago
-        ];
+        $_SESSION['REMEMBER_ME'] = true;
+        $_SESSION['LAST_ACTIVITY'] = time() - 86500; // More than 24 hours ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 
         $this->assertTrue($result);
-        $this->assertArrayHasKey('USER_ID', $_SESSION);
+        $this->assertArrayHasKey('user_id', $_SESSION);
     }
 
     public function testNoUserSession()
     {
-        $_SESSION = [];
+        unset($_SESSION['user_id']);
         $result = applySessionMiddleware($this->config, $this->app_root);
 
         $this->assertFalse($result);
-        $this->assertArrayNotHasKey('USER_ID', $_SESSION);
+        $this->assertArrayNotHasKey('user_id', $_SESSION);
     }
 
     public function testSessionHeaders()
     {
-        $_SESSION = [
-            'USER_ID' => 1,
-            'LAST_ACTIVITY' => time() - 1500 // 25 minutes ago
-        ];
+        $_SESSION['LAST_ACTIVITY'] = time() - 1500; // 25 minutes ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 
         $this->assertFalse($result);
-        $this->assertArrayNotHasKey('USER_ID', $_SESSION, 'Session should be cleared after timeout');
+        $this->assertArrayNotHasKey('user_id', $_SESSION, 'Session should be cleared after timeout');
     }
 }

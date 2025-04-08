@@ -44,6 +44,19 @@ class UserTest extends TestCase
             )
         ");
 
+        // Create user_2fa table for two-factor authentication
+        $this->db->getConnection()->exec("
+            CREATE TABLE user_2fa (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                secret_key TEXT NOT NULL,
+                backup_codes TEXT,
+                enabled TINYINT(1) NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ");
+
         // Create tables for rate limiter
         $this->db->getConnection()->exec("
             CREATE TABLE login_attempts (
@@ -116,7 +129,13 @@ class UserTest extends TestCase
         // Test successful login
         try {
             $result = $this->user->login('testuser', $password);
-            $this->assertTrue($result);
+            $this->assertIsArray($result);
+            $this->assertEquals('success', $result['status']);
+            $this->assertArrayHasKey('user_id', $result);
+            $this->assertArrayHasKey('username', $result);
+            $this->assertArrayHasKey('user_id', $_SESSION);
+            $this->assertArrayHasKey('CREATED', $_SESSION);
+            $this->assertArrayHasKey('LAST_ACTIVITY', $_SESSION);
         } catch (Exception $e) {
             $this->fail('Login should not throw an exception for valid credentials: ' . $e->getMessage());
         }
