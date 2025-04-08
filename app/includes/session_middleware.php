@@ -24,7 +24,7 @@ function applySessionMiddleware($config, $app_root) {
     }
 
     // Check if user is logged in
-    if (!isset($_SESSION['USER_ID'])) {
+    if (!isset($_SESSION['user_id'])) {
         if (!$isTest) {
             header('Location: ' . $app_root . '?page=login');
             exit();

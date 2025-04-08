@@ -14,14 +14,24 @@
  * - `password`: Change password
  */
 
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: $app_root?page=login");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+// Initialize user object
+$userObject = new User($dbWeb);
+
 $action = $_REQUEST['action'] ?? '';
 $item = $_REQUEST['item'] ?? '';
 
 // if a form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Validate CSRF token
-    require_once '../app/helpers/security.php';
-    $security = SecurityHelper::getInstance();
+    $security->verifyCsrfToken($_POST['csrf_token'] ?? '');
     if (!$security->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
         Feedback::flash('ERROR', 'DEFAULT', 'Invalid security token. Please try again.');
         header("Location: $app_root?page=credentials");
@@ -34,8 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     switch ($item) {
         case '2fa':
-            require_once '../app/helpers/2fa.php';
-
             switch ($action) {
                 case 'setup':
                     // Validate the setup code
@@ -47,13 +55,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         header("Location: $app_root?page=credentials");
                         exit();
                     } else {
-                        Feedback::flash('ERROR', 'DEFAULT', 'Invalid verification code. Please try again.');
-                        header("Location: $app_root?page=credentials&action=edit");
+                        // Only show error if code was actually submitted
+                        if ($code !== '') {
+                            Feedback::flash('ERROR', 'DEFAULT', 'Invalid verification code. Please try again.');
+                        }
+                        header("Location: $app_root?page=credentials&action=setup");
                         exit();
                     }
                     break;
 
                 case 'verify':
+                    // This is a user-initiated verification
                     $code = $_POST['code'] ?? '';
                     if ($userObject->verifyTwoFactor($user_id, $code)) {
                         $_SESSION['2fa_verified'] = true;
@@ -127,12 +139,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $has2fa = $userObject->isTwoFactorEnabled($user_id);
 
     switch ($action) {
-        case 'edit':
+        case 'setup':
             if (!$has2fa) {
-                require_once '../app/helpers/2fa.php';
-                $secret = $userObject->generateTwoFactorSecret();
-                $qrCode = $userObject->generateTwoFactorQR($user_id, $secret);
-                $backupCodes = $userObject->generateBackupCodes();
+                $result = $userObject->enableTwoFactor($user_id);
+                if ($result['success']) {
+                    $setupData = $result['data'];
+                } else {
+                    Feedback::flash('ERROR', 'DEFAULT', $result['message'] ?? 'Failed to generate 2FA setup data');
+                    header("Location: $app_root?page=credentials");
+                    exit();
+                }
             }
             // Get any new feedback messages
             include '../app/helpers/feedback.php';
