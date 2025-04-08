@@ -507,10 +507,12 @@ class User {
      * Enable two-factor authentication for a user
      *
      * @param int $userId User ID
-     * @return array Result of enabling 2FA
+     * @param string $secret Secret key to use
+     * @param string $code Verification code to validate
+     * @return bool True if enabled successfully
      */
-    public function enableTwoFactor($userId) {
-        return $this->twoFactorAuth->enable($userId);
+    public function enableTwoFactor($userId, $secret = null, $code = null) {
+        return $this->twoFactorAuth->enable($userId, $secret, $code);
     }
 
     /**

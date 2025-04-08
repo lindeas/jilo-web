@@ -8,11 +8,12 @@
  */
 class TwoFactorAuthentication {
     private $db;
-    private $secretLength = 32;
-    private $period = 30; // Time step in seconds
-    private $digits = 6;  // Number of digits in TOTP code
-    private $algorithm = 'sha1';
-    private $issuer = 'Jilo';
+    private $secretLength = 20; // 160 bits for SHA1
+    private $period = 30;       // Time step in seconds (T0)
+    private $digits = 6;        // Number of digits in TOTP code
+    private $algorithm = 'sha1'; // HMAC algorithm
+    private $issuer = 'TotalMeet';
+    private $window = 1;        // Time window of 1 step before/after
 
     /**
      * Constructor
@@ -31,9 +32,11 @@ class TwoFactorAuthentication {
      * Enable 2FA for a user
      *
      * @param int $userId User ID
-     * @return array Array containing success status and data (secret, QR code URL)
+     * @param string $secret Secret key (base32 encoded)
+     * @param string $code Verification code
+     * @return bool True if enabled successfully
      */
-    public function enable($userId) {
+    public function enable($userId, $secret = null, $code = null) {
         try {
             // Check if 2FA is already enabled
             $stmt = $this->db->prepare('SELECT enabled FROM user_2fa WHERE user_id = ?');
@@ -41,58 +44,81 @@ class TwoFactorAuthentication {
             $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($existing && $existing['enabled']) {
-                return ['success' => false, 'message' => '2FA is already enabled'];
+                return false;
             }
 
-            // Generate secret key
-            $secret = $this->generateSecret();
+            // If no secret provided, generate one and return setup data
+            if ($secret === null) {
+                // Generate secret key
+                $secret = $this->generateSecret();
 
-            // Get user's username for the QR code
-            $stmt = $this->db->prepare('SELECT username FROM users WHERE id = ?');
-            $stmt->execute([$userId]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                // Get user's username for the QR code
+                $stmt = $this->db->prepare('SELECT username FROM user WHERE id = ?');
+                $stmt->execute([$userId]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Generate backup codes
-            $backupCodes = $this->generateBackupCodes();
+                // Generate backup codes
+                $backupCodes = $this->generateBackupCodes();
 
-            // Store in database
-            $this->db->beginTransaction();
+                // Store in database without enabling yet
+                $this->db->beginTransaction();
 
-            $stmt = $this->db->prepare('
-                INSERT INTO user_2fa (user_id, secret_key, backup_codes, enabled, created_at)
-                VALUES (?, ?, ?, 0, NOW())
-                ON DUPLICATE KEY UPDATE
-                    secret_key = VALUES(secret_key),
-                    backup_codes = VALUES(backup_codes),
-                    enabled = VALUES(enabled),
-                    created_at = VALUES(created_at)
-            ');
+                $stmt = $this->db->prepare('
+                    INSERT INTO user_2fa (user_id, secret_key, backup_codes, enabled, created_at)
+                    VALUES (?, ?, ?, 0, NOW())
+                    ON DUPLICATE KEY UPDATE
+                        secret_key = VALUES(secret_key),
+                        backup_codes = VALUES(backup_codes),
+                        enabled = VALUES(enabled),
+                        created_at = VALUES(created_at)
+                ');
 
-            $stmt->execute([
-                $userId,
-                $secret,
-                json_encode($backupCodes)
-            ]);
+                $stmt->execute([
+                    $userId,
+                    $secret,
+                    json_encode($backupCodes)
+                ]);
 
-            $this->db->commit();
+                $this->db->commit();
 
-            // Generate otpauth URL for QR code
-            $otpauthUrl = $this->generateOtpauthUrl($user['username'], $secret);
+                // Generate otpauth URL for QR code
+                $otpauthUrl = $this->generateOtpauthUrl($user['username'], $secret);
 
-            return [
-                'success' => true,
-                'data' => [
-                    'secret' => $secret,
-                    'otpauthUrl' => $otpauthUrl,
-                    'backupCodes' => $backupCodes
-                ]
-            ];
+                return [
+                    'success' => true,
+                    'data' => [
+                        'secret' => $secret,
+                        'otpauthUrl' => $otpauthUrl,
+                        'backupCodes' => $backupCodes
+                    ]
+                ];
+            }
+
+            // If secret and code provided, verify the code and enable 2FA
+            if ($code !== null) {
+                // Verify the setup code
+                if (!$this->verify($userId, $code)) {
+                    error_log("Code verification failed");
+                    return false;
+                }
+
+                // Enable 2FA
+                $stmt = $this->db->prepare('
+                    UPDATE user_2fa
+                    SET enabled = 1
+                    WHERE user_id = ? AND secret_key = ?
+                ');
+                return $stmt->execute([$userId, $secret]);
+            }
+
+            return false;
 
         } catch (Exception $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            return ['success' => false, 'message' => $e->getMessage()];
+            error_log('2FA enable error: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -106,37 +132,24 @@ class TwoFactorAuthentication {
     public function verify($userId, $code) {
         try {
             // Get user's 2FA settings
-            $stmt = $this->db->prepare('
-                SELECT secret_key, backup_codes, enabled
-                FROM user_2fa
-                WHERE user_id = ?
-            ');
-            $stmt->execute([$userId]);
-            $tfa = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$tfa || !$tfa['enabled']) {
+            $settings = $this->getUserSettings($userId);
+            if (!$settings) {
                 return false;
             }
 
-            // Check if it's a backup code
+            // Check if code matches a backup code
             if ($this->verifyBackupCode($userId, $code)) {
                 return true;
             }
 
-            // Verify TOTP code
+            // Get current Unix timestamp
             $currentTime = time();
 
-            // Check current and adjacent time steps
-            for ($timeStep = -1; $timeStep <= 1; $timeStep++) {
-                $checkTime = $currentTime + ($timeStep * $this->period);
-                if ($this->generateCode($tfa['secret_key'], $checkTime) === $code) {
-                    // Update last used timestamp
-                    $stmt = $this->db->prepare('
-                        UPDATE user_2fa
-                        SET last_used = NOW()
-                        WHERE user_id = ?
-                    ');
-                    $stmt->execute([$userId]);
+            // Check time window
+            for ($timeSlot = -$this->window; $timeSlot <= $this->window; $timeSlot++) {
+                $checkTime = $currentTime + ($timeSlot * $this->period);
+                $generatedCode = $this->generateCode($settings['secret_key'], $checkTime);
+                if (hash_equals($generatedCode, $code)) {
                     return true;
                 }
             }
@@ -150,48 +163,12 @@ class TwoFactorAuthentication {
     }
 
     /**
-     * Generate a TOTP code for a given secret and time
-     *
-     * @param string $secret The secret key
-     * @param int $time Current Unix timestamp
-     * @return string Generated code
-     */
-    private function generateCode($secret, $time) {
-        $timeStep = floor($time / $this->period);
-        $timeHex = str_pad(dechex($timeStep), 16, '0', STR_PAD_LEFT);
-
-        // Convert hex time to binary
-        $timeBin = '';
-        for ($i = 0; $i < strlen($timeHex); $i += 2) {
-            $timeBin .= chr(hexdec(substr($timeHex, $i, 2)));
-        }
-
-        // Get binary secret
-        $secretBin = $this->base32Decode($secret);
-
-        // Calculate HMAC
-        $hash = hash_hmac($this->algorithm, $timeBin, $secretBin, true);
-
-        // Get offset
-        $offset = ord($hash[strlen($hash) - 1]) & 0xF;
-
-        // Generate 4-byte code
-        $code = (
-            ((ord($hash[$offset]) & 0x7F) << 24) |
-            ((ord($hash[$offset + 1]) & 0xFF) << 16) |
-            ((ord($hash[$offset + 2]) & 0xFF) << 8) |
-            (ord($hash[$offset + 3]) & 0xFF)
-        ) % pow(10, $this->digits);
-
-        return str_pad($code, $this->digits, '0', STR_PAD_LEFT);
-    }
-
-    /**
      * Generate a random secret key
      *
      * @return string Base32 encoded secret
      */
     private function generateSecret() {
+        // Generate random bytes (160 bits for SHA1)
         $random = random_bytes($this->secretLength);
         return $this->base32Encode($random);
     }
@@ -214,8 +191,17 @@ class TwoFactorAuthentication {
 
         // Process 5 bits at a time
         for ($i = 0; $i < strlen($binary); $i += 5) {
-            $chunk = substr($binary . '0000', $i, 5);
+            $chunk = substr($binary, $i, 5);
+            if (strlen($chunk) < 5) {
+                $chunk = str_pad($chunk, 5, '0', STR_PAD_RIGHT);
+            }
             $encoded .= $alphabet[bindec($chunk)];
+        }
+
+        // Add padding
+        $padding = strlen($encoded) % 8;
+        if ($padding > 0) {
+            $encoded .= str_repeat('=', 8 - $padding);
         }
 
         return $encoded;
@@ -229,16 +215,22 @@ class TwoFactorAuthentication {
      */
     private function base32Decode($data) {
         $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+        // Remove padding and uppercase
+        $data = rtrim(strtoupper($data), '=');
+
         $binary = '';
-        $decoded = '';
 
         // Convert to binary
         for ($i = 0; $i < strlen($data); $i++) {
             $position = strpos($alphabet, $data[$i]);
-            if ($position === false) continue;
+            if ($position === false) {
+                continue;
+            }
             $binary .= str_pad(decbin($position), 5, '0', STR_PAD_LEFT);
         }
 
+        $decoded = '';
         // Process 8 bits at a time
         for ($i = 0; $i + 7 < strlen($binary); $i += 8) {
             $chunk = substr($binary, $i, 8);
@@ -249,22 +241,59 @@ class TwoFactorAuthentication {
     }
 
     /**
+     * Generate a TOTP code for a given secret and time
+     * RFC 6238 compliant implementation
+     */
+    private function generateCode($secret, $time) {
+        // Calculate number of time steps since Unix epoch
+        $timeStep = (int)floor($time / $this->period);
+
+        // Pack time into 8 bytes (64-bit big-endian)
+        $timeBin = pack('J', $timeStep);
+
+        // Clean secret of any padding
+        $secret = rtrim($secret, '=');
+
+        // Get binary secret
+        $secretBin = $this->base32Decode($secret);
+
+        // Calculate HMAC
+        $hash = hash_hmac($this->algorithm, $timeBin, $secretBin, true);
+
+        // Get dynamic truncation offset
+        $offset = ord($hash[strlen($hash) - 1]) & 0xF;
+
+        // Generate 31-bit number
+        $code = (
+            ((ord($hash[$offset]) & 0x7F) << 24) |
+            ((ord($hash[$offset + 1]) & 0xFF) << 16) |
+            ((ord($hash[$offset + 2]) & 0xFF) << 8) |
+            (ord($hash[$offset + 3]) & 0xFF)
+        ) % pow(10, $this->digits);
+
+        $code = str_pad($code, $this->digits, '0', STR_PAD_LEFT);
+
+        return $code;
+    }
+
+    /**
      * Generate otpauth URL for QR codes
-     *
-     * @param string $username Username
-     * @param string $secret Secret key
-     * @return string otpauth URL
+     * Format: otpauth://totp/ISSUER:ACCOUNT?secret=SECRET&issuer=ISSUER&algorithm=ALGORITHM&digits=DIGITS&period=PERIOD
      */
     private function generateOtpauthUrl($username, $secret) {
+        $params = [
+            'secret' => $secret,
+            'issuer' => $this->issuer,
+            'algorithm' => strtoupper($this->algorithm),
+            'digits' => $this->digits,
+            'period' => $this->period
+        ];
+
         return sprintf(
-            'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=%s&digits=%d&period=%d',
-            urlencode($this->issuer),
-            urlencode($username),
-            $secret,
-            urlencode($this->issuer),
-            strtoupper($this->algorithm),
-            $this->digits,
-            $this->period
+            'otpauth://totp/%s:%s?%s',
+            rawurlencode($this->issuer),
+            rawurlencode($username),
+            http_build_query($params)
         );
     }
 
@@ -335,11 +364,15 @@ class TwoFactorAuthentication {
      */
     public function disable($userId) {
         try {
+            // First check if user has 2FA settings
+            $settings = $this->getUserSettings($userId);
+            if (!$settings) {
+                return false;
+            }
+
+            // Delete the 2FA settings entirely instead of just disabling
             $stmt = $this->db->prepare('
-                UPDATE user_2fa
-                SET enabled = 0,
-                    secret_key = NULL,
-                    backup_codes = NULL
+                DELETE FROM user_2fa
                 WHERE user_id = ?
             ');
             return $stmt->execute([$userId]);
@@ -366,6 +399,22 @@ class TwoFactorAuthentication {
         } catch (Exception $e) {
             error_log('2FA status check error: ' . $e->getMessage());
             return false;
+        }
+    }
+
+    private function getUserSettings($userId) {
+        try {
+            $stmt = $this->db->prepare('
+                SELECT secret_key, backup_codes, enabled
+                FROM user_2fa
+                WHERE user_id = ?
+            ');
+            $stmt->execute([$userId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        } catch (Exception $e) {
+            error_log('Failed to get user 2FA settings: ' . $e->getMessage());
+            return null;
         }
     }
 }
