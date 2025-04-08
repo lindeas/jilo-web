@@ -19,11 +19,11 @@ unset($error);
 
 try {
     // connect to database
-    $dbWeb = connectDB($config)['db'];
+    $db = connectDB($config)['db'];
 
     // Initialize RateLimiter
     require_once '../app/classes/ratelimiter.php';
-    $rateLimiter = new RateLimiter($dbWeb);
+    $rateLimiter = new RateLimiter($db);
 
     // Get user IP
     $user_IP = getUserIP();
@@ -38,7 +38,7 @@ try {
         $rememberMe = isset($_SESSION['2fa_pending_remember']);
 
         require_once '../app/classes/twoFactorAuth.php';
-        $twoFactorAuth = new TwoFactorAuthentication($dbWeb);
+        $twoFactorAuth = new TwoFactorAuthentication($db);
 
         if ($twoFactorAuth->verify($userId, $code)) {
             // Complete login
@@ -63,6 +63,122 @@ try {
         // Load the 2FA verification template
         include '../app/templates/credentials-2fa-verify.php';
         exit();
+    } elseif ($action === 'forgot') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Handle password reset request
+            try {
+                // Validate CSRF token
+                $security = SecurityHelper::getInstance();
+                if (!$security->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+                    throw new Exception('Invalid security token. Please try again.');
+                }
+
+                // Apply rate limiting
+                if (!$rateLimiter->isIpWhitelisted($user_IP)) {
+                    if ($rateLimiter->isIpBlacklisted($user_IP)) {
+                        throw new Exception(Feedback::get('LOGIN', 'IP_BLACKLISTED')['message']);
+                    }
+                    if ($rateLimiter->tooManyAttempts('password_reset', $user_IP)) {
+                        throw new Exception(Feedback::get('LOGIN', 'TOO_MANY_ATTEMPTS')['message']);
+                    }
+                    $rateLimiter->attempt('password_reset', $user_IP);
+                }
+
+                // Validate email
+                $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+                if (!$email) {
+                    throw new Exception('Please enter a valid email address.');
+                }
+
+                // Process reset request
+                require_once '../app/classes/passwordReset.php';
+                $resetHandler = new PasswordReset($db);
+                $result = $resetHandler->requestReset($email);
+
+                // Always show same message whether email exists or not for security
+                Feedback::flash('NOTICE', 'DEFAULT', $result['message']);
+                header("Location: $app_root?page=login");
+                exit();
+
+            } catch (Exception $e) {
+                Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
+            }
+        }
+
+        // Generate CSRF token
+        $security = SecurityHelper::getInstance();
+        $security->generateCsrfToken();
+
+        // Load the forgot password form
+        include '../app/helpers/feedback.php';
+        include '../app/templates/form-password-forgot.php';
+        exit();
+
+    } elseif ($action === 'reset' && isset($_GET['token'])) {
+        // Handle password reset
+        try {
+            require_once '../app/classes/passwordReset.php';
+            $resetHandler = new PasswordReset($db);
+            $token = $_GET['token'];
+
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                // Validate CSRF token
+                $security = SecurityHelper::getInstance();
+                if (!$security->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+                    throw new Exception('Invalid security token. Please try again.');
+                }
+
+                // Apply rate limiting
+                if (!$rateLimiter->isIpWhitelisted($user_IP)) {
+                    if ($rateLimiter->tooManyAttempts('password_reset', $user_IP)) {
+                        throw new Exception(Feedback::get('LOGIN', 'TOO_MANY_ATTEMPTS')['message']);
+                    }
+                    $rateLimiter->attempt('password_reset', $user_IP);
+                }
+
+                // Validate password
+                require_once '../app/classes/validator.php';
+                $validator = new Validator($_POST);
+                $rules = [
+                    'new_password' => [
+                        'required' => true,
+                        'min' => 8
+                    ],
+                    'confirm_password' => [
+                        'required' => true,
+                        'matches' => 'new_password'
+                    ]
+                ];
+
+                if (!$validator->validate($rules)) {
+                    throw new Exception($validator->getFirstError());
+                }
+
+                // Reset password
+                if ($resetHandler->resetPassword($token, $_POST['new_password'])) {
+                    Feedback::flash('NOTICE', 'DEFAULT', 'Your password has been reset successfully. You can now log in.');
+                    header("Location: $app_root?page=login");
+                    exit();
+                }
+                throw new Exception('Invalid or expired reset link. Please request a new one.');
+            }
+
+            // Verify token is valid
+            $validation = $resetHandler->validateToken($token);
+            if (!$validation['valid']) {
+                throw new Exception('Invalid or expired reset link. Please request a new one.');
+            }
+
+            // Show reset password form
+            include '../app/helpers/feedback.php';
+            include '../app/templates/form-password-reset.php';
+            exit();
+
+        } catch (Exception $e) {
+            Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
+            header("Location: $app_root?page=login&action=forgot");
+            exit();
+        }
     }
 
     if ( $_SERVER['REQUEST_METHOD'] == 'POST' && $action !== 'verify' ) {

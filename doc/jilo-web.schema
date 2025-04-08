@@ -63,6 +63,15 @@ CREATE TABLE user_2fa_temp (
   PRIMARY KEY (user_id, code),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+CREATE TABLE user_password_reset (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    expires INTEGER NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
