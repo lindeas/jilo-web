@@ -10,6 +10,8 @@ return [
     'domain'			=> 'localhost',
     // subfolder for the web app, if any
     'folder'			=> '/jilo-web/',
+    // site name used in emails and in the inteerface
+    'site_name'			=> 'Jilo Web',
     // set to false to disable new registrations
     'registration_enabled'	=> '1',
     // will be displayed on login screen
