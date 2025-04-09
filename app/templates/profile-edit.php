@@ -45,7 +45,7 @@
                                             <label for="name" class="form-label"><small>name:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="name" value="<?= htmlspecialchars($userDetails[0]['name']) ?>" autofocus />
+                                            <input class="form-control" type="text" name="name" value="<?= htmlspecialchars($userDetails[0]['name'] ?? '') ?>" autofocus />
                                         </div>
                                     </div>
 
@@ -54,7 +54,7 @@
                                             <label for="email" class="form-label"><small>email:</small></label>
                                         </div>
                                         <div class="col-md-8 text-start bg-light">
-                                            <input class="form-control" type="text" name="email" value="<?= htmlspecialchars($userDetails[0]['email']) ?>" />
+                                            <input class="form-control" type="text" name="email" value="<?= htmlspecialchars($userDetails[0]['email'] ?? '') ?>" />
                                         </div>
                                     </div>
 
