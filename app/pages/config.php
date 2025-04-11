@@ -18,18 +18,24 @@ $logObject = new Log($dbWeb);
 $configObject = new Config();
 
 // For AJAX requests
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+// Set JSON content type for AJAX requests
+if ($isAjax) {
+    header('Content-Type: application/json');
+}
 
 // Ensure config file path is set
 if (!isset($config_file) || empty($config_file)) {
     if ($isAjax) {
         ApiResponse::error('Config file path not set');
+        exit;
     } else {
         Feedback::flash('ERROR', 'DEFAULT', 'Config file path not set');
         header('Location: ' . htmlspecialchars($app_root));
+        exit;
     }
-    exit;
 }
 
 // Check if file is writable
@@ -37,6 +43,10 @@ $isWritable = is_writable($config_file);
 $configMessage = '';
 if (!$isWritable) {
     $configMessage = Feedback::render('ERROR', 'DEFAULT', 'Config file is not writable', false);
+    if ($isAjax) {
+        ApiResponse::error('Config file is not writable', null, 403);
+        exit;
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -45,10 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $logObject->insertLog($user_id, "Unauthorized: User \"$currentUser\" tried to edit config file. IP: $user_IP", 'system');
         if ($isAjax) {
             ApiResponse::error('Forbidden: You do not have permission to edit the config file', null, 403);
+            exit;
         } else {
             include '../app/templates/error-unauthorized.php';
+            exit;
         }
-        exit;
     }
 
     // Apply rate limiting
@@ -65,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($jsonData === false) {
             $logObject->insertLog($user_id, "Failed to read request data for config update", 'system');
             ApiResponse::error('Failed to read request data');
+            exit;
         }
 
         // Try to parse JSON
@@ -72,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (json_last_error() !== JSON_ERROR_NONE) {
             $error = json_last_error_msg();
             ApiResponse::error('Invalid JSON data received: ' . $error);
+            exit;
         }
 
         // Try to update config file
@@ -81,18 +94,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             ApiResponse::error($result['error']);
         }
-    }
-
-    // Handle non-AJAX POST
-    $result = $configObject->editConfigFile($_POST, $config_file);
-    if ($result['success']) {
-        Feedback::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+        exit;
     } else {
-        Feedback::flash('ERROR', 'DEFAULT', "Error updating config file: " . $result['error'], true);
-    }
+        // Handle non-AJAX POST
+        $result = $configObject->editConfigFile($_POST, $config_file);
+        if ($result['success']) {
+            Feedback::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
+        } else {
+            Feedback::flash('ERROR', 'DEFAULT', "Error updating config file: " . $result['error'], true);
+        }
 
-    header('Location: ' . htmlspecialchars($app_root) . '?page=config');
-    exit;
+        header('Location: ' . htmlspecialchars($app_root) . '?page=config');
+        exit;
+    }
 }
 
 // Only include template for non-AJAX requests
