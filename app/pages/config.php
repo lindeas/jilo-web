@@ -10,13 +10,27 @@
 include '../app/helpers/feedback.php';
 
 require '../app/classes/config.php';
-$configObject = new Config();
+require '../app/classes/api_response.php';
 
-require '../app/includes/rate_limit_middleware.php';
+// Initialize required objects
+$userObject = new User($dbWeb);
+$logObject = new Log($dbWeb);
+$configObject = new Config();
 
 // For AJAX requests
 $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+// Ensure config file path is set
+if (!isset($config_file) || empty($config_file)) {
+    if ($isAjax) {
+        ApiResponse::error('Config file path not set');
+    } else {
+        Feedback::flash('ERROR', 'DEFAULT', 'Config file path not set');
+        header('Location: ' . htmlspecialchars($app_root));
+    }
+    exit;
+}
 
 // Check if file is writable
 $isWritable = is_writable($config_file);
@@ -26,7 +40,19 @@ if (!$isWritable) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if user has permission to edit config
+    if (!$userObject->hasRight($user_id, 'edit config file')) {
+        $logObject->insertLog($user_id, "Unauthorized: User \"$currentUser\" tried to edit config file. IP: $user_IP", 'system');
+        if ($isAjax) {
+            ApiResponse::error('Forbidden: You do not have permission to edit the config file', null, 403);
+        } else {
+            include '../app/templates/error-unauthorized.php';
+        }
+        exit;
+    }
+
     // Apply rate limiting
+    require '../app/includes/rate_limit_middleware.php';
     checkRateLimit($dbWeb, 'config', $user_id);
 
     // Ensure no output before this point
@@ -34,50 +60,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // For AJAX requests, get JSON data
     if ($isAjax) {
-        header('Content-Type: application/json');
-
         // Get raw input
         $jsonData = file_get_contents('php://input');
+        if ($jsonData === false) {
+            $logObject->insertLog($user_id, "Failed to read request data for config update", 'system');
+            ApiResponse::error('Failed to read request data');
+        }
 
+        // Try to parse JSON
         $postData = json_decode($jsonData, true);
-
         if (json_last_error() !== JSON_ERROR_NONE) {
             $error = json_last_error_msg();
-
-            Feedback::flash('ERROR', 'DEFAULT', 'Invalid JSON data received: ' . $error, true);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Invalid JSON data received: ' . $error
-            ]);
-            exit;
+            ApiResponse::error('Invalid JSON data received: ' . $error);
         }
 
         // Try to update config file
         $result = $configObject->editConfigFile($postData, $config_file);
-        if ($result === true) {
-            $messageData = Feedback::getMessageData('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
-            echo json_encode([
-                'success' => true,
-                'message' => 'Config file updated successfully',
-                'messageData' => $messageData
-            ]);
+        if ($result['success']) {
+            ApiResponse::success($result['updated'], 'Config file updated successfully');
         } else {
-            $messageData = Feedback::getMessageData('ERROR', 'DEFAULT', "Error updating config file: $result", true);
-            echo json_encode([
-                'success' => false,
-                'message' => "Error updating config file: $result",
-                'messageData' => $messageData
-            ]);
+            ApiResponse::error($result['error']);
         }
-        exit;
     }
 
     // Handle non-AJAX POST
     $result = $configObject->editConfigFile($_POST, $config_file);
-    if ($result === true) {
+    if ($result['success']) {
         Feedback::flash('NOTICE', 'DEFAULT', 'Config file updated successfully', true);
     } else {
-        Feedback::flash('ERROR', 'DEFAULT', "Error updating config file: $result", true);
+        Feedback::flash('ERROR', 'DEFAULT', "Error updating config file: " . $result['error'], true);
     }
 
     header('Location: ' . htmlspecialchars($app_root) . '?page=config');

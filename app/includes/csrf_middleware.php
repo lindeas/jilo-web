@@ -4,6 +4,7 @@ require_once __DIR__ . '/../helpers/security.php';
 require_once __DIR__ . '/../helpers/logs.php';
 
 function applyCsrfMiddleware() {
+    global $logObject;
     $security = SecurityHelper::getInstance();
 
     // Skip CSRF check for GET requests
@@ -21,7 +22,8 @@ function applyCsrfMiddleware() {
 
     // Check CSRF token for all other POST requests
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $token = $_POST['csrf_token'] ?? '';
+        // Check for token in POST data or headers
+        $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
         if (!$security->verifyCsrfToken($token)) {
             // Log CSRF attempt
             $ipAddress = getUserIP();
@@ -31,7 +33,7 @@ function applyCsrfMiddleware() {
                 $_GET['page'] ?? 'unknown',
                 $_SESSION['username'] ?? 'anonymous'
             );
-            $logObject->insertLog(0, $logMessage, 'system');
+            $logObject->insertLog(null, $logMessage, 'system');
 
             // Return error message
             http_response_code(403);
