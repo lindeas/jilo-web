@@ -12,10 +12,18 @@ function applyCsrfMiddleware() {
         return true;
     }
 
+    // Skip CSRF check for initial login, registration, and 2FA verification attempts
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
+        isset($_GET['page']) && isset($_GET['action']) &&
+        $_GET['page'] === 'login' && $_GET['action'] === 'verify' &&
+        isset($_SESSION['2fa_pending_user_id'])) {
+        return true;
+    }
+
     // Skip CSRF check for initial login and registration attempts
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
-        isset($_GET['page']) && 
-        in_array($_GET['page'], ['login', 'register']) && 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
+        isset($_GET['page']) &&
+        in_array($_GET['page'], ['login', 'register']) &&
         !isset($_SESSION['username'])) {
         return true;
     }
