@@ -33,7 +33,7 @@ return [
     // default avatar
     'default_avatar'		=> 'static/default_avatar.png',
     // system info
-    'version'			=> '0.3',
+    'version'			=> '0.4',
     // development has verbose error messages, production has not
     'environment'		=> 'development',
 

@@ -7,12 +7,32 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 #### Links
-- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.3...HEAD
-- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.3...HEAD
-- github: https://github.com/lindeas/jilo-web/compare/v0.3...HEAD
-- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.3...HEAD
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.4...HEAD
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.4...HEAD
+- github: https://github.com/lindeas/jilo-web/compare/v0.4...HEAD
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.4...HEAD
 
 ### Added
+
+### Changed
+
+### Fixed
+
+---
+
+## 0.4 - 2025-04-12
+
+#### Links
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.3...v0.4
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.3...v0.4
+- github: https://github.com/lindeas/jilo-web/compare/v0.3...v0.4
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.3...v0.4
+
+### Added
+- Added top-right menu with profile, admin, and docs sections
+- Added two-factor authentication
+- Added resetting of forgotten password
+- Added login credentials management
 - Added proper pagination
 - Added agents managemet pages
 - Added javascript-based feedback messages
@@ -26,6 +46,7 @@ All notable changes to this project will be documented in this file.
 - Added testing workflow for github
 
 ### Changed
+- Increased session to 2 hours w/out "remember me", 30 days with
 - Made the config editing in-place with AJAX
 - Redesigned the help page
 - Moved graphs and latest data to their own pages
@@ -33,6 +54,8 @@ All notable changes to this project will be documented in this file.
 - Redesigned the messages system and renamed them to feedback messages
 
 ### Fixed
+- Bugfixes
+- Fixed config editing
 - Fixed logs search
 - Removed hardcoded messages, changed to feedback messages
 
