@@ -6,13 +6,19 @@
             <ul class="menu-left">
                 <div class="container">
                     <div class="row">
-                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>" class="logo-link"><div class="col-4"><img class="logo" src="<?= htmlspecialchars($app_root) ?>static/jilo-logo.png" alt="JILO"/></div></a>
+                        <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>" class="logo-link">
+                            <div class="col-4">
+                                <img class="logo" src="<?= htmlspecialchars($app_root) ?>static/jilo-logo.png" alt="JILO"/>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
-                <li class="font-weight-light text-uppercase" style="font-size: 0.5em; color: whitesmoke; margin-right: 70px; align-content: center;">version&nbsp;<?= htmlspecialchars($config['version']) ?></li>
+                <li class="font-weight-light text-uppercase" style="font-size: 0.5em; color: whitesmoke; margin-right: 70px; align-content: center;">
+                    version&nbsp;<?= htmlspecialchars($config['version']) ?>
+                </li>
 
-<?php if ( isset($_SESSION['username']) ) { ?>
+<?php if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) { ?>
 
 <?php foreach ($platformsAll as $platform) {
     $platform_switch_url = switchPlatform($platform['id']);
@@ -34,7 +40,7 @@
             </ul>
 
             <ul class="menu-right">
-<?php if ( isset($_SESSION['username']) ) { ?>
+<?php if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) { ?>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                         <i class="fas fa-user"></i>
