@@ -8,6 +8,7 @@ class SessionMiddlewareTest extends TestCase
 {
     protected $config;
     protected $app_root;
+    protected const SESSION_TIMEOUT = 7200; // 2 hours in seconds
 
     protected function setUp(): void
     {
@@ -52,7 +53,7 @@ class SessionMiddlewareTest extends TestCase
 
     public function testSessionTimeout()
     {
-        $_SESSION['LAST_ACTIVITY'] = time() - 1500; // 25 minutes ago
+        $_SESSION['LAST_ACTIVITY'] = time() - (self::SESSION_TIMEOUT + 60); // 2 hours + 1 minute ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 
@@ -76,7 +77,7 @@ class SessionMiddlewareTest extends TestCase
     public function testRememberMe()
     {
         $_SESSION['REMEMBER_ME'] = true;
-        $_SESSION['LAST_ACTIVITY'] = time() - 86500; // More than 24 hours ago
+        $_SESSION['LAST_ACTIVITY'] = time() - (self::SESSION_TIMEOUT + 60); // More than 2 hours ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 
@@ -95,7 +96,7 @@ class SessionMiddlewareTest extends TestCase
 
     public function testSessionHeaders()
     {
-        $_SESSION['LAST_ACTIVITY'] = time() - 1500; // 25 minutes ago
+        $_SESSION['LAST_ACTIVITY'] = time() - (self::SESSION_TIMEOUT + 60); // 2 hours + 1 minute ago
 
         $result = applySessionMiddleware($this->config, $this->app_root);
 

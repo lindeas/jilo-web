@@ -60,10 +60,10 @@ function applySessionMiddleware($config, $app_root) {
  * Helper function to clean up session data and redirect
  */
 function cleanupSession($config, $app_root, $isTest) {
-    if (!$isTest) {
-        // Clear session data
-        $_SESSION = array();
+    // Always clear session data
+    $_SESSION = array();
 
+    if (!$isTest) {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_unset();
             session_destroy();
