@@ -35,6 +35,10 @@ class Feedback {
             'type' => self::TYPE_SUCCESS,
             'dismissible' => true
         ],
+        'SESSION_TIMEOUT' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => true
+        ],
         'IP_BLACKLISTED' => [
             'type' => self::TYPE_ERROR,
             'dismissible' => false

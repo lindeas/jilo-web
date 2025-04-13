@@ -11,6 +11,7 @@ return [
         'LOGIN_SUCCESS' => 'Login successful.',
         'LOGIN_FAILED' => 'Login failed. Please check your credentials.',
         'LOGOUT_SUCCESS' => 'Logout successful. You can log in again.',
+        'SESSION_TIMEOUT' => 'Your session has expired. Please log in again.',
         'IP_BLACKLISTED' => 'Access denied. Your IP address is blacklisted.',
         'IP_NOT_WHITELISTED' => 'Access denied. Your IP address is not whitelisted.',
         'TOO_MANY_ATTEMPTS' => 'Too many login attempts. Please try again later.',
