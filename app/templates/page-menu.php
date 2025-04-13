@@ -18,7 +18,7 @@
                     version&nbsp;<?= htmlspecialchars($config['version']) ?>
                 </li>
 
-<?php if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) { ?>
+<?php if (Session::isValidSession()) { ?>
 
 <?php foreach ($platformsAll as $platform) {
     $platform_switch_url = switchPlatform($platform['id']);
@@ -40,7 +40,7 @@
             </ul>
 
             <ul class="menu-right">
-<?php if (isset($_SESSION['username']) && isset($_SESSION['user_id'])) { ?>
+<?php if (Session::isValidSession()) { ?>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                         <i class="fas fa-user"></i>
