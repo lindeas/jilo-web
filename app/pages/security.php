@@ -9,9 +9,9 @@ if (!($userObject->hasRight($user_id, 'superuser') ||
     exit;
 }
 
-if (!isset($currentUser)) {
-    include '../app/templates/error-unauthorized.php';
-    exit;
+if (!Session::getUsername()) {
+    header('Location: ' . htmlspecialchars($app_root) . '?page=login');
+    exit();
 }
 
 // Get current section

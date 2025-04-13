@@ -12,7 +12,7 @@
 
     </div>
 
-<?php if (isset($currentUser) && $page !== 'logout') { ?>
+<?php if (Session::getUsername() && $page !== 'logout') { ?>
     <script src="static/js/sidebar.js"></script>
 <?php } ?>
 
