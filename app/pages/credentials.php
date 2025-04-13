@@ -14,12 +14,6 @@
  * - `password`: Change password
  */
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: $app_root?page=login");
-    exit();
-}
-
 $user_id = $_SESSION['user_id'];
 
 // Initialize user object

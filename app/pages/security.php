@@ -9,11 +9,6 @@ if (!($userObject->hasRight($user_id, 'superuser') ||
     exit;
 }
 
-if (!Session::getUsername()) {
-    header('Location: ' . htmlspecialchars($app_root) . '?page=login');
-    exit();
-}
-
 // Get current section
 $section = isset($_POST['section']) ? $_POST['section'] : (isset($_GET['section']) ? $_GET['section'] : 'whitelist');
 
