@@ -6,10 +6,13 @@
  * $totalPages - Total number of pages
  */
 
-// Ensure required variables are set
+// Validate required pagination variables
 if (!isset($currentPage) || !isset($totalPages)) {
     return;
 }
+
+// Ensure valid values
+$currentPage = max(1, min($currentPage, $totalPages));
 
 // Number of page links to show before and after current page
 $range = 2;
