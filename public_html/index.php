@@ -15,14 +15,18 @@
 // flush it later only when there is no redirect
 ob_start();
 
+// Start session before any session-dependent code
+require_once '../app/classes/session.php';
+Session::startSession();
+
 // Apply security headers
 require_once '../app/includes/security_headers_middleware.php';
 
 // sanitize all input vars that may end up in URLs or forms
 require '../app/includes/sanitize.php';
 
-session_name('jilo');
-session_start();
+// Check session validity
+$validSession = Session::isValidSession();
 
 // Initialize feedback message system
 require_once '../app/classes/feedback.php';
@@ -64,6 +68,8 @@ $allowed_urls = [
     'login',
     'logout',
     'register',
+
+    'about',
 ];
 
 // cnfig file
@@ -92,17 +98,26 @@ if ($config_file) {
 
 $app_root = $config['folder'];
 
-// check if logged in
-unset($currentUser);
-if (isset($_COOKIE['username'])) {
-    if ( !isset($_SESSION['username']) ) {
-        $_SESSION['username'] = $_COOKIE['username'];
-    }
-    $currentUser = htmlspecialchars($_SESSION['username']);
+// List of pages that don't require authentication
+$public_pages = ['login', 'register', 'help', 'about'];
+
+// Check if the requested page requires authentication
+if (!isset($_COOKIE['username']) && !$validSession && !in_array($page, $public_pages)) {
+    require_once '../app/includes/session_middleware.php';
+    applySessionMiddleware($config, $app_root);
 }
 
-// redirect to login
-if ( !isset($_COOKIE['username']) && ($page !== 'login' && $page !== 'register') ) {
+// Check session and redirect if needed
+$currentUser = null;
+if ($validSession) {
+    $currentUser = Session::getUsername();
+} else if (isset($_COOKIE['username']) && !in_array($page, $public_pages)) {
+    // Cookie exists but session is invalid - redirect to login
+    Feedback::flash('LOGIN', 'SESSION_TIMEOUT');
+    header('Location: ' . htmlspecialchars($app_root) . '?page=login&timeout=1');
+    exit();
+} else if (!in_array($page, $public_pages)) {
+    // No valid session or cookie, and not a public page
     header('Location: ' . htmlspecialchars($app_root) . '?page=login');
     exit();
 }
@@ -164,11 +179,10 @@ if ($page == 'logout') {
     $user_id = $userObject->getUserId($currentUser)[0]['id'];
 
     // clean up session
-    session_unset();
-    session_destroy();
+    Session::destroySession();
 
     // start new session for the login page
-    session_start();
+    Session::startSession();
 
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
@@ -186,8 +200,7 @@ if ($page == 'logout') {
 } else {
 
     // if user is logged in, we need user details and rights
-    if (isset($currentUser)) {
-
+    if ($validSession) {
         // If by error a logged in user requests the login page
         if ($page === 'login') {
             header('Location: ' . htmlspecialchars($app_root));
@@ -211,18 +224,10 @@ if ($page == 'logout') {
         }
     }
 
-    // List of pages that don't require authentication
-    $public_pages = ['login', 'register'];
-
-    // Check if the requested page requires authentication
-    if (!in_array($page, $public_pages)) {
-        require_once '../app/includes/session_middleware.php';
-    }
-
     // page building
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
-    if (isset($currentUser)) {
+    if ($validSession) {
         include '../app/templates/page-sidebar.php';
     }
     if (in_array($page, $allowed_urls)) {

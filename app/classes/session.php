@@ -17,7 +17,7 @@ class Session {
      * Start or resume a session with secure options
      */
     public static function startSession() {
-        session_name('totalmeet');
+        session_name('jilo');
         if (session_status() !== PHP_SESSION_ACTIVE && !headers_sent()) {
             session_start(self::$sessionOptions);
         }

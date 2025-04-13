@@ -33,21 +33,23 @@ try {
     if ($action === 'verify' && isset($_SESSION['2fa_pending_user_id'])) {
         // Handle 2FA verification
         $code = $_POST['code'] ?? '';
-        $userId = $_SESSION['2fa_pending_user_id'];
-        $username = $_SESSION['2fa_pending_username'];
-        $rememberMe = isset($_SESSION['2fa_pending_remember']);
+        $pending2FA = Session::get2FAPending();
+
+        if (!$pending2FA) {
+            header('Location: ' . htmlspecialchars($app_root) . '?page=login');
+            exit();
+        }
 
         require_once '../app/classes/twoFactorAuth.php';
         $twoFactorAuth = new TwoFactorAuthentication($db);
 
-        if ($twoFactorAuth->verify($userId, $code)) {
+        if ($twoFactorAuth->verify($pending2FA['user_id'], $code)) {
             // Complete login
-            handleSuccessfulLogin($userId, $username, $rememberMe, $config, $logObject, $user_IP);
+            handleSuccessfulLogin($pending2FA['user_id'], $pending2FA['username'],
+                $pending2FA['remember_me'], $config, $logObject, $user_IP);
 
             // Clean up 2FA session data
-            unset($_SESSION['2fa_pending_user_id']);
-            unset($_SESSION['2fa_pending_username']);
-            unset($_SESSION['2fa_pending_remember']);
+            Session::clear2FAPending();
 
             exit();
         }
@@ -232,11 +234,8 @@ try {
                 switch ($loginResult['status']) {
                     case 'requires_2fa':
                         // Store pending 2FA info
-                        $_SESSION['2fa_pending_user_id'] = $loginResult['user_id'];
-                        $_SESSION['2fa_pending_username'] = $loginResult['username'];
-                        if (isset($formData['remember_me'])) {
-                            $_SESSION['2fa_pending_remember'] = true;
-                        }
+                        Session::store2FAPending($loginResult['user_id'], $loginResult['username'],
+                            isset($formData['remember_me']));
 
                         // Redirect to 2FA verification
                         header('Location: ?page=login&action=verify');
@@ -282,36 +281,8 @@ include '../app/templates/form-login.php';
  * Handle successful login by setting up session and cookies
  */
 function handleSuccessfulLogin($userId, $username, $rememberMe, $config, $logObject, $userIP) {
-    if ($rememberMe) {
-        // 30*24*60*60 = 30 days
-        $cookie_lifetime = 30 * 24 * 60 * 60;
-        $setcookie_lifetime = time() + 30 * 24 * 60 * 60;
-    } else {
-        // 0 - session end on browser close
-        $cookie_lifetime = 0;
-        $setcookie_lifetime = 0;
-    }
-
-    // Regenerate session ID to prevent session fixation
-    session_regenerate_id(true);
-
-    // set session lifetime and cookies
-    setcookie('username', $username, [
-        'expires' => $setcookie_lifetime,
-        'path'    => $config['folder'],
-        'domain'  => $config['domain'],
-        'secure'  => isset($_SERVER['HTTPS']),
-        'httponly' => true,
-        'samesite' => 'Strict'
-    ]);
-
-    // Set session variables
-    $_SESSION['user_id'] = $userId;
-    $_SESSION['USERNAME'] = $username;
-    $_SESSION['LAST_ACTIVITY'] = time();
-    if ($rememberMe) {
-        $_SESSION['REMEMBER_ME'] = true;
-    }
+    // Create authenticated session
+    Session::createAuthSession($userId, $username, $rememberMe, $config);
 
     // Log successful login
     $logObject->insertLog($userId, "Login: User \"$username\" logged in. IP: $userIP", 'user');
