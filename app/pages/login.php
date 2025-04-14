@@ -201,8 +201,7 @@ try {
                 ],
                 'password' => [
                     'type' => 'string',
-                    'required' => true,
-                    'min' => 8
+                    'required' => true
                 ]
             ];
 
@@ -226,8 +225,8 @@ try {
                     throw new Exception(Feedback::get('LOGIN', 'TOO_MANY_ATTEMPTS')['message']);
                 }
 
-                // Record this attempt
-                $rateLimiter->attempt($username, $user_IP);
+                // Record this attempt before trying to login
+                $rateLimiter->attempt($username, $user_IP, false);
             }
 
             // Attempt login
@@ -262,6 +261,7 @@ try {
             if (isset($username)) {
                 $userId = $userObject->getUserId($username)[0]['id'] ?? 0;
                 $logObject->insertLog($userId, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", 'user');
+                $rateLimiter->attempt($username, $user_IP);
             }
         }
     }

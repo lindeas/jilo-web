@@ -427,7 +427,12 @@ class RateLimiter {
         return $result['total_attempts'] < $this->autoBlacklistThreshold;
     }
 
-    public function attempt($username, $ipAddress) {
+    public function attempt($username, $ipAddress, $failed = true) {
+        // Only record failed attempts
+        if (!$failed) {
+            return true;
+        }
+
         // Record this attempt
         $sql = "INSERT INTO {$this->authRatelimitTable} (ip_address, username) VALUES (:ip, :username)";
         $stmt = $this->db->prepare($sql);
