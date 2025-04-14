@@ -62,6 +62,9 @@ try {
         // Get any new feedback messages
         include '../app/helpers/feedback.php';
 
+        // Make userId available to template
+        $userId = $pending2FA['user_id'];
+
         // Load the 2FA verification template
         include '../app/templates/credentials-2fa-verify.php';
         exit();
@@ -257,8 +260,8 @@ try {
             // Log the failed attempt
             Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
             if (isset($username)) {
-                $user_id = $userObject->getUserId($username)[0]['id'] ?? 0;
-                $logObject->insertLog($user_id, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", 'user');
+                $userId = $userObject->getUserId($username)[0]['id'] ?? 0;
+                $logObject->insertLog($userId, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", 'user');
             }
         }
     }

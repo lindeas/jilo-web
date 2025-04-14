@@ -8,7 +8,7 @@ require_once dirname(__DIR__, 3) . '/app/helpers/security.php';
 use PHPUnit\Framework\TestCase;
 
 class TestLogger {
-    public static function insertLog($user_id, $message, $scope = 'user') {
+    public static function insertLog($userId, $message, $scope = 'user') {
         return true;
     }
 }

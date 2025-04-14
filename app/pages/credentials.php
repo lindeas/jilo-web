@@ -14,11 +14,10 @@
  * - `password`: Change password
  */
 
-$user_id = $_SESSION['user_id'];
-
 // Initialize user object
 $userObject = new User($dbWeb);
 
+// Get action and item from request
 $action = $_REQUEST['action'] ?? '';
 $item = $_REQUEST['item'] ?? '';
 
@@ -34,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'credentials', $user_id);
+    checkRateLimit($dbWeb, 'credentials', $userId);
 
     switch ($item) {
         case '2fa':
@@ -44,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $code = $_POST['code'] ?? '';
                     $secret = $_POST['secret'] ?? '';
 
-                    if ($userObject->enableTwoFactor($user_id, $secret, $code)) {
+                    if ($userObject->enableTwoFactor($userId, $secret, $code)) {
                         Feedback::flash('NOTICE', 'DEFAULT', 'Two-factor authentication has been enabled successfully.');
                         header("Location: $app_root?page=credentials");
                         exit();
@@ -61,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 case 'verify':
                     // This is a user-initiated verification
                     $code = $_POST['code'] ?? '';
-                    if ($userObject->verifyTwoFactor($user_id, $code)) {
+                    if ($userObject->verifyTwoFactor($userId, $code)) {
                         $_SESSION['2fa_verified'] = true;
                         header("Location: $app_root?page=dashboard");
                         exit();
@@ -73,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     break;
 
                 case 'disable':
-                    if ($userObject->disableTwoFactor($user_id)) {
+                    if ($userObject->disableTwoFactor($userId)) {
                         Feedback::flash('NOTICE', 'DEFAULT', 'Two-factor authentication has been disabled.');
                     } else {
                         Feedback::flash('ERROR', 'DEFAULT', 'Failed to disable two-factor authentication.');
@@ -109,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
 
-            if ($userObject->changePassword($user_id, $_POST['current_password'], $_POST['new_password'])) {
+            if ($userObject->changePassword($userId, $_POST['current_password'], $_POST['new_password'])) {
                 Feedback::flash('NOTICE', 'DEFAULT', 'Password has been changed successfully.');
             } else {
                 Feedback::flash('ERROR', 'DEFAULT', 'Failed to change password. Please verify your current password.');
@@ -130,12 +129,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $security->generateCsrfToken();
 
     // Get 2FA status for the template
-    $has2fa = $userObject->isTwoFactorEnabled($user_id);
+    $has2fa = $userObject->isTwoFactorEnabled($userId);
 
     switch ($action) {
         case 'setup':
             if (!$has2fa) {
-                $result = $userObject->enableTwoFactor($user_id);
+                $result = $userObject->enableTwoFactor($userId);
                 if ($result['success']) {
                     $setupData = $result['data'];
                 } else {

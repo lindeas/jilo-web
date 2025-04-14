@@ -12,8 +12,8 @@
 include '../app/helpers/feedback.php';
 
 // Check for rights; user or system
-$has_system_access = ($userObject->hasRight($user_id, 'superuser') ||
-                     $userObject->hasRight($user_id, 'view app logs'));
+$has_system_access = ($userObject->hasRight($userId, 'superuser') ||
+                     $userObject->hasRight($userId, 'view app logs'));
 
 // Get current page for pagination
 $currentPage = $_REQUEST['page_num'] ?? 1;
@@ -69,8 +69,8 @@ if (isset($_REQUEST['tab'])) {
 }
 
 // prepare the result
-$search = $logObject->readLog($user_id, $scope, $offset, $items_per_page, $filters);
-$search_all = $logObject->readLog($user_id, $scope, 0, 0, $filters);
+$search = $logObject->readLog($userId, $scope, $offset, $items_per_page, $filters);
+$search_all = $logObject->readLog($userId, $scope, 0, 0, $filters);
 
 if (!empty($search)) {
     // we get total items and number of pages
@@ -103,7 +103,7 @@ if (!empty($search)) {
     }
 }
 
-$username = $userObject->getUserDetails($user_id)[0]['username'];
+$username = $userObject->getUserDetails($userId)[0]['username'];
 
 // Load the template
 include '../app/templates/logs.php';

@@ -5,17 +5,17 @@
                             <h2 class="mb-0">Security settings</h2>
                             <small>network restrictions to control flooding and brute force attacks</small>
                             <ul class="nav nav-tabs mt-5">
-<?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit whitelist')) { ?>
+<?php if ($userObject->hasRight($userId, 'superuser') || $userObject->hasRight($userId, 'edit whitelist')) { ?>
                                 <li class="nav-item">
                                     <a class="nav-link <?= $section === 'whitelist' ? 'active' : '' ?>" href="?page=security&section=whitelist">IP whitelist</a>
                                 </li>
 <?php } ?>
-<?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit blacklist')) { ?>
+<?php if ($userObject->hasRight($userId, 'superuser') || $userObject->hasRight($userId, 'edit blacklist')) { ?>
                                 <li class="nav-item">
                                     <a class="nav-link <?= $section === 'blacklist' ? 'active' : '' ?>" href="?page=security&section=blacklist">IP blacklist</a>
                                 </li>
 <?php } ?>
-<?php if ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit ratelimiting')) { ?>
+<?php if ($userObject->hasRight($userId, 'superuser') || $userObject->hasRight($userId, 'edit ratelimiting')) { ?>
                                 <li class="nav-item">
                                     <a class="nav-link <?= $section === 'ratelimit' ? 'active' : '' ?>" href="?page=security&section=ratelimit">Rate limiting</a>
                                 </li>
@@ -24,7 +24,7 @@
                         </div>
                     </div>
 
-<?php if ($section === 'whitelist' && ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit whitelist'))) { ?>
+<?php if ($section === 'whitelist' && ($userObject->hasRight($userId, 'superuser') || $userObject->hasRight($userId, 'edit whitelist'))) { ?>
                     <!-- whitelist section -->
                     <div class="row mb-4">
                         <div class="col">
@@ -93,7 +93,7 @@
                     </div>
 <?php } ?>
 
-<?php if ($section === 'blacklist' && ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit blacklist'))) { ?>
+<?php if ($section === 'blacklist' && ($userObject->hasRight($userId, 'superuser') || $userObject->hasRight($userId, 'edit blacklist'))) { ?>
                     <!-- blacklist section -->
                     <div class="row mb-4">
                         <div class="col">
@@ -167,7 +167,7 @@
                     </div>
 <?php } ?>
 
-<?php if ($section === 'ratelimit' && ($userObject->hasRight($user_id, 'superuser') || $userObject->hasRight($user_id, 'edit ratelimiting'))) { ?>
+<?php if ($section === 'ratelimit' && ($userObject->hasRight($userId, 'superuser') || $userObject->hasRight($userId, 'edit ratelimiting'))) { ?>
                     <!-- rate limiting section -->
                     <div class="row mb-4">
                         <div class="col">

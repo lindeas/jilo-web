@@ -51,8 +51,8 @@ if (!$isWritable) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if user has permission to edit config
-    if (!$userObject->hasRight($user_id, 'edit config file')) {
-        $logObject->insertLog($user_id, "Unauthorized: User \"$currentUser\" tried to edit config file. IP: $user_IP", 'system');
+    if (!$userObject->hasRight($userId, 'edit config file')) {
+        $logObject->insertLog($userId, "Unauthorized: User \"$currentUser\" tried to edit config file. IP: $user_IP", 'system');
         if ($isAjax) {
             ApiResponse::error('Forbidden: You do not have permission to edit the config file', null, 403);
             exit;
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Apply rate limiting
     require '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'config', $user_id);
+    checkRateLimit($dbWeb, 'config', $userId);
 
     // Ensure no output before this point
     ob_clean();
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get raw input
         $jsonData = file_get_contents('php://input');
         if ($jsonData === false) {
-            $logObject->insertLog($user_id, "Failed to read request data for config update", 'system');
+            $logObject->insertLog($userId, "Failed to read request data for config update", 'system');
             ApiResponse::error('Failed to read request data');
             exit;
         }
@@ -115,10 +115,10 @@ if (!$isAjax) {
      * Handles GET requests to display templates.
      */
 
-    if ($userObject->hasRight($user_id, 'view config file')) {
+    if ($userObject->hasRight($userId, 'view config file')) {
         include '../app/templates/config.php';
     } else {
-        $logObject->insertLog($user_id, "Unauthorized: User \"$currentUser\" tried to access \"config\" page. IP: $user_IP", 'system');
+        $logObject->insertLog($userId, "Unauthorized: User \"$currentUser\" tried to access \"config\" page. IP: $user_IP", 'system');
         include '../app/templates/error-unauthorized.php';
     }
 }

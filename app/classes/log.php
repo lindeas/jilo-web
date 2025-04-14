@@ -24,13 +24,13 @@ class Log {
     /**
      * Insert a log event into the database.
      *
-     * @param int    $user_id The ID of the user associated with the log event.
+     * @param int    $userId  The ID of the user associated with the log event.
      * @param string $message The log message to insert.
      * @param string $scope   The scope of the log event (e.g., 'user', 'system'). Default is 'user'.
      *
      * @return bool|string True on success, or an error message on failure.
      */
-    public function insertLog($user_id, $message, $scope='user') {
+    public function insertLog($userId, $message, $scope='user') {
         try {
             $sql = 'INSERT INTO logs
                         (user_id, scope, message)
@@ -39,7 +39,7 @@ class Log {
 
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':user_id'      => $user_id,
+                ':user_id'      => $userId,
                 ':scope'        => $scope,
                 ':message'      => $message,
             ]);
@@ -54,7 +54,7 @@ class Log {
     /**
      * Retrieve log entries from the database.
      *
-     * @param int    $user_id        The ID of the user whose logs are being retrieved.
+     * @param int    $userId         The ID of the user whose logs are being retrieved.
      * @param string $scope          The scope of the logs ('user' or 'system').
      * @param int    $offset         The offset for pagination. Default is 0.
      * @param int    $items_per_page The number of log entries to retrieve per page. Default is no limit.
@@ -62,7 +62,7 @@ class Log {
      *
      * @return array An array of log entries.
      */
-    public function readLog($user_id, $scope, $offset=0, $items_per_page='', $filters=[]) {
+    public function readLog($userId, $scope, $offset=0, $items_per_page='', $filters=[]) {
         $params = [];
         $where_clauses = [];
 
@@ -74,7 +74,7 @@ class Log {
         // Add scope condition
         if ($scope === 'user') {
             $where_clauses[] = 'l.user_id = :user_id';
-            $params[':user_id'] = $user_id;
+            $params[':user_id'] = $userId;
         }
 
         // Add time range filters if specified

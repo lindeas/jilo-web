@@ -93,9 +93,9 @@ class User {
     /**
      * Logs in a user by verifying credentials.
      *
-     * @param string $username The username of the user.
-     * @param string $password The password of the user.
-     * @param string $twoFactorCode Optional. The 2FA code if 2FA is enabled.
+     * @param string $username       The username of the user.
+     * @param string $password       The password of the user.
+     * @param string $twoFactorCode  Optional. The 2FA code if 2FA is enabled.
      *
      * @return array Login result with status and any necessary data
      */
@@ -180,11 +180,11 @@ class User {
     /**
      * Fetches user details by user ID.
      *
-     * @param int $user_id The user ID.
+     * @param int $userId The user ID.
      *
      * @return array|null User details or null if not found.
      */
-    public function getUserDetails($user_id) {
+    public function getUserDetails($userId) {
         $sql = 'SELECT
                     um.*,
                     u.username
@@ -197,7 +197,7 @@ class User {
 
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':user_id'		=> $user_id,
+            ':user_id'		=> $userId,
         ]);
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -208,19 +208,19 @@ class User {
     /**
      * Grants a user a specific right.
      *
-     * @param int $user_id The user ID.
-     * @param int $right_id The right ID to grant.
+     * @param int $userId    The user ID.
+     * @param int $right_id  The right ID to grant.
      *
      * @return void
      */
-    public function addUserRight($user_id, $right_id) {
+    public function addUserRight($userId, $right_id) {
         $sql = 'INSERT INTO users_rights
                     (user_id, right_id)
                 VALUES
                     (:user_id, :right_id)';
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':user_id'		=> $user_id,
+            ':user_id'		=> $userId,
             ':right_id'		=> $right_id,
         ]);
     }
@@ -229,12 +229,12 @@ class User {
     /**
      * Revokes a specific right from a user.
      *
-     * @param int $user_id The user ID.
-     * @param int $right_id The right ID to revoke.
+     * @param int $userId    The user ID.
+     * @param int $right_id  The right ID to revoke.
      *
      * @return void
      */
-    public function removeUserRight($user_id, $right_id) {
+    public function removeUserRight($userId, $right_id) {
         $sql = 'DELETE FROM users_rights
                 WHERE
                     user_id = :user_id
@@ -242,7 +242,7 @@ class User {
                     right_id = :right_id';
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':user_id'		=> $user_id,
+            ':user_id'		=> $userId,
             ':right_id'		=> $right_id,
         ]);
     }
@@ -270,11 +270,11 @@ class User {
     /**
      * Retrieves the rights assigned to a specific user.
      *
-     * @param int $user_id The user ID.
+     * @param int $userId The user ID.
      *
      * @return array List of user rights.
      */
-    public function getUserRights($user_id) {
+    public function getUserRights($userId) {
         $sql = 'SELECT
                     u.id AS user_id,
                     r.id AS right_id,
@@ -290,7 +290,7 @@ class User {
 
         $query = $this->db->prepare($sql);
         $query->execute([
-            ':user_id'		=> $user_id,
+            ':user_id'		=> $userId,
         ]);
 
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -299,7 +299,7 @@ class User {
         $specialEntries = [];
 
         // user 1 is always superuser
-        if ($user_id == 1) {
+        if ($userId == 1) {
             $specialEntries = [
                 [
                     'user_id' => 1,
@@ -309,7 +309,7 @@ class User {
             ];
 
         // user 2 is always demo
-        } elseif ($user_id == 2) {
+        } elseif ($userId == 2) {
             $specialEntries = [
                 [
                     'user_id' => 2,
@@ -333,17 +333,17 @@ class User {
     /**
      * Check if the user has a specific right.
      *
-     * @param int $user_id The user ID.
-     * @param string $right_name The human-readable name of the user right.
+     * @param int    $userId      The user ID.
+     * @param string $right_name  The human-readable name of the user right.
      *
      * @return bool True if the user has the right, false otherwise.
      */
-    function hasRight($user_id, $right_name) {
-        $userRights = $this->getUserRights($user_id);
+    function hasRight($userId, $right_name) {
+        $userRights = $this->getUserRights($userId);
         $userHasRight = false;
 
         // superuser always has all the rights
-        if ($user_id === 1) {
+        if ($userId === 1) {
             $userHasRight = true;
         }
 
@@ -362,8 +362,8 @@ class User {
     /**
      * Updates a user's metadata in the database.
      *
-     * @param int $user_id The ID of the user to update.
-     * @param array $updatedUser An associative array containing updated user data:
+     * @param int   $userId       The ID of the user to update.
+     * @param array $updatedUser  An associative array containing updated user data:
      *  - 'name' (string): The updated name of the user.
      *  - 'email' (string): The updated email of the user.
      *  - 'timezone' (string): The updated timezone of the user.
@@ -371,7 +371,7 @@ class User {
      *
      * @return bool|string Returns true if the update is successful, or an error message if an exception occurs.
      */
-    public function editUser($user_id, $updatedUser) {
+    public function editUser($userId, $updatedUser) {
         try {
             $sql = 'UPDATE users_meta SET
                         name = :name,
@@ -381,7 +381,7 @@ class User {
                     WHERE user_id = :user_id';
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':user_id'	=> $user_id,
+                ':user_id'	=> $userId,
                 ':name'		=> $updatedUser['name'],
                 ':email'	=> $updatedUser['email'],
                 ':timezone'	=> $updatedUser['timezone'],
@@ -400,12 +400,12 @@ class User {
     /**
      * Removes a user's avatar from the database and deletes the associated file.
      *
-     * @param int $user_id The ID of the user whose avatar is being removed.
-     * @param string $old_avatar Optional. The file path of the current avatar to delete. Default is an empty string.
+     * @param int    $userId      The ID of the user whose avatar is being removed.
+     * @param string $old_avatar  Optional. The file path of the current avatar to delete. Default is an empty string.
      *
      * @return bool|string Returns true if the avatar is successfully removed, or an error message if an exception occurs.
      */
-    public function removeAvatar($user_id, $old_avatar = '') {
+    public function removeAvatar($userId, $old_avatar = '') {
         try {
             // remove from database
             $sql = 'UPDATE users_meta SET
@@ -413,7 +413,7 @@ class User {
                     WHERE user_id = :user_id';
             $query = $this->db->prepare($sql);
             $query->execute([
-                ':user_id'	=> $user_id,
+                ':user_id'	=> $userId,
             ]);
 
             // delete the old avatar file
@@ -433,14 +433,14 @@ class User {
     /**
      * Updates a user's avatar by uploading a new file and saving its path in the database.
      *
-     * @param int $user_id The ID of the user whose avatar is being updated.
-     * @param array $avatar_file The uploaded avatar file from the $_FILES array.
-     *                           Should include 'tmp_name', 'name', 'error', etc.
-     * @param string $avatars_path The directory path where avatar files should be saved.
+     * @param int    $userId        The ID of the user whose avatar is being updated.
+     * @param array  $avatar_file   The uploaded avatar file from the $_FILES array.
+     *                              Should include 'tmp_name', 'name', 'error', etc.
+     * @param string $avatars_path  The directory path where avatar files should be saved.
      *
      * @return bool|string Returns true if the avatar is successfully updated, or an error message if an exception occurs.
      */
-    public function changeAvatar($user_id, $avatar_file, $avatars_path) {
+    public function changeAvatar($userId, $avatar_file, $avatars_path) {
         try {
             // check if the file was uploaded
             if (isset($avatar_file) && $avatar_file['error'] === UPLOAD_ERR_OK) {
@@ -463,7 +463,7 @@ class User {
                             $query = $this->db->prepare($sql);
                             $query->execute([
                                 ':avatar' => $newFileName,
-                                ':user_id' => $user_id
+                                ':user_id' => $userId
                             ]);
                             // all went OK
                             $_SESSION['notice'] .= 'Avatar updated successfully. ';
@@ -505,9 +505,9 @@ class User {
     /**
      * Enable two-factor authentication for a user
      *
-     * @param int $userId User ID
-     * @param string $secret Secret key to use
-     * @param string $code Verification code to validate
+     * @param int    $userId  User ID
+     * @param string $secret  Secret key to use
+     * @param string $code    Verification code to validate
      * @return bool True if enabled successfully
      */
     public function enableTwoFactor($userId, $secret = null, $code = null) {
@@ -527,8 +527,8 @@ class User {
     /**
      * Verify a two-factor authentication code
      *
-     * @param int $userId User ID
-     * @param string $code The verification code
+     * @param int    $userId  User ID
+     * @param string $code    The verification code
      * @return bool True if verified
      */
     public function verifyTwoFactor($userId, $code) {
@@ -548,9 +548,9 @@ class User {
     /**
      * Change a user's password
      *
-     * @param int $userId User ID
-     * @param string $currentPassword Current password for verification
-     * @param string $newPassword New password to set
+     * @param int    $userId           User ID
+     * @param string $currentPassword  Current password for verification
+     * @param string $newPassword      New password to set
      * @return bool True if password was changed successfully
      */
     public function changePassword($userId, $currentPassword, $newPassword) {

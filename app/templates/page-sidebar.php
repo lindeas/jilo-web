@@ -75,17 +75,17 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 
                         <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>system</small></p></li>
 
-<?php if ($userObject->hasRight($user_id, 'view config file')) {?>
+<?php if ($userObject->hasRight($userId, 'view config file')) {?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=config">
                             <li class="list-group-item<?php if ($page === 'config') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="app config"></i>config
                             </li>
                         </a>
 <?php } ?>
-<?php if ($userObject->hasRight($user_id, 'superuser') ||
-          $userObject->hasRight($user_id, 'edit whitelist') ||
-          $userObject->hasRight($user_id, 'edit blacklist') ||
-          $userObject->hasRight($user_id, 'edit ratelimiting')) { ?>
+<?php if ($userObject->hasRight($userId, 'superuser') ||
+          $userObject->hasRight($userId, 'edit whitelist') ||
+          $userObject->hasRight($userId, 'edit blacklist') ||
+          $userObject->hasRight($userId, 'edit ratelimiting')) { ?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=security">
                             <li class="list-group-item<?php if ($page === 'security') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-shield-alt" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="security"></i>security
@@ -98,7 +98,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-<?php if ($userObject->hasRight($user_id, 'view app logs')) {?>
+<?php if ($userObject->hasRight($userId, 'view app logs')) {?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
                             <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-shoe-prints" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs

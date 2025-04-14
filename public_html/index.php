@@ -28,6 +28,9 @@ require '../app/includes/sanitize.php';
 // Check session validity
 $validSession = Session::isValidSession();
 
+// Get user ID early if session is valid
+$userId = $validSession ? Session::getUserId() : null;
+
 // Initialize feedback message system
 require_once '../app/classes/feedback.php';
 $system_messages = [];
@@ -175,9 +178,6 @@ $userObject = new User($dbWeb);
 
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
-    // get user info before destroying session
-    $user_id = $userObject->getUserId($currentUser)[0]['id'];
-
     // clean up session
     Session::destroySession();
 
@@ -187,7 +187,7 @@ if ($page == 'logout') {
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
     // Log successful logout
-    $logObject->insertLog($user_id, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
+    $logObject->insertLog($userId, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
 
     // Set success message
     Feedback::flash('LOGIN', 'LOGOUT_SUCCESS');
@@ -206,9 +206,8 @@ if ($page == 'logout') {
             header('Location: ' . htmlspecialchars($app_root));
             exit();
         }
-        $user_id = $userObject->getUserId($currentUser)[0]['id'];
-        $userDetails = $userObject->getUserDetails($user_id);
-        $userRights = $userObject->getUserRights($user_id);
+        $userDetails = $userObject->getUserDetails($userId);
+        $userRights = $userObject->getUserRights($userId);
         $userTimezone = (!empty($userDetails[0]['timezone'])) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set (or is missing)
 
         // check if the Jilo Server is running

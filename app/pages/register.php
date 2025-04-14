@@ -61,8 +61,8 @@ if ($config['registration_enabled'] == true) {
                 // redirect to login
                 if ($result === true) {
                     // Get the new user's ID for logging
-                    $user_id = $userObject->getUserId($username)[0]['id'];
-                    $logObject->insertLog($user_id, "Registration: New user \"$username\" registered successfully. IP: $user_IP", 'user');
+                    $userId = $userObject->getUserId($username)[0]['id'];
+                    $logObject->insertLog($userId, "Registration: New user \"$username\" registered successfully. IP: $user_IP", 'user');
                     Feedback::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
                     header('Location: ' . htmlspecialchars($app_root));
                     exit();

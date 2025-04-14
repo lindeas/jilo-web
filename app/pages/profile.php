@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting for profile operations
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'profile', $user_id);
+    checkRateLimit($dbWeb, 'profile', $userId);
 
     // avatar removal
     if ($item === 'avatar' && $action === 'remove') {
-        $validator = new Validator(['user_id' => $user_id]);
+        $validator = new Validator(['user_id' => $userId]);
         $rules = [
             'user_id' => [
                 'required' => true,
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
 
-        $result = $userObject->removeAvatar($user_id, $config['avatars_path'].$userDetails[0]['avatar']);
+        $result = $userObject->removeAvatar($userId, $config['avatars_path'].$userDetails[0]['avatar']);
         if ($result === true) {
             Feedback::flash('NOTICE', 'DEFAULT', "Avatar for user \"{$userDetails[0]['username']}\" is removed.");
         } else {
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'timezone' => htmlspecialchars($_POST['timezone'] ?? ''),
         'bio' => htmlspecialchars($_POST['bio'] ?? ''),
     ];
-    $result = $userObject->editUser($user_id, $updatedUser);
+    $result = $userObject->editUser($userId, $updatedUser);
     if ($result === true) {
         Feedback::flash('NOTICE', 'DEFAULT', "User details for \"{$updatedUser['name']}\" are edited.");
     } else {
@@ -118,21 +118,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $rightsToAdd = array_diff($newRights, $userRightsIds);
         if (!empty($rightsToAdd)) {
             foreach ($rightsToAdd as $rightId) {
-                $userObject->addUserRight($user_id, $rightId);
+                $userObject->addUserRight($userId, $rightId);
             }
         }
         // what rights we need to remove
         $rightsToRemove = array_diff($userRightsIds, $newRights);
         if (!empty($rightsToRemove)) {
             foreach ($rightsToRemove as $rightId) {
-                $userObject->removeUserRight($user_id, $rightId);
+                $userObject->removeUserRight($userId, $rightId);
             }
         }
     }
 
     // update the avatar
     if (!empty($_FILES['avatar_file']['tmp_name'])) {
-        $result = $userObject->changeAvatar($user_id, $_FILES['avatar_file'], $config['avatars_path']);
+        $result = $userObject->changeAvatar($userId, $_FILES['avatar_file'], $config['avatars_path']);
     }
 
     header("Location: $app_root?page=profile");

@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Apply rate limiting for adding new contacts
     require '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'contact', $user_id);
+    checkRateLimit($dbWeb, 'contact', $userId);
 
     // Validate agent ID for POST operations
     if ($agentId === false || $agentId === null) {

@@ -16,7 +16,7 @@ class Config {
      * @return array Returns an array with 'success' and 'updated' keys on success, or 'success' and 'error' keys on failure.
      */
     public function editConfigFile($updatedConfig, $config_file) {
-        global $logObject, $user_id;
+        global $logObject, $userId;
         $allLogs = [];
         $updated = [];
 
@@ -140,7 +140,7 @@ class Config {
             }
 
             if (!empty($allLogs)) {
-                $logObject->insertLog($user_id, implode("\n", $allLogs), 'system');
+                $logObject->insertLog($userId, implode("\n", $allLogs), 'system');
             }
 
             return [
@@ -148,7 +148,7 @@ class Config {
                 'updated' => $updated
             ];
         } catch (Exception $e) {
-            $logObject->insertLog($user_id, "Config update error: " . $e->getMessage(), 'system');
+            $logObject->insertLog($userId, "Config update error: " . $e->getMessage(), 'system');
             return [
                 'success' => false,
                 'error' => $e->getMessage()

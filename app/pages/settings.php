@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting for profile operations
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'profile', $user_id);
+    checkRateLimit($dbWeb, 'profile', $userId);
 
     // Get hash from URL if present
     $hash = parse_url($_SERVER['REQUEST_URI'], PHP_URL_FRAGMENT) ?? '';
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      * Handles GET requests to display templates.
      */
 
-    if ($userObject->hasRight($user_id, 'view settings')) {
+    if ($userObject->hasRight($userId, 'view settings')) {
         $jilo_agent_types = $agentObject->getAgentTypes();
         include '../app/templates/settings.php';
     } else {

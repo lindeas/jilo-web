@@ -57,7 +57,7 @@
                                     <button type="button" class="btn btn-outline-secondary cancel-edit platform-edit-mode" style="display: none;">
                                         <i class="fas fa-times me-1"></i>Cancel
                                     </button>
-                                    <?php if ($userObject->hasRight($user_id, 'delete platform')): ?>
+                                    <?php if ($userObject->hasRight($userId, 'delete platform')): ?>
                                         <button type="button" class="btn btn-outline-danger platform-view-mode" onclick="showDeletePlatformModal(<?= htmlspecialchars($platform['id']) ?>, '<?= htmlspecialchars(addslashes($platform['name'])) ?>', '<?= htmlspecialchars(addslashes($platform['jitsi_url'])) ?>', '<?= htmlspecialchars(addslashes($platform['jilo_database'])) ?>')">
                                             <i class="fas fa-trash me-1"></i>Delete platform
                                         </button>
