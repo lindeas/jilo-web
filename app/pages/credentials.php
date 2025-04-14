@@ -89,8 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $validator = new Validator($_POST);
             $rules = [
                 'current_password' => [
-                    'required' => true,
-                    'min' => 8
+                    'required' => true
                 ],
                 'new_password' => [
                     'required' => true,
