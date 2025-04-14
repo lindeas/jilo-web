@@ -5,24 +5,37 @@ INSERT INTO users VALUES(2,'demo1','$2y$10$LtV9m.rMCJ.K/g45e6tzDexZ8C/9xxu3qFCkv
 INSERT INTO users_meta VALUES(1,1,'demo admin user','admin@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web');
 INSERT INTO users_meta VALUES(2,2,'demo user','demo@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web');
 
-INSERT INTO platforms VALUES(1,'meet.lindeas.com','https://meet.lindeas.com','../jilo-meet.lindeas.db');
-INSERT INTO platforms VALUES(2,'example.com','https://meet.example.com','../jilo.db');
+INSERT INTO rights VALUES(1,'superuser');
+INSERT INTO rights VALUES(2,'edit users');
+INSERT INTO rights VALUES(3,'view settings');
+INSERT INTO rights VALUES(4,'edit settings');
+INSERT INTO rights VALUES(5,'view own profile');
+INSERT INTO rights VALUES(6,'edit own profile');
+INSERT INTO rights VALUES(7,'view all profiles');
+INSERT INTO rights VALUES(8,'edit all profiles');
+INSERT INTO rights VALUES(9,'view app logs');
+INSERT INTO rights VALUES(10,'view all platforms');
+INSERT INTO rights VALUES(11,'edit all platforms');
+INSERT INTO rights VALUES(12,'view all agents');
+INSERT INTO rights VALUES(13,'edit all agents');
+INSERT INTO rights VALUES(14,'view jilo config');
 
-INSERT INTO logs VALUES(1,2,'2024-09-30 09:54:50','user','Logout: User "demo" logged out. IP: 151.237.101.43');
-INSERT INTO logs VALUES(2,2,'2024-09-30 09:54:54','user','Login: User "demo" logged in. IP: 151.237.101.43');
-INSERT INTO logs VALUES(3,2,'2024-10-03 16:34:49','user','Logout: User "demo" logged out. IP: 151.237.101.43');
-INSERT INTO logs VALUES(4,2,'2024-10-03 16:34:56','user','Login: User "demo" logged in. IP: 151.237.101.43');
-INSERT INTO logs VALUES(5,2,'2024-10-09 11:08:16','user','Logout: User "demo" logged out. IP: 151.237.101.43');
-INSERT INTO logs VALUES(6,2,'2024-10-09 11:08:20','user','Login: User "demo" logged in. IP: 151.237.101.43');
-INSERT INTO logs VALUES(7,2,'2024-10-17 16:22:57','user','Logout: User "demo" logged out. IP: 151.237.101.43');
-INSERT INTO logs VALUES(8,2,'2024-10-17 16:23:08','user','Login: User "demo" logged in. IP: 151.237.101.43');
-INSERT INTO logs VALUES(9,2,'2024-10-18 08:07:25','user','Login: User "demo" logged in. IP: 42.104.201.119');
+INSERT INTO jilo_agent_types VALUES(1,'jvb','/jvb');
+INSERT INTO jilo_agent_types VALUES(2,'jicofo','/jicofo');
+INSERT INTO jilo_agent_types VALUES(3,'prosody','/prosody');
+INSERT INTO jilo_agent_types VALUES(4,'nginx','/nginx');
+INSERT INTO jilo_agent_types VALUES(5,'jibri','/jibri');
 
-INSERT INTO jilo_agents VALUES(1,1,1,'https://meet.lindeas.com:8081','mysecretkey',5);
-INSERT INTO jilo_agents VALUES(4,1,2,'https://meet.lindeas.com:8081','mysecretkey',5);
-INSERT INTO jilo_agents VALUES(7,1,3,'http://meet.lindeas.com:8081','mysecretkey',5);
-INSERT INTO jilo_agents VALUES(8,1,4,'http://meet.lindeas.com:8081','mysecretkey',5);
+INSERT INTO platforms VALUES(1,'example.com','https://meet.example.com','../../jilo/jilo.db');
 
-INSERT INTO hosts VALUES(1,'meet.lindeas.com',2,'main machine');
-INSERT INTO hosts VALUES(2,'meet.example.com',2,'test');
+INSERT INTO ip_whitelist VALUES(1,'127.0.0.1',0,'localhost IPv4','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(2,'::1',0,'localhost IPv6','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(3,'10.0.0.0/8',1,'Private network (Class A)','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(4,'172.16.0.0/12',1,'Private network (Class B)','2025-01-04 11:39:08','system');
+INSERT INTO ip_whitelist VALUES(5,'192.168.0.0/16',1,'Private network (Class C)','2025-01-04 11:39:08','system');
 
+INSERT INTO ip_blacklist VALUES(1,'0.0.0.0/8',1,'Reserved address space - RFC 1122',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(2,'100.64.0.0/10',1,'Carrier-grade NAT space - RFC 6598',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(3,'192.0.2.0/24',1,'TEST-NET-1 Documentation space - RFC 5737',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(4,'198.51.100.0/24',1,'TEST-NET-2 Documentation space - RFC 5737',NULL,'2025-01-04 11:39:08','system');
+INSERT INTO ip_blacklist VALUES(5,'203.0.113.0/24',1,'TEST-NET-3 Documentation space - RFC 5737',NULL,'2025-01-04 11:39:08','system');
