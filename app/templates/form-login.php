@@ -12,7 +12,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <input type="password" class="form-control w-50 mx-auto" name="password" placeholder="Password" 
-                            pattern=".{5,}" title="Eight or more characters"
+                            pattern=".{8,}" title="Eight or more characters"
                             required />
                     </div>
                     <div class="form-group mb-3">

@@ -202,7 +202,7 @@ try {
                 'password' => [
                     'type' => 'string',
                     'required' => true,
-                    'min' => 5
+                    'min' => 8
                 ]
             ];
 
