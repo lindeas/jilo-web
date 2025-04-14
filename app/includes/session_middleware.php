@@ -16,8 +16,10 @@ function applySessionMiddleware($config, $app_root, $isTest = false) {
     // Check session validity
     if (!Session::isValidSession()) {
         // Only show session timeout message if there was an active session
-        if (isset($_SESSION['LAST_ACTIVITY'])) {
+        // and we haven't shown it yet
+        if (isset($_SESSION['LAST_ACTIVITY']) && !isset($_SESSION['session_timeout_shown'])) {
             Feedback::flash('LOGIN', 'SESSION_TIMEOUT');
+            $_SESSION['session_timeout_shown'] = true;
         }
 
         // Session invalid, clean up and redirect

@@ -108,6 +108,9 @@ class Session {
 
         // Start fresh session
         self::startSession();
+
+        // Reset session timeout flag
+        unset($_SESSION['session_timeout_shown']);
     }
 
     /**

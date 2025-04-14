@@ -116,8 +116,11 @@ if ($validSession) {
     $currentUser = Session::getUsername();
 } else if (isset($_COOKIE['username']) && !in_array($page, $public_pages)) {
     // Cookie exists but session is invalid - redirect to login
-    Feedback::flash('LOGIN', 'SESSION_TIMEOUT');
-    header('Location: ' . htmlspecialchars($app_root) . '?page=login&timeout=1');
+    if (!isset($_SESSION['session_timeout_shown'])) {
+        Feedback::flash('LOGIN', 'SESSION_TIMEOUT');
+        $_SESSION['session_timeout_shown'] = true;
+    }
+    header('Location: ' . htmlspecialchars($app_root) . '?page=login');
     exit();
 } else if (!in_array($page, $public_pages)) {
     // No valid session or cookie, and not a public page

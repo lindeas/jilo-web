@@ -271,7 +271,7 @@ try {
 
 // Show configured login message if any
 if (!empty($config['login_message'])) {
-    echo Feedback::render('NOTICE', 'DEFAULT', $config['login_message'], false);
+    echo Feedback::render('NOTICE', 'DEFAULT', $config['login_message'], false, false, false);
 }
 
 // Get any new feedback messages
