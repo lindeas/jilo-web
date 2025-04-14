@@ -18,7 +18,11 @@ class Log {
      * @param object $database The database object to initialize the connection.
      */
     public function __construct($database) {
-        $this->db = $database->getConnection();
+        if ($database instanceof PDO) {
+            $this->db = $database;
+        } else {
+            $this->db = $database->getConnection();
+        }
     }
 
     /**

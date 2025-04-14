@@ -23,7 +23,11 @@ class RateLimiter {
     ];
 
     public function __construct($database) {
-        $this->db = $database->getConnection();
+        if ($database instanceof PDO) {
+            $this->db = $database;
+        } else {
+            $this->db = $database->getConnection();
+        }
         $this->log = new Log($database);
         $this->createTablesIfNotExist();
     }
