@@ -104,9 +104,6 @@ class User {
         require_once __DIR__ . '/../helpers/logs.php';
         $ipAddress = getUserIP();
 
-        // Record attempt
-        $this->rateLimiter->attempt($username, $ipAddress);
-
         // Check rate limiting first
         if (!$this->rateLimiter->isAllowed($username, $ipAddress)) {
             $remainingTime = $this->rateLimiter->getDecayMinutes();

@@ -115,7 +115,7 @@ class RateLimiter {
      * Get number of recent login attempts for an IP
      */
     public function getRecentAttempts($ip) {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as attempts FROM {$this->authRatelimitTable} 
+        $stmt = $this->db->prepare("SELECT COUNT(*) as attempts FROM {$this->authRatelimitTable}
             WHERE ip_address = ? AND attempted_at > datetime('now', '-' || :minutes || ' minutes')");
         $stmt->execute([$ip, $this->decayMinutes]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -574,7 +574,7 @@ class RateLimiter {
      * Clean old page requests
      */
     private function cleanOldPageRequests() {
-        $sql = "DELETE FROM {$this->pagesRatelimitTable} 
+        $sql = "DELETE FROM {$this->pagesRatelimitTable}
                 WHERE request_time < DATETIME('now', '-1 minute')";
 
         $stmt = $this->db->prepare($sql);

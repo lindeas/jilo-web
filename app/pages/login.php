@@ -224,9 +224,6 @@ try {
                 if ($rateLimiter->tooManyAttempts($username, $user_IP)) {
                     throw new Exception(Feedback::get('LOGIN', 'TOO_MANY_ATTEMPTS')['message']);
                 }
-
-                // Record this attempt before trying to login
-                $rateLimiter->attempt($username, $user_IP, false);
             }
 
             // Attempt login
