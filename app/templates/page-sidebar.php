@@ -72,45 +72,11 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                                 <i class="fas fa-cog" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="jilo settings"></i>settings
                             </li>
                         </a>
-
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>system</small></p></li>
-
-<?php if ($userObject->hasRight($userId, 'view config file')) {?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=config">
-                            <li class="list-group-item<?php if ($page === 'config') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-wrench" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="app config"></i>config
-                            </li>
-                        </a>
-<?php } ?>
-<?php if ($userObject->hasRight($userId, 'superuser') ||
-          $userObject->hasRight($userId, 'edit whitelist') ||
-          $userObject->hasRight($userId, 'edit blacklist') ||
-          $userObject->hasRight($userId, 'edit ratelimiting')) { ?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=security">
-                            <li class="list-group-item<?php if ($page === 'security') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-shield-alt" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="security"></i>security
-                            </li>
-                        </a>
-<?php } ?>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=status">
                             <li class="list-group-item<?php if ($page === 'status' && $item === '') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
                                 <i class="fas fa-heartbeat" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="status"></i>status
                             </li>
                         </a>
-
-<?php if ($userObject->hasRight($userId, 'view app logs')) {?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=logs">
-                            <li class="list-group-item<?php if ($page === 'logs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-shoe-prints" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="logs"></i>logs
-                            </li>
-                        </a>
-<?php } ?>
-                        <a href="<?= htmlspecialchars($app_root) ?>?page=help">
-                            <li class="list-group-item<?php if ($page === 'help') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
-                                <i class="fas fa-question-circle" data-toggle="tooltip" data-placement="right" data-offset="30.0" title="help"></i>help
-                            </li>
-                        </a>
-
                     </ul>
                 </div>
             </div>
