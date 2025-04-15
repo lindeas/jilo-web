@@ -91,42 +91,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     ];
     $result = $userObject->editUser($userId, $updatedUser);
     if ($result === true) {
-        Feedback::flash('NOTICE', 'DEFAULT', "User details for \"{$updatedUser['name']}\" are edited.");
+        Feedback::flash('NOTICE', 'DEFAULT', "User details for \"{$userDetails[0]['username']}\" are edited.");
     } else {
         Feedback::flash('ERROR', 'DEFAULT', "Editing the user details failed. Error: $result");
     }
 
     // update the rights
-    if (isset($_POST['rights'])) {
-        $validator = new Validator(['rights' => $_POST['rights']]);
-        $rules = [
-            'rights' => [
-                'array' => true
-            ]
-        ];
+    // Get current rights IDs
+    $userRightsIds = array_column($userRights, 'right_id');
 
-        if (!$validator->validate($rules)) {
-            Feedback::flash('ERROR', 'DEFAULT', $validator->getFirstError());
-            header("Location: $app_root?page=profile");
-            exit();
-        }
+    // If no rights are selected, remove all rights
+    if (!isset($_POST['rights'])) {
+        $_POST['rights'] = [];
+    }
 
-        $newRights = $_POST['rights'];
-        // extract the new right_ids
-        $userRightsIds = array_column($userRights, 'right_id');
-        // what rights we need to add
-        $rightsToAdd = array_diff($newRights, $userRightsIds);
-        if (!empty($rightsToAdd)) {
-            foreach ($rightsToAdd as $rightId) {
-                $userObject->addUserRight($userId, $rightId);
-            }
+    $validator = new Validator(['rights' => $_POST['rights']]);
+    $rules = [
+        'rights' => [
+            'array' => true
+        ]
+    ];
+
+    if (!$validator->validate($rules)) {
+        Feedback::flash('ERROR', 'DEFAULT', $validator->getFirstError());
+        header("Location: $app_root?page=profile");
+        exit();
+    }
+
+    $newRights = $_POST['rights'];
+    // what rights we need to add
+    $rightsToAdd = array_diff($newRights, $userRightsIds);
+    if (!empty($rightsToAdd)) {
+        foreach ($rightsToAdd as $rightId) {
+            $userObject->addUserRight($userId, $rightId);
         }
-        // what rights we need to remove
-        $rightsToRemove = array_diff($userRightsIds, $newRights);
-        if (!empty($rightsToRemove)) {
-            foreach ($rightsToRemove as $rightId) {
-                $userObject->removeUserRight($userId, $rightId);
-            }
+    }
+    // what rights we need to remove
+    $rightsToRemove = array_diff($userRightsIds, $newRights);
+    if (!empty($rightsToRemove)) {
+        foreach ($rightsToRemove as $rightId) {
+            $userObject->removeUserRight($userId, $rightId);
         }
     }
 
