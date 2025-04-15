@@ -59,6 +59,32 @@
                         </a>
                     </div>
                 </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <h6 class="dropdown-header">system</h6>
+<?php   if ($userObject->hasRight($_SESSION['user_id'], 'view config file')) {?>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=config">
+                            <i class="fas fa-wrench"></i>Configuration
+                        </a>
+<?php   } ?>
+<?php   if ($userObject->hasRight($_SESSION['user_id'], 'superuser') ||
+          $userObject->hasRight($_SESSION['user_id'], 'edit whitelist') ||
+          $userObject->hasRight($_SESSION['user_id'], 'edit blacklist') ||
+          $userObject->hasRight($_SESSION['user_id'], 'edit ratelimiting')) { ?>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=security">
+                            <i class="fas fa-shield-alt"></i>Security
+                        </a>
+<?php   } ?>
+<?php   if ($userObject->hasRight($_SESSION['user_id'], 'view logs')) {?>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=logs">
+                            <i class="fas fa-list"></i>Logs
+                        </a>
+<?php   } ?>
+                    </div>
+                </li>
 <?php } else { ?>
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=login">login</a></li>
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=register">register</a></li>
