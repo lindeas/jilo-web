@@ -63,6 +63,18 @@
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=login">login</a></li>
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=register">register</a></li>
 <?php } ?>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <h6 class="dropdown-header">resources</h6>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=help">
+                            <i class="fas fa-question-circle"></i>Help
+                        </a>
+                    </div>
+                </li>
+
             </ul>
         </div>
         <!-- /Menu -->
