@@ -65,20 +65,20 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <h6 class="dropdown-header">system</h6>
-<?php   if ($userObject->hasRight($_SESSION['user_id'], 'view config file')) {?>
+<?php   if ($userObject->hasRight($userId, 'view config file')) {?>
                         <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=config">
                             <i class="fas fa-wrench"></i>Configuration
                         </a>
 <?php   } ?>
-<?php   if ($userObject->hasRight($_SESSION['user_id'], 'superuser') ||
-          $userObject->hasRight($_SESSION['user_id'], 'edit whitelist') ||
-          $userObject->hasRight($_SESSION['user_id'], 'edit blacklist') ||
-          $userObject->hasRight($_SESSION['user_id'], 'edit ratelimiting')) { ?>
+<?php   if ($userObject->hasRight($userId, 'superuser') ||
+          $userObject->hasRight($userId, 'edit whitelist') ||
+          $userObject->hasRight($userId, 'edit blacklist') ||
+          $userObject->hasRight($userId, 'edit ratelimiting')) { ?>
                         <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=security">
                             <i class="fas fa-shield-alt"></i>Security
                         </a>
 <?php   } ?>
-<?php   if ($userObject->hasRight($_SESSION['user_id'], 'view logs')) {?>
+<?php   if ($userObject->hasRight($userId, 'view app logs')) {?>
                         <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=logs">
                             <i class="fas fa-list"></i>Logs
                         </a>
