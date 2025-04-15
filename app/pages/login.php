@@ -46,7 +46,7 @@ try {
         if ($twoFactorAuth->verify($pending2FA['user_id'], $code)) {
             // Complete login
             handleSuccessfulLogin($pending2FA['user_id'], $pending2FA['username'],
-                $pending2FA['remember_me'], $config, $logObject, $user_IP);
+                $pending2FA['remember_me'], $config, $app_root, $logObject, $user_IP);
 
             // Clean up 2FA session data
             Session::clear2FAPending();
@@ -243,7 +243,7 @@ try {
                     case 'success':
                         // Complete login
                         handleSuccessfulLogin($loginResult['user_id'], $loginResult['username'],
-                            isset($formData['remember_me']), $config, $logObject, $user_IP);
+                            isset($formData['remember_me']), $config, $app_root, $logObject, $user_IP);
                         exit();
 
                     default:
@@ -280,7 +280,7 @@ include '../app/templates/form-login.php';
 /**
  * Handle successful login by setting up session and cookies
  */
-function handleSuccessfulLogin($userId, $username, $rememberMe, $config, $logObject, $userIP) {
+function handleSuccessfulLogin($userId, $username, $rememberMe, $config, $app_root, $logObject, $userIP) {
     // Create authenticated session
     Session::createAuthSession($userId, $username, $rememberMe, $config);
 
