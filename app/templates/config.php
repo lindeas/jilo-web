@@ -37,7 +37,7 @@
         <div class="card-body p-4">
             <form id="configForm">
 <?php
-include 'csrf_token.php';
+include CSRF_TOKEN_INCLUDE;
 
 function renderConfigItem($key, $value, $path = '') {
     $fullPath = $path ? $path . '[' . $key . ']' : $key;

@@ -35,7 +35,7 @@
                                 </div>
                                 <div class="card-body">
                                     <form method="POST" class="mb-4">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                         <input type="hidden" name="action" value="add_whitelist">
                                         <div class="row g-3">
                                             <div class="col-md-4">
@@ -77,7 +77,7 @@
                                                 <td><?= htmlspecialchars($ip['created_at']) ?></td>
                                                 <td>
                                                     <form method="POST" style="display: inline;">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                                         <input type="hidden" name="action" value="remove_whitelist">
                                                         <input type="hidden" name="ip_address" value="<?= htmlspecialchars($ip['ip_address']) ?>">
                                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this IP from whitelist?')">Remove</button>
@@ -104,7 +104,7 @@
                                 </div>
                                 <div class="card-body">
                                     <form method="POST" class="mb-4">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                         <input type="hidden" name="action" value="add_blacklist">
                                         <div class="row g-3">
                                             <div class="col-md-3">
@@ -151,7 +151,7 @@
                                                 <td><?= $ip['expiry_time'] ? htmlspecialchars($ip['expiry_time']) : 'Never' ?></td>
                                                 <td>
                                                     <form method="POST" style="display: inline;">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                                         <input type="hidden" name="action" value="remove_blacklist">
                                                         <input type="hidden" name="ip_address" value="<?= htmlspecialchars($ip['ip_address']) ?>">
                                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this IP from blacklist?')">Remove</button>

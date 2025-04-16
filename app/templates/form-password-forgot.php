@@ -8,7 +8,7 @@
                             <p>Enter your email address and we will send you<br />
                                 instructions to reset your password.</p>
                             <form method="post" action="?page=login&action=forgot">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                 <div class="form-group">
                                     <label for="email">email address:</label>
                                     <input type="email"

@@ -11,6 +11,11 @@
  * Version: 0.4
  */
 
+// Define CSRF token include path globally
+if (!defined('CSRF_TOKEN_INCLUDE')) {
+    define('CSRF_TOKEN_INCLUDE', dirname(__DIR__) . '/app/includes/csrf_token.php');
+}
+
 // we start output buffering and
 // flush it later only when there is no redirect
 ob_start();

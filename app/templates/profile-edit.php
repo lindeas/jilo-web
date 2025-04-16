@@ -6,7 +6,7 @@
                     <div class="card-body">
 
                         <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=profile" enctype="multipart/form-data">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                             <div class="row">
                                 <p class="border rounded bg-light mb-4"><small>edit the profile fields</small></p>
                                 <div class="col-md-4 avatar-container">
@@ -133,7 +133,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                         <form id="remove-avatar-form" data-action="remove-avatar" method="POST" action="<?= htmlspecialchars($app_root) ?>?page=profile&action=remove&item=avatar">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                                             <button type="button" class="btn btn-danger" id="confirm-delete">Delete Avatar</button>
                                                         </form>
                                                     </div>

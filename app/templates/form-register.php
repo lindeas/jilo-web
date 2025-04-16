@@ -4,7 +4,7 @@
             <div class="card-body">
                 <p class="card-text">Enter credentials for registration:</p>
                 <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=register">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                     <div class="form-group mb-3">
                         <input type="text" class="form-control w-50 mx-auto" name="username" placeholder="Username"
                             pattern="[A-Za-z0-9_\-]{3,20}" title="3-20 characters, letters, numbers, - and _"

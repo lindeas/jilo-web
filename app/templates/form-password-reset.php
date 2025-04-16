@@ -6,7 +6,7 @@
                         <div class="card-body">
                             <h3 class="card-title mb-4">Set new password</h3>
                             <form method="post" action="?page=login&action=reset&token=<?= htmlspecialchars(urlencode($token)) ?>">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                                 <div class="form-group">
                                     <label for="new_password">new password:</label>
                                     <input type="password"

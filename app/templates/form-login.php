@@ -4,7 +4,7 @@
             <div class="card-body">
                 <p class="card-text"><strong>Welcome to <?= htmlspecialchars($config['site_name']); ?>!</strong><br />Please enter login credentials:</p>
                 <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=login">
-<?php include 'csrf_token.php'; ?>
+<?php include CSRF_TOKEN_INCLUDE; ?>
                     <div class="form-group mb-3">
                         <input type="text" class="form-control w-50 mx-auto" name="username" placeholder="Username" 
                             pattern="[A-Za-z0-9_\-]{3,20}" title="3-20 characters, letters, numbers, - and _"
