@@ -11,6 +11,44 @@
  * Version: 0.4
  */
 
+// Preparing plugins and hooks
+$GLOBALS['plugin_hooks'] = [];
+$enabled_plugins = [];
+
+// Plugin discovery
+$plugins_dir = dirname(__DIR__) . '/plugins/';
+foreach (glob($plugins_dir . '*', GLOB_ONLYDIR) as $plugin_path) {
+    $manifest = $plugin_path . '/plugin.json';
+    if (file_exists($manifest)) {
+        $meta = json_decode(file_get_contents($manifest), true);
+        if (!empty($meta['enabled'])) {
+            $plugin_name = basename($plugin_path);
+            $enabled_plugins[$plugin_name] = [
+                'path' => $plugin_path,
+                'meta' => $meta
+            ];
+            // Autoload plugin bootstrap if exists
+            $bootstrap = $plugin_path . '/bootstrap.php';
+            if (file_exists($bootstrap)) {
+                include_once $bootstrap;
+            }
+        }
+    }
+}
+$GLOBALS['enabled_plugins'] = $enabled_plugins;
+
+// Simple hook system
+function register_hook($hook, $callback) {
+    $GLOBALS['plugin_hooks'][$hook][] = $callback;
+}
+function do_hook($hook, $context = []) {
+    if (!empty($GLOBALS['plugin_hooks'][$hook])) {
+        foreach ($GLOBALS['plugin_hooks'][$hook] as $callback) {
+            call_user_func($callback, $context);
+        }
+    }
+}
+
 // Define CSRF token include path globally
 if (!defined('CSRF_TOKEN_INCLUDE')) {
     define('CSRF_TOKEN_INCLUDE', dirname(__DIR__) . '/app/includes/csrf_token.php');
@@ -79,6 +117,17 @@ $allowed_urls = [
 
     'about',
 ];
+
+// Let plugins filter/extend allowed_urls
+function filter_allowed_urls($urls) {
+    if (!empty($GLOBALS['plugin_hooks']['filter_allowed_urls'])) {
+        foreach ($GLOBALS['plugin_hooks']['filter_allowed_urls'] as $callback) {
+            $urls = call_user_func($callback, $urls);
+        }
+    }
+    return $urls;
+}
+$allowed_urls = filter_allowed_urls($allowed_urls);
 
 // cnfig file
 // possible locations, in order of preference
