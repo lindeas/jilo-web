@@ -157,6 +157,17 @@ $app_root = $config['folder'];
 // List of pages that don't require authentication
 $public_pages = ['login', 'help', 'about'];
 
+// Let plugins filter/extend public_pages
+function filter_public_pages($pages) {
+    if (!empty($GLOBALS['plugin_hooks']['filter_public_pages'])) {
+        foreach ($GLOBALS['plugin_hooks']['filter_public_pages'] as $callback) {
+            $pages = call_user_func($callback, $pages);
+        }
+    }
+    return $pages;
+}
+$public_pages = filter_public_pages($public_pages);
+
 // Check if the requested page requires authentication
 if (!isset($_COOKIE['username']) && !$validSession && !in_array($page, $public_pages)) {
     require_once '../app/includes/session_middleware.php';
