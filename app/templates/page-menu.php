@@ -87,7 +87,7 @@
                 </li>
 <?php } else { ?>
                 <li><a href="<?= htmlspecialchars($app_root) ?>?page=login">login</a></li>
-                <li><a href="<?= htmlspecialchars($app_root) ?>?page=register">register</a></li>
+<?php do_hook('main_public_menu', ['app_root' => $app_root, 'section' => 'main', 'position' => 100]); ?>
 <?php } ?>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
