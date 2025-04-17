@@ -113,7 +113,6 @@ $allowed_urls = [
 
     'login',
     'logout',
-    'register',
 
     'about',
 ];
@@ -156,7 +155,7 @@ if ($config_file) {
 $app_root = $config['folder'];
 
 // List of pages that don't require authentication
-$public_pages = ['login', 'register', 'help', 'about'];
+$public_pages = ['login', 'help', 'about'];
 
 // Check if the requested page requires authentication
 if (!isset($_COOKIE['username']) && !$validSession && !in_array($page, $public_pages)) {
