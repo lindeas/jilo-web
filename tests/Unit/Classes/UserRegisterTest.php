@@ -2,13 +2,15 @@
 
 require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 require_once dirname(__DIR__, 3) . '/app/classes/user.php';
+require_once dirname(__DIR__, 3) . '/plugins/register/models/register.php';
 require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
 
 use PHPUnit\Framework\TestCase;
 
-class UserTest extends TestCase
+class UserRegisterTest extends TestCase
 {
     private $db;
+    private $register;
     private $user;
 
     protected function setUp(): void
@@ -90,7 +92,29 @@ class UserTest extends TestCase
             )
         ");
 
+        $this->register = new Register($this->db);
         $this->user = new User($this->db);
+    }
+
+    public function testRegister()
+    {
+        $result = $this->register->register('testuser', 'password123');
+        $this->assertTrue($result);
+
+        // Verify user was created
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM users WHERE username = ?');
+        $stmt->execute(['testuser']);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals('testuser', $user['username']);
+        $this->assertTrue(password_verify('password123', $user['password']));
+
+        // Verify user_meta was created
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM users_meta WHERE user_id = ?');
+        $stmt->execute([$user['id']]);
+        $meta = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertNotNull($meta);
     }
 
     public function testLogin()
