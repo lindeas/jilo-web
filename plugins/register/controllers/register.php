@@ -27,7 +27,7 @@ if ($config['registration_enabled'] == true) {
 
             // Apply rate limiting
             require_once dirname(__FILE__, 4) . '/app/includes/rate_limit_middleware.php';
-            checkRateLimit($db, 'register');
+            checkRateLimit($dbWeb, 'register');
 
             $security = SecurityHelper::getInstance();
 
@@ -67,7 +67,7 @@ if ($config['registration_enabled'] == true) {
                 $password = $formData['password'];
 
                 // registering
-                $register = new Register($db);
+                $register = new Register($dbWeb);
                 $result = $register->register($username, $password);
 
                 // redirect to login

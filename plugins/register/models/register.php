@@ -64,9 +64,9 @@ class Register {
                 return false;
             }
 
-            // insert the last user id into user_meta table
+            // insert the last user id into users_meta table
             $sql2 = 'INSERT
-                        INTO user_meta (user_id)
+                        INTO users_meta (user_id)
                         VALUES (:user_id)';
             $query2 = $this->db->prepare($sql2);
             $query2->bindValue(':user_id', $this->db->lastInsertId());
