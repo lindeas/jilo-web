@@ -280,6 +280,15 @@ if ($page == 'logout') {
         }
     }
 
+    // --- Plugin loading logic for all enabled plugins ---
+    $plugin_controllers = [];
+    foreach ($GLOBALS['enabled_plugins'] as $plugin_name => $plugin_info) {
+        $controller_path = $plugin_info['path'] . '/controllers/' . $plugin_name . '.php';
+        if (file_exists($controller_path)) {
+            $plugin_controllers[$plugin_name] = $controller_path;
+        }
+    }
+
     // page building
     include '../app/templates/page-header.php';
     include '../app/templates/page-menu.php';
@@ -288,7 +297,11 @@ if ($page == 'logout') {
     }
     if (in_array($page, $allowed_urls)) {
         // all normal pages
-        include "../app/pages/{$page}.php";
+        if (isset($plugin_controllers[$page])) {
+            include $plugin_controllers[$page];
+            } else {
+                include "../app/pages/{$page}.php";
+            }
     } else {
         // the page is not in allowed urls, loading "not found" page
         include '../app/templates/error-notfound.php';
