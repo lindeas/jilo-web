@@ -14,11 +14,12 @@ INSERT INTO rights VALUES(6,'edit own profile');
 INSERT INTO rights VALUES(7,'view all profiles');
 INSERT INTO rights VALUES(8,'edit all profiles');
 INSERT INTO rights VALUES(9,'view app logs');
-INSERT INTO rights VALUES(10,'view all platforms');
-INSERT INTO rights VALUES(11,'edit all platforms');
-INSERT INTO rights VALUES(12,'view all agents');
-INSERT INTO rights VALUES(13,'edit all agents');
-INSERT INTO rights VALUES(14,'view jilo config');
+INSERT INTO rights VALUES(10,'manage plugins');
+INSERT INTO rights VALUES(11,'view all platforms');
+INSERT INTO rights VALUES(12,'edit all platforms');
+INSERT INTO rights VALUES(13,'view all agents');
+INSERT INTO rights VALUES(14,'edit all agents');
+INSERT INTO rights VALUES(15,'view jilo config');
 
 INSERT INTO jilo_agent_types VALUES(1,'jvb','/jvb');
 INSERT INTO jilo_agent_types VALUES(2,'jicofo','/jicofo');
