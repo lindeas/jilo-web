@@ -173,7 +173,6 @@ $public_pages = filter_public_pages($public_pages);
 
 // Check if the requested page requires authentication
 if (!isset($_COOKIE['username']) && !$validSession && !in_array($page, $public_pages)) {
-    require_once '../app/includes/session_middleware.php';
     $loginUrl = $app_root . '?page=login';
     // Use the central exclusion list for redirect
     $trimmed = trim($page, '/?');
@@ -190,6 +189,8 @@ if ($validSession) {
     $currentUser = Session::getUsername();
 } else if (isset($_COOKIE['username']) && !in_array($page, $public_pages)) {
     // Cookie exists but session is invalid - redirect to login
+    require_once '../app/includes/session_middleware.php';
+    applySessionMiddleware($config, $app_root);
     $loginUrl = $app_root . '?page=login';
     $trimmed = trim($page, '/?');
     if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
