@@ -21,6 +21,9 @@
                             remember me
                         </label>
                     </div>
+<?php if (isset($_GET['redirect'])): ?>
+                    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_GET['redirect']); ?>">
+<?php endif; ?>
                     <input type="submit" class="btn btn-primary" value="Login" />
                 </form>
                 <div class="mt-3">

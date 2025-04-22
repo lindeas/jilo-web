@@ -54,6 +54,9 @@ if (!defined('CSRF_TOKEN_INCLUDE')) {
     define('CSRF_TOKEN_INCLUDE', dirname(__DIR__) . '/app/includes/csrf_token.php');
 }
 
+// Global cnstants
+require_once '../app/includes/constants.php';
+
 // we start output buffering and
 // flush it later only when there is no redirect
 ob_start();
@@ -171,7 +174,14 @@ $public_pages = filter_public_pages($public_pages);
 // Check if the requested page requires authentication
 if (!isset($_COOKIE['username']) && !$validSession && !in_array($page, $public_pages)) {
     require_once '../app/includes/session_middleware.php';
-    applySessionMiddleware($config, $app_root);
+    $loginUrl = $app_root . '?page=login';
+    // Use the central exclusion list for redirect
+    $trimmed = trim($page, '/?');
+    if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
+        $loginUrl .= '&redirect=' . urlencode($_SERVER['REQUEST_URI']);
+    }
+    header('Location: ' . $loginUrl);
+    exit();
 }
 
 // Check session and redirect if needed
@@ -180,15 +190,21 @@ if ($validSession) {
     $currentUser = Session::getUsername();
 } else if (isset($_COOKIE['username']) && !in_array($page, $public_pages)) {
     // Cookie exists but session is invalid - redirect to login
-    if (!isset($_SESSION['session_timeout_shown'])) {
-        Feedback::flash('LOGIN', 'SESSION_TIMEOUT');
-        $_SESSION['session_timeout_shown'] = true;
+    $loginUrl = $app_root . '?page=login';
+    $trimmed = trim($page, '/?');
+    if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
+        $loginUrl .= '&redirect=' . urlencode($_SERVER['REQUEST_URI']);
     }
-    header('Location: ' . htmlspecialchars($app_root) . '?page=login');
+    header('Location: ' . $loginUrl);
     exit();
 } else if (!in_array($page, $public_pages)) {
     // No valid session or cookie, and not a public page
-    header('Location: ' . htmlspecialchars($app_root) . '?page=login');
+    $loginUrl = $app_root . '?page=login';
+    $trimmed = trim($page, '/?');
+    if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
+        $loginUrl .= '&redirect=' . urlencode($_SERVER['REQUEST_URI']);
+    }
+    header('Location: ' . $loginUrl);
     exit();
 }
 

@@ -287,7 +287,20 @@ function handleSuccessfulLogin($userId, $username, $rememberMe, $config, $app_ro
     // Log successful login
     $logObject->insertLog($userId, "Login: User \"$username\" logged in. IP: $userIP", 'user');
 
-    // Set success message and redirect
+    // Set success message
     Feedback::flash('LOGIN', 'LOGIN_SUCCESS');
     header('Location: ' . htmlspecialchars($app_root));
+
+    // After successful login, redirect to original page if provided in URL param or POST
+    $redirect = $app_root;
+    $candidate = $_POST['redirect'] ?? $_GET['redirect'] ?? '';
+    $trimmed = trim($candidate, '/?');
+    if (
+        (strpos($candidate, '/') === 0 || strpos($candidate, '?') === 0)
+        && !in_array($trimmed, INVALID_REDIRECT_PAGES, true)
+    ) {
+        $redirect = $candidate;
+    }
+    header('Location: ' . htmlspecialchars($redirect));
+    exit();
 }
