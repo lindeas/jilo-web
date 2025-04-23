@@ -171,35 +171,23 @@ function filter_public_pages($pages) {
 }
 $public_pages = filter_public_pages($public_pages);
 
-// Check if the requested page requires authentication
-if (!isset($_COOKIE['username']) && !$validSession && !in_array($page, $public_pages)) {
-    $loginUrl = $app_root . '?page=login';
-    // Use the central exclusion list for redirect
-    $trimmed = trim($page, '/?');
-    if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
-        $loginUrl .= '&redirect=' . urlencode($_SERVER['REQUEST_URI']);
-    }
-    header('Location: ' . $loginUrl);
-    exit();
-}
-
 // Check session and redirect if needed
 $currentUser = null;
 if ($validSession) {
+    // Session is OK
     $currentUser = Session::getUsername();
-} else if (isset($_COOKIE['username']) && !in_array($page, $public_pages)) {
-    // Cookie exists but session is invalid - redirect to login
-    require_once '../app/includes/session_middleware.php';
-    applySessionMiddleware($config, $app_root);
-    $loginUrl = $app_root . '?page=login';
-    $trimmed = trim($page, '/?');
-    if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
-        $loginUrl .= '&redirect=' . urlencode($_SERVER['REQUEST_URI']);
-    }
-    header('Location: ' . $loginUrl);
-    exit();
 } else if (!in_array($page, $public_pages)) {
-    // No valid session or cookie, and not a public page
+    // Session expired/invalid, page needs login
+    if (isset($_SESSION['LAST_ACTIVITY']) && !isset($_SESSION['session_timeout_shown'])) {
+        // Only show session timeout message if there was an active session
+        // and we haven't shown it yet
+        Feedback::flash('LOGIN', 'SESSION_TIMEOUT');
+        $_SESSION['session_timeout_shown'] = true;
+        // Cleanup session but keep flash messages
+        $flash_messages = $_SESSION['flash_messages'] ?? [];
+        Session::cleanup($config);
+        $_SESSION['flash_messages'] = $flash_messages;
+    }
     $loginUrl = $app_root . '?page=login';
     $trimmed = trim($page, '/?');
     if (!in_array($trimmed, INVALID_REDIRECT_PAGES, true)) {
