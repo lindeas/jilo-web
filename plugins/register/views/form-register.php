@@ -8,7 +8,7 @@
                     <div class="form-group mb-3">
                         <input type="text" class="form-control w-50 mx-auto" name="username" placeholder="Username"
                             pattern="[A-Za-z0-9_\-]{3,20}" title="3-20 characters, letters, numbers, - and _"
-                            required autofocus />
+                            required />
                     </div>
                     <div class="form-group mb-3">
                         <input type="password" class="form-control w-50 mx-auto" name="password" placeholder="Password"
