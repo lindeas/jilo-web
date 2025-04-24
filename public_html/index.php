@@ -12,42 +12,30 @@
  */
 
 // Preparing plugins and hooks
-$GLOBALS['plugin_hooks'] = [];
-$enabled_plugins = [];
+// Initialize HookDispatcher and plugin system
+require_once __DIR__ . '/../app/core/HookDispatcher.php';
+require_once __DIR__ . '/../app/core/PluginManager.php';
+use App\Core\HookDispatcher;
+use App\Core\PluginManager;
 
-// Plugin discovery
+// Hook registration and dispatch helpers
+function register_hook(string $hook, callable $callback): void {
+    HookDispatcher::register($hook, $callback);
+}
+function do_hook(string $hook, array $context = []): void {
+    HookDispatcher::dispatch($hook, $context);
+}
+function filter_public_pages(array $pages): array {
+    return HookDispatcher::applyFilters('filter_public_pages', $pages);
+}
+function filter_allowed_urls(array $urls): array {
+    return HookDispatcher::applyFilters('filter_allowed_urls', $urls);
+}
+
+// Load enabled plugins
 $plugins_dir = dirname(__DIR__) . '/plugins/';
-foreach (glob($plugins_dir . '*', GLOB_ONLYDIR) as $plugin_path) {
-    $manifest = $plugin_path . '/plugin.json';
-    if (file_exists($manifest)) {
-        $meta = json_decode(file_get_contents($manifest), true);
-        if (!empty($meta['enabled'])) {
-            $plugin_name = basename($plugin_path);
-            $enabled_plugins[$plugin_name] = [
-                'path' => $plugin_path,
-                'meta' => $meta
-            ];
-            // Autoload plugin bootstrap if exists
-            $bootstrap = $plugin_path . '/bootstrap.php';
-            if (file_exists($bootstrap)) {
-                include_once $bootstrap;
-            }
-        }
-    }
-}
+$enabled_plugins = PluginManager::load($plugins_dir);
 $GLOBALS['enabled_plugins'] = $enabled_plugins;
-
-// Simple hook system
-function register_hook($hook, $callback) {
-    $GLOBALS['plugin_hooks'][$hook][] = $callback;
-}
-function do_hook($hook, $context = []) {
-    if (!empty($GLOBALS['plugin_hooks'][$hook])) {
-        foreach ($GLOBALS['plugin_hooks'][$hook] as $callback) {
-            call_user_func($callback, $context);
-        }
-    }
-}
 
 // Define CSRF token include path globally
 if (!defined('CSRF_TOKEN_INCLUDE')) {
@@ -121,14 +109,6 @@ $allowed_urls = [
 ];
 
 // Let plugins filter/extend allowed_urls
-function filter_allowed_urls($urls) {
-    if (!empty($GLOBALS['plugin_hooks']['filter_allowed_urls'])) {
-        foreach ($GLOBALS['plugin_hooks']['filter_allowed_urls'] as $callback) {
-            $urls = call_user_func($callback, $urls);
-        }
-    }
-    return $urls;
-}
 $allowed_urls = filter_allowed_urls($allowed_urls);
 
 // cnfig file
@@ -161,14 +141,6 @@ $app_root = $config['folder'];
 $public_pages = ['login', 'help', 'about'];
 
 // Let plugins filter/extend public_pages
-function filter_public_pages($pages) {
-    if (!empty($GLOBALS['plugin_hooks']['filter_public_pages'])) {
-        foreach ($GLOBALS['plugin_hooks']['filter_public_pages'] as $callback) {
-            $pages = call_user_func($callback, $pages);
-        }
-    }
-    return $pages;
-}
 $public_pages = filter_public_pages($public_pages);
 
 // Dispatch routing and auth
