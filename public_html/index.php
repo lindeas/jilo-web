@@ -121,6 +121,9 @@ $config = ConfigLoader::loadConfig([
     '/srv/jilo-web/jilo-web.conf.php',
     '/opt/jilo-web/jilo-web.conf.php',
 ]);
+// Expose config file path for pages
+$config_file = ConfigLoader::getConfigPath();
+$localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
 
 $app_root = $config['folder'];
 

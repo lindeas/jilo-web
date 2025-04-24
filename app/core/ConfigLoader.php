@@ -5,6 +5,11 @@ namespace App\Core;
 class ConfigLoader
 {
     /**
+     * @var string|null
+     */
+    private static $configPath = null;
+
+    /**
      * Load configuration array from a set of possible file locations.
      *
      * @param string[] $locations
@@ -22,6 +27,15 @@ class ConfigLoader
         if (!$configFile) {
             die('Config file not found');
         }
+        self::$configPath = $configFile;
         return require $configFile;
+    }
+
+    /**
+     * @return string|null
+     */
+    public static function getConfigPath(): ?string
+    {
+        return self::$configPath;
     }
 }
