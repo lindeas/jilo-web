@@ -134,22 +134,10 @@ $public_pages = filter_public_pages($public_pages);
 require_once __DIR__ . '/../app/core/Router.php';
 $currentUser = \App\Core\Router::checkAuth($config, $app_root, $public_pages, $page);
 
-// connect to db of Jilo Web
-require '../app/classes/database.php';
-require '../app/includes/database.php';
-try {
-    $response = connectDB($config);
-    if (!$response['db']) {
-        throw new Exception('Could not connect to database: ' . $response['error']);
-    }
-    $dbWeb = $response['db'];
-} catch (Exception $e) {
-    Feedback::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
-    include '../app/templates/page-header.php';
-    include '../app/helpers/feedback.php';
-    include '../app/templates/page-footer.php';
-    exit();
-}
+// connect to DB via DatabaseConnector
+require_once __DIR__ . '/../app/core/DatabaseConnector.php';
+use App\Core\DatabaseConnector;
+$dbWeb = DatabaseConnector::connect($config);
 
 // start logging
 require '../app/classes/log.php';
