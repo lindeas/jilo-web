@@ -111,29 +111,16 @@ $allowed_urls = [
 // Let plugins filter/extend allowed_urls
 $allowed_urls = filter_allowed_urls($allowed_urls);
 
-// cnfig file
-// possible locations, in order of preference
-$config_file_locations = [
+require_once __DIR__ . '/../app/core/ConfigLoader.php';
+use App\Core\ConfigLoader;
+
+// Load configuration
+$config = ConfigLoader::loadConfig([
     __DIR__ . '/../app/config/jilo-web.conf.php',
     __DIR__ . '/../jilo-web.conf.php',
     '/srv/jilo-web/jilo-web.conf.php',
-    '/opt/jilo-web/jilo-web.conf.php'
-];
-$config_file = null;
-// try to find the config file
-foreach ($config_file_locations as $location) {
-    if (file_exists($location)) {
-        $config_file = $location;
-        break;
-    }
-}
-// if found, use it
-if ($config_file) {
-    $localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
-    $config = require $config_file;
-} else {
-    die('Config file not found');
-}
+    '/opt/jilo-web/jilo-web.conf.php',
+]);
 
 $app_root = $config['folder'];
 
