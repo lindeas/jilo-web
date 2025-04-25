@@ -20,9 +20,9 @@ class LogTest extends TestCase
             'dbFile' => ':memory:'
         ]);
 
-        // Create users table
+        // Create user table
         $this->db->getConnection()->exec("
-            CREATE TABLE users (
+            CREATE TABLE user (
                 id INTEGER PRIMARY KEY,
                 username TEXT NOT NULL
             )
@@ -30,18 +30,18 @@ class LogTest extends TestCase
 
         // Create test user
         $this->db->getConnection()->exec("
-            INSERT INTO users (id, username) VALUES (1, 'testuser'), (2, 'testuser2')
+            INSERT INTO user (id, username) VALUES (1, 'testuser'), (2, 'testuser2')
         ");
 
-        // Create logs table
+        // Create log table
         $this->db->getConnection()->exec("
-            CREATE TABLE logs (
+            CREATE TABLE log (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER,
                 scope TEXT NOT NULL,
                 message TEXT NOT NULL,
                 time DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                FOREIGN KEY (user_id) REFERENCES user(id)
             )
         ");
 
@@ -53,7 +53,7 @@ class LogTest extends TestCase
         $result = $this->log->insertLog(1, 'Test message', 'test');
         $this->assertTrue($result);
 
-        $stmt = $this->db->getConnection()->prepare("SELECT * FROM logs WHERE scope = ?");
+        $stmt = $this->db->getConnection()->prepare("SELECT * FROM log WHERE scope = ?");
         $stmt->execute(['test']);
         $log = $stmt->fetch(PDO::FETCH_ASSOC);
 

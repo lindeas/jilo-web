@@ -32,7 +32,7 @@ class Log {
      */
     public function insertLog($userId, $message, $scope = 'user') {
         try {
-            $sql = 'INSERT INTO logs
+            $sql = 'INSERT INTO log
                         (user_id, scope, message)
                     VALUES
                         (:user_id, :scope, :message)';
@@ -68,8 +68,8 @@ class Log {
 
         // Base query with user join
         $base_sql = 'SELECT l.*, u.username 
-                    FROM logs l 
-                    LEFT JOIN users u ON l.user_id = u.id';
+                    FROM log l 
+                    LEFT JOIN user u ON l.user_id = u.id';
 
         // Add scope condition
         if ($scope === 'user') {

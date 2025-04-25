@@ -21,18 +21,18 @@ class UserTest extends TestCase
             'dbFile' => ':memory:'
         ]);
 
-        // Create users table
+        // Create user table
         $this->db->getConnection()->exec("
-            CREATE TABLE users (
+            CREATE TABLE user (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL
             )
         ");
 
-        // Create users_meta table
+        // Create user_meta table
         $this->db->getConnection()->exec("
-            CREATE TABLE users_meta (
+            CREATE TABLE user_meta (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 name TEXT,
@@ -40,7 +40,7 @@ class UserTest extends TestCase
                 timezone TEXT,
                 bio TEXT,
                 avatar TEXT,
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                FOREIGN KEY (user_id) REFERENCES user(id)
             )
         ");
 
@@ -53,7 +53,7 @@ class UserTest extends TestCase
                 backup_codes TEXT,
                 enabled TINYINT(1) NOT NULL DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
             )
         ");
 
@@ -99,7 +99,7 @@ class UserTest extends TestCase
         $password = 'password123';
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO users (username, password) VALUES (?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO user (username, password) VALUES (?, ?)');
         $stmt->execute(['testuser', $hashedPassword]);
 
         // Mock $_SERVER['REMOTE_ADDR'] for rate limiter
@@ -139,12 +139,12 @@ class UserTest extends TestCase
     public function testGetUserDetails()
     {
         // Create a test user
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO users (username, password) VALUES (?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO user (username, password) VALUES (?, ?)');
         $stmt->execute(['testuser', 'hashedpassword']);
         $userId = $this->db->getConnection()->lastInsertId();
 
         // Create user meta with some data
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO users_meta (user_id, name, email) VALUES (?, ?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO user_meta (user_id, name, email) VALUES (?, ?, ?)');
         $stmt->execute([$userId, 'Test User', 'test@example.com']);
 
         $userDetails = $this->user->getUserDetails($userId);

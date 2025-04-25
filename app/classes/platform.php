@@ -30,7 +30,7 @@ class Platform {
      * @return array An associative array containing platform details.
      */
     public function getPlatformDetails($platform_id = '') {
-        $sql = 'SELECT * FROM platforms';
+        $sql = 'SELECT * FROM platform';
         if ($platform_id !== '') {
             $sql .= ' WHERE id = :platform_id';
             $query = $this->db->prepare($sql);
@@ -57,7 +57,7 @@ class Platform {
      */
     public function addPlatform($newPlatform) {
         try {
-            $sql = 'INSERT INTO platforms
+            $sql = 'INSERT INTO platform
                     (name, jitsi_url, jilo_database)
                     VALUES
                     (:name, :jitsi_url, :jilo_database)';
@@ -90,7 +90,7 @@ class Platform {
      */
     public function editPlatform($platform_id, $updatedPlatform) {
         try {
-            $sql = 'UPDATE platforms SET
+            $sql = 'UPDATE platform SET
                         name = :name,
                         jitsi_url = :jitsi_url,
                         jilo_database = :jilo_database
@@ -125,7 +125,7 @@ class Platform {
             $this->db->beginTransaction();
 
             // First, get all hosts in this platform
-            $sql = 'SELECT id FROM hosts WHERE platform_id = :platform_id';
+            $sql = 'SELECT id FROM host WHERE platform_id = :platform_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':platform_id', $platform_id);
             $query->execute();
@@ -133,20 +133,20 @@ class Platform {
 
             // Delete all agents for each host
             foreach ($hosts as $host) {
-                $sql = 'DELETE FROM jilo_agents WHERE host_id = :host_id';
+                $sql = 'DELETE FROM jilo_agent WHERE host_id = :host_id';
                 $query = $this->db->prepare($sql);
                 $query->bindParam(':host_id', $host['id']);
                 $query->execute();
             }
 
             // Delete all hosts in this platform
-            $sql = 'DELETE FROM hosts WHERE platform_id = :platform_id';
+            $sql = 'DELETE FROM host WHERE platform_id = :platform_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':platform_id', $platform_id);
             $query->execute();
 
             // Finally, delete the platform
-            $sql = 'DELETE FROM platforms WHERE id = :platform_id';
+            $sql = 'DELETE FROM platform WHERE id = :platform_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':platform_id', $platform_id);
             $query->execute();

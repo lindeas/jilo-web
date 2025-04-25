@@ -37,7 +37,7 @@ class Host {
                     platform_id,
                     name
                 FROM
-                    hosts';
+                    host';
 
         if ($platform_id !== '' && $host_id !== '') {
             $sql .= ' WHERE platform_id = :platform_id AND id = :host_id';
@@ -71,7 +71,7 @@ class Host {
      */
     public function addHost($newHost) {
         try {
-            $sql = 'INSERT INTO hosts
+            $sql = 'INSERT INTO host
                     (address, platform_id, name)
                     VALUES
                     (:address, :platform_id, :name)';
@@ -101,7 +101,7 @@ class Host {
      */
     public function editHost($platform_id, $updatedHost) {
         try {
-            $sql = 'UPDATE hosts SET
+            $sql = 'UPDATE host SET
                         address = :address,
                         name = :name
                     WHERE
@@ -140,13 +140,13 @@ class Host {
             $this->db->beginTransaction();
 
             // First delete all agents associated with this host
-            $sql = 'DELETE FROM jilo_agents WHERE host_id = :host_id';
+            $sql = 'DELETE FROM jilo_agent WHERE host_id = :host_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':host_id', $host_id);
             $query->execute();
 
             // Then delete the host
-            $sql = 'DELETE FROM hosts WHERE id = :host_id';
+            $sql = 'DELETE FROM host WHERE id = :host_id';
             $query = $this->db->prepare($sql);
             $query->bindParam(':host_id', $host_id);
             $query->execute();

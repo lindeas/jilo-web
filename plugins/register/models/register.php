@@ -49,9 +49,9 @@ class Register {
             // hash the password, don't store it plain
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // insert into users table
+            // insert into user table
             $sql = 'INSERT
-                        INTO users (username, password)
+                        INTO user (username, password)
                         VALUES (:username, :password)';
             $query = $this->db->prepare($sql);
             $query->bindValue(':username', $username);
@@ -64,9 +64,9 @@ class Register {
                 return false;
             }
 
-            // insert the last user id into users_meta table
+            // insert the last user id into user_meta table
             $sql2 = 'INSERT
-                        INTO users_meta (user_id)
+                        INTO user_meta (user_id)
                         VALUES (:user_id)';
             $query2 = $this->db->prepare($sql2);
             $query2->bindValue(':user_id', $this->db->lastInsertId());

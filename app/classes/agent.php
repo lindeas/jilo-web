@@ -43,11 +43,11 @@ class Agent {
                     jat.endpoint AS agent_endpoint,
                     h.platform_id
                 FROM
-                    jilo_agents ja
+                    jilo_agent ja
                 JOIN
-                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                    jilo_agent_type jat ON ja.agent_type_id = jat.id
                 JOIN
-                    hosts h ON ja.host_id = h.id
+                    host h ON ja.host_id = h.id
                 WHERE
                     ja.host_id = :host_id';
 
@@ -87,11 +87,11 @@ class Agent {
                     jat.endpoint AS agent_endpoint,
                     h.platform_id
                 FROM
-                    jilo_agents ja
+                    jilo_agent ja
                 JOIN
-                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                    jilo_agent_type jat ON ja.agent_type_id = jat.id
                 JOIN
-                    hosts h ON ja.host_id = h.id
+                    host h ON ja.host_id = h.id
                 WHERE
                     ja.id = :agent_id';
 
@@ -110,7 +110,7 @@ class Agent {
      */
     public function getAgentTypes() {
         $sql = 'SELECT *
-                    FROM jilo_agent_types
+                    FROM jilo_agent_type
                     ORDER BY id';
         $query = $this->db->prepare($sql);
         $query->execute();
@@ -131,7 +131,7 @@ class Agent {
                     id,
                     agent_type_id
                 FROM
-                    jilo_agents
+                    jilo_agent
                 WHERE
                     host_id = :host_id';
         $query = $this->db->prepare($sql);
@@ -152,7 +152,7 @@ class Agent {
      */
     public function addAgent($host_id, $newAgent) {
         try {
-            $sql = 'INSERT INTO jilo_agents
+            $sql = 'INSERT INTO jilo_agent
                     (host_id, agent_type_id, url, secret_key, check_period)
                     VALUES
                     (:host_id, :agent_type_id, :url, :secret_key, :check_period)';
@@ -184,7 +184,7 @@ class Agent {
      */
     public function editAgent($agent_id, $updatedAgent) {
         try {
-            $sql = 'UPDATE jilo_agents
+            $sql = 'UPDATE jilo_agent
                     SET
                         agent_type_id = :agent_type_id,
                         url = :url,
@@ -222,7 +222,7 @@ class Agent {
      */
     public function deleteAgent($agent_id) {
         try {
-            $sql = 'DELETE FROM jilo_agents
+            $sql = 'DELETE FROM jilo_agent
                     WHERE
                     id = :agent_id';
 
@@ -420,13 +420,13 @@ class Agent {
                     jac.agent_id,
                     jat.description
                 FROM
-                    jilo_agent_checks jac
+                    jilo_agent_check jac
                 JOIN
-                    jilo_agents ja ON jac.agent_id = ja.id
+                    jilo_agent ja ON jac.agent_id = ja.id
                 JOIN
-                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                    jilo_agent_type jat ON ja.agent_type_id = jat.id
                 JOIN
-                    hosts h ON ja.host_id = h.id
+                    host h ON ja.host_id = h.id
                 WHERE
                     h.id = :host_id
                     AND jat.description = :agent_type
@@ -520,13 +520,13 @@ class Agent {
                     jac.response_content,
                     COUNT(*) as checks_count
                 FROM
-                    jilo_agent_checks jac
+                    jilo_agent_check jac
                 JOIN
-                    jilo_agents ja ON jac.agent_id = ja.id
+                    jilo_agent ja ON jac.agent_id = ja.id
                 JOIN
-                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                    jilo_agent_type jat ON ja.agent_type_id = jat.id
                 JOIN
-                    hosts h ON ja.host_id = h.id
+                    host h ON ja.host_id = h.id
                 WHERE
                     h.id = :host_id
                     AND jat.description = :agent_type
@@ -591,13 +591,13 @@ class Agent {
                     jac.timestamp,
                     jac.response_content
                 FROM
-                    jilo_agent_checks jac
+                    jilo_agent_check jac
                 JOIN
-                    jilo_agents ja ON jac.agent_id = ja.id
+                    jilo_agent ja ON jac.agent_id = ja.id
                 JOIN
-                    jilo_agent_types jat ON ja.agent_type_id = jat.id
+                    jilo_agent_type jat ON ja.agent_type_id = jat.id
                 JOIN
-                    hosts h ON ja.host_id = h.id
+                    host h ON ja.host_id = h.id
                 WHERE
                     h.id = :host_id
                     AND jat.description = :agent_type

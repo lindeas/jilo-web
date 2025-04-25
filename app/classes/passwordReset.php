@@ -26,8 +26,8 @@ class PasswordReset {
         // Check if email exists
         $query = $this->db->prepare("
             SELECT u.id, um.email
-            FROM users u
-            JOIN users_meta um ON u.id = um.user_id
+            FROM user u
+            JOIN user_meta um ON u.id = um.user_id
             WHERE um.email = :email"
         );
         $query->bindParam(':email', $email);

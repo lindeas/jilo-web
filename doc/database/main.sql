@@ -11,7 +11,7 @@ SET NAMES utf8mb4;
 --
 
 -- --------------------------------------------------------
-CREATE TABLE `users` (
+CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(100) NOT NULL,
@@ -19,12 +19,12 @@ CREATE TABLE `users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `users` (`id`, `username`, `password`) VALUES
+INSERT INTO `user` (`id`, `username`, `password`) VALUES
 (1,'demo','$2y$12$AtIKs3eVxD4wTT1IWwJujuuHyGhhmfBJYqSfIrPFFPMDfKu3Rcsx6'),
 (2,'demo1','$2y$12$ELwYyhQ8XDkVvX9Xsb0mlORqeQHNFaBOvaBuPQym4n4IomA/DgvLC');
 
 -- --------------------------------------------------------
-CREATE TABLE `users_meta` (
+CREATE TABLE `user_meta` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -34,22 +34,22 @@ CREATE TABLE `users_meta` (
   `bio` text DEFAULT NULL,
   PRIMARY KEY (`id`,`user_id`) USING BTREE,
   KEY `user_id` (`user_id`),
-  CONSTRAINT `user_meta_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `user_meta_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `users_meta` (`id`, `user_id`, `name`, `email`, `timezone`, `avatar`, `bio`) VALUES
+INSERT INTO `user_meta` (`id`, `user_id`, `name`, `email`, `timezone`, `avatar`, `bio`) VALUES
 (1,1,'demo admin user','admin@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web'),
 (2,2,'demo user','demo@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web');
 
 -- --------------------------------------------------------
-CREATE TABLE `rights` (
+CREATE TABLE `right` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `rights` (`id`, `name`) VALUES
+INSERT INTO `right` (`id`, `name`) VALUES
 (1, 'superuser'),
 (2, 'edit users'),
 (3, 'view config file'),
@@ -67,13 +67,13 @@ INSERT INTO `rights` (`id`, `name`) VALUES
 (15,'view jilo config');
 
 -- --------------------------------------------------------
-CREATE TABLE `users_rights` (
+CREATE TABLE `user_right` (
   `user_id` int(11) NOT NULL,
   `right_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`,`right_id`),
   KEY `fk_right_id` (`right_id`),
-  CONSTRAINT `fk_right_id` FOREIGN KEY (`right_id`) REFERENCES `rights` (`id`),
-  CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `fk_right_id` FOREIGN KEY (`right_id`) REFERENCES `right` (`id`),
+  CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -85,7 +85,7 @@ CREATE TABLE `user_2fa` (
   `created_at` datetime NOT NULL,
   `last_used` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`),
-  CONSTRAINT `fk_user_2fa_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `fk_user_2fa_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -95,7 +95,7 @@ CREATE TABLE `user_2fa_temp` (
   `created_at` datetime NOT NULL,
   `expires_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`, `code`),
-  CONSTRAINT `fk_user_2fa_temp_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `fk_user_2fa_temp_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -106,7 +106,7 @@ CREATE TABLE `user_password_reset` (
   `expires` int(11) NOT NULL,
   `used` TINYINT(1) NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT `fk_user_password_reset` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
+  CONSTRAINT `fk_user_password_reset` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`),
   UNIQUE KEY `token_idx` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
@@ -115,7 +115,7 @@ CREATE TABLE `user_password_reset` (
 --
 
 -- --------------------------------------------------------
-CREATE TABLE `login_attempts` (
+CREATE TABLE `security_rate_auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `username` varchar(255) NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE `login_attempts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
-CREATE TABLE `pages_rate_limits` (
+CREATE TABLE `security_rate_page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `endpoint` varchar(255) NOT NULL,
@@ -136,7 +136,7 @@ CREATE TABLE `pages_rate_limits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
-CREATE TABLE `ip_blacklist` (
+CREATE TABLE `security_ip_blacklist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `is_network` tinyint(1) DEFAULT 0,
@@ -148,7 +148,7 @@ CREATE TABLE `ip_blacklist` (
   UNIQUE KEY `unique_ip` (`ip_address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `ip_blacklist` (`id`, `ip_address`, `is_network`, `reason`, `expiry_time`, `created_at`, `created_by`) VALUES
+INSERT INTO `security_ip_blacklist` (`id`, `ip_address`, `is_network`, `reason`, `expiry_time`, `created_at`, `created_by`) VALUES
 (1, '0.0.0.0/8', 1, 'Reserved address space - RFC 1122', NULL, '2025-01-03 16:40:15', 'system'),
 (2, '100.64.0.0/10', 1, 'Carrier-grade NAT space - RFC 6598', NULL, '2025-01-03 16:40:15', 'system'),
 (3, '192.0.2.0/24', 1, 'TEST-NET-1 Documentation space - RFC 5737', NULL, '2025-01-03 16:40:15', 'system'),
@@ -156,7 +156,7 @@ INSERT INTO `ip_blacklist` (`id`, `ip_address`, `is_network`, `reason`, `expiry_
 (5, '203.0.113.0/24', 1, 'TEST-NET-3 Documentation space - RFC 5737', NULL, '2025-01-03 16:40:15', 'system');
 
 -- --------------------------------------------------------
-CREATE TABLE `ip_whitelist` (
+CREATE TABLE `security_ip_whitelist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `is_network` tinyint(1) DEFAULT 0,
@@ -167,7 +167,7 @@ CREATE TABLE `ip_whitelist` (
   UNIQUE KEY `unique_ip` (`ip_address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
-INSERT INTO `ip_whitelist` (`id`, `ip_address`, `is_network`, `description`, `created_at`, `created_by`) VALUES
+INSERT INTO `security_ip_whitelist` (`id`, `ip_address`, `is_network`, `description`, `created_at`, `created_by`) VALUES
 (1, '127.0.0.1', 0, 'localhost IPv4', '2025-01-03 16:40:15', 'system'),
 (2, '::1', 0, 'localhost IPv6', '2025-01-03 16:40:15', 'system'),
 (3, '10.0.0.0/8', 1, 'Private network (Class A)', '2025-01-03 16:40:15', 'system'),
@@ -179,7 +179,7 @@ INSERT INTO `ip_whitelist` (`id`, `ip_address`, `is_network`, `description`, `cr
 --
 
 -- --------------------------------------------------------
-CREATE TABLE `logs` (
+CREATE TABLE `log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `time` datetime NOT NULL DEFAULT current_timestamp(),
@@ -187,7 +187,7 @@ CREATE TABLE `logs` (
   `message` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
@@ -195,13 +195,13 @@ CREATE TABLE `logs` (
 --
 
 -- --------------------------------------------------------
-CREATE TABLE `jilo_agent_types` (
+CREATE TABLE `jilo_agent_type` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `description` varchar(255),
     `endpoint` varchar(255),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-INSERT INTO `jilo_agent_types` (`id`, `description`, `endpoint`) VALUES
+INSERT INTO `jilo_agent_type` (`id`, `description`, `endpoint`) VALUES
 (1,'jvb','/jvb'),
 (2,'jicofo','/jicofo'),
 (3,'prosody','/prosody'),
@@ -209,7 +209,7 @@ INSERT INTO `jilo_agent_types` (`id`, `description`, `endpoint`) VALUES
 (5,'jibri','/jibri');
 
 -- --------------------------------------------------------
-CREATE TABLE `platforms` (
+CREATE TABLE `platform` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `jitsi_url` varchar(255) NOT NULL,
@@ -221,17 +221,17 @@ INSERT INTO `platforms` (`id`, `name`, `jitsi_url`, `jilo_database`) VALUES
 (1,'example.com','https://meet.example.com','../../jilo/jilo.db');
 
 -- --------------------------------------------------------
-CREATE TABLE `hosts` (
+CREATE TABLE `host` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `address` varchar(255) NOT NULL,
     `platform_id` int(11) NOT NULL,
     `name` varchar(255),
     PRIMARY KEY (`id`),
-    CONSTRAINT `hosts_ibfk_1` FOREIGN KEY (`platform_id`) REFERENCES `platforms` (`id`)
+    CONSTRAINT `host_ibfk_1` FOREIGN KEY (`platform_id`) REFERENCES `platform` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
-CREATE TABLE `jilo_agents` (
+CREATE TABLE `jilo_agent` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `host_id` int(11) NOT NULL,
     `agent_type_id` int(11) NOT NULL,
@@ -239,12 +239,12 @@ CREATE TABLE `jilo_agents` (
     `secret_key` varchar(255),
     `check_period` int(11) DEFAULT 0,
     PRIMARY KEY (`id`),
-    CONSTRAINT `jilo_agents_ibfk_1` FOREIGN KEY (`agent_type_id`) REFERENCES `jilo_agent_types` (`id`),
-    CONSTRAINT `jilo_agents_ibfk_2` FOREIGN KEY (`host_id`) REFERENCES `hosts` (`id`)
+    CONSTRAINT `jilo_agent_ibfk_1` FOREIGN KEY (`agent_type_id`) REFERENCES `jilo_agent_type` (`id`),
+    CONSTRAINT `jilo_agent_ibfk_2` FOREIGN KEY (`host_id`) REFERENCES `host` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
-CREATE TABLE jilo_agent_checks (
+CREATE TABLE `jilo_agent_check` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `agent_id` int(11),
     `timestamp` datetime DEFAULT current_timestamp(),
@@ -252,9 +252,8 @@ CREATE TABLE jilo_agent_checks (
     `response_time_ms` int(11),
     `response_content` varchar(255),
     PRIMARY KEY (`id`),
-    CONSTRAINT `jilo_agent_checks_ibfk_1` FOREIGN KEY (`agent_id`) REFERENCES `jilo_agents` (`id`)
+    CONSTRAINT `jilo_agent_check_ibfk_1` FOREIGN KEY (`agent_id`) REFERENCES `jilo_agent` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
 
 
 COMMIT;

@@ -24,9 +24,9 @@ class AgentTest extends TestCase
             'dbFile' => ':memory:'
         ]);
 
-        // Create jilo_agents table
+        // Create jilo_agent table
         $this->db->getConnection()->exec("
-            CREATE TABLE jilo_agents (
+            CREATE TABLE jilo_agent (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 host_id INTEGER NOT NULL,
                 agent_type_id INTEGER NOT NULL,
@@ -38,18 +38,18 @@ class AgentTest extends TestCase
             )
         ");
 
-        // Create jilo_agent_types table
+        // Create jilo_agent_type table
         $this->db->getConnection()->exec("
-            CREATE TABLE jilo_agent_types (
+            CREATE TABLE jilo_agent_type (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 description TEXT NOT NULL,
                 endpoint TEXT NOT NULL
             )
         ");
 
-        // Create hosts table
+        // Create host table
         $this->db->getConnection()->exec("
-            CREATE TABLE hosts (
+            CREATE TABLE host (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 platform_id INTEGER NOT NULL,
                 name TEXT NOT NULL
@@ -58,12 +58,12 @@ class AgentTest extends TestCase
 
         // Insert test host
         $this->db->getConnection()->exec("
-            INSERT INTO hosts (id, platform_id, name) VALUES (1, 1, 'Test Host')
+            INSERT INTO host (id, platform_id, name) VALUES (1, 1, 'Test Host')
         ");
 
         // Insert test agent type
         $this->db->getConnection()->exec("
-            INSERT INTO jilo_agent_types (id, description, endpoint) 
+            INSERT INTO jilo_agent_type (id, description, endpoint) 
             VALUES (1, 'Test Agent Type', '/api/test')
         ");
 
@@ -85,7 +85,7 @@ class AgentTest extends TestCase
             $this->assertTrue($result);
 
             // Verify agent was created
-            $stmt = $this->db->getConnection()->prepare('SELECT * FROM jilo_agents WHERE host_id = ?');
+            $stmt = $this->db->getConnection()->prepare('SELECT * FROM jilo_agent WHERE host_id = ?');
             $stmt->execute([$hostId]);
             $agent = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -131,7 +131,7 @@ class AgentTest extends TestCase
         $this->agent->addAgent($hostId, $data);
 
         // Get agent ID
-        $stmt = $this->db->getConnection()->prepare('SELECT id FROM jilo_agents WHERE host_id = ? LIMIT 1');
+        $stmt = $this->db->getConnection()->prepare('SELECT id FROM jilo_agent WHERE host_id = ? LIMIT 1');
         $stmt->execute([$hostId]);
         $agentId = $stmt->fetch(PDO::FETCH_COLUMN);
 
@@ -148,7 +148,7 @@ class AgentTest extends TestCase
         $this->assertTrue($result);
 
         // Verify update
-        $stmt = $this->db->getConnection()->prepare('SELECT * FROM jilo_agents WHERE id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM jilo_agent WHERE id = ?');
         $stmt->execute([$agentId]);
         $agent = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -171,7 +171,7 @@ class AgentTest extends TestCase
         $this->agent->addAgent($hostId, $data);
 
         // Get agent ID
-        $stmt = $this->db->getConnection()->prepare('SELECT id FROM jilo_agents WHERE host_id = ? LIMIT 1');
+        $stmt = $this->db->getConnection()->prepare('SELECT id FROM jilo_agent WHERE host_id = ? LIMIT 1');
         $stmt->execute([$hostId]);
         $agentId = $stmt->fetch(PDO::FETCH_COLUMN);
 
@@ -180,7 +180,7 @@ class AgentTest extends TestCase
         $this->assertTrue($result);
 
         // Verify deletion
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) FROM jilo_agents WHERE id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) FROM jilo_agent WHERE id = ?');
         $stmt->execute([$agentId]);
         $count = $stmt->fetch(PDO::FETCH_COLUMN);
 
@@ -201,7 +201,7 @@ class AgentTest extends TestCase
         $this->agent->addAgent($hostId, $data);
 
         // Get agent ID
-        $stmt = $this->db->getConnection()->prepare('SELECT id FROM jilo_agents WHERE host_id = ? LIMIT 1');
+        $stmt = $this->db->getConnection()->prepare('SELECT id FROM jilo_agent WHERE host_id = ? LIMIT 1');
         $stmt->execute([$hostId]);
         $agentId = $stmt->fetch(PDO::FETCH_COLUMN);
 

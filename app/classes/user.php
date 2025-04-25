@@ -3,7 +3,7 @@
 /**
  * class User
  *
- * Handles user-related functionalities such as registration, login, rights management, and profile updates.
+ * Handles user-related functionalities such as login, rights management, and profile updates.
  */
 class User {
     /**
@@ -36,9 +36,9 @@ class User {
     /**
      * Logs in a user by verifying credentials.
      *
-     * @param string $username       The username of the user.
-     * @param string $password       The password of the user.
-     * @param string $twoFactorCode  Optional. The 2FA code if 2FA is enabled.
+     * @param string $username The username of the user.
+     * @param string $password The password of the user.
+     * @param string $twoFactorCode Optional. The 2FA code if 2FA is enabled.
      *
      * @return array Login result with status and any necessary data
      */
@@ -53,7 +53,7 @@ class User {
         }
 
         // Then check credentials
-        $query = $this->db->prepare("SELECT * FROM users WHERE username = :username");
+        $query = $this->db->prepare("SELECT * FROM user WHERE username = :username");
         $query->bindParam(':username', $username);
         $query->execute();
 
@@ -92,7 +92,10 @@ class User {
 
         // Get remaining attempts AFTER this failed attempt
         $remainingAttempts = $this->rateLimiter->getRemainingAttempts($username, $ipAddress);
-        throw new Exception("Invalid credentials. {$remainingAttempts} attempts remaining.");
+        return [
+            'status' => 'failed',
+            'message' => "Invalid credentials. {$remainingAttempts} attempts remaining."
+        ];
     }
 
 
@@ -105,7 +108,7 @@ class User {
      */
     // FIXME not used now?
     public function getUserId($username) {
-        $sql = 'SELECT id FROM users WHERE username = :username';
+        $sql = 'SELECT id FROM user WHERE username = :username';
         $query = $this->db->prepare($sql);
         $query->bindParam(':username', $username);
 
@@ -128,8 +131,8 @@ class User {
                     um.*,
                     u.username
                 FROM
-                    users_meta um
-                LEFT JOIN users u
+                    user_meta um
+                LEFT JOIN user u
                     ON um.user_id = u.id
                 WHERE
                     u.id = :user_id';
@@ -153,7 +156,7 @@ class User {
      * @return void
      */
     public function addUserRight($userId, $right_id) {
-        $sql = 'INSERT INTO users_rights
+        $sql = 'INSERT INTO user_right
                     (user_id, right_id)
                 VALUES
                     (:user_id, :right_id)';
@@ -174,7 +177,7 @@ class User {
      * @return void
      */
     public function removeUserRight($userId, $right_id) {
-        $sql = 'DELETE FROM users_rights
+        $sql = 'DELETE FROM user_right
                 WHERE
                     user_id = :user_id
                 AND
@@ -196,7 +199,7 @@ class User {
         $sql = 'SELECT
                     id AS right_id,
                     name AS right_name
-                FROM rights
+                FROM `right`
                 ORDER BY id ASC';
         $query = $this->db->prepare($sql);
         $query->execute();
@@ -219,10 +222,10 @@ class User {
                     r.id AS right_id,
                     r.name AS right_name
                 FROM
-                    users u
-                    LEFT JOIN users_rights ur
+                    `user` u
+                    LEFT JOIN `user_right` ur
                         ON u.id = ur.user_id
-                    LEFT JOIN rights r
+                    LEFT JOIN `right` r
                         ON ur.right_id = r.id
                 WHERE
                     u.id = :user_id';
@@ -312,7 +315,7 @@ class User {
      */
     public function editUser($userId, $updatedUser) {
         try {
-            $sql = 'UPDATE users_meta SET
+            $sql = 'UPDATE user_meta SET
                         name = :name,
                         email = :email,
                         timezone = :timezone,
@@ -347,7 +350,7 @@ class User {
     public function removeAvatar($userId, $old_avatar = '') {
         try {
             // remove from database
-            $sql = 'UPDATE users_meta SET
+            $sql = 'UPDATE user_meta SET
                         avatar = NULL
                     WHERE user_id = :user_id';
             $query = $this->db->prepare($sql);
@@ -396,7 +399,7 @@ class User {
                     if (move_uploaded_file($fileTmpPath, $dest_path)) {
                         try {
                             // update user's avatar path in DB
-                            $sql = 'UPDATE users_meta SET
+                            $sql = 'UPDATE user_meta SET
                                         avatar = :avatar
                                     WHERE user_id = :user_id';
                             $query = $this->db->prepare($sql);
@@ -432,7 +435,7 @@ class User {
      */
     public function getUsers() {
         $sql = "SELECT id, username
-                FROM users
+                FROM `user`
                 ORDER BY username ASC";
 
         $stmt = $this->db->prepare($sql);
@@ -495,7 +498,7 @@ class User {
     public function changePassword($userId, $currentPassword, $newPassword) {
         try {
             // First verify the current password
-            $sql = "SELECT password FROM users WHERE id = :user_id";
+            $sql = "SELECT password FROM user WHERE id = :user_id";
             $query = $this->db->prepare($sql);
             $query->execute([':user_id' => $userId]);
             $user = $query->fetch(PDO::FETCH_ASSOC);
@@ -508,7 +511,7 @@ class User {
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
             // Update the password
-            $sql = "UPDATE users SET password = :password WHERE id = :user_id";
+            $sql = "UPDATE user SET password = :password WHERE id = :user_id";
             $query = $this->db->prepare($sql);
             return $query->execute([
                 ':password' => $hashedPassword,

@@ -20,26 +20,26 @@ class PlatformTest extends TestCase
             'dbFile' => ':memory:'
         ]);
 
-        // Create hosts table
+        // Create host table
         $this->db->getConnection()->exec("
-            CREATE TABLE hosts (
+            CREATE TABLE host (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 platform_id INTEGER NOT NULL,
                 name TEXT NOT NULL
             )
         ");
 
-        // Create jilo_agents table
+        // Create jilo_agent table
         $this->db->getConnection()->exec("
-            CREATE TABLE jilo_agents (
+            CREATE TABLE jilo_agent (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 host_id INTEGER NOT NULL
             )
         ");
 
-        // Create platforms table
+        // Create platform table
         $this->db->getConnection()->exec("
-            CREATE TABLE platforms (
+            CREATE TABLE platform (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 jitsi_url TEXT NOT NULL,
@@ -64,7 +64,7 @@ class PlatformTest extends TestCase
         $this->assertTrue($result);
 
         // Verify platform was created
-        $stmt = $this->db->getConnection()->prepare('SELECT * FROM platforms WHERE name = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM platform WHERE name = ?');
         $stmt->execute([$data['name']]);
         $platform = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -77,7 +77,7 @@ class PlatformTest extends TestCase
     public function testGetPlatformDetails()
     {
         // Create test platform
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO platforms (name, jitsi_url, jilo_database) VALUES (?, ?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO platform (name, jitsi_url, jilo_database) VALUES (?, ?, ?)');
         $stmt->execute(['Test platform', 'https://jitsi.example.com', '/path/to/jilo.db']);
         $platformId = $this->db->getConnection()->lastInsertId();
 
@@ -95,7 +95,7 @@ class PlatformTest extends TestCase
     public function testEditPlatform()
     {
         // Create test platform
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO platforms (name, jitsi_url, jilo_database) VALUES (?, ?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO platform (name, jitsi_url, jilo_database) VALUES (?, ?, ?)');
         $stmt->execute(['Test platform', 'https://jitsi.example.com', '/path/to/jilo.db']);
         $platformId = $this->db->getConnection()->lastInsertId();
 
@@ -109,7 +109,7 @@ class PlatformTest extends TestCase
         $this->assertTrue($result);
 
         // Verify update
-        $stmt = $this->db->getConnection()->prepare('SELECT * FROM platforms WHERE id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM platform WHERE id = ?');
         $stmt->execute([$platformId]);
         $platform = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -120,36 +120,36 @@ class PlatformTest extends TestCase
     public function testDeletePlatform()
     {
         // Create test platform
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO platforms (name, jitsi_url, jilo_database) VALUES (?, ?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO platform (name, jitsi_url, jilo_database) VALUES (?, ?, ?)');
         $stmt->execute(['Test platform', 'https://jitsi.example.com', '/path/to/jilo.db']);
         $platformId = $this->db->getConnection()->lastInsertId();
 
         // Create test host
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO hosts (platform_id, name) VALUES (?, ?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO host (platform_id, name) VALUES (?, ?)');
         $stmt->execute([$platformId, 'Test host']);
         $hostId = $this->db->getConnection()->lastInsertId();
 
         // Create test agent
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO jilo_agents (host_id) VALUES (?)');
+        $stmt = $this->db->getConnection()->prepare('INSERT INTO jilo_agent (host_id) VALUES (?)');
         $stmt->execute([$hostId]);
 
         $result = $this->platform->deletePlatform($platformId);
         $this->assertTrue($result);
 
         // Verify platform deletion
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platforms WHERE id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platform WHERE id = ?');
         $stmt->execute([$platformId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertEquals(0, $result['count']);
 
         // Verify host deletion
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM hosts WHERE platform_id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM host WHERE platform_id = ?');
         $stmt->execute([$platformId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertEquals(0, $result['count']);
 
         // Verify agent deletion
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM jilo_agents WHERE host_id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM jilo_agent WHERE host_id = ?');
         $stmt->execute([$hostId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertEquals(0, $result['count']);
@@ -167,7 +167,7 @@ class PlatformTest extends TestCase
         $this->assertTrue($result);
 
         // Verify platform was created
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platforms WHERE name = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platform WHERE name = ?');
         $stmt->execute([$validData['name']]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertEquals(1, $result['count']);
@@ -182,7 +182,7 @@ class PlatformTest extends TestCase
         $this->assertIsString($result); // Should return error message
 
         // Verify platform was not created
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platforms WHERE name = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platform WHERE name = ?');
         $stmt->execute([$invalidData['name']]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertEquals(0, $result['count']);
@@ -205,7 +205,7 @@ class PlatformTest extends TestCase
         $this->assertTrue($result);
 
         // Verify platform was created
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platforms WHERE jilo_database = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) as count FROM platform WHERE jilo_database = ?');
         $stmt->execute([$tempDb]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertEquals(1, $result['count']);

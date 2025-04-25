@@ -23,9 +23,9 @@ class HostTest extends TestCase
             'dbFile' => ':memory:'
         ]);
 
-        // Create hosts table
+        // Create host table
         $this->db->getConnection()->exec("
-            CREATE TABLE hosts (
+            CREATE TABLE host (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 platform_id INTEGER NOT NULL,
                 name TEXT NOT NULL,
@@ -33,9 +33,9 @@ class HostTest extends TestCase
             )
         ");
 
-        // Create jilo_agents table for relationship testing
+        // Create jilo_agent table for relationship testing
         $this->db->getConnection()->exec("
-            CREATE TABLE jilo_agents (
+            CREATE TABLE jilo_agent (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 host_id INTEGER NOT NULL,
                 agent_type_id INTEGER NOT NULL,
@@ -60,7 +60,7 @@ class HostTest extends TestCase
         $this->assertTrue($result);
 
         // Verify host was created
-        $stmt = $this->db->getConnection()->prepare('SELECT * FROM hosts WHERE platform_id = ? AND name = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM host WHERE platform_id = ? AND name = ?');
         $stmt->execute([$data['platform_id'], $data['name']]);
         $host = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -107,7 +107,7 @@ class HostTest extends TestCase
         $this->host->addHost($data);
 
         // Get host ID
-        $stmt = $this->db->getConnection()->prepare('SELECT id FROM hosts WHERE platform_id = ? AND name = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT id FROM host WHERE platform_id = ? AND name = ?');
         $stmt->execute([$data['platform_id'], $data['name']]);
         $hostId = $stmt->fetch(\PDO::FETCH_COLUMN);
 
@@ -122,7 +122,7 @@ class HostTest extends TestCase
         $this->assertTrue($result);
 
         // Verify update
-        $stmt = $this->db->getConnection()->prepare('SELECT * FROM hosts WHERE id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT * FROM host WHERE id = ?');
         $stmt->execute([$hostId]);
         $host = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -141,13 +141,13 @@ class HostTest extends TestCase
         $this->host->addHost($data);
 
         // Get host ID
-        $stmt = $this->db->getConnection()->prepare('SELECT id FROM hosts WHERE platform_id = ? AND name = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT id FROM host WHERE platform_id = ? AND name = ?');
         $stmt->execute([$data['platform_id'], $data['name']]);
         $hostId = $stmt->fetch(\PDO::FETCH_COLUMN);
 
         // Add test agent to the host
         $this->db->getConnection()->exec("
-            INSERT INTO jilo_agents (host_id, agent_type_id, url, secret_key)
+            INSERT INTO jilo_agent (host_id, agent_type_id, url, secret_key)
             VALUES ($hostId, 1, 'http://test:8080', 'secret')
         ");
 
@@ -156,13 +156,13 @@ class HostTest extends TestCase
         $this->assertTrue($result);
 
         // Verify host deletion
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) FROM hosts WHERE id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) FROM host WHERE id = ?');
         $stmt->execute([$hostId]);
         $hostCount = $stmt->fetch(\PDO::FETCH_COLUMN);
         $this->assertEquals(0, $hostCount);
 
         // Verify agent deletion
-        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) FROM jilo_agents WHERE host_id = ?');
+        $stmt = $this->db->getConnection()->prepare('SELECT COUNT(*) FROM jilo_agent WHERE host_id = ?');
         $stmt->execute([$hostId]);
         $agentCount = $stmt->fetch(\PDO::FETCH_COLUMN);
         $this->assertEquals(0, $agentCount);
