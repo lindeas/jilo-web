@@ -10,21 +10,103 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: jilo_test
+          MARIADB_USER: test_jilo
+          MARIADB_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h127.0.0.1 -P3306 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=10s
+          --health-retries=5
+          --health-start-period=30s
+
     steps:
     - uses: actions/checkout@v3
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'
-        extensions: pdo, pdo_sqlite
+        php-version: '8.2'
+        extensions: pdo, pdo_mysql, xdebug
+        coverage: xdebug
+
+    - name: Wait for MariaDB
+      run: |
+        sudo apt-get install -y mariadb-client
+        while ! mysqladmin ping -h"127.0.0.1" -P"3306" -uroot -proot --silent; do
+          echo "Waiting for database connection..."
+          sleep 2
+        done
 
     - name: Install dependencies
       run: |
         cd tests
         composer install
 
+    - name: Test database connection
+      run: |
+        mysql -h127.0.0.1 -P3306 -uroot -proot -e "SHOW DATABASES;"
+        mysql -h127.0.0.1 -P3306 -uroot -proot -e "SELECT User,Host FROM mysql.user;"
+        mysql -h127.0.0.1 -P3306 -uroot -proot -e "GRANT ALL PRIVILEGES ON jilo_test.* TO 'test_jilo'@'%';"
+        mysql -h127.0.0.1 -P3306 -uroot -proot -e "FLUSH PRIVILEGES;"
+
+    - name: Update database config for CI
+      run: |
+        # Create temporary test config
+        mkdir -p tests/config
+        cat > tests/config/ci-config.php << 'EOF'
+        <?php
+        define('CI_DB_PASSWORD', 'test_password');
+        define('CI_DB_HOST', '127.0.0.1');
+        EOF
+
+        # Verify config file was created
+        echo "Config file contents:"
+        cat tests/config/ci-config.php
+        echo "\nConfig file location:"
+        ls -la tests/config/ci-config.php
+
+        # Grant access from Docker network
+        mysql -h127.0.0.1 -P3306 -uroot -proot -e "
+          DROP USER IF EXISTS 'test_jilo'@'%';
+          CREATE USER 'test_jilo'@'%' IDENTIFIED BY 'test_password';
+          GRANT ALL PRIVILEGES ON jilo_test.* TO 'test_jilo'@'%';
+          CREATE DATABASE IF NOT EXISTS jilo_test;
+          FLUSH PRIVILEGES;
+        "
+
+        # Update test files to require the config (using absolute path)
+        CONFIG_PATH=$(realpath tests/config/ci-config.php)
+        echo "\nConfig path: $CONFIG_PATH"
+
+        # Add require statement at the very start
+        for file in tests/Unit/Classes/{DatabaseTest,UserTest}.php; do
+          echo "<?php" > "$file.tmp"
+          echo "require_once '$CONFIG_PATH';" >> "$file.tmp"
+          tail -n +2 "$file" >> "$file.tmp"
+          mv "$file.tmp" "$file"
+          echo "\nFirst 5 lines of $file:"
+          head -n 5 "$file"
+        done
+
+        # Test database connection directly
+        echo "\nTesting database connection:"
+        mysql -h127.0.0.1 -P3306 -utest_jilo -ptest_password -e "SELECT 'Database connection successful!'" || echo "Database connection failed"
+
     - name: Run test suite
       run: |
         cd tests
         ./vendor/bin/phpunit
+# FIXME
+#       XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html coverage
+#      env:
+#        COMPOSER_PROCESS_TIMEOUT: 0
+#        COMPOSER_NO_INTERACTION: 1
+#        COMPOSER_NO_AUDIT: 1
