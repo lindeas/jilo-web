@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../classes/ratelimiter.php';
-require_once __DIR__ . '/../helpers/logs.php';
 
 /**
  * Rate limit middleware for page requests
@@ -13,10 +12,10 @@ require_once __DIR__ . '/../helpers/logs.php';
  * @return bool True if request is allowed, false if rate limited
  */
 function checkRateLimit($database, $endpoint, $userId = null, $existingRateLimiter = null) {
-    global $app_root;
+    global $app_root, $user_IP;
     $isTest = defined('PHPUNIT_RUNNING');
     $rateLimiter = $existingRateLimiter ?? new RateLimiter($database);
-    $ipAddress = getUserIP();
+    $ipAddress = $user_IP;
 
     // Check if request is allowed
     if (!$rateLimiter->isPageRequestAllowed($ipAddress, $endpoint, $userId)) {

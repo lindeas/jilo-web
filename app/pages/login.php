@@ -24,8 +24,8 @@ try {
     // Initialize RateLimiter
     require_once '../app/classes/ratelimiter.php';
     $rateLimiter = new RateLimiter($db);
-
     // Get user IP
+    require_once '../app/helpers/ip_helper.php';
     $user_IP = getUserIP();
 
     $action = $_REQUEST['action'] ?? '';

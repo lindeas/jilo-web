@@ -14,7 +14,6 @@ require '../app/classes/api_response.php';
 
 // Initialize required objects
 $userObject = new User($dbWeb);
-$logObject = new Log($dbWeb);
 $configObject = new Config();
 
 // For AJAX requests

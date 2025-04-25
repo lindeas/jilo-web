@@ -28,7 +28,10 @@ class RateLimiter {
         } else {
             $this->db = $database->getConnection();
         }
+        // Initialize logger via Log wrapper
+        require_once __DIR__ . '/log.php';
         $this->log = new Log($database);
+        // Initialize database tables
         $this->createTablesIfNotExist();
     }
 

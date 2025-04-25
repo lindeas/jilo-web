@@ -44,7 +44,6 @@ class User {
      */
     public function login($username, $password, $twoFactorCode = null) {
         // Get user's IP address
-        require_once __DIR__ . '/../helpers/logs.php';
         $ipAddress = getUserIP();
 
         // Check rate limiting first
