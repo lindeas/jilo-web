@@ -13,8 +13,11 @@ if (!headers_sent()) {
 }
 
 // Load plugin Log model and IP helper early so fallback wrapper is bypassed
-require_once __DIR__ . '/../plugins/logs/models/Log.php';
 require_once __DIR__ . '/../app/helpers/ip_helper.php';
+
+// Initialize global user_IP for tests
+global $user_IP;
+$user_IP = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
 // Load Composer's autoloader
 require_once __DIR__ . '/vendor/autoload.php';

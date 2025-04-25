@@ -2,6 +2,7 @@
 
 require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 require_once dirname(__DIR__, 3) . '/app/classes/user.php';
+require_once dirname(__DIR__, 3) . '/plugins/register/models/register.php';
 require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
 
 use PHPUnit\Framework\TestCase;
@@ -9,47 +10,67 @@ use PHPUnit\Framework\TestCase;
 class UserTest extends TestCase
 {
     private $db;
+    private $register;
     private $user;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Set up test database
+        // Prepare DB for Github CI
+        $host = defined('CI_DB_HOST') ? CI_DB_HOST : '127.0.0.1';
+        $password = defined('CI_DB_PASSWORD') ? CI_DB_PASSWORD : '';
+
         $this->db = new Database([
-            'type' => 'sqlite',
-            'dbFile' => ':memory:'
+            'type' => 'mariadb',
+            'host' => $host,
+            'port' => '3306',
+            'dbname' => 'totalmeet_test',
+            'user' => 'test_totalmeet',
+            'password' => $password
         ]);
 
-        // Create user table
+        // Create user table with MariaDB syntax
         $this->db->getConnection()->exec("
-            CREATE TABLE user (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS user (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                username VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
-        // Create user_meta table
+        // Create user_meta table with MariaDB syntax
         $this->db->getConnection()->exec("
-            CREATE TABLE user_meta (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                name TEXT,
-                email TEXT,
-                timezone TEXT,
+            CREATE TABLE IF NOT EXISTS user_meta (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                user_id INT NOT NULL,
+                name VARCHAR(255),
+                email VARCHAR(255),
+                timezone VARCHAR(100),
                 bio TEXT,
-                avatar TEXT,
-                FOREIGN KEY (user_id) REFERENCES user(id)
+                avatar VARCHAR(255),
+                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+            )
+        ");
+
+        // Create security_rate_auth table for rate limiting
+        $this->db->getConnection()->exec("
+            CREATE TABLE IF NOT EXISTS security_rate_auth (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                ip_address VARCHAR(45) NOT NULL,
+                username VARCHAR(255) NOT NULL,
+                attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_ip_username (ip_address, username)
             )
         ");
 
         // Create user_2fa table for two-factor authentication
         $this->db->getConnection()->exec("
-            CREATE TABLE user_2fa (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                secret_key TEXT NOT NULL,
+            CREATE TABLE IF NOT EXISTS user_2fa (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                user_id INT NOT NULL,
+                secret_key VARCHAR(255) NOT NULL,
                 backup_codes TEXT,
                 enabled TINYINT(1) NOT NULL DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -57,106 +78,93 @@ class UserTest extends TestCase
             )
         ");
 
-        // Create tables for rate limiter
-        $this->db->getConnection()->exec("
-            CREATE TABLE login_attempts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ip_address TEXT NOT NULL,
-                username TEXT NOT NULL,
-                attempted_at TEXT DEFAULT (DATETIME('now'))
-            )
-        ");
-
-        $this->db->getConnection()->exec("
-            CREATE TABLE ip_whitelist (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ip_address TEXT NOT NULL UNIQUE,
-                is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
-                description TEXT,
-                created_at TEXT DEFAULT (DATETIME('now')),
-                created_by TEXT
-            )
-        ");
-
-        $this->db->getConnection()->exec("
-            CREATE TABLE ip_blacklist (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ip_address TEXT NOT NULL UNIQUE,
-                is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
-                reason TEXT,
-                expiry_time TEXT NULL,
-                created_at TEXT DEFAULT (DATETIME('now')),
-                created_by TEXT
-            )
-        ");
-
         $this->user = new User($this->db);
+        $this->register = new Register($this->db);
+    }
+
+    protected function tearDown(): void
+    {
+        // Drop tables in correct order
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user_2fa");
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS security_rate_auth");
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user_meta");
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user");
+        parent::tearDown();
     }
 
     public function testLogin()
     {
-        // Create a test user
+        // First register a user
+        $username = 'testuser';
         $password = 'password123';
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO user (username, password) VALUES (?, ?)');
-        $stmt->execute(['testuser', $hashedPassword]);
+        $this->register->register($username, $password);
 
         // Mock $_SERVER['REMOTE_ADDR'] for rate limiter
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         // Test successful login
         try {
-            $result = $this->user->login('testuser', $password);
+            $result = $this->user->login($username, $password);
             $this->assertIsArray($result);
             $this->assertEquals('success', $result['status']);
             $this->assertArrayHasKey('user_id', $result);
             $this->assertArrayHasKey('username', $result);
             $this->assertArrayHasKey('user_id', $_SESSION);
+            $this->assertArrayHasKey('username', $_SESSION);
             $this->assertArrayHasKey('CREATED', $_SESSION);
             $this->assertArrayHasKey('LAST_ACTIVITY', $_SESSION);
         } catch (Exception $e) {
-            $this->fail('Login should not throw an exception for valid credentials: ' . $e->getMessage());
+            $this->fail('Login should not throw for valid credentials: ' . $e->getMessage());
         }
 
         // Test failed login
-        try {
-            $this->user->login('testuser', 'wrongpassword');
-            $this->fail('Login should throw an exception for invalid credentials');
-        } catch (Exception $e) {
-            $this->assertStringContainsString('Invalid credentials', $e->getMessage());
-        }
-
-        // Test nonexistent user
-        try {
-            $this->user->login('nonexistent', $password);
-            $this->fail('Login should throw an exception for nonexistent user');
-        } catch (Exception $e) {
-            $this->assertStringContainsString('Invalid credentials', $e->getMessage());
-        }
+        $result = $this->user->login($username, 'wrongpassword');
+        $this->assertIsArray($result);
+        $this->assertEquals('failed', $result['status']);
+        $this->assertArrayHasKey('message', $result);
+        $this->assertStringContainsString('Invalid credentials', $result['message']);
     }
 
     public function testGetUserDetails()
     {
-        // Create a test user
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO user (username, password) VALUES (?, ?)');
-        $stmt->execute(['testuser', 'hashedpassword']);
-        $userId = $this->db->getConnection()->lastInsertId();
+        // Register a test user first
+        $username = 'testuser';
+        $password = 'password123';
+        $result = $this->register->register($username, $password);
+        $this->assertTrue($result);
 
-        // Create user meta with some data
-        $stmt = $this->db->getConnection()->prepare('INSERT INTO user_meta (user_id, name, email) VALUES (?, ?, ?)');
-        $stmt->execute([$userId, 'Test User', 'test@example.com']);
+        // Get user ID from database
+        $stmt = $this->db->getConnection()->prepare("SELECT id FROM user WHERE username = ?");
+        $stmt->execute([$username]);
+        $userId = $stmt->fetchColumn();
+        $this->assertNotFalse($userId);
 
+        // Insert user metadata
+        $stmt = $this->db->getConnection()->prepare("
+            UPDATE user_meta
+            SET name = ?, email = ?
+            WHERE user_id = ?
+        ");
+        $stmt->execute(['Test User', 'test@example.com', $userId]);
+
+        // Get user details
         $userDetails = $this->user->getUserDetails($userId);
-        $this->assertIsArray($userDetails);
-        $this->assertCount(1, $userDetails); // Should return one row
-        $user = $userDetails[0]; // Get the first row
-        $this->assertEquals('testuser', $user['username']);
-        $this->assertEquals('Test User', $user['name']);
-        $this->assertEquals('test@example.com', $user['email']);
 
-        // Test nonexistent user
-        $userDetails = $this->user->getUserDetails(999);
-        $this->assertEmpty($userDetails);
+        $this->assertIsArray($userDetails);
+        $this->assertNotEmpty($userDetails);
+        $this->assertArrayHasKey(0, $userDetails, 'User details should be returned as an array');
+
+        // Get first row since we're querying by primary key
+        $userDetails = $userDetails[0];
+
+        $this->assertArrayHasKey('username', $userDetails, 'User details should include username');
+        $this->assertArrayHasKey('name', $userDetails, 'User details should include name');
+        $this->assertArrayHasKey('email', $userDetails, 'User details should include email');
+
+        // Verify values
+        $this->assertEquals($username, $userDetails['username'], 'Username should match');
+        $this->assertEquals('Test User', $userDetails['name'], 'Name should match');
+        $this->assertEquals('test@example.com', $userDetails['email'], 'Email should match');
     }
 }

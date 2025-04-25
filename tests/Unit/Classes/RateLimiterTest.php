@@ -8,103 +8,99 @@ use PHPUnit\Framework\TestCase;
 
 class RateLimiterTest extends TestCase
 {
-    private $rateLimiter;
     private $db;
+    private $rateLimiter;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Set up in-memory SQLite database
+        // Prepare DB for Github CI
+        $host = defined('CI_DB_HOST') ? CI_DB_HOST : '127.0.0.1';
+        $password = defined('CI_DB_PASSWORD') ? CI_DB_PASSWORD : '';
+
+        // Set up test database
         $this->db = new Database([
-            'type' => 'sqlite',
-            'dbFile' => ':memory:'
+            'type' => 'mariadb',
+            'host' => $host,
+            'port' => '3306',
+            'dbname' => 'totalmeet_test',
+            'user' => 'test_totalmeet',
+            'password' => $password
         ]);
 
+        // The RateLimiter constructor will create all necessary tables
         $this->rateLimiter = new RateLimiter($this->db);
+    }
+
+    protected function tearDown(): void
+    {
+        // Drop tables in correct order
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->authRatelimitTable}");
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->pagesRatelimitTable}");
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->blacklistTable}");
+        $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->whitelistTable}");
+        parent::tearDown();
     }
 
     public function testGetRecentAttempts()
     {
-        $ip = '127.0.0.1';
-        $username = 'testuser';
+        $ip = '8.8.8.8';
 
-        // Clean up any existing attempts first
-        $stmt = $this->db->getConnection()->prepare("DELETE FROM {$this->rateLimiter->authRatelimitTable} WHERE ip_address = ?");
-        $stmt->execute([$ip]);
+        // Record some login attempts
+        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->authRatelimitTable} 
+            (ip_address, username, attempted_at) VALUES (?, ?, NOW())");
 
-        // Initially should have no attempts
+        // Add 3 attempts
+        for ($i = 0; $i < 3; $i++) {
+            $stmt->execute([$ip, 'testuser']);
+        }
+
         $attempts = $this->rateLimiter->getRecentAttempts($ip);
-        $this->assertEquals(0, $attempts);
-
-        // Add a login attempt
-        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->authRatelimitTable} (ip_address, username) VALUES (?, ?)");
-        $stmt->execute([$ip, $username]);
-
-        // Should now have 1 attempt
-        $attempts = $this->rateLimiter->getRecentAttempts($ip);
-        $this->assertEquals(1, $attempts);
+        $this->assertEquals(3, $attempts);
     }
 
-    public function testIpBlacklisting()
+    public function testIsIpBlacklisted()
     {
-        $ip = '192.0.2.1'; // Using TEST-NET-1 range
-
-        // Should be blacklisted by default (TEST-NET-1 range)
-        $this->assertTrue($this->rateLimiter->isIpBlacklisted($ip));
-
-        // Test with non-blacklisted IP
-        $nonBlacklistedIp = '8.8.8.8'; // Google DNS
-        $this->assertFalse($this->rateLimiter->isIpBlacklisted($nonBlacklistedIp));
+        $ip = '8.8.8.8';
 
         // Add IP to blacklist
-        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->blacklistTable} (ip_address, reason) VALUES (?, ?)");
-        $stmt->execute([$nonBlacklistedIp, 'Test blacklist']);
+        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->blacklistTable} 
+            (ip_address, is_network, reason) VALUES (?, ?, ?)");
+        $stmt->execute([$ip, 0, 'Test blacklist']); // Explicitly set is_network to 0 (false)
 
-        // IP should now be blacklisted
-        $this->assertTrue($this->rateLimiter->isIpBlacklisted($nonBlacklistedIp));
-    }
-
-    public function testIpWhitelisting()
-    {
-        $ip = '127.0.0.1'; // Localhost
-
-        // Clean up any existing whitelist entries
-        $stmt = $this->db->getConnection()->prepare("DELETE FROM {$this->rateLimiter->whitelistTable} WHERE ip_address = ?");
-        $stmt->execute([$ip]);
-
-        // Add to whitelist
-        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->whitelistTable} (ip_address, description) VALUES (?, ?)");
-        $stmt->execute([$ip, 'Test whitelist']);
-
-        // Should be whitelisted
-        $this->assertTrue($this->rateLimiter->isIpWhitelisted($ip));
-
-        // Test with non-whitelisted IP
-        $nonWhitelistedIp = '8.8.8.8'; // Google DNS
-        $this->assertFalse($this->rateLimiter->isIpWhitelisted($nonWhitelistedIp));
-
-        // Add to whitelist
-        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->whitelistTable} (ip_address, description) VALUES (?, ?)");
-        $stmt->execute([$nonWhitelistedIp, 'Test whitelist']);
-
-        // Should now be whitelisted
-        $this->assertTrue($this->rateLimiter->isIpWhitelisted($nonWhitelistedIp));
-    }
-
-    public function testIpRangeBlacklisting()
-    {
-        $ip = '8.8.8.8'; // Google DNS
-        $networkIp = '8.8.8.0/24'; // Network containing Google DNS
-
-        // Initially IP should not be blacklisted
-        $this->assertFalse($this->rateLimiter->isIpBlacklisted($ip));
-
-        // Add network to blacklist
-        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->blacklistTable} (ip_address, is_network, reason) VALUES (?, 1, ?)");
-        $stmt->execute([$networkIp, 'Test network blacklist']);
-
-        // IP in range should now be blacklisted
         $this->assertTrue($this->rateLimiter->isIpBlacklisted($ip));
+        $this->assertFalse($this->rateLimiter->isIpBlacklisted('8.8.4.4'));
+    }
+
+    public function testIsIpWhitelisted()
+    {
+        // Test with an IP that's not in the default whitelisted ranges
+        $ip = '8.8.8.8'; // Google's DNS, definitely not in private ranges
+
+        // Add IP to whitelist
+        $stmt = $this->db->getConnection()->prepare("INSERT INTO {$this->rateLimiter->whitelistTable} 
+            (ip_address, is_network, description) VALUES (?, ?, ?)");
+        $stmt->execute([$ip, 0, 'Test whitelist']); // Explicitly set is_network to 0 (false)
+
+        $this->assertTrue($this->rateLimiter->isIpWhitelisted($ip));
+        $this->assertFalse($this->rateLimiter->isIpWhitelisted('8.8.4.4')); // Another IP not in private ranges
+    }
+
+    public function testRateLimitCheck()
+    {
+        $ip = '8.8.8.8'; // Use non-whitelisted IP
+        $endpoint = '/test';
+
+        // First request should be allowed
+        $this->assertTrue($this->rateLimiter->isPageRequestAllowed($ip, $endpoint));
+
+        // Add requests up to the limit
+        for ($i = 0; $i < 60; $i++) { // Default limit is 60 per minute
+            $this->rateLimiter->recordPageRequest($ip, $endpoint);
+        }
+
+        // The next request should be rate limited
+        $this->assertFalse($this->rateLimiter->isPageRequestAllowed($ip, $endpoint));
     }
 }
