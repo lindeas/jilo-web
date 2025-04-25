@@ -11,47 +11,47 @@ use PHPUnit\Framework\TestCase;
  */
 class TestLogger {
     private $db;
-    
+
     public function __construct($database) {
         $this->db = $database->getConnection();
     }
-    
+
     public function insertLog($userId, $message, $scope = 'user') {
         try {
             $sql = 'INSERT INTO log
                         (user_id, scope, message)
                     VALUES
                         (:user_id, :scope, :message)';
-            
+
             $query = $this->db->prepare($sql);
             $query->execute([
                 ':user_id' => $userId,
                 ':scope'   => $scope,
                 ':message' => $message,
             ]);
-            
+
             return true;
-            
+
         } catch (Exception $e) {
             return $e->getMessage();
         }
     }
-    
+
     public function readLog($userId, $scope, $offset = 0, $items_per_page = '', $filters = []) {
         $params = [];
         $where_clauses = [];
-        
+
         // Base query with user join
         $base_sql = 'SELECT l.*, u.username 
                     FROM log l 
                     LEFT JOIN user u ON l.user_id = u.id';
-        
+
         // Add scope condition
         if ($scope === 'user') {
             $where_clauses[] = 'l.user_id = :user_id';
             $params[':user_id'] = $userId;
         }
-        
+
         // Add time range filters if specified
         if (!empty($filters['from_time'])) {
             $where_clauses[] = 'l.time >= :from_time';
@@ -61,37 +61,37 @@ class TestLogger {
             $where_clauses[] = 'l.time <= :until_time';
             $params[':until_time'] = $filters['until_time'] . ' 23:59:59';
         }
-        
+
         // Add message search if specified
         if (!empty($filters['message'])) {
             $where_clauses[] = 'l.message LIKE :message';
             $params[':message'] = '%' . $filters['message'] . '%';
         }
-        
+
         // Add user ID search if specified
         if (!empty($filters['id'])) {
             $where_clauses[] = 'l.user_id = :search_user_id';
             $params[':search_user_id'] = $filters['id'];
         }
-        
+
         // Combine WHERE clauses
         $sql = $base_sql;
         if (!empty($where_clauses)) {
             $sql .= ' WHERE ' . implode(' AND ', $where_clauses);
         }
-        
+
         // Add ordering
         $sql .= ' ORDER BY l.time DESC';
-        
+
         // Add pagination
         if ($items_per_page) {
             $items_per_page = (int)$items_per_page;
             $sql .= ' LIMIT ' . $offset . ',' . $items_per_page;
         }
-        
+
         $query = $this->db->prepare($sql);
         $query->execute($params);
-        
+
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 }
@@ -115,8 +115,8 @@ class LogTest extends TestCase
             'type' => 'mariadb',
             'host' => $host,
             'port' => '3306',
-            'dbname' => 'totalmeet_test',
-            'user' => 'test_totalmeet',
+            'dbname' => 'jilo_test',
+            'user' => 'test_jilo',
             'password' => $password
         ]);
 

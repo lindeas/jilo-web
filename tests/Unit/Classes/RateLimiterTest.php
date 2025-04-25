@@ -24,8 +24,8 @@ class RateLimiterTest extends TestCase
             'type' => 'mariadb',
             'host' => $host,
             'port' => '3306',
-            'dbname' => 'totalmeet_test',
-            'user' => 'test_totalmeet',
+            'dbname' => 'jilo_test',
+            'user' => 'test_jilo',
             'password' => $password
         ]);
 
