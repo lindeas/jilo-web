@@ -99,7 +99,6 @@ $allowed_urls = [
     'settings',
     'security',
     'status',
-    'logs',
     'help',
 
     'login',
@@ -135,18 +134,32 @@ $public_pages = filter_public_pages($public_pages);
 
 // Dispatch routing and auth
 require_once __DIR__ . '/../app/core/Router.php';
-$currentUser = \App\Core\Router::checkAuth($config, $app_root, $public_pages, $page);
+use App\Core\Router;
+$currentUser = Router::checkAuth($config, $app_root, $public_pages, $page);
 
 // connect to DB via DatabaseConnector
 require_once __DIR__ . '/../app/core/DatabaseConnector.php';
 use App\Core\DatabaseConnector;
 $dbWeb = DatabaseConnector::connect($config);
 
-// start logging
-require '../app/classes/log.php';
-include '../app/helpers/logs.php';
-$logObject = new Log($dbWeb);
-$user_IP = getUserIP();
+// Logging: default to NullLogger, plugin can override
+require_once __DIR__ . '/../app/core/NullLogger.php';
+use App\Core\NullLogger;
+$logObject = new NullLogger();
+// Get the user IP
+require_once __DIR__ . '/../app/helpers/ip_helper.php';
+$user_IP = '';
+
+// Plugin: initialize logging system plugin if available
+do_hook('logger.system_init', ['db' => $dbWeb]);
+
+// Override defaults if plugin provided real logger
+if (isset($GLOBALS['logObject'])) {
+    $logObject = $GLOBALS['logObject'];
+}
+if (isset($GLOBALS['user_IP'])) {
+    $user_IP = $GLOBALS['user_IP'];
+}
 
 // Initialize security middleware
 require_once '../app/includes/csrf_middleware.php';
