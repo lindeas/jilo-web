@@ -214,7 +214,7 @@ CREATE TABLE `platforms` (
     `name` varchar(255) NOT NULL,
     `jitsi_url` varchar(255) NOT NULL,
     `jilo_database` varchar(255) NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
     UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 INSERT INTO `platforms` (`id`, `name`, `jitsi_url`, `jilo_database`) VALUES
@@ -226,7 +226,7 @@ CREATE TABLE `hosts` (
     `address` varchar(255) NOT NULL,
     `platform_id` int(11) NOT NULL,
     `name` varchar(255),
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
     CONSTRAINT `hosts_ibfk_1` FOREIGN KEY (`platform_id`) REFERENCES `platforms` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
@@ -238,9 +238,9 @@ CREATE TABLE `jilo_agents` (
     `url` varchar(255) NOT NULL,
     `secret_key` varchar(255),
     `check_period` int(11) DEFAULT 0,
-    PRIMARY KEY (`id`)
-    CONSTRAINT `jilo_agents_ibfk_1` FOREIGN KEY (`agent_type_id`) REFERENCES `jilo_agent_types` (`id`)
-    CONSTRAINT `jilo_agents_ibfk_1` FOREIGN KEY (`host_id`) REFERENCES `hosts` (`id`)
+    PRIMARY KEY (`id`),
+    CONSTRAINT `jilo_agents_ibfk_1` FOREIGN KEY (`agent_type_id`) REFERENCES `jilo_agent_types` (`id`),
+    CONSTRAINT `jilo_agents_ibfk_2` FOREIGN KEY (`host_id`) REFERENCES `hosts` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -251,7 +251,7 @@ CREATE TABLE jilo_agent_checks (
     `status_code` int(11),
     `response_time_ms` int(11),
     `response_content` varchar(255),
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
     CONSTRAINT `jilo_agent_checks_ibfk_1` FOREIGN KEY (`agent_id`) REFERENCES `jilo_agents` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
