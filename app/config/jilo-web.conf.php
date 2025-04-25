@@ -22,12 +22,20 @@ return [
     //*******************************************
 
     // database
-    'db' => [
-        // DB type for the web app, currently only "sqlite" is used
-        'db_type'		=> 'sqlite',
-        // default is ../app/jilo-web.db
+    'db_type'			=> 'mariadb',
+
+    'sqlite' => [
         'sqlite_file'		=> '../app/jilo-web.db',
     ],
+
+    'sql' => [
+        'sql_host'		=> 'localhost',
+        'sql_port'		=> '3306',
+        'sql_database'		=> 'jilo',
+        'sql_username'		=> 'jilouser',
+        'sql_password'		=> 'jilopass',
+    ],
+
     // avatars path
     'avatars_path'		=> 'uploads/avatars/',
     // default avatar

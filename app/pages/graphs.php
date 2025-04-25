@@ -7,11 +7,11 @@ require '../app/classes/agent.php';
 require '../app/classes/conference.php';
 require '../app/classes/host.php';
 
-$agentObject = new Agent($dbWeb);
-$hostObject = new Host($dbWeb);
+$agentObject = new Agent($db);
+$hostObject = new Host($db);
 
 // Connect to Jilo database for log data
-$response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
+$response = connectJiloDB($config, $platformDetails[0]['jilo_database'], $platform_id);
 if ($response['db'] === null) {
     Feedback::flash('ERROR', 'DEFAULT', $response['error']);
 } else {

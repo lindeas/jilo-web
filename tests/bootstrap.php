@@ -12,8 +12,15 @@ if (!headers_sent()) {
     ini_set('session.gc_maxlifetime', 1440); // 24 minutes
 }
 
+// Load plugin Log model and IP helper early so fallback wrapper is bypassed
+require_once __DIR__ . '/../plugins/logs/models/Log.php';
+require_once __DIR__ . '/../app/helpers/ip_helper.php';
+
 // Load Composer's autoloader
 require_once __DIR__ . '/vendor/autoload.php';
+
+// Ensure core NullLogger is available during tests
+require_once __DIR__ . '/../app/core/NullLogger.php';
 
 // Set error reporting
 error_reporting(E_ALL);
@@ -26,18 +33,23 @@ date_default_timezone_set('UTC');
 // Define global variables needed by the application
 $GLOBALS['app_root'] = '/';
 $GLOBALS['config'] = [
-    'db' => [
-        'type' => 'sqlite',
-        'dbFile' => ':memory:'
-    ]
+    'db_type' => 'mariadb',
+    'sql' => [
+        'sql_host' => 'localhost',
+        'sql_port' => '3306',
+        'sql_database' => 'jilo_test',
+        'sql_username' => 'test_jilo',
+        'sql_password' => '',
+    ],
+    'environment' => 'testing'
 ];
 
 // Define global connectDB function
 if (!function_exists('connectDB')) {
     function connectDB($config) {
-        global $dbWeb;
+        global $db;
         return [
-            'db' => $dbWeb
+            'db' => $db
         ];
     }
 }

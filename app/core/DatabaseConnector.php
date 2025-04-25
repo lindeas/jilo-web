@@ -21,10 +21,10 @@ class DatabaseConnector
 
         try {
             $db = connectDB($config);
-            if (!$db['db']) {
+            if (!$db) {
                 throw new Exception('Could not connect to database');
             }
-            return $db['db'];
+            return $db;
         } catch (Exception $e) {
             // Show error and exit
             Feedback::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));

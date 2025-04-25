@@ -14,7 +14,7 @@ $section = isset($_POST['section']) ? $_POST['section'] : (isset($_GET['section'
 
 // Initialize RateLimiter
 require_once '../app/classes/ratelimiter.php';
-$rateLimiter = new RateLimiter($dbWeb);
+$rateLimiter = new RateLimiter($db);
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     // Apply rate limiting for security operations
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'security', $userId);
+    checkRateLimit($db, 'security', $userId);
 
     $action = $_POST['action'];
     $validator = new Validator($_POST);

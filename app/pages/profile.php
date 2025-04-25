@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting for profile operations
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'profile', $userId);
+    checkRateLimit($db, 'profile', $userId);
 
     // avatar removal
     if ($item === 'avatar' && $action === 'remove') {

@@ -13,8 +13,8 @@ include '../app/helpers/feedback.php';
 
 require '../app/classes/agent.php';
 require '../app/classes/host.php';
-$agentObject = new Agent($dbWeb);
-$hostObject = new Host($dbWeb);
+$agentObject = new Agent($db);
+$hostObject = new Host($db);
 
 include '../app/templates/status-server.php';
 
@@ -22,7 +22,7 @@ include '../app/templates/status-server.php';
 foreach ($platformsAll as $platform) {
 
     // check if we can connect to the jilo database
-    $response = connectDB($config, 'jilo', $platform['jilo_database'], $platform['id']);
+    $response = connectJiloDB($config, $platform['jilo_database'], $platform['id']);
     if ($response['error'] !== null) {
         $jilo_database_status = $response['error'];
     } else {

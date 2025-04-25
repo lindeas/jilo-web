@@ -19,7 +19,7 @@ unset($error);
 
 try {
     // connect to database
-    $db = connectDB($config)['db'];
+    $db = connectDB($config);
 
     // Initialize RateLimiter
     require_once '../app/classes/ratelimiter.php';

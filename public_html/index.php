@@ -80,30 +80,13 @@ error_reporting(E_ALL);
 // edit accordingly, add 'pages/PAGE.php'
 $allowed_urls = [
     'dashboard',
-
-    'conferences',
-    'participants',
-    'components',
-
-    'graphs',
-    'latest',
-    'livejs',
-
-    'agents',
-
-    'config',
-
-    'profile',
-    'credentials',
-
+    'conferences','participants','components',
+    'graphs','latest','livejs','agents',
+    'profile','credentials','config','security',
     'settings',
-    'security',
     'status',
     'help',
-
-    'login',
-    'logout',
-
+    'login','logout',
     'about',
 ];
 
@@ -137,10 +120,10 @@ require_once __DIR__ . '/../app/core/Router.php';
 use App\Core\Router;
 $currentUser = Router::checkAuth($config, $app_root, $public_pages, $page);
 
-// connect to DB via DatabaseConnector
+// Connect to DB via DatabaseConnector
 require_once __DIR__ . '/../app/core/DatabaseConnector.php';
 use App\Core\DatabaseConnector;
-$dbWeb = DatabaseConnector::connect($config);
+$db = DatabaseConnector::connect($config);
 
 // Logging: default to NullLogger, plugin can override
 require_once __DIR__ . '/../app/core/NullLogger.php';
@@ -151,7 +134,7 @@ require_once __DIR__ . '/../app/helpers/ip_helper.php';
 $user_IP = '';
 
 // Plugin: initialize logging system plugin if available
-do_hook('logger.system_init', ['db' => $dbWeb]);
+do_hook('logger.system_init', ['db' => $db]);
 
 // Override defaults if plugin provided real logger
 if (isset($GLOBALS['logObject'])) {
@@ -174,7 +157,7 @@ require '../app/classes/ratelimiter.php';
 
 // get platforms details
 require '../app/classes/platform.php';
-$platformObject = new Platform($dbWeb);
+$platformObject = new Platform($db);
 $platformsAll = $platformObject->getPlatformDetails();
 
 // by default we connect ot the first configured platform
@@ -187,7 +170,7 @@ $platformDetails = $platformObject->getPlatformDetails($platform_id);
 // init user functions
 require '../app/classes/user.php';
 include '../app/helpers/profile.php';
-$userObject = new User($dbWeb);
+$userObject = new User($db);
 
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
@@ -225,7 +208,7 @@ if ($page == 'logout') {
 
         // check if the Jilo Server is running
         require '../app/classes/server.php';
-        $serverObject = new Server($dbWeb);
+        $serverObject = new Server($db);
 
         $server_host = '127.0.0.1';
         $server_port = '8080';
@@ -255,9 +238,9 @@ if ($page == 'logout') {
         // all normal pages
         if (isset($plugin_controllers[$page])) {
             include $plugin_controllers[$page];
-            } else {
-                include "../app/pages/{$page}.php";
-            }
+        } else {
+            include "../app/pages/{$page}.php";
+        }
     } else {
         // the page is not in allowed urls, loading "not found" page
         include '../app/templates/error-notfound.php';

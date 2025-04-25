@@ -2,15 +2,16 @@
 
 class RateLimiter {
     public $db;
+    private $database;
     private $log;
     public $maxAttempts = 5;           // Maximum login attempts
     public $decayMinutes = 15;         // Time window in minutes
     public $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
     public $autoBlacklistDuration = 24;  // Hours to blacklist for
-    public $authRatelimitTable = 'login_attempts';  // For username/password attempts
-    public $pagesRatelimitTable = 'pages_rate_limits';  // For page requests
-    public $whitelistTable = 'ip_whitelist';
-    public $blacklistTable = 'ip_blacklist';
+    public $authRatelimitTable = 'security_rate_auth';  // For rate limiting username/password attempts
+    public $pagesRatelimitTable = 'security_rate_page';  // For rate limiting page requests
+    public $whitelistTable = 'security_ip_whitelist';  // For whitelisting IPs and network ranges
+    public $blacklistTable = 'security_ip_blacklist';  // For blacklisting IPs and network ranges
     private $pageLimits = [
         // Default rate limits per minute
         'default' => 60,
@@ -23,11 +24,8 @@ class RateLimiter {
     ];
 
     public function __construct($database) {
-        if ($database instanceof PDO) {
-            $this->db = $database;
-        } else {
-            $this->db = $database->getConnection();
-        }
+        $this->database = $database;  // Store the Database object
+        $this->db = $database->getConnection();
         // Initialize logger via Log wrapper
         require_once __DIR__ . '/log.php';
         $this->log = new Log($database);
@@ -39,42 +37,47 @@ class RateLimiter {
     private function createTablesIfNotExist() {
         // Authentication attempts table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->authRatelimitTable} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL,
-            username TEXT NOT NULL,
-            attempted_at TEXT DEFAULT (DATETIME('now'))
+            id int(11) PRIMARY KEY AUTO_INCREMENT,
+            ip_address VARCHAR(45) NOT NULL,
+            username VARCHAR(255) NOT NULL,
+            attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_ip_username (ip_address, username)
         )";
         $this->db->exec($sql);
 
         // Pages rate limits table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->pagesRatelimitTable} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL,
-            endpoint TEXT NOT NULL,
-            request_time DATETIME DEFAULT CURRENT_TIMESTAMP
+            id int(11) PRIMARY KEY AUTO_INCREMENT,
+            ip_address VARCHAR(45) NOT NULL,
+            endpoint VARCHAR(255) NOT NULL,
+            request_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_ip_endpoint (ip_address, endpoint),
+            INDEX idx_request_time (request_time)
         )";
         $this->db->exec($sql);
 
         // IP whitelist table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->whitelistTable} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL UNIQUE,
-            is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
-            description TEXT,
-            created_at TEXT DEFAULT (DATETIME('now')),
-            created_by TEXT
+            id int(11) PRIMARY KEY AUTO_INCREMENT,
+            ip_address VARCHAR(45) NOT NULL,
+            is_network BOOLEAN DEFAULT FALSE,
+            description VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_by VARCHAR(255),
+            UNIQUE KEY unique_ip (ip_address)
         )";
         $this->db->exec($sql);
 
         // IP blacklist table
         $sql = "CREATE TABLE IF NOT EXISTS {$this->blacklistTable} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL UNIQUE,
-            is_network BOOLEAN DEFAULT 0 CHECK(is_network IN (0,1)),
-            reason TEXT,
-            expiry_time TEXT  NULL,
-            created_at TEXT DEFAULT (DATETIME('now')),
-            created_by TEXT
+            id int(11) PRIMARY KEY AUTO_INCREMENT,
+            ip_address VARCHAR(45) NOT NULL,
+            is_network BOOLEAN DEFAULT FALSE,
+            reason VARCHAR(255),
+            expiry_time TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_by VARCHAR(255),
+            UNIQUE KEY unique_ip (ip_address)
         )";
         $this->db->exec($sql);
 
@@ -88,7 +91,7 @@ class RateLimiter {
         ];
 
         // Insert default whitelisted IPs if they don't exist
-        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->whitelistTable}
+        $stmt = $this->db->prepare("INSERT IGNORE INTO {$this->whitelistTable}
             (ip_address, is_network, description, created_by)
             VALUES (?, ?, ?, 'system')");
         foreach ($defaultIps as $ip) {
@@ -104,7 +107,7 @@ class RateLimiter {
             ['203.0.113.0/24', true, 'TEST-NET-3 Documentation space - RFC 5737']
         ];
 
-        $stmt = $this->db->prepare("INSERT OR IGNORE INTO {$this->blacklistTable}
+        $stmt = $this->db->prepare("INSERT IGNORE INTO {$this->blacklistTable}
             (ip_address, is_network, reason, created_by)
             VALUES (?, ?, ?, 'system')");
 
@@ -119,7 +122,7 @@ class RateLimiter {
      */
     public function getRecentAttempts($ip) {
         $stmt = $this->db->prepare("SELECT COUNT(*) as attempts FROM {$this->authRatelimitTable}
-            WHERE ip_address = ? AND attempted_at > datetime('now', '-' || :minutes || ' minutes')");
+            WHERE ip_address = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL ? MINUTE)");
         $stmt->execute([$ip, $this->decayMinutes]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return intval($result['attempts']);
@@ -222,9 +225,13 @@ class RateLimiter {
                 return false;
             }
 
-            $stmt = $this->db->prepare("INSERT OR REPLACE INTO {$this->whitelistTable}
+            $stmt = $this->db->prepare("INSERT INTO {$this->whitelistTable}
                 (ip_address, is_network, description, created_by)
-                VALUES (?, ?, ?, ?)");
+                VALUES (?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                is_network = VALUES(is_network),
+                description = VALUES(description),
+                created_by = VALUES(created_by)");
 
                 $result = $stmt->execute([$ip, $isNetwork, $description, $createdBy]);
 
@@ -236,7 +243,7 @@ class RateLimiter {
                         $createdBy,
                         $description
                     );
-                    $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+                    $this->log->insertLog($userId ?? null, $logMessage, 'system');
                 }
 
             return $result;
@@ -271,7 +278,7 @@ class RateLimiter {
                     $removedBy,
                     $ipDetails['created_by']
                 );
-                $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+                $this->log->insertLog($userId ?? null, $logMessage, 'system');
             }
 
             return $result;
@@ -299,9 +306,14 @@ class RateLimiter {
 
             $expiryTime = $expiryHours ? date('Y-m-d H:i:s', strtotime("+{$expiryHours} hours")) : null;
 
-            $stmt = $this->db->prepare("INSERT OR REPLACE INTO {$this->blacklistTable}
+            $stmt = $this->db->prepare("INSERT INTO {$this->blacklistTable}
                 (ip_address, is_network, reason, expiry_time, created_by)
-                VALUES (?, ?, ?, ?, ?)");
+                VALUES (?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                is_network = VALUES(is_network),
+                reason = VALUES(reason),
+                expiry_time = VALUES(expiry_time),
+                created_by = VALUES(created_by)");
 
             $result = $stmt->execute([$ip, $isNetwork, $reason, $expiryTime, $createdBy]);
 
@@ -314,7 +326,7 @@ class RateLimiter {
                     $reason,
                     $expiryTime ?? 'never'
                 );
-                $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+                $this->log->insertLog($userId ?? null, $logMessage, 'system');
             }
 
             return $result;
@@ -348,7 +360,7 @@ class RateLimiter {
                     $ipDetails['created_by'],
                     $ipDetails['reason']
                 );
-                $this->log->insertLog($userId ?? 0, $logMessage, 'system');
+                $this->log->insertLog($userId ?? null, $logMessage, 'system');
             }
 
             return $result;
@@ -379,17 +391,17 @@ class RateLimiter {
         try {
             // Remove expired blacklist entries
             $stmt = $this->db->prepare("DELETE FROM {$this->blacklistTable}
-                WHERE expiry_time IS NOT NULL AND expiry_time < datetime('now')");
+                WHERE expiry_time IS NOT NULL AND expiry_time < NOW()");
             $stmt->execute();
 
             // Clean old login attempts
             $stmt = $this->db->prepare("DELETE FROM {$this->authRatelimitTable}
-                WHERE attempted_at < datetime('now', '-' || :minutes || ' minutes')");
+                WHERE attempted_at < DATE_SUB(NOW(), INTERVAL :minutes MINUTE)");
             $stmt->execute([':minutes' => $this->decayMinutes]);
 
             return true;
         } catch (Exception $e) {
-            $this->log->insertLog(0, "Failed to cleanup expired entries: " . $e->getMessage(), 'system');
+            $this->log->insertLog(null, "Failed to cleanup expired entries: " . $e->getMessage(), 'system');
             Feedback::flash('ERROR', 'DEFAULT', "Failed to cleanup expired entries: " . $e->getMessage());
             return false;
         }
@@ -418,7 +430,7 @@ class RateLimiter {
         $sql = "SELECT COUNT(*) as total_attempts
                 FROM {$this->authRatelimitTable}
                 WHERE ip_address = :ip
-                AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
+                AND attempted_at > DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':ip'      => $ipAddress,
@@ -456,7 +468,7 @@ class RateLimiter {
                 FROM {$this->authRatelimitTable}
                 WHERE ip_address = :ip
                 AND username = :username
-                AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
+                AND attempted_at > DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -492,7 +504,7 @@ class RateLimiter {
 
     public function clearOldAttempts() {
         $sql = "DELETE FROM {$this->authRatelimitTable}
-                WHERE attempted_at < datetime('now', '-' || :minutes || ' minutes')";
+                WHERE attempted_at < DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -505,7 +517,7 @@ class RateLimiter {
                 FROM {$this->authRatelimitTable}
                 WHERE ip_address = :ip
                 AND username = :username
-                AND attempted_at > datetime('now', '-' || :minutes || ' minutes')";
+                AND attempted_at > DATE_SUB(NOW(), INTERVAL :minutes MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -547,7 +559,7 @@ class RateLimiter {
                 FROM {$this->pagesRatelimitTable}
                 WHERE ip_address = :ip
                 AND endpoint = :endpoint
-                AND request_time >= DATETIME('now', '-1 minute')";
+                AND request_time >= DATE_SUB(NOW(), INTERVAL 1 MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -578,7 +590,7 @@ class RateLimiter {
      */
     private function cleanOldPageRequests() {
         $sql = "DELETE FROM {$this->pagesRatelimitTable}
-                WHERE request_time < DATETIME('now', '-1 minute')";
+                WHERE request_time < DATE_SUB(NOW(), INTERVAL 1 MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -590,8 +602,10 @@ class RateLimiter {
     private function getPageLimitForEndpoint($endpoint, $userId = null) {
         // Admin users get higher limits
         if ($userId) {
-            $userObj = new User($this->db);
-            if ($userObj->hasRight($userId, 'admin')) {
+            // Check admin rights directly from database
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM `user_right` ur JOIN `right` r ON ur.right_id = r.id WHERE ur.user_id = ? AND r.name = ?');
+            $stmt->execute([$userId, 'superuser']);
+            if ($stmt->fetchColumn() > 0) {
                 return $this->pageLimits['admin'];
             }
         }
@@ -627,7 +641,7 @@ class RateLimiter {
                 FROM {$this->pagesRatelimitTable}
                 WHERE ip_address = :ip
                 AND endpoint = :endpoint
-                AND request_time > DATETIME('now', '-1 minute')";
+                AND request_time > DATE_SUB(NOW(), INTERVAL 1 MINUTE)";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([

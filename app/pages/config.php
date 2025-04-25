@@ -13,7 +13,7 @@ require '../app/classes/config.php';
 require '../app/classes/api_response.php';
 
 // Initialize required objects
-$userObject = new User($dbWeb);
+$userObject = new User($db);
 $configObject = new Config();
 
 // For AJAX requests
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Apply rate limiting
     require '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'config', $userId);
+    checkRateLimit($db, 'config', $userId);
 
     // Ensure no output before this point
     ob_clean();

@@ -19,8 +19,8 @@ $agentId = filter_input(INPUT_GET, 'agent', FILTER_VALIDATE_INT);
 
 require '../app/classes/agent.php';
 require '../app/classes/host.php';
-$agentObject = new Agent($dbWeb);
-$hostObject = new Host($dbWeb);
+$agentObject = new Agent($db);
+$hostObject = new Host($db);
 
 /**
  * Get the cache key for an agent
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Apply rate limiting for adding new contacts
     require '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'contact', $userId);
+    checkRateLimit($db, 'contact', $userId);
 
     // Validate agent ID for POST operations
     if ($agentId === false || $agentId === null) {

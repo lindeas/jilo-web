@@ -16,7 +16,7 @@ require '../app/classes/conference.php';
 require '../app/classes/participant.php';
 
 // connect to database
-$response = connectDB($config, 'jilo', $platformDetails[0]['jilo_database'], $platform_id);
+$response = connectJiloDB($config, $platformDetails[0]['jilo_database'], $platform_id);
 
 // if DB connection has error, display it and stop here
 if ($response['db'] === null) {

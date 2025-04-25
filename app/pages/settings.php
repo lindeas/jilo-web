@@ -21,8 +21,8 @@ $host = $_REQUEST['host'] ?? '';
 require '../app/classes/host.php';
 require '../app/classes/agent.php';
 
-$hostObject = new Host($dbWeb);
-$agentObject = new Agent($dbWeb);
+$hostObject = new Host($db);
+$agentObject = new Agent($db);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     /**
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting for profile operations
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'profile', $userId);
+    checkRateLimit($db, 'profile', $userId);
 
     // Get hash from URL if present
     $hash = parse_url($_SERVER['REQUEST_URI'], PHP_URL_FRAGMENT) ?? '';

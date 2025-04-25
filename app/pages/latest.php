@@ -3,8 +3,8 @@
 require '../app/classes/agent.php';
 require '../app/classes/host.php';
 
-$agentObject = new Agent($dbWeb);
-$hostObject = new Host($dbWeb);
+$agentObject = new Agent($db);
+$hostObject = new Host($db);
 
 // Define metrics to display
 $metrics = [

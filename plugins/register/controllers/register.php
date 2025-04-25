@@ -21,13 +21,13 @@ require_once dirname(__FILE__, 4) . '/app/helpers/security.php';
 if ($config['registration_enabled'] == true) {
 
     try {
-        global $dbWeb, $logObject, $userObject;
+        global $db, $logObject, $userObject;
 
         if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
             // Apply rate limiting
             require_once dirname(__FILE__, 4) . '/app/includes/rate_limit_middleware.php';
-            checkRateLimit($dbWeb, 'register');
+            checkRateLimit($db, 'register');
 
             $security = SecurityHelper::getInstance();
 
@@ -67,7 +67,7 @@ if ($config['registration_enabled'] == true) {
                 $password = $formData['password'];
 
                 // registering
-                $register = new Register($dbWeb);
+                $register = new Register($db);
                 $result = $register->register($username, $password);
 
                 // redirect to login

@@ -15,7 +15,7 @@
  */
 
 // Initialize user object
-$userObject = new User($dbWeb);
+$userObject = new User($db);
 
 // Get action and item from request
 $action = $_REQUEST['action'] ?? '';
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Apply rate limiting
     require_once '../app/includes/rate_limit_middleware.php';
-    checkRateLimit($dbWeb, 'credentials', $userId);
+    checkRateLimit($db, 'credentials', $userId);
 
     switch ($item) {
         case '2fa':

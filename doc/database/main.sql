@@ -20,8 +20,8 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 INSERT INTO `users` (`id`, `username`, `password`) VALUES
-(1,'demo','$2y$10$tLCLvgYu91gf/zBoc58Am.iVls/SOMcIXO3ykGfgFFei9yneZTrb2'),
-(2,'demo1','$2y$10$LtV9m.rMCJ.K/g45e6tzDexZ8C/9xxu3qFCkvz92pUYa7Jg06np0i');
+(1,'demo','$2y$12$AtIKs3eVxD4wTT1IWwJujuuHyGhhmfBJYqSfIrPFFPMDfKu3Rcsx6'),
+(2,'demo1','$2y$12$ELwYyhQ8XDkVvX9Xsb0mlORqeQHNFaBOvaBuPQym4n4IomA/DgvLC');
 
 -- --------------------------------------------------------
 CREATE TABLE `users_meta` (
@@ -67,7 +67,7 @@ INSERT INTO `rights` (`id`, `name`) VALUES
 (15,'view jilo config');
 
 -- --------------------------------------------------------
-CREATE TABLE `users_right` (
+CREATE TABLE `users_rights` (
   `user_id` int(11) NOT NULL,
   `right_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`,`right_id`),
