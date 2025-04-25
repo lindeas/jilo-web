@@ -79,9 +79,7 @@
                         </a>
 <?php   } ?>
 <?php   if ($userObject->hasRight($userId, 'view app logs')) {?>
-                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=logs">
-                            <i class="fas fa-list"></i>Logs
-                        </a>
+<?php do_hook('main_menu', ['app_root' => $app_root, 'section' => 'main', 'position' => 100]); ?>
 <?php   } ?>
                     </div>
                 </li>
