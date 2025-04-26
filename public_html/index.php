@@ -53,11 +53,21 @@ ob_start();
 require_once '../app/classes/session.php';
 Session::startSession();
 
-// Apply security headers
-require_once '../app/includes/security_headers_middleware.php';
+// Define page variable early via sanitize
+require_once __DIR__ . '/../app/includes/sanitize.php';
+// Ensure $page is defined to avoid undefined variable
+if (!isset($page)) {
+    $page = 'dashboard';
+}
 
-// sanitize all input vars that may end up in URLs or forms
-require '../app/includes/sanitize.php';
+// Middleware pipeline for security, sanitization & CSRF
+require_once __DIR__ . '/../app/core/MiddlewarePipeline.php';
+$pipeline = new \App\Core\MiddlewarePipeline();
+$pipeline->add(function() {
+    // Apply security headers
+    require_once __DIR__ . '/../app/includes/security_headers_middleware.php';
+    return true;
+});
 
 // Check session validity
 $validSession = Session::isValidSession();
@@ -144,16 +154,32 @@ if (isset($GLOBALS['user_IP'])) {
     $user_IP = $GLOBALS['user_IP'];
 }
 
-// Initialize security middleware
-require_once '../app/includes/csrf_middleware.php';
-require_once '../app/helpers/security.php';
-$security = SecurityHelper::getInstance();
-
-// Verify CSRF token for POST requests
-applyCsrfMiddleware();
-
-// init rate limiter
-require '../app/classes/ratelimiter.php';
+// CSRF middleware and run pipeline
+$pipeline->add(function() {
+    // Initialize security middleware
+    require_once __DIR__ . '/../app/includes/csrf_middleware.php';
+    require_once __DIR__ . '/../app/helpers/security.php';
+    $security = SecurityHelper::getInstance();
+    // Verify CSRF token for POST requests
+    return applyCsrfMiddleware();
+});
+$pipeline->add(function() {
+    // Init rate limiter
+    global $db, $page, $userId;
+    require_once __DIR__ . '/../app/includes/rate_limit_middleware.php';
+    return checkRateLimit($db, $page, $userId);
+});
+$pipeline->add(function() {
+    // Init user functions
+    global $db, $userObject;
+    require_once __DIR__ . '/../app/classes/user.php';
+    include __DIR__ . '/../app/helpers/profile.php';
+    $userObject = new User($db);
+    return true;
+});
+if (!$pipeline->run()) {
+    exit;
+}
 
 // get platforms details
 require '../app/classes/platform.php';
@@ -166,11 +192,6 @@ if ($platform_id == '') {
 }
 
 $platformDetails = $platformObject->getPlatformDetails($platform_id);
-
-// init user functions
-require '../app/classes/user.php';
-include '../app/helpers/profile.php';
-$userObject = new User($db);
 
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
