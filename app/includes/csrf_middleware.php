@@ -40,7 +40,7 @@ function applyCsrfMiddleware() {
                 $_GET['page'] ?? 'unknown',
                 $_SESSION['username'] ?? 'anonymous'
             );
-            $logObject->insertLog(null, $logMessage, 'system');
+            $logObject->log('error', $logMessage, ['user_id' => null, 'scope' => 'system']);
 
             // Return error message
             http_response_code(403);

@@ -232,7 +232,7 @@ class RateLimiter {
             if ($this->isIpBlacklisted($ip)) {
                 $message = "Cannot whitelist {$ip} - IP is currently blacklisted";
                 if ($userId) {
-                    $this->logger->info("IP Whitelist: {$message}", ['user_id' => $userId]);
+                    $this->logger->log('info', "IP Whitelist: {$message}", ['user_id' => $userId, 'scope' => 'system']);
                     Feedback::flash('ERROR', 'DEFAULT', $message);
                 }
                 return false;
@@ -256,14 +256,14 @@ class RateLimiter {
                         $createdBy,
                         $description
                     );
-                    $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
+                    $this->logger->log('info', $logMessage, ['user_id' => $userId ?? null, 'scope' => 'system']);
                 }
 
             return $result;
 
         } catch (Exception $e) {
             if ($userId) {
-                $this->logger->error("IP Whitelist: Failed to add {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
+                $this->logger->log('error', "IP Whitelist: Failed to add {$ip}: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Whitelist: Failed to add {$ip}: " . $e->getMessage());
             }
             return false;
@@ -291,14 +291,14 @@ class RateLimiter {
                     $removedBy,
                     $ipDetails['created_by']
                 );
-                $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
+                $this->logger->log('info', $logMessage, ['user_id' => $userId ?? null, 'scope' => 'system']);
             }
 
             return $result;
 
         } catch (Exception $e) {
             if ($userId) {
-                $this->logger->error("IP Whitelist: Failed to remove {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
+                $this->logger->log('error', "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage());
             }
             return false;
@@ -311,7 +311,7 @@ class RateLimiter {
             if ($this->isIpWhitelisted($ip)) {
                 $message = "Cannot blacklist {$ip} - IP is currently whitelisted";
                 if ($userId) {
-                    $this->logger->info("IP Blacklist: {$message}", ['user_id' => $userId]);
+                    $this->logger->log('info', "IP Blacklist: {$message}", ['user_id' => $userId, 'scope' => 'system']);
                     Feedback::flash('ERROR', 'DEFAULT', $message);
                 }
                 return false;
@@ -339,13 +339,13 @@ class RateLimiter {
                     $reason,
                     $expiryTime ?? 'never'
                 );
-                $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
+                $this->logger->log('info', $logMessage, ['user_id' => $userId ?? null, 'scope' => 'system']);
             }
 
             return $result;
         } catch (Exception $e) {
             if ($userId) {
-                $this->logger->error("IP Blacklist: Failed to add {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
+                $this->logger->log('error', "IP Blacklist: Failed to add {$ip}: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Blacklist: Failed to add {$ip}: " . $e->getMessage());
             }
             return false;
@@ -373,13 +373,13 @@ class RateLimiter {
                     $ipDetails['created_by'],
                     $ipDetails['reason']
                 );
-                $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
+                $this->logger->log('info', $logMessage, ['user_id' => $userId ?? null, 'scope' => 'system']);
             }
 
             return $result;
         } catch (Exception $e) {
             if ($userId) {
-                $this->logger->error("IP Blacklist: Failed to remove {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
+                $this->logger->log('error', "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage());
             }
             return false;
@@ -414,7 +414,7 @@ class RateLimiter {
 
             return true;
         } catch (Exception $e) {
-            $this->logger->error("Failed to cleanup expired entries: " . $e->getMessage());
+            $this->logger->log('error', "Failed to cleanup expired entries: " . $e->getMessage(), ['user_id' => $userId ?? null, 'scope' => 'system']);
             Feedback::flash('ERROR', 'DEFAULT', "Failed to cleanup expired entries: " . $e->getMessage());
             return false;
         }

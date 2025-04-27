@@ -204,7 +204,7 @@ if ($page == 'logout') {
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
     // Log successful logout
-    $logObject->insertLog($userId, "Logout: User \"$currentUser\" logged out. IP: $user_IP", 'user');
+    $logObject->log('info', "Logout: User \"$currentUser\" logged out. IP: $user_IP", ['user_id' => $userId, 'scope' => 'user']);
 
     // Set success message
     Feedback::flash('LOGIN', 'LOGOUT_SUCCESS');

@@ -140,7 +140,7 @@ class Config {
             }
 
             if (!empty($allLogs)) {
-                $logObject->insertLog($userId, implode("\n", $allLogs), 'system');
+                $logObject->log('info', implode("\n", $allLogs), ['user_id' => $userId, 'scope' => 'system']);
             }
 
             return [
@@ -148,7 +148,7 @@ class Config {
                 'updated' => $updated
             ];
         } catch (Exception $e) {
-            $logObject->insertLog($userId, "Config update error: " . $e->getMessage(), 'system');
+            $logObject->log('error', "Config update error: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
             return [
                 'success' => false,
                 'error' => $e->getMessage()

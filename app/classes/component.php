@@ -94,11 +94,11 @@ class Component {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (!empty($result)) {
-                $logObject->insertLog(0, "Retrieved " . count($result) . " Jitsi component events");
+                $logObject->log('info', "Retrieved " . count($result) . " Jitsi component events", ['user_id' => $userId, 'scope' => 'system']);
             }
             return $result;
         } catch (PDOException $e) {
-            $logObject->insertLog(0, "Failed to retrieve Jitsi component events: " . $e->getMessage());
+            $logObject->log('error', "Failed to retrieve Jitsi component events: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
             return [];
         }
     }
@@ -162,7 +162,7 @@ class Component {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             return (int)$result['total'];
         } catch (PDOException $e) {
-            $logObject->insertLog(0, "Failed to retrieve component events count: " . $e->getMessage());
+            $logObject->log('error', "Failed to retrieve component events count: " . $e->getMessage(), ['user_id' => $userId, 'scope' => 'system']);
             return 0;
         }
     }
