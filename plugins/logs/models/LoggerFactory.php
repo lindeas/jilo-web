@@ -15,11 +15,11 @@ class LoggerFactory
     {
         // Auto-migration: ensure log table exists
         $pdo = $db->getConnection();
-//        $migrationFile = __DIR__ . '/../migrations/create_log_table.sql';
-//        if (file_exists($migrationFile)) {
-//            $sql = file_get_contents($migrationFile);
-//            $pdo->exec($sql);
-//        }
+        $migrationFile = __DIR__ . '/../migrations/create_log_table.sql';
+        if (file_exists($migrationFile)) {
+            $sql = file_get_contents($migrationFile);
+            $pdo->exec($sql);
+        }
 
         // Load models and core IP helper
         require_once __DIR__ . '/Log.php';
