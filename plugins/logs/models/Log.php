@@ -67,8 +67,8 @@ class Log {
         $where_clauses = [];
 
         // Base query with user join
-        $base_sql = 'SELECT l.*, u.username 
-                    FROM log l 
+        $base_sql = 'SELECT l.*, u.username
+                    FROM log l
                     LEFT JOIN user u ON l.user_id = u.id';
 
         // Add scope condition
@@ -118,5 +118,12 @@ class Log {
         $query->execute($params);
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // PSR-3 style log method
+    public function log(string $level, string $message, array $context = []): void {
+        $userId = $context['user_id'] ?? null;
+        $scope  = $context['scope']    ?? 'system';
+        $this->insertLog($userId, "[$level] " . $message, $scope);
     }
 }

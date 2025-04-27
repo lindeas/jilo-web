@@ -16,4 +16,12 @@ class NullLogger
      * @return void
      */
     public function insertLog($userId, string $message, ?string $type = null): void {}
+
+    /**
+     * PSR-3 log stub.
+     * @param string $level
+     * @param string $message
+     * @param array $context
+     */
+    public function log(string $level, string $message, array $context = []): void {}
 }
