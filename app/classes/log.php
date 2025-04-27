@@ -29,14 +29,12 @@ class Log {
     }
 
     /**
-     * Delegate insertLog to underlying logger
-     *
-     * @param mixed $userId
+     * PSR-3 compatible log method
+     * @param string $level
      * @param string $message
-     * @param string|null $scope
-     * @return mixed True on success or error message
+     * @param array $context
      */
-    public function insertLog($userId, string $message, ?string $scope = null) {
-        return $this->logger->insertLog($userId, $message, $scope);
+    public function log(string $level, string $message, array $context = []): void {
+        $this->logger->log($level, $message, $context);
     }
 }

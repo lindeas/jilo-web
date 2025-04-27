@@ -4,7 +4,7 @@
  * Returns a logger instance: plugin Log if available, otherwise NullLogger.
  *
  * @param mixed $database Database or DatabaseConnector instance.
- * @return mixed Logger instance with insertLog() method.
+ * @return mixed Logger instance with PSR-3 log() compatible method.
  */
 function getLoggerInstance($database) {
     if (class_exists('Log')) {

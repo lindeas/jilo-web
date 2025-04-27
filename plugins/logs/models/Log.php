@@ -22,36 +22,6 @@ class Log {
     }
 
     /**
-     * Insert a log event into the database.
-     *
-     * @param int    $userId  The ID of the user associated with the log event.
-     * @param string $message The log message to insert.
-     * @param string $scope   The scope of the log event (e.g., 'user', 'system'). Default is 'user'.
-     *
-     * @return bool|string True on success, or an error message on failure.
-     */
-    public function insertLog($userId, $message, $scope = 'user') {
-        try {
-            $sql = 'INSERT INTO log
-                        (user_id, scope, message)
-                    VALUES
-                        (:user_id, :scope, :message)';
-
-            $query = $this->db->prepare($sql);
-            $query->execute([
-                ':user_id' => $userId,
-                ':scope'   => $scope,
-                ':message' => $message,
-            ]);
-
-            return true;
-
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-    /**
      * Retrieve log entries from the database.
      *
      * @param int    $userId         The ID of the user whose logs are being retrieved.
@@ -67,8 +37,8 @@ class Log {
         $where_clauses = [];
 
         // Base query with user join
-        $base_sql = 'SELECT l.*, u.username
-                    FROM log l
+        $base_sql = 'SELECT l.*, u.username 
+                    FROM log l 
                     LEFT JOIN user u ON l.user_id = u.id';
 
         // Add scope condition
@@ -120,10 +90,29 @@ class Log {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // PSR-3 style log method
+    /**
+     * PSR-3 style log method - inserts a log event into the database.
+     *
+     * @param string $level   The log level (emergency, alert, critical, error, warning, notice, info, debug).
+     * @param string $message The log message to insert.
+     * @param string $scope   The scope of the log event (e.g., 'user', 'system'). Default is 'system'.
+     */
     public function log(string $level, string $message, array $context = []): void {
         $userId = $context['user_id'] ?? null;
         $scope  = $context['scope']    ?? 'system';
-        $this->insertLog($userId, "[$level] " . $message, $scope);
+        try {
+            $sql = 'INSERT INTO log
+                        (user_id, scope, message)
+                    VALUES
+                        (:user_id, :scope, :message)';
+            $query = $this->db->prepare($sql);
+            $query->execute([
+                ':user_id' => $userId,
+                ':scope'   => $scope,
+                ':message' => "[$level] " . $message,
+            ]);
+        } catch (Exception $e) {
+            // swallowing exceptions or here we could log to error log for testing
+        }
     }
 }
