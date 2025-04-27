@@ -114,7 +114,8 @@ if (!$isAjax) {
      * Handles GET requests to display templates.
      */
 
-    if ($userObject->hasRight($userId, 'view config file')) {
+    if ($userObject->hasRight($userId, 'superuser') ||
+      $userObject->hasRight($userId, 'view config file')) {
         include '../app/templates/config.php';
     } else {
         $logObject->insertLog($userId, "Unauthorized: User \"$currentUser\" tried to access \"config\" page. IP: $user_IP", 'system');

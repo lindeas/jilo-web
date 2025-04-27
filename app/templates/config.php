@@ -17,7 +17,8 @@
                 <i class="fas fa-wrench me-2 text-secondary"></i>
                 <?= htmlspecialchars($config['site_name']) ?> app configuration
             </h5>
-<?php if ($userObject->hasRight($userId, 'edit config file')) { ?>
+<?php if ($userObject->hasRight($userId, 'superuser') ||
+          $userObject->hasRight($userId, 'edit config file')) { ?>
             <div>
                 <button type="button" class="btn btn-outline-primary btn-sm toggle-edit" <?= !$isWritable ? 'disabled' : '' ?>>
                     <i class="fas fa-edit me-2"></i>Edit

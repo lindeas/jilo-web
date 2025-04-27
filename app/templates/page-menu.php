@@ -65,12 +65,15 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <h6 class="dropdown-header">system</h6>
-<?php   if ($userObject->hasRight($userId, 'view config file')) {?>
+<?php if ($userObject->hasRight($userId, 'superuser') ||
+          $userObject->hasRight($userId, 'view config file')) {?>
                         <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=config">
                             <i class="fas fa-wrench"></i>Configuration
                         </a>
 <?php   } ?>
 <?php   if ($userObject->hasRight($userId, 'superuser') ||
+          $userObject->hasRight($userId, 'view config file') ||
+          $userObject->hasRight($userId, 'edit config file') ||
           $userObject->hasRight($userId, 'edit whitelist') ||
           $userObject->hasRight($userId, 'edit blacklist') ||
           $userObject->hasRight($userId, 'edit ratelimiting')) { ?>
