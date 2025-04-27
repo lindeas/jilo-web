@@ -91,6 +91,7 @@ if (!empty($search)) {
             $log_record = array(
                 // assign title to the field in the array record
                 'time'          => $item['time'],
+                'log level'     => $item['level'],
                 'log message'   => $item['message']
             );
         } else {
@@ -99,6 +100,7 @@ if (!empty($search)) {
                 'userID'        => $item['user_id'],
                 'username'      => $item['username'],
                 'time'          => $item['time'],
+                'log level'     => $item['level'],
                 'log message'   => $item['message']
             );
         }

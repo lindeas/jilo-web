@@ -75,13 +75,14 @@
             <div class="mb-5">
 <?php if (!empty($logs['records'])) { ?>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" style="width: 100%;">
                         <thead class="table-light">
                             <tr>
 <?php if ($scope === 'system') { ?>
                                 <th>Username&nbsp;(id)</th>
 <?php } ?>
-                                <th>Time</th>
+                                <th style="white-space: nowrap;">Time</th>
+                                <th style="white-space: nowrap;">Log level</th>
                                 <th>Log message</th>
                             </tr>
                         </thead>
@@ -89,10 +90,11 @@
 <?php     foreach ($logs['records'] as $row) { ?>
                             <tr>
 <?php         if ($scope === 'system') { ?>
-                                <td><?= $row['userID'] ? '<strong>' . htmlspecialchars($row['username'] . " ({$row['userID']})") . '</strong>' : '<span class="text-muted font-weight-normal small">SYSTEM</span>' ?></td>
+                                <td style="white-space: nowrap;"><?= $row['userID'] ? '<strong>' . htmlspecialchars($row['username'] . " ({$row['userID']})") . '</strong>' : '<span class="text-muted font-weight-normal small">SYSTEM</span>' ?></td>
 <?php         } ?>
-                                <td><span class="text-muted"><?= date('d M Y H:i', strtotime($row['time'])) ?></span></td>
-                                <td><?= htmlspecialchars($row['log message']) ?></td>
+                                <td style="white-space: nowrap;"><span class="text-muted"><?= date('d M Y H:i', strtotime($row['time'])) ?></span></td>
+                                <td style="white-space: nowrap;"><?= htmlspecialchars($row['log level']) ?></td>
+                                <td style="width: 100%; word-break: break-word;"><?= htmlspecialchars($row['log message']) ?></td>
                             </tr>
 <?php     } ?>
                         </tbody>

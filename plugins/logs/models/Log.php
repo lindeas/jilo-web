@@ -102,14 +102,15 @@ class Log {
         $scope  = $context['scope']    ?? 'system';
         try {
             $sql = 'INSERT INTO log
-                        (user_id, scope, message)
+                        (user_id, level, scope, message)
                     VALUES
-                        (:user_id, :scope, :message)';
+                        (:user_id, :level, :scope, :message)';
             $query = $this->db->prepare($sql);
             $query->execute([
                 ':user_id' => $userId,
+                ':level'   => $level,
                 ':scope'   => $scope,
-                ':message' => "[$level] " . $message,
+                ':message' => $message,
             ]);
         } catch (Exception $e) {
             // swallowing exceptions or here we could log to error log for testing

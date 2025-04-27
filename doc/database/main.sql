@@ -175,22 +175,6 @@ INSERT INTO `security_ip_whitelist` (`id`, `ip_address`, `is_network`, `descript
 (5, '192.168.0.0/16', 1, 'Private network (Class C)', '2025-01-03 16:40:15', 'system');
 
 --
--- Logs
---
-
--- --------------------------------------------------------
-CREATE TABLE `log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `time` datetime NOT NULL DEFAULT current_timestamp(),
-  `scope` set('user','system') NOT NULL,
-  `message` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
---
 -- Jilo
 --
 
