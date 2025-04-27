@@ -74,27 +74,27 @@ if ($config['registration_enabled'] == true) {
                 if ($result === true) {
                     // Get the new user's ID for logging
                     $userId = $userObject->getUserId($username)[0]['id'];
-                    $logObject->insertLog($userId, "Registration: New user \"$username\" registered successfully. IP: $user_IP", 'user');
+                    $logObject->log('info', "Registration: New user \"$username\" registered successfully. IP: $user_IP", ['user_id' => $userId, 'scope' => 'user']);
                     Feedback::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
                     header('Location: ' . htmlspecialchars($app_root . '?page=login'));
                     exit();
                 // registration fail, redirect to login
                 } else {
-                    $logObject->insertLog(null, "Registration: Failed registration attempt for user \"$username\". IP: $user_IP. Reason: $result", 'system');
+                    $logObject->log('error', "Registration: Failed registration attempt for user \"$username\". IP: $user_IP. Reason: $result", ['user_id' => null, 'scope' => 'system']);
                     Feedback::flash('ERROR', 'DEFAULT', "Registration failed. $result");
                     header('Location: ' . htmlspecialchars($app_root . '?page=register'));
                     exit();
                 }
             } else {
                 $error = $validator->getFirstError();
-                $logObject->insertLog(null, "Registration: Failed validation for user \"" . ($username ?? 'unknown') . "\". IP: $user_IP. Reason: $error", 'system');
+                $logObject->log('error', "Registration: Failed validation for user \"" . ($username ?? 'unknown') . "\". IP: $user_IP. Reason: $error", ['user_id' => null, 'scope' => 'system']);
                 Feedback::flash('ERROR', 'DEFAULT', $error);
                 header('Location: ' . htmlspecialchars($app_root . '?page=register'));
                 exit();
             }
         }
     } catch (Exception $e) {
-        $logObject->insertLog(null, "Registration: System error. IP: $user_IP. Error: " . $e->getMessage(), 'system');
+        $logObject->log('error', "Registration: System error. IP: $user_IP. Error: " . $e->getMessage(), ['user_id' => null, 'scope' => 'system']);
         Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
     }
 

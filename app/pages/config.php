@@ -51,7 +51,7 @@ if (!$isWritable) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if user has permission to edit config
     if (!$userObject->hasRight($userId, 'edit config file')) {
-        $logObject->insertLog($userId, "Unauthorized: User \"$currentUser\" tried to edit config file. IP: $user_IP", 'system');
+        $logObject->log('error', "Unauthorized: User \"$currentUser\" tried to edit config file. IP: $user_IP", ['user_id' => $userId, 'scope' => 'system']);
         if ($isAjax) {
             ApiResponse::error('Forbidden: You do not have permission to edit the config file', null, 403);
             exit;
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get raw input
         $jsonData = file_get_contents('php://input');
         if ($jsonData === false) {
-            $logObject->insertLog($userId, "Failed to read request data for config update", 'system');
+            $logObject->log('error', "Failed to read request data for config update", ['user_id' => $userId, 'scope' => 'system']);
             ApiResponse::error('Failed to read request data');
             exit;
         }
@@ -118,7 +118,7 @@ if (!$isAjax) {
       $userObject->hasRight($userId, 'view config file')) {
         include '../app/templates/config.php';
     } else {
-        $logObject->insertLog($userId, "Unauthorized: User \"$currentUser\" tried to access \"config\" page. IP: $user_IP", 'system');
+        $logObject->log('error', "Unauthorized: User \"$currentUser\" tried to access \"config\" page. IP: $user_IP", ['user_id' => $userId, 'scope' => 'system']);
         include '../app/templates/error-unauthorized.php';
     }
 }

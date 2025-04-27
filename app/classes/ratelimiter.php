@@ -1,9 +1,12 @@
 <?php
 
+use App\Core\NullLogger;
+
 class RateLimiter {
     public $db;
     private $database;
-    private $log;
+    /** @var mixed NullLogger (or PSR-3 logger) or plugin Log */
+    private $logger;
     public $maxAttempts = 5;           // Maximum login attempts
     public $decayMinutes = 15;         // Time window in minutes
     public $autoBlacklistThreshold = 10; // Attempts before auto-blacklist
@@ -23,12 +26,22 @@ class RateLimiter {
         'config' => 10
     ];
 
-    public function __construct($database) {
-        $this->database = $database;  // Store the Database object
+    /**
+     * @param mixed $database Database object
+     * @param mixed $logger Optional NullLogger (or PSR-3 logger) or plugin Log
+     */
+    public function __construct($database, $logger = null) {
+        $this->database = $database;
         $this->db = $database->getConnection();
-        // Initialize logger via Log wrapper
-        require_once __DIR__ . '/log.php';
-        $this->log = new Log($database);
+        // Initialize logger (plugin Log if present or NullLogger otherwise)
+        if ($logger !== null) {
+            $this->logger = $logger;
+        } else {
+            global $logObject;
+            $this->logger = isset($logObject) && is_object($logObject) && method_exists($logObject, 'info')
+                ? $logObject
+                : new NullLogger();
+        }
         // Initialize database tables
         $this->createTablesIfNotExist();
     }
@@ -219,7 +232,7 @@ class RateLimiter {
             if ($this->isIpBlacklisted($ip)) {
                 $message = "Cannot whitelist {$ip} - IP is currently blacklisted";
                 if ($userId) {
-                    $this->log->insertLog($userId, "IP Whitelist: {$message}", 'system');
+                    $this->logger->info("IP Whitelist: {$message}", ['user_id' => $userId]);
                     Feedback::flash('ERROR', 'DEFAULT', $message);
                 }
                 return false;
@@ -243,14 +256,14 @@ class RateLimiter {
                         $createdBy,
                         $description
                     );
-                    $this->log->insertLog($userId ?? null, $logMessage, 'system');
+                    $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
                 }
 
             return $result;
 
         } catch (Exception $e) {
             if ($userId) {
-                $this->log->insertLog($userId, "IP Whitelist: Failed to add {$ip}: " . $e->getMessage(), 'system');
+                $this->logger->error("IP Whitelist: Failed to add {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Whitelist: Failed to add {$ip}: " . $e->getMessage());
             }
             return false;
@@ -278,14 +291,14 @@ class RateLimiter {
                     $removedBy,
                     $ipDetails['created_by']
                 );
-                $this->log->insertLog($userId ?? null, $logMessage, 'system');
+                $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
             }
 
             return $result;
 
         } catch (Exception $e) {
             if ($userId) {
-                $this->log->insertLog($userId, "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage(), 'system');
+                $this->logger->error("IP Whitelist: Failed to remove {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Whitelist: Failed to remove {$ip}: " . $e->getMessage());
             }
             return false;
@@ -298,7 +311,7 @@ class RateLimiter {
             if ($this->isIpWhitelisted($ip)) {
                 $message = "Cannot blacklist {$ip} - IP is currently whitelisted";
                 if ($userId) {
-                    $this->log->insertLog($userId, "IP Blacklist: {$message}", 'system');
+                    $this->logger->info("IP Blacklist: {$message}", ['user_id' => $userId]);
                     Feedback::flash('ERROR', 'DEFAULT', $message);
                 }
                 return false;
@@ -326,13 +339,13 @@ class RateLimiter {
                     $reason,
                     $expiryTime ?? 'never'
                 );
-                $this->log->insertLog($userId ?? null, $logMessage, 'system');
+                $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
             }
 
             return $result;
         } catch (Exception $e) {
             if ($userId) {
-                $this->log->insertLog($userId, "IP Blacklist: Failed to add {$ip}: " . $e->getMessage(), 'system');
+                $this->logger->error("IP Blacklist: Failed to add {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Blacklist: Failed to add {$ip}: " . $e->getMessage());
             }
             return false;
@@ -360,13 +373,13 @@ class RateLimiter {
                     $ipDetails['created_by'],
                     $ipDetails['reason']
                 );
-                $this->log->insertLog($userId ?? null, $logMessage, 'system');
+                $this->logger->info($logMessage, ['user_id' => $userId ?? null]);
             }
 
             return $result;
         } catch (Exception $e) {
             if ($userId) {
-                $this->log->insertLog($userId, "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage(), 'system');
+                $this->logger->error("IP Blacklist: Failed to remove {$ip}: " . $e->getMessage(), ['user_id' => $userId]);
                 Feedback::flash('ERROR', 'DEFAULT', "IP Blacklist: Failed to remove {$ip}: " . $e->getMessage());
             }
             return false;
@@ -401,7 +414,7 @@ class RateLimiter {
 
             return true;
         } catch (Exception $e) {
-            $this->log->insertLog(null, "Failed to cleanup expired entries: " . $e->getMessage(), 'system');
+            $this->logger->error("Failed to cleanup expired entries: " . $e->getMessage());
             Feedback::flash('ERROR', 'DEFAULT', "Failed to cleanup expired entries: " . $e->getMessage());
             return false;
         }

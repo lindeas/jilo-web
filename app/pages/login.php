@@ -97,7 +97,7 @@ try {
 
                 // Process reset request
                 require_once '../app/classes/passwordReset.php';
-                $resetHandler = new PasswordReset($db);
+                $resetHandler = new PasswordReset($db, $config);
                 $result = $resetHandler->requestReset($email);
 
                 // Always show same message whether email exists or not for security
@@ -123,7 +123,7 @@ try {
         // Handle password reset
         try {
             require_once '../app/classes/passwordReset.php';
-            $resetHandler = new PasswordReset($db);
+            $resetHandler = new PasswordReset($db, $config);
             $token = $_GET['token'];
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -257,7 +257,7 @@ try {
             Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
             if (isset($username)) {
                 $userId = $userObject->getUserId($username)[0]['id'] ?? 0;
-                $logObject->insertLog($userId, "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", 'user');
+                $logObject->log('error', "Login: Failed login attempt for user \"$username\". IP: $user_IP. Reason: {$e->getMessage()}", ['user_id' => $userId, 'scope' => 'user']);
                 $rateLimiter->attempt($username, $user_IP);
             }
         }
@@ -285,11 +285,10 @@ function handleSuccessfulLogin($userId, $username, $rememberMe, $config, $app_ro
     Session::createAuthSession($userId, $username, $rememberMe, $config);
 
     // Log successful login
-    $logObject->insertLog($userId, "Login: User \"$username\" logged in. IP: $userIP", 'user');
+    $logObject->log('info', "Login: User \"$username\" logged in. IP: $userIP", ['user_id' => $userId, 'scope' => 'user']);
 
     // Set success message
     Feedback::flash('LOGIN', 'LOGIN_SUCCESS');
-    header('Location: ' . htmlspecialchars($app_root));
 
     // After successful login, redirect to original page if provided in URL param or POST
     $redirect = $app_root;
