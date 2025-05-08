@@ -1,5 +1,13 @@
 <?php
 
+// Logs plugin bootstrap
+// (here we add any plugin autoloader, if needed)
+
+// List here all the controllers in "/controllers/" that we need as pages
+$GLOBALS['plugin_controllers']['logs'] = [
+    'logs'
+];
+
 // Logger plugin bootstrap
 register_hook('logger.system_init', function(array $context) {
     // Load plugin-specific LoggerFactory class
@@ -9,12 +17,6 @@ register_hook('logger.system_init', function(array $context) {
     // Expose to globals for routing logic
     $GLOBALS['logObject'] = $logger;
     $GLOBALS['user_IP']   = $userIP;
-});
-
-// Add to allowed URLs
-register_hook('filter_allowed_urls', function($urls) {
-    $urls[] = 'logs';
-    return $urls;
 });
 
 // Configuration for top menu injection
