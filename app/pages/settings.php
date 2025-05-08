@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      * Handles GET requests to display templates.
      */
 
-    if ($userObject->hasRight($userId, 'view settings')) {
+    if ($userObject->hasRight($userId, 'view settings') || $userObject->hasRight($userId, 'superuser')) {
         $jilo_agent_types = $agentObject->getAgentTypes();
         include '../app/templates/settings.php';
     } else {
