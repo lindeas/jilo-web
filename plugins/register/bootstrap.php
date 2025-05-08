@@ -1,10 +1,12 @@
 <?php
 
-// Add to allowed URLs
-register_hook('filter_allowed_urls', function($urls) {
-    $urls[] = 'register';
-    return $urls;
-});
+// Register plugin bootstrap
+// (here we add any plugin autoloader, if needed)
+
+// List here all the controllers in "/controllers/" that we need as pages
+$GLOBALS['plugin_controllers']['register'] = [
+    'register'
+];
 
 // Add to publicly accessible pages
 register_hook('filter_public_pages', function($pages) {
