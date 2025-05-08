@@ -11,12 +11,29 @@
  * Version: 0.4
  */
 
+// error reporting, comment out in production
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
+
 // Preparing plugins and hooks
 // Initialize HookDispatcher and plugin system
 require_once __DIR__ . '/../app/core/HookDispatcher.php';
 require_once __DIR__ . '/../app/core/PluginManager.php';
 use App\Core\HookDispatcher;
 use App\Core\PluginManager;
+
+// Global allowed URLs registration
+register_hook('filter_allowed_urls', function($urls) {
+    if (isset($GLOBALS['plugin_controllers']) && is_array($GLOBALS['plugin_controllers'])) {
+        foreach ($GLOBALS['plugin_controllers'] as $controllers) {
+            foreach ($controllers as $ctrl) {
+                $urls[] = $ctrl;
+            }
+        }
+    }
+    return $urls;
+});
 
 // Hook registration and dispatch helpers
 function register_hook(string $hook, callable $callback): void {
@@ -81,11 +98,6 @@ $system_messages = [];
 
 require '../app/includes/errors.php';
 
-// error reporting, comment out in production
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // list of available pages
 // edit accordingly, add 'pages/PAGE.php'
 $allowed_urls = [
@@ -95,9 +107,8 @@ $allowed_urls = [
     'profile','credentials','config','security',
     'settings',
     'status',
-    'help',
+    'help','about',
     'login','logout',
-    'about',
 ];
 
 // Let plugins filter/extend allowed_urls
@@ -215,7 +226,6 @@ if ($page == 'logout') {
     include '../app/templates/page-footer.php';
 
 } else {
-
     // if user is logged in, we need user details and rights
     if ($validSession) {
         // If by error a logged in user requests the login page
@@ -241,32 +251,69 @@ if ($page == 'logout') {
     }
 
     // --- Plugin loading logic for all enabled plugins ---
-    $plugin_controllers = [];
+    // Ensure all enabled plugin bootstraps are loaded before mapping controllers
     foreach ($GLOBALS['enabled_plugins'] as $plugin_name => $plugin_info) {
-        $controller_path = $plugin_info['path'] . '/controllers/' . $plugin_name . '.php';
-        if (file_exists($controller_path)) {
-            $plugin_controllers[$plugin_name] = $controller_path;
+        $bootstrap_path = $plugin_info['path'] . '/bootstrap.php';
+        if (file_exists($bootstrap_path)) {
+            require_once $bootstrap_path;
+        }
+    }
+    // Plugin controller mapping logic (we add each controller listed in bootstrap as a page)
+    $mapped_plugin_controllers = [];
+    foreach ($GLOBALS['enabled_plugins'] as $plugin_name => $plugin_info) {
+        if (isset($GLOBALS['plugin_controllers'][$plugin_name])) {
+            foreach ($GLOBALS['plugin_controllers'][$plugin_name] as $plugin_page) {
+                $controller_path = $plugin_info['path'] . '/controllers/' . $plugin_page . '.php';
+                if (file_exists($controller_path)) {
+                    $mapped_plugin_controllers[$plugin_page] = $controller_path;
+                }
+            }
         }
     }
 
     // page building
-    include '../app/templates/page-header.php';
-    include '../app/templates/page-menu.php';
-    if ($validSession) {
-        include '../app/templates/page-sidebar.php';
-    }
     if (in_array($page, $allowed_urls)) {
-        // all normal pages
-        if (isset($plugin_controllers[$page])) {
-            include $plugin_controllers[$page];
+    // The page is in allowed URLs
+        if (isset($mapped_plugin_controllers[$page]) && file_exists($mapped_plugin_controllers[$page])) {
+        // The page is from a plugin controller
+            if (defined('PLUGIN_PAGE_DIRECT_OUTPUT') && PLUGIN_PAGE_DIRECT_OUTPUT === true) {
+                // Barebone page controller, we don't output anything extra
+                include $mapped_plugin_controllers[$page];
+                ob_end_flush();
+                exit;
+            } else {
+                include '../app/templates/page-header.php';
+                include '../app/templates/page-menu.php';
+                if ($validSession) {
+                    include '../app/templates/page-sidebar.php';
+                }
+                include $mapped_plugin_controllers[$page];
+                include '../app/templates/page-footer.php';
+            }
         } else {
-            include "../app/pages/{$page}.php";
+        // The page is from a core controller
+            include '../app/templates/page-header.php';
+            include '../app/templates/page-menu.php';
+            if ($validSession) {
+                include '../app/templates/page-sidebar.php';
+            }
+            if (file_exists("../app/pages/{$page}.php")) {
+                include "../app/pages/{$page}.php";
+            } else {
+                include '../app/templates/error-notfound.php';
+            }
+            include '../app/templates/page-footer.php';
         }
     } else {
-        // the page is not in allowed urls, loading "not found" page
+    // The page is not in allowed URLs
+        include '../app/templates/page-header.php';
+        include '../app/templates/page-menu.php';
+        if ($validSession) {
+            include '../app/templates/page-sidebar.php';
+        }
         include '../app/templates/error-notfound.php';
+        include '../app/templates/page-footer.php';
     }
-    include '../app/templates/page-footer.php';
 }
 
 // flush the output buffer and show the page
