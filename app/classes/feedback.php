@@ -53,6 +53,21 @@ class Feedback {
         ]
     ];
 
+    const REGISTER = [
+        'SUCCESS' => [
+            'type' => self::TYPE_SUCCESS,
+            'dismissible' => true
+        ],
+        'FAILED' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => true
+        ],
+        'DISABLED' => [
+            'type' => self::TYPE_ERROR,
+            'dismissible' => false
+        ],
+    ];
+
     const SECURITY = [
         'WHITELIST_ADD_SUCCESS' => [
             'type' => self::TYPE_SUCCESS,
@@ -100,19 +115,15 @@ class Feedback {
         ]
     ];
 
-    const REGISTER = [
-        'SUCCESS' => [
+    const THEME = [
+        'THEME_CHANGE_SUCCESS' => [
             'type' => self::TYPE_SUCCESS,
             'dismissible' => true
         ],
-        'FAILED' => [
+        'THEME_CHANGE_FAILED' => [
             'type' => self::TYPE_ERROR,
             'dismissible' => true
-        ],
-        'DISABLED' => [
-            'type' => self::TYPE_ERROR,
-            'dismissible' => false
-        ],
+        ]
     ];
 
     const SYSTEM = [

@@ -16,6 +16,11 @@ return [
         'IP_NOT_WHITELISTED' => 'Access denied. Your IP address is not whitelisted.',
         'TOO_MANY_ATTEMPTS' => 'Too many login attempts. Please try again later.',
     ],
+    'REGISTER' => [
+        'SUCCESS' => 'Registration successful. You can log in now.',
+        'FAILED' => 'Registration failed: %s',
+        'DISABLED' => 'Registration is disabled.',
+    ],
     'SECURITY' => [
         'WHITELIST_ADD_SUCCESS' => 'IP address successfully added to whitelist.',
         'WHITELIST_ADD_FAILED' => 'Failed to add IP to whitelist.',
@@ -31,10 +36,9 @@ return [
         'PERMISSION_DENIED' => 'Permission denied. You do not have the required rights.',
         'IP_REQUIRED' => 'IP address is required.',
     ],
-    'REGISTER' => [
-        'SUCCESS' => 'Registration successful. You can log in now.',
-        'FAILED' => 'Registration failed: %s',
-        'DISABLED' => 'Registration is disabled.',
+    'THEME' => [
+        'THEME_CHANGE_SUCCESS' => 'Theme has been changed successfully.',
+        'THEME_CHANGE_FAILED' => 'Failed to change theme. The selected theme may not be available.',
     ],
     'SYSTEM' => [
         'DB_ERROR' => 'Error connecting to the database: %s',
