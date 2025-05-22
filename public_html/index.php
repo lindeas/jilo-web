@@ -23,6 +23,10 @@ require_once __DIR__ . '/../app/core/PluginManager.php';
 use App\Core\HookDispatcher;
 use App\Core\PluginManager;
 
+// Initialize themes system
+require_once __DIR__ . '/../app/helpers/theme.php';
+use app\Helpers\Theme;
+
 // Global allowed URLs registration
 register_hook('filter_allowed_urls', function($urls) {
     if (isset($GLOBALS['plugin_controllers']) && is_array($GLOBALS['plugin_controllers'])) {
@@ -105,7 +109,7 @@ $allowed_urls = [
     'conferences','participants','components',
     'graphs','latest','livejs','agents',
     'profile','credentials','config','security',
-    'settings',
+    'settings','theme',
     'status',
     'help','about',
     'login','logout',
