@@ -220,10 +220,11 @@ if ($page == 'logout') {
     // Set success message
     Feedback::flash('LOGIN', 'LOGOUT_SUCCESS');
 
-    include '../app/templates/page-header.php';
-    include '../app/templates/page-menu.php';
+    // Use theme helper to include templates
+    \App\Helpers\Theme::include('page-header');
+    \App\Helpers\Theme::include('page-menu');
     include '../app/pages/login.php';
-    include '../app/templates/page-footer.php';
+    \App\Helpers\Theme::include('page-footer');
 
 } else {
     // if user is logged in, we need user details and rights
@@ -282,20 +283,20 @@ if ($page == 'logout') {
                 ob_end_flush();
                 exit;
             } else {
-                include '../app/templates/page-header.php';
-                include '../app/templates/page-menu.php';
+                \App\Helpers\Theme::include('page-header');
+                \App\Helpers\Theme::include('page-menu');
                 if ($validSession) {
-                    include '../app/templates/page-sidebar.php';
+                    \App\Helpers\Theme::include('page-sidebar');
                 }
                 include $mapped_plugin_controllers[$page];
-                include '../app/templates/page-footer.php';
+                \App\Helpers\Theme::include('page-footer');
             }
         } else {
         // The page is from a core controller
-            include '../app/templates/page-header.php';
-            include '../app/templates/page-menu.php';
+            \App\Helpers\Theme::include('page-header');
+            \App\Helpers\Theme::include('page-menu');
             if ($validSession) {
-                include '../app/templates/page-sidebar.php';
+                \App\Helpers\Theme::include('page-sidebar');
             }
             if (file_exists("../app/pages/{$page}.php")) {
                 include "../app/pages/{$page}.php";
