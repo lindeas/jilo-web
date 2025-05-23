@@ -12,12 +12,29 @@ namespace App\Helpers;
 
 use Exception;
 
+// Include Session class
+require_once __DIR__ . '/../classes/session.php';
+use Session;
+
 class Theme
 {
     /**
      * @var array Theme configuration
      */
     private static $config;
+
+    /**
+     * Get the theme configuration
+     *
+     * @return array
+     */
+    public static function getConfig()
+    {
+        if (self::$config === null) {
+            self::init();
+        }
+        return self::$config;
+    }
 
     /**
      * @var string Current theme name
@@ -134,41 +151,35 @@ class Theme
     }
 
     /**
-     * Include a theme template
+     * Include a theme template file
      *
-     * @param string $template
-     * @param array $data
+     * @param string $template Template name without .php extension
      * @return void
      */
-    public static function include($template, $data = [])
+    public static function include($template)
     {
         $themeName = self::getCurrentThemeName();
         $config = self::getConfig();
 
-        // For non-default themes, look in the theme directory
+        // Import all global variables into local scope
+        // We need this here, otherwise because this helper
+        // between index and the views breaks the session vars
+        extract($GLOBALS, EXTR_SKIP | EXTR_REFS);
+
+        // For non-default themes, look in the theme directory first
         if ($themeName !== 'default') {
             $themePath = $config['paths']['themes'] . '/' . $themeName . '/views/' . $template . '.php';
             if (file_exists($themePath)) {
-                extract($data);
                 include $themePath;
                 return;
             }
+        }
 
-            // Fallback to default theme if template not found in custom theme
-            $legacyPath = $config['paths']['templates'] . '/' . $template . '.php';
-            if (file_exists($legacyPath)) {
-                extract($data);
-                include $legacyPath;
-                return;
-            }
-        } else {
-            // Default theme uses app/templates
-            $legacyPath = $config['paths']['templates'] . '/' . $template . '.php';
-            if (file_exists($legacyPath)) {
-                extract($data);
-                include $legacyPath;
-                return;
-            }
+        // Fallback to default template location
+        $defaultPath = $config['paths']['templates'] . '/' . $template . '.php';
+        if (file_exists($defaultPath)) {
+            include $defaultPath;
+            return;
         }
 
         // Log error if template not found
