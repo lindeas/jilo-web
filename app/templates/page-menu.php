@@ -15,7 +15,7 @@
                 </div>
 
                 <li class="font-weight-light text-uppercase" style="font-size: 0.5em; color: whitesmoke; margin-right: 70px; align-content: center;">
-                    version&nbsp;<?= htmlspecialchars($config['version']) ?>
+                    version&nbsp;<?= htmlspecialchars($config['version'] ?? '1.0.0') ?>
                 </li>
 
 <?php if (Session::isValidSession()) { ?>
@@ -47,6 +47,10 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <h6 class="dropdown-header"><?= htmlspecialchars($currentUser) ?></h6>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=theme">
+                            <i class="fas fa-paint-brush"></i>Change theme
+                        </a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=profile">
                             <i class="fas fa-id-card"></i>Profile details
                         </a>
