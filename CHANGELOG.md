@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.4...HEAD
 
 ### Added
+- Added CSS and JS to the default theme
+- Added change theme menu entry
 
 ### Changed
 
