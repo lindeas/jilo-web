@@ -9,6 +9,10 @@
  * - switch_to: Changes the active theme for the current user
  */
 
+// Initialize security
+require_once '../app/helpers/security.php';
+$security = SecurityHelper::getInstance();
+
 // Only allow access to logged-in users
 if (!Session::isValidSession()) {
     header('Location: ' . $app_root . '?page=login');
@@ -20,9 +24,6 @@ if (isset($_GET['switch_to'])) {
     $themeName = $_GET['switch_to'];
 
     // Validate CSRF token for state-changing operations
-    require_once '../app/helpers/security.php';
-    $security = SecurityHelper::getInstance();
-
     if (!$security->verifyCsrfToken($_GET['csrf_token'] ?? '')) {
         Feedback::flash('SECURITY', 'CSRF_INVALID');
         header("Location: $app_root?page=theme");
