@@ -193,22 +193,21 @@ class Theme
      */
     public static function getAvailableThemes(): array
     {
+        $config = self::getConfig();
+        $availableThemes = $config['available_themes'] ?? [];
         $themes = [];
-        $themesDir = self::$config['path'] ?? (__DIR__ . '/../../themes');
 
-        if (!is_dir($themesDir)) {
-            return [];
+        // Add default theme if not already present
+        if (!isset($availableThemes['default'])) {
+            $availableThemes['default'] = 'Default built-in theme';
         }
 
-        foreach (scandir($themesDir) as $item) {
-            if ($item === '.' || $item === '..' || !is_dir("$themesDir/$item")) {
-                continue;
-            }
-
-            $configFile = "$themesDir/$item/config.php";
-            if (file_exists($configFile)) {
-                $config = include $configFile;
-                $themes[$item] = $config['name'] ?? ucfirst($item);
+        // Verify each theme exists and has a config file
+        $themesDir = $config['paths']['themes'] ?? (__DIR__ . '/../../themes');
+        foreach ($availableThemes as $id => $name) {
+            if ($id === 'default' || 
+                (is_dir("$themesDir/$id") && file_exists("$themesDir/$id/config.php"))) {
+                $themes[$id] = $name;
             }
         }
 

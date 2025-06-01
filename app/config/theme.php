@@ -7,7 +7,8 @@ return [
     // Available themes with their display names
     'available_themes' => [
         'default' => 'Default built-in theme',
-        'modern' => 'Modern Theme'
+        'modern' => 'Modern theme',
+        'retro' => 'Alternative retro theme'
     ],
 
     // Path configurations
