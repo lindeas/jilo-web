@@ -24,7 +24,7 @@
                                     <p class="card-text text-muted">Theme ID: <code><?= htmlspecialchars($themeId) ?></code></p>
                                     <div class="mt-auto">
 <?php if (!$isActive) { ?>
-                                        <a href="?page=theme&switch_to=<?= urlencode($themeId) ?>" class="btn btn-primary">Switch to this theme</a>
+                                        <a href="?page=theme&switch_to=<?= urlencode($themeId) ?>&csrf_token=<?= $csrf_token ?>" class="btn btn-primary">Switch to this theme</a>
 <?php } else { ?>
                                         <button class="btn btn-outline-secondary" disabled>Currently active</button>
 <?php } ?>
