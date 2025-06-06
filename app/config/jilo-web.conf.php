@@ -10,8 +10,17 @@ return [
     'domain'			=> 'localhost',
     // subfolder for the web app, if any
     'folder'			=> '/jilo-web/',
-    // site name used in emails and in the inteerface
+    // site name used in emails and in the interface
     'site_name'			=> 'Jilo Web',
+    // session configuration
+    'session' => [
+        // session name, if empty a random one will be generated
+        'name' => 'jilo',
+        // 2 hours (7200) default, when "remember me" is not checked
+        'lifetime' => 7200,
+        // 30 days (2592000) default, when "remember me" is checked
+        'remember_me_lifetime' => 2592000,
+    ],
     // set to false to disable new registrations
     'registration_enabled'	=> true,
     // will be displayed on login screen
