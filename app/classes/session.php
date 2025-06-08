@@ -6,6 +6,15 @@
  * Core session management functionality for the application
  */
 class Session {
+    private static $initialized = false;
+    private static $sessionName = ''; // Will be set from config, if not we'll have a random session name
+
+    /**
+     * Generate a random session name
+     */
+    private static function generateRandomSessionName(): string {
+        return 'sess_' . bin2hex(random_bytes(8)); // 16-character random string
+    }
     private static $sessionOptions = [
         'cookie_httponly' => 1,
         'cookie_secure' => 1,
@@ -14,11 +23,44 @@ class Session {
     ];
 
     /**
+     * Initialize session configuration
+     */
+    private static function initialize() {
+        if (self::$initialized) {
+            return;
+        }
+
+        global $config;
+
+        // Load session settings from config if available
+        self::$sessionName = self::generateRandomSessionName();
+
+        if (isset($config['session']) && is_array($config['session'])) {
+            if (!empty($config['session']['name'])) {
+                self::$sessionName = $config['session']['name'];
+            }
+
+            if (isset($config['session']['lifetime'])) {
+                self::$sessionOptions['gc_maxlifetime'] = (int)$config['session']['lifetime'];
+            }
+        }
+
+        self::$initialized = true;
+    }
+
+    /**
      * Start or resume a session with secure options
      */
     public static function startSession() {
-        session_name('jilo');
-        if (session_status() !== PHP_SESSION_ACTIVE && !headers_sent()) {
+        self::initialize();
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_name(self::$sessionName);
+            session_start(self::$sessionOptions);
+        } elseif (session_status() === PHP_SESSION_ACTIVE && session_name() !== self::$sessionName) {
+            // If session is active but with wrong name, destroy and restart it
+            session_destroy();
+            session_name(self::$sessionName);
             session_start(self::$sessionOptions);
         }
     }
