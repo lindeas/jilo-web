@@ -30,9 +30,8 @@ class Theme
      */
     public static function getConfig()
     {
-        if (self::$config === null) {
-            self::init();
-        }
+        // Always reload the config to get the latest changes
+        self::$config = require __DIR__ . '/../config/theme.php';
         return self::$config;
     }
 
@@ -46,7 +45,10 @@ class Theme
      */
     public static function init()
     {
-        self::$config = require __DIR__ . '/../config/theme.php';
+        // Only load config if not already loaded
+        if (self::$config === null) {
+            self::$config = require __DIR__ . '/../config/theme.php';
+        }
         self::$currentTheme = self::getCurrentThemeName();
     }
 
@@ -57,13 +59,19 @@ class Theme
      */
     public static function getCurrentThemeName()
     {
+        // Ensure session is started
+        if (session_status() === PHP_SESSION_NONE) {
+            Session::startSession();
+        }
+
         // Check if already determined
         if (self::$currentTheme !== null) {
             return self::$currentTheme;
         }
 
         // Get from session if available
-        if (Session::isValidSession() && ($theme = Session::get('user_theme'))) {
+        if (Session::isValidSession() && isset($_SESSION['user_theme'])) {
+            $theme = $_SESSION['user_theme'];
             if (self::themeExists($theme)) {
                 self::$currentTheme = $theme;
                 return $theme;
@@ -87,11 +95,33 @@ class Theme
             return false;
         }
 
+        // Update session
         if (Session::isValidSession()) {
-            Session::set('user_theme', $themeName);
+            $_SESSION['user_theme'] = $themeName;
+        } else {
+            return false;
         }
 
-        self::$currentTheme = $themeName;
+        // Update config file
+        $configFile = __DIR__ . '/../config/theme.php';
+        if (file_exists($configFile) && is_writable($configFile)) {
+            $config = file_get_contents($configFile);
+            // Update the active_theme in the config
+            $newConfig = preg_replace(
+                "/'active_theme'\s*=>\s*'[^']*'/",
+                "'active_theme' => '" . addslashes($themeName) . "'",
+                $config
+            );
+
+            if ($newConfig !== $config) {
+                if (file_put_contents($configFile, $newConfig) === false) {
+                    return false;
+                }
+            }
+            self::$currentTheme = $themeName;
+            return true;
+        }
+        return false;
         return true;
     }
 
@@ -103,6 +133,11 @@ class Theme
      */
     public static function themeExists(string $themeName): bool
     {
+        // Default theme always exists as it uses core templates
+        if ($themeName === 'default') {
+            return true;
+        }
+
         $themePath = self::getThemePath($themeName);
         return is_dir($themePath) && file_exists("$themePath/config.php");
     }
@@ -205,8 +240,7 @@ class Theme
         // Verify each theme exists and has a config file
         $themesDir = $config['paths']['themes'] ?? (__DIR__ . '/../../themes');
         foreach ($availableThemes as $id => $name) {
-            if ($id === 'default' || 
-                (is_dir("$themesDir/$id") && file_exists("$themesDir/$id/config.php"))) {
+            if ($id === 'default' || (is_dir("$themesDir/$id") && file_exists("$themesDir/$id/config.php"))) {
                 $themes[$id] = $name;
             }
         }
