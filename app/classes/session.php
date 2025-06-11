@@ -32,20 +32,37 @@ class Session {
 
         global $config;
 
-        // Load session settings from config if available
-        self::$sessionName = self::generateRandomSessionName();
+        // Get session name from config or generate a random one
+        self::$sessionName = $config['session']['name'] ?? self::generateRandomSessionName();
 
-        if (isset($config['session']) && is_array($config['session'])) {
-            if (!empty($config['session']['name'])) {
-                self::$sessionName = $config['session']['name'];
-            }
+        // Set session name before starting the session
+        session_name(self::$sessionName);
 
-            if (isset($config['session']['lifetime'])) {
-                self::$sessionOptions['gc_maxlifetime'] = (int)$config['session']['lifetime'];
-            }
-        }
+        // Set session cookie parameters
+        $thisPath = $config['folder'] ?? '/';
+        $thisDomain = $config['domain'] ?? '';
+        $isSecure = isset($_SERVER['HTTPS']);
+
+        session_set_cookie_params([
+            'lifetime' => 0, // Session cookie (browser session)
+            'path' => $thisPath,
+            'domain' => $thisDomain,
+            'secure' => $isSecure,
+            'httponly' => true,
+            'samesite' => 'Strict'
+        ]);
 
         self::$initialized = true;
+    }
+
+    /**
+     * Get session name from config or generate a random one
+     */
+    private static function getSessionNameFromConfig($config) {
+        if (isset($config['session']['name']) && !empty($config['session']['name'])) {
+            return $config['session']['name'];
+        }
+        return self::generateRandomSessionName();
     }
 
     /**
@@ -55,13 +72,9 @@ class Session {
         self::initialize();
 
         if (session_status() === PHP_SESSION_NONE) {
-            session_name(self::$sessionName);
-            session_start(self::$sessionOptions);
-        } elseif (session_status() === PHP_SESSION_ACTIVE && session_name() !== self::$sessionName) {
-            // If session is active but with wrong name, destroy and restart it
-            session_destroy();
-            session_name(self::$sessionName);
-            session_start(self::$sessionOptions);
+            if (!headers_sent()) {
+                session_start(self::$sessionOptions);
+            }
         }
     }
 
@@ -91,10 +104,23 @@ class Session {
 
     /**
      * Check if current session is valid
+     *
+     * @param bool $strict If true, will return false for new/unauthenticated sessions
+     * @return bool True if session is valid, false otherwise
      */
-    public static function isValidSession() {
-        // Check required session variables
-        if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
+    public static function isValidSession($strict = true) {
+        // If session is not started or empty, it's not valid
+        if (session_status() !== PHP_SESSION_ACTIVE || empty($_SESSION)) {
+            return false;
+        }
+
+        // In non-strict mode, consider empty session as valid (for login/logout)
+        if (!$strict && !isset($_SESSION['user_id']) && !isset($_SESSION['username'])) {
+            return true;
+        }
+
+        // In strict mode, require user_id and username
+        if ($strict && (!isset($_SESSION['user_id']) || !isset($_SESSION['username']))) {
             return false;
         }
 
@@ -159,26 +185,44 @@ class Session {
      * Create a new authenticated session for a user
      */
     public static function createAuthSession($userId, $username, $rememberMe, $config) {
-        // Set cookie lifetime based on remember me
-        $cookieLifetime = $rememberMe ? time() + (30 * 24 * 60 * 60) : 0;
-
-        // Regenerate session ID to prevent session fixation
-        session_regenerate_id(true);
-
-        // Set cookie with secure options
-        setcookie('username', $username, [
-            'expires' => $cookieLifetime,
-            'path' => $config['folder'],
-            'domain' => $config['domain'],
-            'secure' => isset($_SERVER['HTTPS']),
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
+        // Ensure session is started
+        self::startSession();
 
         // Set session variables
         $_SESSION['user_id'] = $userId;
         $_SESSION['username'] = $username;
         $_SESSION['LAST_ACTIVITY'] = time();
+        $_SESSION['REMEMBER_ME'] = $rememberMe;
+
+        // Set cookie lifetime based on remember me
+        $cookieLifetime = $rememberMe ? time() + (30 * 24 * 60 * 60) : 0;
+
+        // Update session cookie with remember me setting
+        if (!headers_sent()) {
+            setcookie(
+                session_name(),
+                session_id(),
+                [
+                    'expires' => $cookieLifetime,
+                    'path' => $config['folder'] ?? '/',
+                    'domain' => $config['domain'] ?? '',
+                    'secure' => isset($_SERVER['HTTPS']),
+                    'httponly' => true,
+                    'samesite' => 'Strict'
+                ]
+            );
+
+            // Set username cookie
+            setcookie('username', $username, [
+                'expires' => $cookieLifetime,
+                'path' => $config['folder'] ?? '/',
+                'domain' => $config['domain'] ?? '',
+                'secure' => isset($_SERVER['HTTPS']),
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+        }
+
         if ($rememberMe) {
             self::setRememberMe(true);
         }
