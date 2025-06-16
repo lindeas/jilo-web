@@ -193,13 +193,18 @@ class Theme
      */
     public static function include($template)
     {
-        $themeName = self::getCurrentThemeName();
-        $config = self::getConfig();
+        global $config;
+        $config = $config ?? [];
 
-        // Import all global variables into local scope
+        $themeConfig = self::getConfig();
+        $themeName = self::getCurrentThemeName();
+
         // We need this here, otherwise because this helper
         // between index and the views breaks the session vars
         extract($GLOBALS, EXTR_SKIP | EXTR_REFS);
+
+        // Ensure config is always available in templates
+        $config = array_merge($config, $themeConfig);
 
         // For non-default themes, look in the theme directory first
         if ($themeName !== 'default') {
