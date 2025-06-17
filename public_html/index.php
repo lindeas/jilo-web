@@ -16,16 +16,33 @@
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
+// Prepare config loader
+require_once __DIR__ . '/../app/core/ConfigLoader.php';
+use App\Core\ConfigLoader;
+
+// Load configuration
+$config = ConfigLoader::loadConfig([
+    __DIR__ . '/../app/config/jilo-web.conf.php',
+    __DIR__ . '/../jilo-web.conf.php',
+    '/srv/jilo-web/jilo-web.conf.php',
+    '/opt/jilo-web/jilo-web.conf.php',
+]);
+
+// Make config available globally
+$GLOBALS['config'] = $config;
+
+// Expose config file path for pages
+$config_file = ConfigLoader::getConfigPath();
+$localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
+
+// Set app root with default
+$app_root = $config['folder'] ?? '/';
+
 // Preparing plugins and hooks
-// Initialize HookDispatcher and plugin system
 require_once __DIR__ . '/../app/core/HookDispatcher.php';
 require_once __DIR__ . '/../app/core/PluginManager.php';
 use App\Core\HookDispatcher;
 use App\Core\PluginManager;
-
-// Initialize themes system
-require_once __DIR__ . '/../app/helpers/theme.php';
-use app\Helpers\Theme;
 
 // Global allowed URLs registration
 register_hook('filter_allowed_urls', function($urls) {
@@ -72,6 +89,11 @@ ob_start();
 
 // Start session before any session-dependent code
 require_once '../app/classes/session.php';
+
+// Initialize themes system after session is started
+require_once __DIR__ . '/../app/helpers/theme.php';
+use app\Helpers\Theme;
+
 Session::startSession();
 
 // Define page variable early via sanitize
@@ -80,6 +102,12 @@ require_once __DIR__ . '/../app/includes/sanitize.php';
 if (!isset($page)) {
     $page = 'dashboard';
 }
+
+// List of pages that don't require authentication
+$public_pages = ['login', 'help', 'about'];
+
+// Let plugins filter/extend public_pages
+$public_pages = filter_public_pages($public_pages);
 
 // Middleware pipeline for security, sanitization & CSRF
 require_once __DIR__ . '/../app/core/MiddlewarePipeline.php';
@@ -90,11 +118,18 @@ $pipeline->add(function() {
     return true;
 });
 
-// Check session validity
-$validSession = Session::isValidSession();
+// For public pages, we don't need to validate the session
+// The Router will handle authentication for protected pages
+$validSession = false;
+$userId = null;
 
-// Get user ID early if session is valid
-$userId = $validSession ? Session::getUserId() : null;
+// Only check session for non-public pages
+if (!in_array($page, $public_pages)) {
+    $validSession = Session::isValidSession(true);
+    if ($validSession) {
+        $userId = Session::getUserId();
+    }
+}
 
 // Initialize feedback message system
 require_once '../app/classes/feedback.php';
@@ -118,27 +153,7 @@ $allowed_urls = [
 // Let plugins filter/extend allowed_urls
 $allowed_urls = filter_allowed_urls($allowed_urls);
 
-require_once __DIR__ . '/../app/core/ConfigLoader.php';
-use App\Core\ConfigLoader;
-
-// Load configuration
-$config = ConfigLoader::loadConfig([
-    __DIR__ . '/../app/config/jilo-web.conf.php',
-    __DIR__ . '/../jilo-web.conf.php',
-    '/srv/jilo-web/jilo-web.conf.php',
-    '/opt/jilo-web/jilo-web.conf.php',
-]);
-// Expose config file path for pages
-$config_file = ConfigLoader::getConfigPath();
-$localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
-
-$app_root = $config['folder'];
-
-// List of pages that don't require authentication
-$public_pages = ['login', 'help', 'about'];
-
-// Let plugins filter/extend public_pages
-$public_pages = filter_public_pages($public_pages);
+// Config and app_root are now set at the top of the file
 
 // Dispatch routing and auth
 require_once __DIR__ . '/../app/core/Router.php';
@@ -210,11 +225,18 @@ $platformDetails = $platformObject->getPlatformDetails($platform_id);
 
 // logout is a special case, as we can't use session vars for notices
 if ($page == 'logout') {
+    // Save config before destroying session
+    $savedConfig = $config;
+
     // clean up session
     Session::destroySession();
 
     // start new session for the login page
     Session::startSession();
+
+    // Restore config to global scope
+    $config = $savedConfig;
+    $GLOBALS['config'] = $config;
 
     setcookie('username', "", time() - 100, $config['folder'], $config['domain'], isset($_SERVER['HTTPS']), true);
 
