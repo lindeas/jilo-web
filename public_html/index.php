@@ -39,6 +39,7 @@ $localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
 $app_root = $config['folder'] ?? '/';
 
 // Preparing plugins and hooks
+// Initialize HookDispatcher and plugin system
 require_once __DIR__ . '/../app/core/HookDispatcher.php';
 require_once __DIR__ . '/../app/core/PluginManager.php';
 use App\Core\HookDispatcher;
@@ -152,8 +153,6 @@ $allowed_urls = [
 
 // Let plugins filter/extend allowed_urls
 $allowed_urls = filter_allowed_urls($allowed_urls);
-
-// Config and app_root are now set at the top of the file
 
 // Dispatch routing and auth
 require_once __DIR__ . '/../app/core/Router.php';
@@ -329,17 +328,17 @@ if ($page == 'logout') {
             } else {
                 include '../app/templates/error-notfound.php';
             }
-            include '../app/templates/page-footer.php';
+            \App\Helpers\Theme::include('page-footer');
         }
     } else {
     // The page is not in allowed URLs
-        include '../app/templates/page-header.php';
-        include '../app/templates/page-menu.php';
+        \App\Helpers\Theme::include('page-header');
+        \App\Helpers\Theme::include('page-menu');
         if ($validSession) {
-            include '../app/templates/page-sidebar.php';
+            \App\Helpers\Theme::include('page-sidebar');
         }
         include '../app/templates/error-notfound.php';
-        include '../app/templates/page-footer.php';
+        \App\Helpers\Theme::include('page-footer');
     }
 }
 
