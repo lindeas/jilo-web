@@ -48,6 +48,19 @@ if (isset($_GET['switch_to'])) {
 $themes = \App\Helpers\Theme::getAvailableThemes();
 $currentTheme = \App\Helpers\Theme::getCurrentThemeName();
 
+// Prepare theme data with screenshot URLs for the view
+$themeData = [];
+foreach ($themes as $id => $name) {
+    $themeData[$id] = [
+        'name' => $name,
+        'screenshotUrl' => \App\Helpers\Theme::getScreenshotUrl($id),
+        'isActive' => $id === $currentTheme
+    ];
+}
+
+// Make theme data available to the view
+$themes = $themeData;
+
 // Generate CSRF token for the form
 $csrf_token = $security->generateCsrfToken();
 
