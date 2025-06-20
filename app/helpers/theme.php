@@ -23,6 +23,7 @@ class Theme
      */
     private static $config;
 
+
     /**
      * Get the theme configuration
      *
@@ -35,10 +36,12 @@ class Theme
         return self::$config;
     }
 
+
     /**
      * @var string Current theme name
      */
     private static $currentTheme;
+
 
     /**
      * Initialize the theme system
@@ -51,6 +54,7 @@ class Theme
         }
         self::$currentTheme = self::getCurrentThemeName();
     }
+
 
     /**
      * Get the current theme name
@@ -69,19 +73,54 @@ class Theme
             return self::$currentTheme;
         }
 
-        // Get from session if available
-        if (Session::isValidSession() && isset($_SESSION['user_theme'])) {
-            $theme = $_SESSION['user_theme'];
-            if (self::themeExists($theme)) {
-                self::$currentTheme = $theme;
-                return $theme;
-            }
+        // Try to get from session first
+        $sessionTheme = Session::get('theme');
+        if ($sessionTheme && isset(self::$config['available_themes'][$sessionTheme])) {
+            self::$currentTheme = $sessionTheme;
+        } else {
+            // Fall back to default theme
+            self::$currentTheme = self::$config['active_theme'];
         }
 
-        // Default to 'default' theme which uses app/templates
-        self::$currentTheme = 'default';
-        return 'default';
+        return self::$currentTheme;
     }
+
+
+    /**
+     * Get the URL for a theme asset
+     *
+     * @param string $themeId Theme ID
+     * @param string $assetPath Path to the asset relative to theme directory (e.g., 'css/style.css')
+     * @return string|null URL to the asset or null if not found
+     */
+    public static function getAssetUrl($themeId, $assetPath = '')
+    {
+        // Clean and validate the asset path
+        $assetPath = ltrim($assetPath, '/');
+        if (empty($assetPath)) {
+            return null;
+        }
+
+        // Only allow alphanumeric, hyphen, underscore, dot, and forward slash
+        if (!preg_match('/^[a-zA-Z0-9_\-\.\/]+$/', $assetPath)) {
+            return null;
+        }
+
+        // Prevent directory traversal
+        if (strpos($assetPath, '..') !== false) {
+            return null;
+        }
+
+        $fullPath = __DIR__ . "/../../themes/$themeId/$assetPath";
+        if (!file_exists($fullPath) || !is_readable($fullPath)) {
+            return null;
+        }
+
+        // Use the router to generate the URL
+        global $app_root;
+        return "$app_root/app/helpers/theme-asset.php?theme=" . urlencode($themeId) . "&path=" . urlencode($assetPath);
+    }
+
 
     /**
      * Set the current theme for the session
@@ -125,6 +164,7 @@ class Theme
         return true;
     }
 
+
     /**
      * Check if a theme exists
      *
@@ -142,6 +182,7 @@ class Theme
         return is_dir($themePath) && file_exists("$themePath/config.php");
     }
 
+
     /**
      * Get the path to a theme
      *
@@ -154,6 +195,7 @@ class Theme
         $config = self::getConfig();
         return rtrim($config['paths']['themes'], '/') . "/$themeName";
     }
+
 
     /**
      * Get the URL for a theme asset
@@ -184,6 +226,7 @@ class Theme
 
         return $baseUrl . $assetPath;
     }
+
 
     /**
      * Include a theme template file
@@ -225,6 +268,7 @@ class Theme
         // Log error if template not found
         error_log("Template not found: {$template} in theme: {$themeName}");
     }
+
 
     /**
      * Get all available themes
