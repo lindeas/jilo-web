@@ -53,7 +53,7 @@ $themeData = [];
 foreach ($themes as $id => $name) {
     $themeData[$id] = [
         'name' => $name,
-        'screenshotUrl' => \App\Helpers\Theme::getScreenshotUrl($id),
+        'screenshotUrl' => \App\Helpers\Theme::getAssetUrl($id, 'screenshot.png'),
         'isActive' => $id === $currentTheme
     ];
 }
