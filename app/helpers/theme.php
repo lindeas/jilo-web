@@ -74,7 +74,7 @@ class Theme
         }
 
         // Try to get from session first
-        $sessionTheme = Session::get('theme');
+        $sessionTheme = isset($_SESSION['theme']) ? $_SESSION['theme'] : null;
         if ($sessionTheme && isset(self::$config['available_themes'][$sessionTheme])) {
             self::$currentTheme = $sessionTheme;
         } else {
