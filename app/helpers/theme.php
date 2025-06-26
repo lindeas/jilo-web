@@ -116,9 +116,11 @@ class Theme
             return null;
         }
 
-        // Use the router to generate the URL
+        // Generate URL that goes through index.php
         global $app_root;
-        return "$app_root/app/helpers/theme-asset.php?theme=" . urlencode($themeId) . "&path=" . urlencode($assetPath);
+        // Remove any trailing slash from app_root to avoid double slashes
+        $baseUrl = rtrim($app_root, '/');
+        return "$baseUrl/?page=theme-asset&theme=" . urlencode($themeId) . "&path=" . urlencode($assetPath);
     }
 
 

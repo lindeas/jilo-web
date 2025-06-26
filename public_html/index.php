@@ -145,7 +145,7 @@ $allowed_urls = [
     'conferences','participants','components',
     'graphs','latest','livejs','agents',
     'profile','credentials','config','security',
-    'settings','theme',
+    'settings','theme','theme-asset',
     'status',
     'help','about',
     'login','logout',
