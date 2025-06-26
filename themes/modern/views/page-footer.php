@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <span class="text-muted">
-                        &copy; <?= date('Y') ?> <?= htmlspecialchars($config['site_name'] ?? '') ?> v<?= htmlspecialchars($config['version'] ?? '') ?>
+                        &copy; 2024-<?= date('Y') ?> <?= htmlspecialchars($config['site_name'] ?? '') ?> v<?= htmlspecialchars($config['version'] ?? '') ?>
                     </span>
                 </div>
                 <div class="col-md-6 text-md-end">
