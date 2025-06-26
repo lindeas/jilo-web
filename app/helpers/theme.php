@@ -138,10 +138,13 @@ class Theme
 
         // Update session
         if (Session::isValidSession()) {
-            $_SESSION['user_theme'] = $themeName;
+            $_SESSION['theme'] = $themeName;
         } else {
             return false;
         }
+
+        // Clear the current theme cache
+        self::$currentTheme = null;
 
         // Update config file
         $configFile = __DIR__ . '/../config/theme.php';
@@ -162,8 +165,8 @@ class Theme
             self::$currentTheme = $themeName;
             return true;
         }
+
         return false;
-        return true;
     }
 
 
