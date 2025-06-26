@@ -1,14 +1,21 @@
 <?php
 /**
- * Theme Asset Handler
+ * Theme Asset handler
  *
  * Serves theme assets (images, CSS, JS, etc.) securely by checking if the requested
  * theme and asset path are valid and accessible.
+ *
+ * This is a standalone handler that doesn't require the full application initialization.
  */
 
-// Include necessary files
-require_once __DIR__ . '/../config/init.php';
-require_once __DIR__ . '/../core/ConfigLoader.php';
+// Set error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
+// Define base path if not defined
+if (!defined('APP_ROOT')) {
+    define('APP_ROOT', dirname(__DIR__));
+}
 
 // Basic security checks
 if (!isset($_GET['theme']) || !preg_match('/^[a-zA-Z0-9_-]+$/', $_GET['theme'])) {
@@ -37,12 +44,35 @@ if (strpos($assetPath, '..') !== false) {
 }
 
 // Build full path to the asset
-$fullPath = __DIR__ . "/../../themes/$themeId/$assetPath";
+$themesDir = dirname(dirname(__DIR__)) . '/themes';
+$fullPath = realpath("$themesDir/$themeId/$assetPath");
+
+// Additional security check to ensure the path is within the themes directory
+if ($fullPath === false) {
+    http_response_code(404);
+    header('Content-Type: text/plain');
+    error_log("Asset not found: $themesDir/$themeId/$assetPath");
+    exit("Asset not found: $themesDir/$themeId/$assetPath");
+}
+
+if (strpos($fullPath, realpath($themesDir)) !== 0) {
+    http_response_code(400);
+    header('Content-Type: text/plain');
+    error_log("Security violation: Attempted to access path outside themes directory: $fullPath");
+    exit('Invalid asset path');
+}
 
 // Check if the file exists and is readable
 if (!file_exists($fullPath) || !is_readable($fullPath)) {
     http_response_code(404);
-    exit('Asset not found');
+    header('Content-Type: text/plain');
+    error_log("File not found or not readable: $fullPath");
+    exit("File not found or not readable: " . basename($fullPath));
+}
+
+// Clear any previous output
+if (ob_get_level()) {
+    ob_clean();
 }
 
 // Determine content type based on file extension
