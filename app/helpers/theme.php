@@ -31,8 +31,67 @@ class Theme
      */
     public static function getConfig()
     {
-        // Always reload the config to get the latest changes
-        self::$config = require __DIR__ . '/../config/theme.php';
+        $configFile = __DIR__ . '/../config/theme.php';
+
+        // Create default config if it doesn't exist
+        if (!file_exists($configFile)) {
+            $configDir = dirname($configFile);
+            if (!is_dir($configDir)) {
+                mkdir($configDir, 0755, true);
+            }
+
+            // Generate the config file with proper formatting
+            $configContent = <<<'EOT'
+<?php
+
+/**
+ * Theme Configuration
+ *
+ * This file is auto-generated. Do not edit it manually.
+ * Use the theme management interface to modify theme settings.
+ */
+
+return [
+    // Active theme (can be overridden by user preference)
+    'active_theme' => 'modern',
+
+    // Available themes with their display names
+    'available_themes' => [
+        'default' => 'Default built-in theme',
+        'modern' => 'Modern theme',
+        'retro' => 'Alternative retro theme'
+    ],
+
+    // Path configurations
+    'paths' => [
+        // Base directory for all external themes
+        'themes' => __DIR__ . '/../../themes',
+
+        // Default templates location (built-in fallback)
+        'templates' => __DIR__ . '/../templates',
+
+        // Public assets directory (built-in fallback)
+        'public' => __DIR__ . '/../../public_html'
+    ],
+
+    // Theme configuration defaults
+    'default_config' => [
+        'name' => 'Unnamed Theme',
+        'description' => 'A Jilo Web theme',
+        'version' => '1.0.0',
+        'author' => 'Lindeas Inc.',
+        'screenshot' => 'screenshot.png',
+        'options' => []
+    ]
+];
+
+EOT;
+
+            file_put_contents($configFile, $configContent);
+        }
+
+        // Load the configuration
+        self::$config = require $configFile;
         return self::$config;
     }
 
@@ -50,8 +109,21 @@ class Theme
     {
         // Only load config if not already loaded
         if (self::$config === null) {
-            self::$config = require __DIR__ . '/../config/theme.php';
+            try {
+                self::getConfig(); // This will create default config if needed
+            } catch (Exception $e) {
+                error_log('Failed to load theme configuration: ' . $e->getMessage());
+                // Fallback to default configuration
+                self::$config = [
+                    'active_theme' => 'modern',
+                    'available_themes' => [
+                        'modern' => ['name' => 'Modern'],
+                        'retro' => ['name' => 'Retro']
+                    ]
+                ];
+            }
         }
+
         self::$currentTheme = self::getCurrentThemeName();
     }
 
@@ -148,25 +220,52 @@ class Theme
 
         // Update config file
         $configFile = __DIR__ . '/../config/theme.php';
-        if (file_exists($configFile) && is_writable($configFile)) {
-            $config = file_get_contents($configFile);
-            // Update the active_theme in the config
-            $newConfig = preg_replace(
-                "/'active_theme'\s*=>\s*'[^']*'/",
-                "'active_theme' => '" . addslashes($themeName) . "'",
-                $config
-            );
 
-            if ($newConfig !== $config) {
-                if (file_put_contents($configFile, $newConfig) === false) {
-                    return false;
-                }
-            }
-            self::$currentTheme = $themeName;
-            return true;
+        // Check if config file exists and is writable
+        if (!file_exists($configFile)) {
+            error_log("Theme config file not found: $configFile");
+            return false;
         }
 
-        return false;
+        if (!is_writable($configFile)) {
+            error_log("Theme config file is not writable: $configFile");
+            if (isset($GLOBALS['feedback_messages'])) {
+                $GLOBALS['feedback_messages'][] = [
+                    'type' => 'error',
+                    'message' => 'Cannot save theme preference: configuration file is not writable.'
+                ];
+            }
+            return false;
+        }
+
+        $config = file_get_contents($configFile);
+        if ($config === false) {
+            error_log("Failed to read theme config file: $configFile");
+            return false;
+        }
+
+        // Update the active_theme in the config
+        $newConfig = preg_replace(
+            "/'active_theme'\s*=>\s*'[^']*'/",
+            "'active_theme' => '" . addslashes($themeName) . "'",
+            $config
+        );
+
+        if ($newConfig !== $config) {
+            if (file_put_contents($configFile, $newConfig) === false) {
+                error_log("Failed to write to theme config file: $configFile");
+                if (isset($GLOBALS['feedback_messages'])) {
+                    $GLOBALS['feedback_messages'][] = [
+                        'type' => 'error',
+                        'message' => 'Failed to save theme preference due to a system error.'
+                    ];
+                }
+                return false;
+            }
+        }
+
+        self::$currentTheme = $themeName;
+        return true;
     }
 
 

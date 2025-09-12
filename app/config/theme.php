@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Theme Configuration
+ *
+ * This file is auto-generated. Do not edit it manually.
+ * Use the theme management interface to modify theme settings.
+ */
+
 return [
     // Active theme (can be overridden by user preference)
     'active_theme' => 'default',
