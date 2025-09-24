@@ -26,10 +26,28 @@ php scripts/migrate.php up
 3. Typical deployment steps
 
 - Pull new code from git.
-- Put the site in maintenance mode (optional, recommended for sensitive changes).
+- Put the site in maintenance mode (recommended): `php scripts/maintenance.php on "Upgrading database"`.
 - Run `php scripts/migrate.php status`.
 - If there are pending migrations, run `php scripts/migrate.php up`.
+- Disable maintenance mode: `php scripts/maintenance.php off`.
 - Clear opcache if applicable and resume traffic.
+
+## Maintenance mode
+
+Enable maintenance mode to temporarily block non-admin traffic during upgrades. Superusers (user ID 1 or with `superuser` right) can still access the site.
+
+Commands:
+
+```bash
+# Turn on with optional message
+php scripts/maintenance.php on "Upgrading database"
+
+# Turn off
+php scripts/maintenance.php off
+
+# Status
+php scripts/maintenance.php status
+```
 
 ## Authoring new migrations
 

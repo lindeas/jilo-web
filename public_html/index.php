@@ -229,6 +229,30 @@ if (!$pipeline->run()) {
     exit;
 }
 
+// Maintenance mode: show maintenance page to non-superusers
+try {
+    require_once __DIR__ . '/../app/core/Maintenance.php';
+    if (\App\Core\Maintenance::isEnabled()) {
+        $isSuperuser = false;
+        if ($validSession && isset($userId) && isset($userObject) && method_exists($userObject, 'hasRight')) {
+            // user 1 is always superuser per implementation, but also check explicit right
+            $isSuperuser = ($userId === 1) || (bool)$userObject->hasRight($userId, 'superuser');
+        }
+        if (!$isSuperuser) {
+            http_response_code(503);
+            // Show themed maintenance page
+            \App\Helpers\Theme::include('page-header');
+            \App\Helpers\Theme::include('page-menu');
+            include __DIR__ . '/../app/templates/maintenance.php';
+            \App\Helpers\Theme::include('page-footer');
+            ob_end_flush();
+            exit;
+        }
+    }
+} catch (\Throwable $e) {
+    // Do not break app if maintenance check fails
+}
+
 // Apply per-user theme from DB into session (without persisting) once user is known
 if ($validSession && isset($userId) && isset($userObject) && is_object($userObject) && method_exists($userObject, 'getUserTheme')) {
     try {
