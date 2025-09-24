@@ -12,6 +12,11 @@ class User {
     private $db;
     private $rateLimiter;
     private $twoFactorAuth;
+    /**
+     * Cache for database schema checks
+     * @var array<string,bool>
+     */
+    private static $schemaCache = [];
 
     /**
      * User constructor.
@@ -30,6 +35,79 @@ class User {
 
         $this->rateLimiter = new RateLimiter($database);
         $this->twoFactorAuth = new TwoFactorAuthentication($database);
+    }
+
+    /**
+     * Check if a column exists in a given table. Results are cached per request.
+     *
+     * @param string $table
+     * @param string $column
+     * @return bool
+     */
+    private function columnExists(string $table, string $column): bool {
+        $cacheKey = $table . '.' . $column;
+        if (isset(self::$schemaCache[$cacheKey])) {
+            return self::$schemaCache[$cacheKey];
+        }
+        try {
+            $stmt = $this->db->prepare("SHOW COLUMNS FROM `$table` LIKE :column");
+            $stmt->execute([':column' => $column]);
+            $exists = (bool)$stmt->fetch(PDO::FETCH_ASSOC);
+            self::$schemaCache[$cacheKey] = $exists;
+            return $exists;
+        } catch (Exception $e) {
+            // On error, assume column doesn't exist to be safe
+            self::$schemaCache[$cacheKey] = false;
+            return false;
+        }
+    }
+
+    /**
+     * Get the user's preferred theme if stored in DB (user_meta.theme). Returns null if not set.
+     *
+     * @param int $userId
+     * @return string|null
+     */
+    public function getUserTheme(int $userId): ?string {
+        if (!$this->columnExists('user_meta', 'theme')) {
+            return null;
+        }
+        try {
+            $sql = 'SELECT theme FROM user_meta WHERE user_id = :user_id LIMIT 1';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':user_id' => $userId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return null;
+            }
+            $theme = $row['theme'] ?? null;
+            return ($theme !== null && $theme !== '') ? $theme : null;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Persist the user's preferred theme in DB (user_meta.theme) when the column exists.
+     * Silently no-ops if the column is missing.
+     *
+     * @param int $userId
+     * @param string $theme
+     * @return bool True when stored or safely skipped; false only on explicit DB error.
+     */
+    public function setUserTheme(int $userId, string $theme): bool {
+        if (!$this->columnExists('user_meta', 'theme')) {
+            // Column not present; treat as success to avoid breaking UX
+            return true;
+        }
+        try {
+            $sql = 'UPDATE user_meta SET theme = :theme WHERE user_id = :user_id';
+            $stmt = $this->db->prepare($sql);
+            $ok = $stmt->execute([':theme' => $theme, ':user_id' => $userId]);
+            return (bool)$ok;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
 

@@ -210,6 +210,18 @@ if (!$pipeline->run()) {
     exit;
 }
 
+// Apply per-user theme from DB into session (without persisting) once user is known
+if ($validSession && isset($userId) && isset($userObject) && is_object($userObject) && method_exists($userObject, 'getUserTheme')) {
+    try {
+        $dbTheme = $userObject->getUserTheme((int)$userId);
+        if ($dbTheme) {
+            \App\Helpers\Theme::setCurrentTheme($dbTheme, false);
+        }
+    } catch (\Throwable $e) {
+        // Non-fatal if theme load fails
+    }
+}
+
 // get platforms details
 require '../app/classes/platform.php';
 $platformObject = new Platform($db);

@@ -150,8 +150,24 @@ EOT;
         if ($sessionTheme && isset(self::$config['available_themes'][$sessionTheme])) {
             self::$currentTheme = $sessionTheme;
         } else {
-            // Fall back to default theme
-            self::$currentTheme = self::$config['active_theme'];
+            // Attempt to load per-user theme from DB if user is logged in and userObject is available
+            if (Session::isValidSession() && isset($_SESSION['user_id']) && isset($GLOBALS['userObject']) && is_object($GLOBALS['userObject']) && method_exists($GLOBALS['userObject'], 'getUserTheme')) {
+                try {
+                    $dbTheme = $GLOBALS['userObject']->getUserTheme((int)$_SESSION['user_id']);
+                    if ($dbTheme && isset(self::$config['available_themes'][$dbTheme]) && self::themeExists($dbTheme)) {
+                        // Set session and current theme to the user's stored preference
+                        $_SESSION['theme'] = $dbTheme;
+                        self::$currentTheme = $dbTheme;
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore and continue to default fallback
+                }
+            }
+
+            // Fall back to default theme if still not determined
+            if (self::$currentTheme === null) {
+                self::$currentTheme = self::$config['active_theme'];
+            }
         }
 
         return self::$currentTheme;
@@ -202,7 +218,7 @@ EOT;
      * @param string $themeName
      * @return bool
      */
-    public static function setCurrentTheme(string $themeName): bool
+    public static function setCurrentTheme(string $themeName, bool $persist = true): bool
     {
         if (!self::themeExists($themeName)) {
             return false;
@@ -218,49 +234,16 @@ EOT;
         // Clear the current theme cache
         self::$currentTheme = null;
 
-        // Update config file
-        $configFile = __DIR__ . '/../config/theme.php';
-
-        // Check if config file exists and is writable
-        if (!file_exists($configFile)) {
-            error_log("Theme config file not found: $configFile");
-            return false;
-        }
-
-        if (!is_writable($configFile)) {
-            error_log("Theme config file is not writable: $configFile");
-            if (isset($GLOBALS['feedback_messages'])) {
-                $GLOBALS['feedback_messages'][] = [
-                    'type' => 'error',
-                    'message' => 'Cannot save theme preference: configuration file is not writable.'
-                ];
-            }
-            return false;
-        }
-
-        $config = file_get_contents($configFile);
-        if ($config === false) {
-            error_log("Failed to read theme config file: $configFile");
-            return false;
-        }
-
-        // Update the active_theme in the config
-        $newConfig = preg_replace(
-            "/'active_theme'\s*=>\s*'[^']*'/",
-            "'active_theme' => '" . addslashes($themeName) . "'",
-            $config
-        );
-
-        if ($newConfig !== $config) {
-            if (file_put_contents($configFile, $newConfig) === false) {
-                error_log("Failed to write to theme config file: $configFile");
-                if (isset($GLOBALS['feedback_messages'])) {
-                    $GLOBALS['feedback_messages'][] = [
-                        'type' => 'error',
-                        'message' => 'Failed to save theme preference due to a system error.'
-                    ];
+        // Persist per-user preference in DB when available and requested
+        if ($persist && Session::isValidSession() && isset($_SESSION['user_id'])) {
+            // Try to use existing user object if available
+            if (isset($GLOBALS['userObject']) && is_object($GLOBALS['userObject']) && method_exists($GLOBALS['userObject'], 'setUserTheme')) {
+                try {
+                    $GLOBALS['userObject']->setUserTheme((int)$_SESSION['user_id'], $themeName);
+                } catch (\Throwable $e) {
+                    // Non-fatal: keep session theme even if DB save fails
+                    error_log('Failed to persist user theme: ' . $e->getMessage());
                 }
-                return false;
             }
         }
 

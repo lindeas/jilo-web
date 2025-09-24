@@ -32,6 +32,7 @@ CREATE TABLE `user_meta` (
   `timezone` varchar(255) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
   `bio` text DEFAULT NULL,
+  `theme` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`,`user_id`) USING BTREE,
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_meta_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
