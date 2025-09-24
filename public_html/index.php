@@ -183,6 +183,25 @@ if (isset($GLOBALS['user_IP'])) {
     $user_IP = $GLOBALS['user_IP'];
 }
 
+// Check for pending DB migrations (non-intrusive: warn only)
+try {
+    $migrationsDir = __DIR__ . '/../doc/database/migrations';
+    if (is_dir($migrationsDir)) {
+        require_once __DIR__ . '/../app/core/MigrationRunner.php';
+        $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
+        if ($runner->hasPendingMigrations()) {
+            $pending = $runner->listPendingMigrations();
+            $msg = 'Database schema is out of date. Pending migrations: ' . implode(', ', $pending) . '. Run: php scripts/migrate.php up';
+            // Log and show as a system message
+            $logObject->log('warning', $msg, ['scope' => 'system']);
+            Feedback::flash('DB', 'MIGRATIONS_PENDING', $msg, false, true);
+        }
+    }
+} catch (\Throwable $e) {
+    // Do not break the app; log only
+    error_log('Migration check failed: ' . $e->getMessage());
+}
+
 // CSRF middleware and run pipeline
 $pipeline->add(function() {
     // Initialize security middleware
