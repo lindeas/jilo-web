@@ -44,5 +44,6 @@ return [
         'DB_ERROR' => 'Error connecting to the database: %s',
         'DB_CONNECT_ERROR' => 'Error connecting to DB: %s',
         'DB_UNKNOWN_TYPE' => 'Error: unknown database type "%s"',
+        'MIGRATIONS_PENDING' => '%s',
     ],
 ];

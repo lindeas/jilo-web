@@ -194,7 +194,7 @@ try {
             $msg = 'Database schema is out of date. Pending migrations: ' . implode(', ', $pending) . '. Run: php scripts/migrate.php up';
             // Log and show as a system message
             $logObject->log('warning', $msg, ['scope' => 'system']);
-            Feedback::flash('DB', 'MIGRATIONS_PENDING', $msg, false, true);
+            Feedback::flash('SYSTEM', 'MIGRATIONS_PENDING', $msg, false, true);
         }
     }
 } catch (\Throwable $e) {

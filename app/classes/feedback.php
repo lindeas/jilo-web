@@ -139,6 +139,10 @@ class Feedback {
             'type' => self::TYPE_ERROR,
             'dismissible' => false
         ],
+        'MIGRATIONS_PENDING' => [
+            'type' => self::TYPE_WARNING,
+            'dismissible' => true
+        ],
     ];
 
     private static $strings = null;

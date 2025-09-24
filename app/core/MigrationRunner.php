@@ -7,12 +7,28 @@ use Exception;
 
 class MigrationRunner
 {
-    private PDO $db;
+    private PDO $pdo;
     private string $migrationsDir;
 
-    public function __construct(PDO $db, string $migrationsDir)
+    /**
+     * @param mixed $db Either a PDO instance or the application's Database wrapper
+     * @param string $migrationsDir Directory containing .sql migrations
+     */
+    public function __construct($db, string $migrationsDir)
     {
-        $this->db = $db;
+        // Normalize to PDO
+        if ($db instanceof PDO) {
+            $this->pdo = $db;
+        } elseif (is_object($db) && method_exists($db, 'getConnection')) {
+            $pdo = $db->getConnection();
+            if (!$pdo instanceof PDO) {
+                throw new Exception('Database wrapper did not return a PDO instance');
+            }
+            $this->pdo = $pdo;
+        } else {
+            $type = is_object($db) ? get_class($db) : gettype($db);
+            throw new Exception("Unsupported database type: {$type}");
+        }
         $this->migrationsDir = rtrim($migrationsDir, '/');
         if (!is_dir($this->migrationsDir)) {
             throw new Exception("Migrations directory not found: {$this->migrationsDir}");
@@ -22,12 +38,21 @@ class MigrationRunner
 
     private function ensureMigrationsTable(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS migrations (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            migration VARCHAR(255) NOT NULL UNIQUE,
-            applied_at DATETIME NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        $this->db->exec($sql);
+        $driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'sqlite') {
+            $sql = "CREATE TABLE IF NOT EXISTS migrations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                migration TEXT NOT NULL UNIQUE,
+                applied_at TEXT NOT NULL
+            )";
+        } else {
+            $sql = "CREATE TABLE IF NOT EXISTS migrations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                migration VARCHAR(255) NOT NULL UNIQUE,
+                applied_at DATETIME NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+        }
+        $this->pdo->exec($sql);
     }
 
     public function listAllMigrations(): array
@@ -39,7 +64,7 @@ class MigrationRunner
 
     public function listAppliedMigrations(): array
     {
-        $stmt = $this->db->query('SELECT migration FROM migrations ORDER BY migration ASC');
+        $stmt = $this->pdo->query('SELECT migration FROM migrations ORDER BY migration ASC');
         return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
     }
 
@@ -64,7 +89,7 @@ class MigrationRunner
         }
 
         try {
-            $this->db->beginTransaction();
+            $this->pdo->beginTransaction();
             foreach ($pending as $migration) {
                 $path = $this->migrationsDir . '/' . $migration;
                 $sql = file_get_contents($path);
@@ -75,16 +100,16 @@ class MigrationRunner
                 $statements = array_filter(array_map('trim', preg_split('/;\s*\n/', $sql)));
                 foreach ($statements as $stmtSql) {
                     if ($stmtSql === '') continue;
-                    $this->db->exec($stmtSql);
+                    $this->pdo->exec($stmtSql);
                 }
-                $ins = $this->db->prepare('INSERT INTO migrations (migration, applied_at) VALUES (:m, NOW())');
+                $ins = $this->pdo->prepare('INSERT INTO migrations (migration, applied_at) VALUES (:m, NOW())');
                 $ins->execute([':m' => $migration]);
                 $appliedNow[] = $migration;
             }
-            $this->db->commit();
+            $this->pdo->commit();
         } catch (Exception $e) {
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
             }
             throw $e;
         }
