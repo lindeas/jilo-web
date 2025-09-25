@@ -146,6 +146,7 @@ $allowed_urls = [
     'graphs','latest','livejs','agents',
     'profile','credentials','config','security',
     'settings','theme','theme-asset',
+    'admin-tools',
     'status',
     'help','about',
     'login','logout',

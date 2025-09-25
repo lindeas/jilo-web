@@ -69,8 +69,13 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <h6 class="dropdown-header">system</h6>
-<?php if ($userObject->hasRight($userId, 'superuser') ||
-          $userObject->hasRight($userId, 'view config file')) {?>
+<?php   if ($userObject->hasRight($userId, 'superuser')) {?>
+                        <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=admin-tools">
+                            <i class="fas fa-toolbox"></i>Admin tools
+                        </a>
+<?php   } ?>
+<?php   if ($userObject->hasRight($userId, 'superuser') ||
+            $userObject->hasRight($userId, 'view config file')) {?>
                         <a class="dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=config">
                             <i class="fas fa-wrench"></i>Configuration
                         </a>
