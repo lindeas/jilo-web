@@ -143,6 +143,10 @@ class Feedback {
             'type' => self::TYPE_WARNING,
             'dismissible' => true
         ],
+        'MAINTENANCE_ON' => [
+            'type' => self::TYPE_WARNING,
+            'dismissible' => false
+        ],
     ];
 
     private static $strings = null;

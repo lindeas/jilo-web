@@ -28,6 +28,9 @@ if (!$canAdmin) {
     exit;
 }
 
+// Get any old feedback messages
+include __DIR__ . '/../helpers/feedback.php';
+
 // Handle actions
 $action = $_POST['action'] ?? '';
 
@@ -140,9 +143,6 @@ try {
 
 // CSRF token
 $csrf_token = $security->generateCsrfToken();
-
-// Get any new feedback messages
-include __DIR__ . '/../helpers/feedback.php';
 
 // Load the template
 include __DIR__ . '/../templates/admin-tools.php';

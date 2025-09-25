@@ -45,5 +45,6 @@ return [
         'DB_CONNECT_ERROR' => 'Error connecting to DB: %s',
         'DB_UNKNOWN_TYPE' => 'Error: unknown database type "%s"',
         'MIGRATIONS_PENDING' => '%s',
+        'MAINTENANCE_ON' => 'Maintenance mode is enabled. Regular users see a maintenance page.',
     ],
 ];
