@@ -30,6 +30,48 @@ if (!$canAdmin) {
 
 // Handle actions
 $action = $_POST['action'] ?? '';
+
+// AJAX: view migration file contents
+if ($action === 'read_migration') {
+    header('Content-Type: application/json');
+
+    // CSRF check
+    $csrfHeader = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    $csrfToken = $_POST['csrf_token'] ?? $csrfHeader;
+    if (!$security->verifyCsrfToken($csrfToken)) {
+        echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
+        exit;
+    }
+
+    // Permission check
+    if (!$canAdmin) {
+        echo json_encode(['success' => false, 'error' => 'Permission denied']);
+        exit;
+    }
+
+    // Validate filename to avoid traversal
+    $filename = basename($_POST['filename'] ?? '');
+    if ($filename === '' || !preg_match('/^[A-Za-z0-9_\-]+\.sql$/', $filename)) {
+        echo json_encode(['success' => false, 'error' => 'Invalid filename']);
+        exit;
+    }
+
+    $migrationsDir = __DIR__ . '/../../doc/database/migrations';
+    $path = realpath($migrationsDir . '/' . $filename);
+    if ($path === false || strpos($path, realpath($migrationsDir)) !== 0) {
+        echo json_encode(['success' => false, 'error' => 'File not found']);
+        exit;
+    }
+
+    $content = @file_get_contents($path);
+    if ($content === false) {
+        echo json_encode(['success' => false, 'error' => 'Could not read file']);
+        exit;
+    }
+
+    echo json_encode(['success' => true, 'name' => $filename, 'content' => $content]);
+    exit;
+}
 if ($action !== '') {
     if (!$security->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
         Feedback::flash('SECURITY', 'CSRF_INVALID');
@@ -75,10 +117,22 @@ require_once __DIR__ . '/../core/MigrationRunner.php';
 $migrationsDir = __DIR__ . '/../../doc/database/migrations';
 $pending = [];
 $applied = [];
+$migration_contents = [];
 try {
     $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
     $pending = $runner->listPendingMigrations();
     $applied = $runner->listAppliedMigrations();
+    // Preload contents for billing-admin style modals
+    $all = array_unique(array_merge($pending, $applied));
+    foreach ($all as $fname) {
+        $path = realpath($migrationsDir . '/' . $fname);
+        if ($path && strpos($path, realpath($migrationsDir)) === 0) {
+            $content = @file_get_contents($path);
+            if ($content !== false) {
+                $migration_contents[$fname] = $content;
+            }
+        }
+    }
 } catch (Throwable $e) {
     // show error in the page
     $migration_error = $e->getMessage();

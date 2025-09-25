@@ -60,11 +60,22 @@
                             <div><strong>Pending</strong></div>
                             <span class="badge <?= empty($pending) ? 'bg-success' : 'bg-warning text-dark' ?>"><?= count($pending) ?></span>
                         </div>
-                        <div class="mt-2 small">
+                        <div class="mt-2 small border rounded" style="max-height: 240px; overflow: auto;">
                             <?php if (empty($pending)): ?>
-                                <span class="text-success">none</span>
+                                <div class="p-2"><span class="text-success">none</span></div>
                             <?php else: ?>
-                                <code><?= htmlspecialchars(implode(', ', $pending)) ?></code>
+                                <ul class="list-group list-group-flush">
+                                    <?php foreach ($pending as $fname): ?>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span class="text-monospace small"><?= htmlspecialchars($fname) ?></span>
+                                            <button type="button"
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#migrationModal<?= md5($fname) ?>">View
+                                            </button>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -73,11 +84,22 @@
                             <div><strong>Applied</strong></div>
                             <span class="badge bg-secondary"><?= count($applied) ?></span>
                         </div>
-                        <div class="mt-2 small">
+                        <div class="mt-2 small border rounded" style="max-height: 240px; overflow: auto;">
                             <?php if (empty($applied)): ?>
-                                <span class="text-muted">none</span>
+                                <div class="p-2"><span class="text-muted">none</span></div>
                             <?php else: ?>
-                                <code><?= htmlspecialchars(implode(', ', $applied)) ?></code>
+                                <ul class="list-group list-group-flush">
+                                    <?php foreach ($applied as $fname): ?>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span class="text-monospace small"><?= htmlspecialchars($fname) ?></span>
+                                            <button type="button"
+                                                    class="btn btn-outline-secondary btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#migrationModal<?= md5($fname) ?>">View
+                                            </button>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -91,3 +113,27 @@
         </div>
     </div>
 </div>
+
+<!-- Migration viewer modals (one per file) -->
+<?php if (!empty($migration_contents)):
+      foreach ($migration_contents as $name => $content):
+          $modalId = 'migrationModal' . md5($name);
+?>
+<div class="modal fade" id="<?= $modalId ?>" tabindex="-1" aria-labelledby="<?= $modalId ?>Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="<?= $modalId ?>Label"><?= htmlspecialchars($name) ?></h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <pre class="mb-0" style="max-height: 60vh; overflow: auto;"><code class="p-3 d-block"><?= htmlspecialchars($content) ?></code></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php   endforeach;
+      endif; ?>
