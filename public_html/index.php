@@ -241,6 +241,8 @@ try {
         }
         if (!$isSuperuser) {
             http_response_code(503);
+            // Advise clients to retry after 10 minutes (600 seconds; configure here)
+            header('Retry-After: 600');
             // Show themed maintenance page
             \App\Helpers\Theme::include('page-header');
             \App\Helpers\Theme::include('page-menu');
