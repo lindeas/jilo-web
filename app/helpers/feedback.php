@@ -15,7 +15,8 @@ if (!empty($flash_messages)) {
             'key' => $flash['key'],
             'custom_message' => $flash['custom_message'] ?? null,
             'dismissible' => $flash['dismissible'] ?? false,
-            'small' => $flash['small'] ?? false
+            'small' => $flash['small'] ?? false,
+            'sanitize' => $flash['sanitize'] ?? true
         ];
     }, $flash_messages));
 }
@@ -28,7 +29,8 @@ if (isset($system_messages) && is_array($system_messages)) {
             $msg['key'],
             $msg['custom_message'] ?? null,
             $msg['dismissible'] ?? false,
-            $msg['small'] ?? false
+            $msg['small'] ?? false,
+            $msg['sanitize'] ?? true
         );
     }
 }

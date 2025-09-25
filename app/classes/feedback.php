@@ -213,7 +213,7 @@ class Feedback {
      * Store feedback message in session for display after redirect
      */
     // Usage: Feedback::flash('LOGIN', 'LOGIN_SUCCESS', 'custom message [or null]', true [for dismissible; or null], true [for small; or omit]);
-    public static function flash($category, $key, $customMessage = null, $dismissible = null, $small = false) {
+    public static function flash($category, $key, $customMessage = null, $dismissible = null, $small = false, $sanitize = true) {
         if (!isset($_SESSION['flash_messages'])) {
             $_SESSION['flash_messages'] = [];
         }
@@ -227,7 +227,8 @@ class Feedback {
             'key' => $key,
             'custom_message' => $customMessage,
             'dismissible' => $isDismissible,
-            'small' => $small
+            'small' => $small,
+            'sanitize' => $sanitize
         ];
     }
 
