@@ -38,6 +38,8 @@ JQuery is used in this project and is licensed under the MIT License. See licens
 
 Chart.js is used in this project and is licensed under the MIT License. See license-chartjs file.
 
+Highlight.js is used in this project and is licensed under the BSD 3-clause License. See license-highlightjs file.
+
 ## requirements
 
 - web server (deb: apache | nginx)
