@@ -19,6 +19,9 @@ if (!Session::isValidSession()) {
     exit;
 }
 
+// Get any old feedback messages
+include '../app/helpers/feedback.php';
+
 // Handle theme switching
 if (isset($_GET['switch_to'])) {
     $themeName = $_GET['switch_to'];
@@ -63,9 +66,6 @@ $themes = $themeData;
 
 // Generate CSRF token for the form
 $csrf_token = $security->generateCsrfToken();
-
-// Get any new feedback messages
-include '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/theme.php';
