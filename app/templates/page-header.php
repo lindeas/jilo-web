@@ -53,7 +53,7 @@
         });
     </script>
 <?php } ?>
-    <title>Jilo Web</title>
+    <title><?= htmlspecialchars($config['site_name']) ?></title>
     <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars($app_root) ?>static/favicon.ico">
 </head>
 

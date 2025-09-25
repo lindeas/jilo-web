@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Apply rate limiting
-    require '../app/includes/rate_limit_middleware.php';
+    require_once '../app/includes/rate_limit_middleware.php';
     checkRateLimit($db, 'config', $userId);
 
     // Ensure no output before this point
