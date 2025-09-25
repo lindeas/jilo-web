@@ -12,7 +12,12 @@
                 </div>
                 <div class="card-body">
                     <p class="lead">The site is temporarily unavailable due to maintenance.</p>
+                    <?php $mm = \App\Core\Maintenance::getMessage(); ?>
+                    <?php if ($mm): ?>
+                    <p class="mb-0"><em><?= htmlspecialchars($mm) ?></em></p>
+                    <?php else: ?>
                     <p class="text-muted">Please try again later.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

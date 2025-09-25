@@ -49,6 +49,13 @@ php scripts/maintenance.php off
 php scripts/maintenance.php status
 ```
 
+Notes:
+
+- The maintenance flag is stored at `app/.maintenance.flag`.
+- You can also control maintenance via environment variables (useful when the filesystem is read-only):
+  - `JILO_MAINTENANCE=1` enables maintenance mode
+  - `JILO_MAINTENANCE_MESSAGE="Your message"` sets the banner message
+
 ## Authoring new migrations
 
 1. Create a new SQL file in `doc/database/migrations/`, e.g.:
