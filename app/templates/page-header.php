@@ -36,6 +36,23 @@
     <script src="<?= htmlspecialchars($app_root) ?>static/libs/chartjs/chartjs-adapter-moment.min.js"></script>
     <script src="<?= htmlspecialchars($app_root) ?>static/libs/chartjs/chartjs-plugin-zoom.min.js"></script>
 <?php } ?>
+<?php if ($page === 'admin-tools') {
+    // Use local highlight.js assets if available
+    $hlBaseFs  = __DIR__ . '/../../public_html/static/libs/highlightjs';
+    $hlBaseUrl = htmlspecialchars($app_root) . 'static/libs/highlightjs/';
+    $hlCss     = $hlBaseFs . '/styles/github.min.css';
+    $hlJs      = $hlBaseFs . '/highlight.min.js';
+    $hlSql     = $hlBaseFs . '/languages/sql.min.js';
+    if (is_file($hlCss)) { echo '<link rel="stylesheet" href="' . $hlBaseUrl . 'styles/github.min.css">'; }
+    if (is_file($hlJs))  { echo '<script src="' . $hlBaseUrl . 'highlight.min.js"></script>'; }
+    if (is_file($hlSql)) { echo '<script src="' . $hlBaseUrl . 'languages/sql.min.js"></script>'; }
+?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.hljs) { hljs.highlightAll(); }
+        });
+    </script>
+<?php } ?>
     <title>Jilo Web</title>
     <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars($app_root) ?>static/favicon.ico">
 </head>
