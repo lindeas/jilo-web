@@ -192,10 +192,10 @@ try {
         $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
         if ($runner->hasPendingMigrations()) {
             $pending = $runner->listPendingMigrations();
-            $msg = 'Database schema is out of date. Pending migrations: ' . implode(', ', $pending) . '. Run: php scripts/migrate.php up';
+            $msg = 'Database schema is out of date. There are pending migrations. Run "<code>php scripts/migrate.php up</code>" or use the <a href="?page=admin-tools">Admin tools</a>';
             // Log and show as a system message
             $logObject->log('warning', $msg, ['scope' => 'system']);
-            Feedback::flash('SYSTEM', 'MIGRATIONS_PENDING', $msg, false, true);
+            Feedback::flash('SYSTEM', 'MIGRATIONS_PENDING', $msg, false, true, false);
         }
     }
 } catch (\Throwable $e) {
