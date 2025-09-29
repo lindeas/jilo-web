@@ -39,6 +39,7 @@ jobs:
 
     - name: Wait for MariaDB
       run: |
+        sudo apt-get update
         sudo apt-get install -y mariadb-client
         while ! mysqladmin ping -h"127.0.0.1" -P"3306" -uroot -proot --silent; do
           echo "Waiting for database connection..."
