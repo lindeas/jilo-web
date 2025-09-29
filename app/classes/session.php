@@ -35,22 +35,30 @@ class Session {
         // Get session name from config or generate a random one
         self::$sessionName = $config['session']['name'] ?? self::generateRandomSessionName();
 
-        // Set session name before starting the session
-        session_name(self::$sessionName);
+        // Set session name before starting the session, only if headers not sent and no active session
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_name(self::$sessionName);
+        }
 
-        // Set session cookie parameters
+        // Set session cookie parameters only if headers not sent and no active session
         $thisPath = $config['folder'] ?? '/';
         $thisDomain = $config['domain'] ?? '';
         $isSecure = isset($_SERVER['HTTPS']);
 
-        session_set_cookie_params([
-            'lifetime' => 0, // Session cookie (browser session)
-            'path' => $thisPath,
-            'domain' => $thisDomain,
-            'secure' => $isSecure,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_set_cookie_params([
+                'lifetime' => 0, // Session cookie (browser session)
+                'path' => $thisPath,
+                'domain' => $thisDomain,
+                'secure' => $isSecure,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+        }
+
+        // Align session start options dynamically with current transport
+        self::$sessionOptions['cookie_secure'] = $isSecure ? 1 : 0;
+        self::$sessionOptions['cookie_samesite'] = 'Strict';
 
         self::$initialized = true;
     }
@@ -109,8 +117,11 @@ class Session {
      * @return bool True if session is valid, false otherwise
      */
     public static function isValidSession($strict = true) {
-        // If session is not started or empty, it's not valid
-        if (session_status() !== PHP_SESSION_ACTIVE || empty($_SESSION)) {
+        // Ensure a session is started (safe in CLI/tests)
+        self::startSession();
+
+        // If there is no session data at all, it's not valid
+        if (empty($_SESSION)) {
             return false;
         }
 
