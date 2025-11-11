@@ -99,7 +99,7 @@ if ($config['registration_enabled'] == true) {
     }
 
     // Get any new feedback messages
-    include dirname(__FILE__, 4) . '/app/helpers/feedback.php';
+    include_once dirname(__FILE__, 4) . '/app/helpers/feedback.php';
 
     // Load the template
     include PLUGIN_REGISTER_PATH . 'views/form-register.php';

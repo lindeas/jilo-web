@@ -113,7 +113,7 @@ if (!empty($search)) {
 $username = $userObject->getUserDetails($userId)[0]['username'];
 
 // Get any new feedback messages
-include dirname(__FILE__, 4) . '/app/helpers/feedback.php';
+include_once dirname(__FILE__, 4) . '/app/helpers/feedback.php';
 
 // Load plugin helpers
 include PLUGIN_LOGS_PATH . 'helpers/logs_view_helper.php';

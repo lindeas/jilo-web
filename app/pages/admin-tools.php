@@ -29,7 +29,7 @@ if (!$canAdmin) {
 }
 
 // Get any old feedback messages
-include __DIR__ . '/../helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 // Handle actions
 $action = $_POST['action'] ?? '';

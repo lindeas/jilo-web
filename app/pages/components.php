@@ -101,7 +101,7 @@ if ($response['db'] === null) {
     }
 
     // Get any new feedback messages
-    include '../app/helpers/feedback.php';
+    include_once '../app/helpers/feedback.php';
 
     // display the widget
     include '../app/templates/components.php';

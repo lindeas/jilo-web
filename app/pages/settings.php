@@ -12,7 +12,7 @@ $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
 // Get any new feedback messages
-include '../app/helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';

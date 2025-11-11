@@ -29,7 +29,7 @@ class DatabaseConnector
             // Show error and exit
             Feedback::flash('ERROR', 'DEFAULT', getError('Error connecting to the database.', $e->getMessage()));
             include __DIR__ . '/../templates/page-header.php';
-            include __DIR__ . '/../helpers/feedback.php';
+            include_once __DIR__ . '/../helpers/feedback.php';
             include __DIR__ . '/../templates/page-footer.php';
             exit();
         }

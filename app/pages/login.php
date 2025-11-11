@@ -60,7 +60,7 @@ try {
         }
 
         // Get any new feedback messages
-        include '../app/helpers/feedback.php';
+        include_once '../app/helpers/feedback.php';
 
         // Make userId available to template
         $userId = $pending2FA['user_id'];
@@ -115,7 +115,7 @@ try {
         $security->generateCsrfToken();
 
         // Load the forgot password form
-        include '../app/helpers/feedback.php';
+        include_once '../app/helpers/feedback.php';
         include '../app/templates/form-password-forgot.php';
         exit();
 
@@ -175,7 +175,7 @@ try {
             }
 
             // Show reset password form
-            include '../app/helpers/feedback.php';
+            include_once '../app/helpers/feedback.php';
             include '../app/templates/form-password-reset.php';
             exit();
 
@@ -272,7 +272,7 @@ if (!empty($config['login_message'])) {
 }
 
 // Get any new feedback messages
-include '../app/helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/form-login.php';

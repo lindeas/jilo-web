@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
             }
             // Get any new feedback messages
-            include '../app/helpers/feedback.php';
+            include_once '../app/helpers/feedback.php';
 
             // Load the 2FA setup template
             include '../app/templates/credentials-2fa-setup.php';
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         case 'verify':
             // Get any new feedback messages
-            include '../app/helpers/feedback.php';
+            include_once '../app/helpers/feedback.php';
 
             // Load the 2FA verification template
             include '../app/templates/credentials-2fa-verify.php';
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         default:
             // Get any new feedback messages
-            include '../app/helpers/feedback.php';
+            include_once '../app/helpers/feedback.php';
 
             // Load the combined management template
             include '../app/templates/credentials-manage.php';

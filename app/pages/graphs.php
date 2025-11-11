@@ -85,7 +85,7 @@ $widget['name'] = 'Graphs';
 $widget['title'] = 'Jitsi graphs';
 
 // Get any new feedback messages
-include '../app/helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 // Load the template
 include '../app/templates/graphs.php';

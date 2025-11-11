@@ -7,7 +7,7 @@
  */
 
 // Get any new feedback messages
-include '../app/helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 require '../app/classes/config.php';
 require '../app/classes/api_response.php';

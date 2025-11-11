@@ -20,7 +20,7 @@ if (!Session::isValidSession()) {
 }
 
 // Get any old feedback messages
-include '../app/helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 // Handle theme switching
 if (isset($_GET['switch_to'])) {

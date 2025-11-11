@@ -10,7 +10,7 @@
  */
 
 // Get any new feedback messages
-include '../app/helpers/feedback.php';
+include_once '../app/helpers/feedback.php';
 
 require '../app/classes/conference.php';
 require '../app/classes/participant.php';
