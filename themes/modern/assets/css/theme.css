@@ -171,7 +171,7 @@ body.modern-theme {
         flex-direction: column;
         padding: 0.5rem;
     }
-    
+
     .menu-left, .menu-right {
         width: 100%;
         justify-content: space-between;

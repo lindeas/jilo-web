@@ -7,15 +7,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
-    
+
     // Initialize popovers
     $('[data-toggle="popover"]').popover();
-    
+
     // Add smooth scrolling to anchor links
     $('a[href^="#"]').on('click', function(e) {
         if (this.hash !== '') {
             e.preventDefault();
-            
+
             const hash = this.hash;
             $('html, body').animate(
                 { scrollTop: $(hash).offset().top - 20 },
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         }
     });
-    
+
     // Handle form validation feedback
     $('form.needs-validation').on('submit', function(event) {
         if (this.checkValidity() === false) {
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         $(this).addClass('was-validated');
     });
-    
+
     // Add active class to current nav item
     const currentPage = window.location.pathname.split('/').pop() || 'index.php';
     $('.nav-link').each(function() {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $(this).closest('.nav-item').addClass('active');
         }
     });
-    
+
     // Handle sidebar toggle
     const sidebarToggle = document.querySelector('.sidebar-toggle');
     if (sidebarToggle) {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.documentElement.classList.contains('sidebar-collapsed') ? 'collapsed' : 'expanded');
         });
     }
-    
+
     // Handle dropdown menus
     $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
         if (!$(this).next().hasClass('show')) {
@@ -59,11 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const $subMenu = $(this).next('.dropdown-menu');
         $subMenu.toggleClass('show');
-        
+
         $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function() {
             $('.dropdown-submenu .show').removeClass('show');
         });
-        
+
         return false;
     });
 });
