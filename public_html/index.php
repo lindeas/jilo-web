@@ -97,6 +97,9 @@ use app\Helpers\Theme;
 
 Session::startSession();
 
+// Reset flash messages display flag for new page load
+$_SESSION['flash_messages_displayed'] = false;
+
 // Define page variable early via sanitize
 require_once __DIR__ . '/../app/includes/sanitize.php';
 // Ensure $page is defined to avoid undefined variable
@@ -185,9 +188,10 @@ if (isset($GLOBALS['user_IP'])) {
 }
 
 // Check for pending DB migrations (non-intrusive: warn only)
+// Only show for authenticated users and not on login page
 try {
     $migrationsDir = __DIR__ . '/../doc/database/migrations';
-    if (is_dir($migrationsDir)) {
+    if (is_dir($migrationsDir) && $userId !== null && $page !== 'login') {
         require_once __DIR__ . '/../app/core/MigrationRunner.php';
         $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
         if ($runner->hasPendingMigrations()) {

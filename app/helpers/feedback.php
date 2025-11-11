@@ -6,8 +6,18 @@
  * Combines functionality to handle retrieving and displaying feedback messages.
  */
 
-// Get any flash messages from previous request
-$flash_messages = Feedback::getFlash();
+// Prevent multiple display of flash messages on the same page
+if (!isset($_SESSION['flash_messages_displayed'])) {
+    $_SESSION['flash_messages_displayed'] = false;
+}
+
+// Get any flash messages from previous request (only once per page load)
+$flash_messages = [];
+if (!$_SESSION['flash_messages_displayed']) {
+    $flash_messages = Feedback::getFlash();
+    $_SESSION['flash_messages_displayed'] = true;
+}
+
 if (!empty($flash_messages)) {
     $system_messages = array_merge($system_messages ?? [], array_map(function($flash) {
         return [
