@@ -14,6 +14,10 @@ $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
 // Get any new feedback messages
 include_once '../app/helpers/feedback.php';
 
+// Initialize security helper
+require_once '../app/helpers/security.php';
+$security = SecurityHelper::getInstance();
+
 $action = $_REQUEST['action'] ?? '';
 $agent = $_REQUEST['agent'] ?? '';
 $host = $_REQUEST['host'] ?? '';

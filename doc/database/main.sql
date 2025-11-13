@@ -30,9 +30,9 @@ CREATE TABLE `user_meta` (
   `name` varchar(255) DEFAULT NULL,
   `email` varchar(256) DEFAULT NULL,
   `timezone` varchar(255) DEFAULT NULL,
+  `theme` varchar(64) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
   `bio` text DEFAULT NULL,
-  `theme` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`,`user_id`) USING BTREE,
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_meta_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
@@ -202,7 +202,7 @@ CREATE TABLE `platform` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-INSERT INTO `platforms` (`id`, `name`, `jitsi_url`, `jilo_database`) VALUES
+INSERT INTO `platform` (`id`, `name`, `jitsi_url`, `jilo_database`) VALUES
 (1,'example.com','https://meet.example.com','../../jilo/jilo.db');
 
 -- --------------------------------------------------------
