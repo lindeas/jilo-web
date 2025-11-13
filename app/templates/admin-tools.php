@@ -55,6 +55,22 @@
                     <?php if (!empty($migration_error)): ?>
                         <div class="alert alert-danger">Error: <?= htmlspecialchars($migration_error) ?></div>
                     <?php endif; ?>
+                    <div class="alert alert-info mb-3">
+                        <strong>Test Migration Tools</strong><br>
+                        <small class="text-muted">These tools create fake migrations in the database only (no files) for testing the migration warning functionality.</small>
+                    </div>
+                    <div class="d-flex gap-2 mb-3">
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="action" value="create_test_migration">
+                            <button type="submit" class="btn btn-outline-info btn-sm" <?= !empty($test_migrations_exist) ? 'disabled' : '' ?>>Create test migration</button>
+                        </form>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="action" value="clear_test_migrations">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm" <?= empty($test_migrations_exist) ? 'disabled' : '' ?>>Clear test migrations</button>
+                        </form>
+                    </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div><strong>Pending</strong></div>

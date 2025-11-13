@@ -97,10 +97,66 @@ if ($action !== '') {
             $migrationsDir = __DIR__ . '/../../doc/database/migrations';
             $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
             $applied = $runner->applyPendingMigrations();
+            
+            // Clean up any test migration files after applying
+            if (!empty($applied)) {
+                foreach ($applied as $migration) {
+                    if (strpos($migration, '_test_migration.sql') !== false) {
+                        $filepath = $migrationsDir . '/' . $migration;
+                        if (file_exists($filepath)) {
+                            unlink($filepath);
+                        }
+                        // Remove from database migrations table to leave no trace
+                        $stmt = $db->getConnection()->prepare("DELETE FROM migrations WHERE migration = :migration");
+                        $stmt->execute([':migration' => $migration]);
+                    }
+                }
+            }
+
             if (empty($applied)) {
                 Feedback::flash('NOTICE', 'DEFAULT', 'No pending migrations.', true);
             } else {
                 Feedback::flash('NOTICE', 'DEFAULT', 'Applied migrations: ' . implode(', ', $applied), true);
+            }
+        } elseif ($action === 'create_test_migration') {
+            $migrationsDir = __DIR__ . '/../../doc/database/migrations';
+            $timestamp = date('Ymd_His');
+            $filename = $timestamp . '_test_migration.sql';
+            $filepath = $migrationsDir . '/' . $filename;
+
+            // Create a simple test migration that adds a test setting (MariaDB compatible)
+            $testMigration = "-- Test migration for testing purposes\n";
+            $testMigration .= "-- This migration adds a test setting to settings table\n";
+            $testMigration .= "INSERT INTO settings (`key`, `value`, updated_at) VALUES ('test_migration_flag', '1', NOW())\n";
+            $testMigration .= "ON DUPLICATE KEY UPDATE `value` = '1', updated_at = NOW();\n";
+
+            if (file_put_contents($filepath, $testMigration)) {
+                Feedback::flash('NOTICE', 'DEFAULT', 'Test migration created: ' . $filename, true);
+            } else {
+                Feedback::flash('ERROR', 'DEFAULT', 'Failed to create test migration file', false);
+            }
+        } elseif ($action === 'clear_test_migrations') {
+            $migrationsDir = __DIR__ . '/../../doc/database/migrations';
+
+            // Find and remove test migration files
+            $testFiles = glob($migrationsDir . '/*_test_migration.sql');
+            $removedCount = 0;
+
+            foreach ($testFiles as $file) {
+                $filename = basename($file);
+                if (file_exists($file)) {
+                    unlink($file);
+                    $removedCount++;
+                }
+                // Remove from database migrations table to leave no trace
+                $stmt = $db->getConnection()->prepare("DELETE FROM migrations WHERE migration = :migration");
+                $stmt->execute([':migration' => $filename]);
+            }
+
+            if ($removedCount > 0) {
+                Feedback::flash('NOTICE', 'DEFAULT', 'Cleared ' . $removedCount . ' test migration(s)', true);
+            } else {
+                Feedback::flash('NOTICE', 'DEFAULT', 'No test migrations to clear', true);
             }
         }
     } catch (Throwable $e) {
@@ -121,10 +177,15 @@ $migrationsDir = __DIR__ . '/../../doc/database/migrations';
 $pending = [];
 $applied = [];
 $migration_contents = [];
+$test_migrations_exist = false;
 try {
     $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
     $pending = $runner->listPendingMigrations();
     $applied = $runner->listAppliedMigrations();
+
+    // Check if any test migrations exist
+    $test_migrations_exist = !empty(glob($migrationsDir . '/*_test_migration.sql'));
+
     // Preload contents for billing-admin style modals
     $all = array_unique(array_merge($pending, $applied));
     foreach ($all as $fname) {
