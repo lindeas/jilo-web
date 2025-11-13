@@ -49,7 +49,7 @@ function isCacheExpired($agentId) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Apply rate limiting for adding new contacts
-    require '../app/includes/rate_limit_middleware.php';
+    require_once '../app/includes/rate_limit_middleware.php';
     checkRateLimit($db, 'contact', $userId);
 
     // Validate agent ID for POST operations

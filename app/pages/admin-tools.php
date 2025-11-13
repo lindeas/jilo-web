@@ -97,7 +97,7 @@ if ($action !== '') {
             $migrationsDir = __DIR__ . '/../../doc/database/migrations';
             $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
             $applied = $runner->applyPendingMigrations();
-            
+
             // Clean up any test migration files after applying
             if (!empty($applied)) {
                 foreach ($applied as $migration) {
