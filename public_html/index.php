@@ -197,9 +197,21 @@ try {
         if ($runner->hasPendingMigrations()) {
             $pending = $runner->listPendingMigrations();
             $msg = 'Database schema is out of date. There are pending migrations. Run "<code>php scripts/migrate.php up</code>" or use the <a href="?page=admin-tools">Admin tools</a>';
-            // Log and show as a system message
-            $logObject->log('warning', $msg, ['scope' => 'system']);
-            Feedback::flash('SYSTEM', 'MIGRATIONS_PENDING', $msg, false, true, false);
+            // Check if migration message already exists to prevent duplicates
+            $hasMigrationMessage = false;
+            if (isset($_SESSION['flash_messages'])) {
+                foreach ($_SESSION['flash_messages'] as $flash) {
+                    if ($flash['category'] === 'SYSTEM' && $flash['key'] === 'MIGRATIONS_PENDING') {
+                        $hasMigrationMessage = true;
+                        break;
+                    }
+                }
+            }
+            // Log and show as a system message only if not already added
+            if (!$hasMigrationMessage) {
+                $logObject->log('warning', $msg, ['scope' => 'system']);
+                Feedback::flash('SYSTEM', 'MIGRATIONS_PENDING', $msg, false, true, false);
+            }
         }
     }
 } catch (\Throwable $e) {
