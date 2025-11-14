@@ -4,21 +4,44 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## Unreleased
+## 0.4.1 - 2025-11-13
 
 #### Links
-- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.4...HEAD
-- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.4...HEAD
-- github: https://github.com/lindeas/jilo-web/compare/v0.4...HEAD
-- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.4...HEAD
+- upstream: https://code.lindeas.com/lindeas/jilo-web/compare/v0.4...v0.4.1
+- codeberg: https://codeberg.org/lindeas/jilo-web/compare/v0.4...v0.4.1
+- github: https://github.com/lindeas/jilo-web/compare/v0.4...v0.4.1
+- gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.4...v0.4.1
 
 ### Added
+- Added the ability to have non-sanitized feedback messages
+- Added a notice for maintenance mode for superusers
+- Added initial support for maintenance mode
+- Added initial support for database upgrades and migrations
+- Added CSRF protection to the theme switcher functionality
+- Added a helper to manage all static assets of a theme
+- Added theme data to be passed correctly to the views
+- Added "modern" and "retro" theme screenshots
+- Added "alternative retro" theme
 - Added CSS and JS to the default theme
 - Added change theme menu entry
 
 ### Changed
+- Moved away from SQLite to MariaDB/MySQL for the main Jilo website
+- Integrated Highlight.js library into the SQL view modal for better code highlighting
+- Moved the migration flag to the database with a fallback to a file
+- Made the theme setting configuration per-user instead of global
+- Refactored the session class and added a random session name generator if not configured
+- Moved session variables to the configuration file
 
 ### Fixed
+- Fixed flash messages to show up only once per page
+- Fixed database migration functionality and associated feedback notices
+- Fixed theme folder structure, helpers, and display logic to work correctly with new asset management
+- Fixed index routing to work with the latest session and config changes
+- Fixed the router class and several bugs within the session class and theme switcher functionality
+
+### Removed
+- Removed getScreenshotUrl function, using the generic getAssetUrl for all assets instead
 
 ---
 
