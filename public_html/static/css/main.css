@@ -264,6 +264,100 @@ body {
     gap: 1rem;
 }
 
+/* Auth forms */
+.auth-card {
+    max-width: 420px;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 1.25rem;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.15);
+    border: none;
+}
+
+.auth-card-body {
+    padding: 2.5rem 2.75rem 2.25rem;
+}
+
+.auth-header {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.auth-eyebrow {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    margin-bottom: 0.4rem;
+}
+
+.auth-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.4rem;
+}
+
+.auth-subtitle {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+.auth-input-group .input-group-text {
+    background: transparent;
+    border-right: none;
+    color: #94a3b8;
+}
+
+.auth-input-group .form-control {
+    border-left: none;
+    border-radius: 0 0.65rem 0.65rem 0;
+}
+
+.auth-input-group .input-group-text,
+.auth-input-group .form-control {
+    border-color: rgba(148, 163, 184, 0.8);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input-group .form-control:focus {
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
+
+.auth-remember .form-check-input {
+    margin-right: 0.35rem;
+}
+
+.auth-link {
+    font-size: 0.85rem;
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+.auth-submit {
+    padding: 0.85rem 1rem;
+    border-radius: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+}
+
+@media (max-width: 576px) {
+    .auth-card-body {
+        padding: 2rem 1.75rem;
+    }
+
+    .auth-title {
+        font-size: 1.35rem;
+    }
+}
+
 .modern-header-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
