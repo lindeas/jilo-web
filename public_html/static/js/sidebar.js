@@ -19,13 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
             toggleButton.textContent = ">>";
             sidebar.classList.add('collapsed');
             mainContent.classList.add('expanded');
-            timeNow.style.display = 'none';
+            timeNow.style.opacity = '0';
         } else {
             toggleButton.value = "<<";
             toggleButton.textContent = "<<";
             sidebar.classList.remove('collapsed');
             mainContent.classList.remove('expanded');
-            timeNow.style.display = 'block';
+            timeNow.style.opacity = '1';
         }
     }
 
@@ -37,15 +37,15 @@ document.addEventListener('DOMContentLoaded', function () {
         sidebar.classList.toggle('collapsed');
         document.documentElement.classList.toggle('sidebar-collapsed');
         mainContent.classList.toggle('expanded');
-        // Toggle the value between ">>" and "<<"
+        // Toggle the value between ">>" and "<<" and fade time box
         if (toggleButton.value === ">>") {
           toggleButton.value = "<<";
           toggleButton.textContent = "<<";
-          timeNow.style.display = 'block';
+          timeNow.style.opacity = '1';
         } else {
           toggleButton.value = ">>";
           toggleButton.textContent = ">>";
-          timeNow.style.display = 'none';
+          timeNow.style.opacity = '0';
         }
 
         // Update with the new state

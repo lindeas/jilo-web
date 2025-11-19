@@ -704,6 +704,16 @@ body {
 }
 
 /* sidebar section titles */
+.sidebar-content .sidebar-section-title-first {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    padding: 0.6rem 1.1rem 0.45rem 1.1rem;
+    cursor: default;
+    background-color: transparent;
+    font-weight: 300;
+}
 .sidebar-content .sidebar-section-title {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -712,10 +722,14 @@ body {
     padding: 0.6rem 1.1rem 0.45rem 1.1rem;
     cursor: default;
     background-color: transparent;
-    font-weight: 600;
+    font-weight: 300;
+    border-top: 1px solid lightgray;
 }
 
 /* make section titles invisible (but keep spacing) when collapsed */
+.sidebar-wrapper.collapsed .sidebar-section-title-first {
+    visibility: hidden;
+}
 .sidebar-wrapper.collapsed .sidebar-section-title {
     visibility: hidden;
 }

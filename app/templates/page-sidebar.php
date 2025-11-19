@@ -1,7 +1,7 @@
         <div class="row">
 
             <!-- Sidebar -->
-            <div class="col-md-3 mb-5 sidebar-wrapper bg-light" id="sidebar">
+            <div class="col-md-3 sidebar-wrapper" id="sidebar">
                 <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
 <?php
 $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
@@ -10,7 +10,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                 </div>
 
                 <div class="col-4"><button class="btn btn-sm btn-info toggle-sidebar-button" type="button" id="toggleSidebarButton" value=">>"></button></div>
-                <div class="sidebar-content card ml-3 mt-3">
+                <div class="sidebar-content card ml-3 mt-0">
                     <ul class="list-group">
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=dashboard">
@@ -19,7 +19,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>logs statistics</small></p></li>
+                        <li class="list-group-item sidebar-section-title-first">logs statistics</li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=conferences">
                             <li class="list-group-item<?php if ($page === 'conferences') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
@@ -37,7 +37,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>live data</small></p></li>
+                        <li class="list-group-item sidebar-section-title">live data</li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=graphs">
                             <li class="list-group-item<?php if ($page === 'graphs') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
@@ -65,7 +65,7 @@ $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
                             </li>
                         </a>
 
-                        <li class="list-group-item bg-light" style="border: none;"><p class="text-end mb-0"><small>jitsi platforms settings</small></p></li>
+                        <li class="list-group-item sidebar-section-title">jitsi platforms settings</li>
 
                         <a href="<?= htmlspecialchars($app_root) ?>?page=settings">
                             <li class="list-group-item<?php if ($page === 'settings') echo ' list-group-item-secondary'; else echo ' list-group-item-action'; ?>">
