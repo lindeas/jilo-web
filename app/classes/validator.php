@@ -21,9 +21,25 @@ class Validator {
         $value = $this->data[$field] ?? null;
 
         switch ($rule) {
+            // case for required fields that can be empty strings
             case 'required':
                 if ($parameter && empty($value)) {
-                    $this->addError($field, "Field is required");
+                    $label = $this->formatFieldLabel($field);
+                    $this->addError($field, "$label is required");
+                }
+                break;
+            // special case for required fields that can't be empty strings or null
+            case 'required_strict':
+                if ($parameter) {
+                    if ($value === null) {
+                        $label = $this->formatFieldLabel($field);
+                        $this->addError($field, "$label is required");
+                    } elseif (is_string($value)) {
+                        if (trim($value) === '') {
+                            $label = $this->formatFieldLabel($field);
+                            $this->addError($field, "$label is required");
+                        }
+                    }
                 }
                 break;
             case 'email':
@@ -90,6 +106,10 @@ class Validator {
             $this->errors[$field] = [];
         }
         $this->errors[$field][] = $message;
+    }
+
+    private function formatFieldLabel($field) {
+        return ucfirst(str_replace('_', ' ', $field));
     }
 
     public function getErrors() {
