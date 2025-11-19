@@ -1,22 +1,340 @@
 html, body {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
 }
 
-/* menu */
-.menu-container {
+.dashboard-stats-row {
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+@media (min-width: 1200px) {
+    .dashboard-stats-row .dashboard-stat-col {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
+.dashboard-stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+}
+
+.dashboard-stat-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.dashboard-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.dashboard-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.dashboard-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
-    list-style: none;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #ffffff;
+}
+
+.dashboard-stat-icon.primary {
+    background: linear-gradient(135deg, #4361ee, #3f37c9);
+}
+
+.dashboard-stat-icon.success {
+    background: linear-gradient(135deg, #4bb543, #2e7d32);
+}
+
+.dashboard-stat-icon.warning {
+    background: linear-gradient(135deg, #f9c74f, #f57c00);
+}
+
+.dashboard-stat-icon.info {
+    background: linear-gradient(135deg, #4895ef, #4361ee);
+}
+
+.dashboard-stat-icon.danger {
+    background: linear-gradient(135deg, #ef476f, #d90429);
+}
+
+/* Call add form modernization */
+.tm-call-form-card {
+    max-width: 640px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border: none;
+    border-radius: 0.9rem;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+}
+
+.tm-call-form-header {
+    background: linear-gradient(135deg, #111827, #1f2933);
+    color: #f9fafb;
+    font-size: 1.15rem;
+    font-weight: 600;
+    padding: 0.9rem 1.5rem;
+    border-bottom: none;
+}
+
+.tm-call-form-body {
+    padding: 1.75rem 1.75rem 1.5rem;
+}
+
+.tm-call-form-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.tm-call-form .form-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    margin-bottom: 0.2rem;
+}
+
+.tm-call-form .form-control {
+    border-radius: 0.6rem;
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    font-size: 0.9rem;
+}
+
+.tm-call-form .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+}
+
+.tm-call-schedule-row,
+.tm-call-now-row {
+    gap: 0.5rem;
+}
+
+.tm-call-duration {
+    margin-top: 0.4rem;
+}
+
+.tm-call-duration .form-check-label {
+    font-size: 0.8rem;
+}
+
+.tm-call-submit {
+    padding-inline: 1.75rem;
+    border-radius: 999px;
+}
+
+.tm-call-lobby-switch .form-check-input {
+    width: 2.5em;
+    height: 1.3em;
+    margin-left: -2.5em;
+    background-color: #e5e7eb !important;
+    border-color: #d1d5db !important;
+}
+
+.tm-call-lobby-switch .form-check-input:checked {
+    background-color: #22c55e !important;
+    border-color: #16a34a !important;
+}
+
+.dashboard-widget-table {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    border: none;
+    outline: 0 !important;
+}
+
+/* ensure no focus outlines/dotted radius inside dashboard widget tables */
+.dashboard-widget-table * {
+    outline: 0 !important;
+}
+
+/* overall app background like mockup */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background-attachment: fixed;
+}
+
+/* modern menu */
+.menu-container {
+    background: linear-gradient(135deg, #4361ee, #3f37c9);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 0;
     margin: 0;
     margin-bottom: 10px;
-    background-color: #777;
 }
 
+.modern-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.modern-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: white;
+}
+
+.modern-logo {
+/*    width: 40px;*/
+    width: 80px;
+    height: 40px;
+/*    background: white;*/
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.modern-logo img {
+/*    width: 28px;*/
+/*    height: 28px;*/
+    height: 35px;
+    object-fit: contain;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 1.75rem;
+}
+
+.brand-name {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.brand-slogan {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+@media (max-width: 576px) {
+    .brand-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+    }
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.modern-header-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-weight: 500;
+}
+
+.modern-header-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+.modern-header-btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+.modern-dropdown {
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    margin-top: 0.5rem;
+    min-width: 220px;
+    border: none;
+}
+
+.modern-dropdown-header {
+    background-color: #f8f9fa;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e9ecef;
+    color: #495057;
+    font-size: 0.875rem;
+}
+
+.modern-dropdown-item {
+    color: #495057;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.modern-dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #4361ee;
+    text-decoration: none;
+}
+
+.modern-dropdown-item i {
+    width: 16px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.modern-dropdown-item:hover i {
+    color: #4361ee;
+}
+
+/* legacy menu support */
 .menu-left, .menu-right {
     display: flex;
     list-style: none;
@@ -25,7 +343,7 @@ html, body {
 }
 
 .menu-left li, .menu-right li {
-    margin: 0 10px;
+    position: relative;
 }
 
 .menu-left a, .menu-right a {
@@ -37,13 +355,14 @@ html, body {
     display: block;
     color: white;
     text-align: center;
-    padding: 14px 16px;
+    padding: 13px 16px;
     text-decoration: none;
 }
 
 .menu-left li a:hover, .menu-right li a:hover {
     background-color: #111;
 }
+
 /* Dropdown menu styles */
 .dropdown-menu {
     background-color: #fff;
@@ -95,6 +414,26 @@ html, body {
     border-left: 4px solid transparent;
 }
 
+/* Position the bell icon relative to badge */
+.menu-right .dropdown > a {
+    position: relative;
+    padding-right: 24px;
+}
+
+/* Quick Actions specific styles */
+.menu-left .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.menu-left .dropdown-toggle i {
+    font-size: 14px;
+}
+
+.menu-left .dropdown-menu {
+    margin-top: 2px;
+}
 /* /menu */
 
 .error {
@@ -157,43 +496,244 @@ html, body {
 }
 
 
+/* dashboard widgets */
+.dashboard-widget-header {
+    margin-bottom: 0.5rem;
+    border-radius: 0.75rem;
+    border: none !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    font-weight: 600;
+    font-size: 1rem;
+    color: #0f172a;
+    outline: 0 !important;
+}
+
+.dashboard-widget-header a {
+    color: #4361ee;
+}
+
+.dashboard-widget-header a:hover {
+    text-decoration: none;
+}
+
+.table.table-striped.table-hover.table-bordered {
+    background-color: transparent;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+    border: none;
+    outline: 0 !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.table thead.thead-dark {
+    background: transparent;
+}
+
+.table thead.thead-dark th {
+    border-color: transparent;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* remove bottom border under the colored header row */
+.table thead.thead-dark tr {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* remove busy inner table borders for cleaner cards */
+.table-bordered td,
+.table-bordered th {
+    border: none;
+}
+
+/* also remove remaining horizontal row borders for dashboard tables */
+.table.table-striped.table-hover.table-bordered tr {
+    border-bottom: none;
+}
+
+/* kill remaining table header borders completely */
+.table thead th {
+    border-style: none !important;
+    border-width: 0 !important;
+}
+
+/* extra safety for bordered headers */
+.table-bordered thead th,
+.table-bordered thead tr {
+    border-style: none !important;
+    border-width: 0 !important;
+}
+
+/* remove any border on thead itself */
+.table thead,
+.table-bordered thead {
+    border-bottom: none !important;
+    border-top: none !important;
+}
+
+/* hard reset all borders/outlines for dashboard tables to remove any remaining lines */
+.table.table-striped.table-hover.table-bordered,
+.table.table-striped.table-hover.table-bordered thead,
+.table.table-striped.table-hover.table-bordered tbody,
+.table.table-striped.table-hover.table-bordered tr,
+.table.table-striped.table-hover.table-bordered th,
+.table.table-striped.table-hover.table-bordered td {
+    border: 0 !important;
+    outline: 0 !important;
+}
+
+/* ensure table headers themselves have no radius; rounding is only on the outer card */
+.table thead,
+.table thead th,
+.table thead.thead-dark,
+.table thead.thead-dark th {
+    border-radius: 0 !important;
+}
+
+
+/* time row in sidebar */
+#time_now {
+    border-color: #e2e8f0 !important;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+    height: 26px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    margin-bottom: 6px;
+    transition: opacity 0.2s ease;
+}
+
+#time_now span {
+    font-size: 12px;
+    color: #0f172a;
+    letter-spacing: 0.02em;
+}
+
+
 /* collapsing sidebar */
 .toggle-sidebar-button {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -8px;
+    right: 0px;
     z-index: 100;
     margin: 10px;
     height: 22px;
     width: 22px;
-    padding-left: 2px;
-    padding-top: 0px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-sidebar-button:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
 }
 .sidebar-wrapper {
     position: relative;
     width: 275px;
     transition: width 0.5s ease;
     overflow-x: hidden;
+    min-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
 }
 .sidebar-wrapper.collapsed {
-    width: 3em;
+    width: 3.25em;
 }
 .sidebar-collapsed .sidebar-wrapper {
-    width: 3em;
+    width: 3.25em;
 }
+
+/* ensure toggle stays aligned to right edge when collapsed */
+.sidebar-wrapper.collapsed .toggle-sidebar-button {
+    right: -3px;
+    left: auto;
+}
+/* sidebar container */
 .sidebar-content {
     width: 250px;
     border: none;
+/*    border-radius: 0.75rem;*/
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    flex: 1 1 auto;
 }
+
+/* sidebar items */
+.sidebar-content .list-group-item {
+    border: none;
+    padding: 0.85rem 1.1rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+    margin-bottom: 0.1rem;
+}
+
+.sidebar-content .list-group-item-action {
+    background-color: transparent;
+}
+
+.sidebar-content .list-group-item-action:hover {
+    background-color: #f1f5f9;
+    transform: translateX(2px);
+}
+
+.sidebar-content .list-group-item-secondary {
+    background: linear-gradient(135deg, #4361ee, #3f37c9);
+    color: #ffffff;
+}
+
+.sidebar-content .list-group-item-secondary i {
+    color: #ffffff;
+}
+
+/* sidebar section titles */
+.sidebar-content .sidebar-section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6c757d;
+    padding: 0.6rem 1.1rem 0.45rem 1.1rem;
+    cursor: default;
+    background-color: transparent;
+    font-weight: 600;
+}
+
+/* make section titles invisible (but keep spacing) when collapsed */
+.sidebar-wrapper.collapsed .sidebar-section-title {
+    visibility: hidden;
+}
+
 .list-group-item i {
     margin-right: 10px;
     margin-left: -8px;
+    width: 20px;
+    text-align: center;
+    color: #64748b;
+    font-size: 1.05rem;
 }
 
 .main-content {
     flex-grow: 1;
     transition: width 0.5s ease;
-    margin-bottom: 50px;
+/*    margin-bottom: 50px;*/
+    padding: 2rem;
 /*    width: 80%;*/
 }
 .main-content.expanded {
@@ -208,13 +748,13 @@ html, body {
 }
 
 .logo {
-    height: 36px;
+    height: 35px;
     margin-top: 10px;
 }
 
 .logo-link {
     border: 1px solid white;
-    margin-top: 2px;
+/*    margin-top: 2px;*/
     margin-left: 2px;
     background-color: lightseagreen;
 }
@@ -277,4 +817,54 @@ input[type="radio"]:disabled {
     padding: 0.25rem 0.25rem;
     margin: -0.125rem -0.125rem -0.125rem auto;
     font-size: 0.75rem;
+}
+
+/* modern header responsive adjustments */
+@media (max-width: 768px) {
+    .modern-header-content {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .logo-section {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .modern-header-btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .brand-name {
+        font-size: 1.25rem;
+    }
+
+    .brand-slogan {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .modern-header-btn {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+    }
+
+    .modern-header-btn .me-2 {
+        display: none;
+    }
 }
