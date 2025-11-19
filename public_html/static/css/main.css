@@ -5,10 +5,114 @@ html, body {
     padding: 0;
 }
 
+/* Credentials management */
+.tm-cred-card {
+    max-width: 900px;
+    background: rgba(255,255,255,0.97);
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+    padding: 2.5rem;
+    margin: 2.5rem auto;
+}
+
+.tm-cred-intro {
+    border-radius: 1rem;
+    border: none;
+}
+
+.tm-cred-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tm-cred-step {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    background: rgba(248, 250, 252, 0.75);
+}
+
+.tm-cred-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: #fff;
+    border: 1px dashed rgba(148, 163, 184, 0.5);
+}
+
+.tm-cred-secret code,
+.tm-cred-backup code {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.6rem;
+    background: #0f172a;
+    color: #f8fafc;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.tm-cred-backup {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.tm-cred-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.tm-cred-panel {
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    background: rgba(248, 250, 252, 0.75);
+}
+
+.tm-cred-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.tm-cred-panel-head h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.tm-cred-form .form-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.tm-cred-form .form-control {
+    border-radius: 0.85rem;
+    border: 1px solid rgba(148, 163, 184, 0.7);
+}
+
+@media (max-width: 768px) {
+    .tm-cred-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
 /* Profile form */
 .tm-profile-card {
     max-width: 1100px;
-    margin: 2.5rem auto;
+    margin: 0rem auto 1.5rem;
     background: rgba(255, 255, 255, 0.97);
     border-radius: 1.5rem;
     box-shadow: 0 30px 70px rgba(15, 23, 42, 0.12);

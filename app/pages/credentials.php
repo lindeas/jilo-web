@@ -23,8 +23,11 @@ $item = $_REQUEST['item'] ?? '';
 
 // if a form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Ensure security helper is available
+    require_once '../app/helpers/security.php';
+    $security = SecurityHelper::getInstance();
+
     // Validate CSRF token
-    $security->verifyCsrfToken($_POST['csrf_token'] ?? '');
     if (!$security->verifyCsrfToken($_POST['csrf_token'] ?? '')) {
         Feedback::flash('ERROR', 'DEFAULT', 'Invalid security token. Please try again.');
         header("Location: $app_root?page=credentials");

@@ -5,88 +5,80 @@
  */
 ?>
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Password Management -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>change password</h3>
+<div class="tm-cred-card mx-auto">
+    <div class="tm-profile-header">
+        <p class="tm-profile-eyebrow">Security</p>
+        <h2 class="tm-profile-title">Manage credentials</h2>
+        <p class="tm-profile-subtitle">Update your password and keep two-factor authentication status in one place.</p>
+    </div>
+
+    <div class="tm-cred-grid">
+        <section class="tm-cred-panel">
+            <div class="tm-cred-panel-head">
+                <div>
+                    <h3>Change password</h3>
+                    <p>Choose a strong password to keep your account safe.</p>
                 </div>
-                <div class="card-body">
-                    <form method="post" action="?page=credentials&item=password">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <span class="badge bg-light text-dark">Required</span>
+            </div>
+            <form method="post" action="?page=credentials&item=password" class="tm-cred-form" novalidate>
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
-                        <div class="form-group">
-                            <label for="current_password">current password</label>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="current_password" 
-                                   name="current_password" 
-                                   required>
-                        </div>
-
-                        <div class="form-group mt-3">
-                            <label for="new_password">new password</label>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="new_password" 
-                                   name="new_password"
-                                   pattern=".{8,}"
-                                   title="Password must be at least 8 characters long"
-                                   required>
-                            <small class="form-text text-muted">minimum 8 characters</small>
-                        </div>
-
-                        <div class="form-group mt-3">
-                            <label for="confirm_password">confirm new password</label>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="confirm_password" 
-                                   name="confirm_password"
-                                   pattern=".{8,}"
-                                   required>
-                        </div>
-
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">change password</button>
-                        </div>
-                    </form>
+                <div class="mb-3">
+                    <label for="current_password" class="form-label">Current password</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" required>
                 </div>
+
+                <div class="mb-3">
+                    <label for="new_password" class="form-label">New password</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" pattern=".{8,}" title="Password must be at least 8 characters long" required>
+                    <small class="form-text text-muted">Minimum 8 characters</small>
+                </div>
+
+                <div class="mb-4">
+                    <label for="confirm_password" class="form-label">Confirm new password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" pattern=".{8,}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary tm-contact-submit w-100">Save new password</button>
+            </form>
+        </section>
+
+        <section class="tm-cred-panel">
+            <div class="tm-cred-panel-head">
+                <div>
+                    <h3>Two-factor authentication</h3>
+                    <p>Strengthen security with a verification code from your authenticator app.</p>
+                </div>
+                <span class="badge <?= $has2fa ? 'bg-success' : 'bg-warning text-dark' ?>">
+                    <?= $has2fa ? 'Enabled' : 'Disabled' ?>
+                </span>
             </div>
 
-            <!-- 2FA Management -->
-            <div class="card">
-                <div class="card-header">
-                    <h3>two-factor authentication</h3>
+            <?php if ($has2fa): ?>
+                <div class="alert alert-success d-flex align-items-center gap-2">
+                    <i class="fas fa-shield-check"></i>
+                    <span>Two-factor authentication is currently enabled.</span>
                 </div>
-                <div class="card-body">
-                    <p class="mb-4">Two-factor authentication adds an extra layer of security to your account. Once enabled, you'll need to enter both your password and a code from your authenticator app when signing in.</p>
-
-                    <?php if ($has2fa): ?>
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> two-factor authentication is enabled
-                        </div>
-                        <form method="post" action="?page=credentials&item=2fa&action=disable">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to disable two-factor authentication? This will make your account less secure.')">
-                                disable two-factor authentication
-                            </button>
-                        </form>
-                    <?php else: ?>
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i> two-factor authentication is not enabled
-                        </div>
-                        <form method="post" action="?page=credentials&item=2fa&action=setup">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                            <button type="submit" class="btn btn-primary">
-                                set up two-factor authentication
-                            </button>
-                        </form>
-                    <?php endif; ?>
+                <form method="post" action="?page=credentials&item=2fa&action=disable" class="tm-cred-form">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Disable two-factor authentication? This will make your account less secure.')">
+                        Disable 2FA
+                    </button>
+                </form>
+            <?php else: ?>
+                <div class="alert alert-warning d-flex align-items-center gap-2">
+                    <i class="fas fa-lock"></i>
+                    <span>Two-factor authentication is not enabled yet.</span>
                 </div>
-            </div>
-        </div>
+                <form method="post" action="?page=credentials&item=2fa&action=setup" class="tm-cred-form">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        Set up 2FA
+                    </button>
+                </form>
+            <?php endif; ?>
+        </section>
     </div>
 </div>
 
