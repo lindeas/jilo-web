@@ -92,7 +92,7 @@ if ($response['db'] === null) {
 
 
     // display the widget
-    include '../app/templates/widget-monthly.php';
+    include '../app/templates/dashboard-monthly.php';
 
 
     /**
@@ -154,7 +154,7 @@ if ($response['db'] === null) {
     $widget['pagination'] = false;
 
     // display the widget
-    include '../app/templates/widget.php';
+    include '../app/templates/dashboard-conferences.php';
 
 
     /**
@@ -224,6 +224,6 @@ if ($response['db'] === null) {
     }
 
     // display the widget
-    include '../app/templates/widget.php';
+    include '../app/templates/dashboard-conferences.php';
 
 }
