@@ -242,15 +242,20 @@ try {
     $all = array_unique(array_merge($pending, $applied));
     foreach ($all as $fname) {
         $path = realpath($migrationsDir . '/' . $fname);
+        $content = false;
         if ($path && strpos($path, realpath($migrationsDir)) === 0) {
             $content = @file_get_contents($path);
-            if ($content !== false) {
-                $migration_contents[$fname] = $content;
-            }
         }
+
         $record = $runner->getMigrationRecord($fname);
         if ($record) {
             $migration_records[$fname] = $record;
+        }
+
+        if ($content !== false && $content !== null) {
+            $migration_contents[$fname] = $content;
+        } elseif (!empty($record['content'])) {
+            $migration_contents[$fname] = $record['content'];
         }
     }
 } catch (Throwable $e) {

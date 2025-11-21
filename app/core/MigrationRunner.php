@@ -213,7 +213,9 @@ class MigrationRunner
                     throw new MigrationException($migration, $migrationException->getMessage(), $migrationException);
                 }
             }
-            $this->pdo->commit();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->commit();
+            }
         } catch (MigrationException $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
