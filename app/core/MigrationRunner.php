@@ -9,6 +9,8 @@ class MigrationRunner
 {
     private PDO $pdo;
     private string $migrationsDir;
+    private string $driver;
+    private bool $isSqlite = false;
 
     /**
      * @param mixed $db Either a PDO instance or the application's Database wrapper
@@ -33,26 +35,70 @@ class MigrationRunner
         if (!is_dir($this->migrationsDir)) {
             throw new Exception("Migrations directory not found: {$this->migrationsDir}");
         }
+        $this->driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $this->isSqlite = ($this->driver === 'sqlite');
         $this->ensureMigrationsTable();
+        $this->ensureMigrationColumns();
     }
 
     private function ensureMigrationsTable(): void
     {
-        $driver = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-        if ($driver === 'sqlite') {
+        if ($this->isSqlite) {
             $sql = "CREATE TABLE IF NOT EXISTS migrations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 migration TEXT NOT NULL UNIQUE,
-                applied_at TEXT NOT NULL
+                applied_at TEXT NOT NULL,
+                content_hash TEXT NULL,
+                content TEXT NULL
             )";
         } else {
             $sql = "CREATE TABLE IF NOT EXISTS migrations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 migration VARCHAR(255) NOT NULL UNIQUE,
-                applied_at DATETIME NOT NULL
+                applied_at DATETIME NOT NULL,
+                content_hash CHAR(64) NULL,
+                content LONGTEXT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
         }
         $this->pdo->exec($sql);
+    }
+
+    private function ensureMigrationColumns(): void
+    {
+        $this->ensureColumnExists(
+            'content_hash',
+            $this->isSqlite ? "ALTER TABLE migrations ADD COLUMN content_hash TEXT NULL" : "ALTER TABLE migrations ADD COLUMN content_hash CHAR(64) NULL DEFAULT NULL AFTER applied_at"
+        );
+        $this->ensureColumnExists(
+            'content',
+            $this->isSqlite ? "ALTER TABLE migrations ADD COLUMN content TEXT NULL" : "ALTER TABLE migrations ADD COLUMN content LONGTEXT NULL DEFAULT NULL AFTER content_hash"
+        );
+    }
+
+    private function ensureColumnExists(string $column, string $alterSql): void
+    {
+        if ($this->columnExists('migrations', $column)) {
+            return;
+        }
+        $this->pdo->exec($alterSql);
+    }
+
+    private function columnExists(string $table, string $column): bool
+    {
+        if ($this->isSqlite) {
+            $stmt = $this->pdo->query("PRAGMA table_info({$table})");
+            $columns = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+            foreach ($columns as $col) {
+                if (($col['name'] ?? '') === $column) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        $stmt = $this->pdo->prepare("SHOW COLUMNS FROM {$table} LIKE :column");
+        $stmt->execute([':column' => $column]);
+        return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function listAllMigrations(): array
@@ -96,14 +142,23 @@ class MigrationRunner
                 if ($sql === false) {
                     throw new Exception("Unable to read migration file: {$migration}");
                 }
-                // Split on ; at line ends, but allow inside procedures? Keep simple for our use-cases
-                $statements = array_filter(array_map('trim', preg_split('/;\s*\n/', $sql)));
+                $trimmedSql = trim($sql);
+                $hash = hash('sha256', $trimmedSql);
+
+                if ($this->contentHashExists($hash)) {
+                    $this->recordMigration($migration, $trimmedSql, $hash);
+                    $appliedNow[] = $migration;
+                    continue;
+                }
+
+                $statements = $this->splitStatements($trimmedSql);
                 foreach ($statements as $stmtSql) {
-                    if ($stmtSql === '') continue;
+                    if ($stmtSql === '') {
+                        continue;
+                    }
                     $this->pdo->exec($stmtSql);
                 }
-                $ins = $this->pdo->prepare('INSERT INTO migrations (migration, applied_at) VALUES (:m, NOW())');
-                $ins->execute([':m' => $migration]);
+                $this->recordMigration($migration, $trimmedSql, $hash);
                 $appliedNow[] = $migration;
             }
             $this->pdo->commit();
@@ -115,5 +170,35 @@ class MigrationRunner
         }
 
         return $appliedNow;
+    }
+
+    private function splitStatements(string $sql): array
+    {
+        if ($sql === '') {
+            return [];
+        }
+        return array_filter(array_map('trim', preg_split('/;\s*\n/', $sql)));
+    }
+
+    private function contentHashExists(string $hash): bool
+    {
+        if ($hash === '') {
+            return false;
+        }
+        $stmt = $this->pdo->prepare('SELECT 1 FROM migrations WHERE content_hash = :hash LIMIT 1');
+        $stmt->execute([':hash' => $hash]);
+        return (bool)$stmt->fetchColumn();
+    }
+
+    private function recordMigration(string $name, string $content, string $hash): void
+    {
+        $timestampExpr = $this->isSqlite ? "datetime('now')" : 'NOW()';
+        $sql = "INSERT INTO migrations (migration, applied_at, content_hash, content) VALUES (:migration, {$timestampExpr}, :hash, :content)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':migration' => $name,
+            ':hash' => $hash,
+                ':content' => $content === '' ? null : $content,
+        ]);
     }
 }
