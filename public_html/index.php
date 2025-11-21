@@ -168,6 +168,10 @@ require_once __DIR__ . '/../app/core/DatabaseConnector.php';
 use App\Core\DatabaseConnector;
 $db = DatabaseConnector::connect($config);
 
+// Initialize Log throttler
+require_once __DIR__ . '/../app/core/LogThrottler.php';
+use App\Core\LogThrottler;
+
 // Logging: default to NullLogger, plugin can override
 require_once __DIR__ . '/../app/core/NullLogger.php';
 use App\Core\NullLogger;
@@ -207,9 +211,9 @@ try {
                     }
                 }
             }
-            // Log and show as a system message only if not already added
+            // Log (throttled) and show as a system message only if not already added
             if (!$hasMigrationMessage) {
-                $logObject->log('warning', $msg, ['scope' => 'system']);
+                LogThrottler::logThrottled($logObject, $db, 'migrations_pending', 86400, 'warning', $msg, ['scope' => 'system']);
                 Feedback::flash('SYSTEM', 'MIGRATIONS_PENDING', $msg, false, true, false);
             }
         }
