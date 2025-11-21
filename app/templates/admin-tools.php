@@ -73,7 +73,12 @@
                     </div>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div><strong>Pending</strong></div>
+                            <div>
+                                <strong>Pending</strong>
+<?php if (!empty($next_pending)): ?>
+                                <span class="badge bg-info text-dark ms-2">Next: <?= htmlspecialchars($next_pending) ?></span>
+<?php endif; ?>
+                            </div>
                             <span class="badge <?= empty($pending) ? 'bg-success' : 'bg-warning text-dark' ?>"><?= count($pending) ?></span>
                         </div>
                         <div class="mt-2 small border rounded" style="max-height: 240px; overflow: auto;">
@@ -84,11 +89,13 @@
                                     <?php foreach ($pending as $fname): ?>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             <span class="text-monospace small"><?= htmlspecialchars($fname) ?></span>
-                                            <button type="button"
-                                                    class="btn btn-outline-primary btn-sm"
-                                                    data-toggle="modal"
-                                                    data-target="#migrationModal<?= md5($fname) ?>">View
-                                            </button>
+                                            <div class="d-flex gap-2">
+                                                <button type="button"
+                                                        class="btn btn-outline-primary btn-sm"
+                                                        data-toggle="modal"
+                                                        data-target="#migrationModal<?= md5($fname) ?>">View
+                                                </button>
+                                            </div>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
@@ -105,7 +112,11 @@
                                 <div class="p-2"><span class="text-muted">none</span></div>
                             <?php else: ?>
                                 <ul class="list-group list-group-flush">
-                                    <?php foreach ($applied as $fname): ?>
+                                    <?php foreach ($applied as $fname):
+                                        if (strpos($fname, '_test_migration') !== false) {
+                                            continue;
+                                        }
+                                    ?>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             <span class="text-monospace small"><?= htmlspecialchars($fname) ?></span>
                                             <button type="button"
@@ -119,11 +130,13 @@
                             <?php endif; ?>
                         </div>
                     </div>
-                    <form method="post" class="mt-3">
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-                        <input type="hidden" name="action" value="migrate_up">
-                        <button type="submit" class="btn btn-primary btn-sm" <?= empty($pending) ? 'disabled' : '' ?>>Apply pending migrations</button>
-                    </form>
+                    <div class="d-flex gap-2 mt-3">
+                        <form method="post" class="tm-confirm" data-confirm="Apply all pending migrations?">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="action" value="migrate_up">
+                            <button type="submit" class="btn btn-primary btn-sm" <?= empty($pending) ? 'disabled' : '' ?>>Apply all pending</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,7 +158,24 @@
             <div class="modal-body p-0">
                 <pre class="mb-0" style="max-height: 60vh; overflow: auto;"><code class="p-3 d-block"><?= htmlspecialchars($content) ?></code></pre>
             </div>
+<?php 
+    $isModalNext = (!empty($next_pending) && $next_pending === $name);
+    $modalResult = (!empty($migration_modal_result) && ($migration_modal_result['name'] ?? '') === $name) ? $migration_modal_result : null;
+?>
             <div class="modal-footer">
+<?php if ($isModalNext): ?>
+                <form method="post" class="me-auto tm-confirm" data-confirm="Apply migration <?= htmlspecialchars($name) ?>?">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                    <input type="hidden" name="action" value="migrate_apply_one">
+                    <input type="hidden" name="migration_name" value="<?= htmlspecialchars($name) ?>">
+                    <button type="submit" class="btn btn-danger">Apply migration</button>
+                </form>
+<?php endif; ?>
+<?php if ($modalResult): ?>
+                <div class="alert alert-<?= $modalResult['status'] === 'success' ? 'success' : 'info' ?> mb-0 small">
+                    <?= htmlspecialchars($modalResult['message']) ?>
+                </div>
+<?php endif; ?>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -153,3 +183,16 @@
 </div>
 <?php   endforeach;
       endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('form.tm-confirm').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            const message = form.getAttribute('data-confirm') || 'Are you sure?';
+            if (!confirm(message)) {
+                event.preventDefault();
+            }
+        });
+    });
+});
+</script>

@@ -118,6 +118,32 @@ if ($action !== '') {
             } else {
                 Feedback::flash('NOTICE', 'DEFAULT', 'Applied migrations: ' . implode(', ', $applied), true);
             }
+        } elseif ($action === 'migrate_apply_one') {
+            require_once __DIR__ . '/../core/MigrationRunner.php';
+            $migrationsDir = __DIR__ . '/../../doc/database/migrations';
+            $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
+            $migrationName = trim($_POST['migration_name'] ?? '');
+            $applied = $migrationName !== '' ? $runner->applyMigrationByName($migrationName) : [];
+
+            if (empty($applied)) {
+                Feedback::flash('NOTICE', 'DEFAULT', 'No pending migrations.', true);
+                $_SESSION['migration_modal_result'] = [
+                    'name' => $migrationName ?: null,
+                    'status' => 'info',
+                    'message' => 'No pending migrations to apply.'
+                ];
+                if (!empty($migrationName)) {
+                    $_SESSION['migration_modal_open'] = $migrationName;
+                }
+            } else {
+                Feedback::flash('NOTICE', 'DEFAULT', 'Applied migration: ' . implode(', ', $applied), true);
+                $_SESSION['migration_modal_result'] = [
+                    'name' => $applied[0],
+                    'status' => 'success',
+                    'message' => 'Migration ' . $applied[0] . ' applied successfully.'
+                ];
+                $_SESSION['migration_modal_open'] = $applied[0];
+            }
         } elseif ($action === 'create_test_migration') {
             $migrationsDir = __DIR__ . '/../../doc/database/migrations';
             $timestamp = date('Ymd_His');
@@ -176,12 +202,38 @@ require_once __DIR__ . '/../core/MigrationRunner.php';
 $migrationsDir = __DIR__ . '/../../doc/database/migrations';
 $pending = [];
 $applied = [];
+$next_pending = null;
 $migration_contents = [];
 $test_migrations_exist = false;
+$migration_modal_result = $_SESSION['migration_modal_result'] ?? null;
+if (isset($_SESSION['migration_modal_result'])) {
+    unset($_SESSION['migration_modal_result']);
+}
+$modal_to_open = $_SESSION['migration_modal_open'] ?? null;
+if (isset($_SESSION['migration_modal_open'])) {
+    unset($_SESSION['migration_modal_open']);
+}
+$migration_records = [];
 try {
     $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
     $pending = $runner->listPendingMigrations();
     $applied = $runner->listAppliedMigrations();
+
+    $sortTestFirst = static function (array $items): array {
+        usort($items, static function ($a, $b) {
+            $aTest = strpos($a, '_test_migration') !== false;
+            $bTest = strpos($b, '_test_migration') !== false;
+            if ($aTest === $bTest) {
+                return strcmp($a, $b);
+            }
+            return $aTest ? -1 : 1;
+        });
+        return $items;
+    };
+
+    $pending = $sortTestFirst($pending);
+    $applied = $sortTestFirst($applied);
+    $next_pending = $pending[0] ?? null;
 
     // Check if any test migrations exist
     $test_migrations_exist = !empty(glob($migrationsDir . '/*_test_migration.sql'));
@@ -195,6 +247,10 @@ try {
             if ($content !== false) {
                 $migration_contents[$fname] = $content;
             }
+        }
+        $record = $runner->getMigrationRecord($fname);
+        if ($record) {
+            $migration_records[$fname] = $record;
         }
     }
 } catch (Throwable $e) {

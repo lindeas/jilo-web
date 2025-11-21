@@ -17,6 +17,7 @@ function printUsage()
     echo "Usage:\n";
     echo "  php scripts/migrate.php status     # Show pending and applied migrations\n";
     echo "  php scripts/migrate.php up         # Apply all pending migrations\n";
+    echo "  php scripts/migrate.php next       # Apply only the next pending migration\n";
     echo "\n";
 }
 
@@ -63,6 +64,21 @@ try {
         foreach ($pending as $m) echo "  - $m\n";
         $applied = $runner->applyPendingMigrations();
         echo "\nApplied successfully: " . count($applied) . "\n";
+        exit(0);
+    } elseif ($action === 'next') {
+        $pending = $runner->listPendingMigrations();
+        if (empty($pending)) {
+            echo "No pending migrations.\n";
+            exit(0);
+        }
+        $next = reset($pending);
+        echo "Applying next migration: {$next}\n";
+        $applied = $runner->applyNextMigration();
+        if (!empty($applied)) {
+            echo "Done.\n";
+        } else {
+            echo "Nothing applied.\n";
+        }
         exit(0);
     } else {
         printUsage();

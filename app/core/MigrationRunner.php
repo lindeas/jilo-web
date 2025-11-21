@@ -2,6 +2,9 @@
 
 namespace App\Core;
 
+require_once __DIR__ . '/NullLogger.php';
+require_once __DIR__ . '/MigrationException.php';
+
 use PDO;
 use Exception;
 
@@ -11,6 +14,8 @@ class MigrationRunner
     private string $migrationsDir;
     private string $driver;
     private bool $isSqlite = false;
+    private $logger;
+    private array $lastResults = [];
 
     /**
      * @param mixed $db Either a PDO instance or the application's Database wrapper
@@ -39,6 +44,7 @@ class MigrationRunner
         $this->isSqlite = ($this->driver === 'sqlite');
         $this->ensureMigrationsTable();
         $this->ensureMigrationColumns();
+        $this->initializeLogger();
     }
 
     private function ensureMigrationsTable(): void
@@ -72,6 +78,10 @@ class MigrationRunner
         $this->ensureColumnExists(
             'content',
             $this->isSqlite ? "ALTER TABLE migrations ADD COLUMN content TEXT NULL" : "ALTER TABLE migrations ADD COLUMN content LONGTEXT NULL DEFAULT NULL AFTER content_hash"
+        );
+        $this->ensureColumnExists(
+            'result',
+            $this->isSqlite ? "ALTER TABLE migrations ADD COLUMN result TEXT NULL" : "ALTER TABLE migrations ADD COLUMN result LONGTEXT NULL DEFAULT NULL AFTER content"
         );
     }
 
@@ -118,7 +128,8 @@ class MigrationRunner
     {
         $all = $this->listAllMigrations();
         $applied = $this->listAppliedMigrations();
-        return array_values(array_diff($all, $applied));
+        $pending = array_values(array_diff($all, $applied));
+        return $this->sortMigrations($pending);
     }
 
     public function hasPendingMigrations(): bool
@@ -140,45 +151,80 @@ class MigrationRunner
         return $this->runMigrations([reset($pending)]);
     }
 
+    public function applyMigrationByName(string $migration): array
+    {
+        $pending = $this->listPendingMigrations();
+        if (!in_array($migration, $pending, true)) {
+            return [];
+        }
+        return $this->runMigrations([$migration]);
+    }
+
     private function runMigrations(array $migrations): array
     {
         $appliedNow = [];
         if (empty($migrations)) {
             return $appliedNow;
         }
+        $this->lastResults = [];
 
         try {
             $this->pdo->beginTransaction();
             foreach ($migrations as $migration) {
-                $path = $this->migrationsDir . '/' . $migration;
-                $sql = file_get_contents($path);
-                if ($sql === false) {
-                    throw new Exception("Unable to read migration file: {$migration}");
-                }
-                $trimmedSql = trim($sql);
-                $hash = hash('sha256', $trimmedSql);
+                try {
+                    $path = $this->migrationsDir . '/' . $migration;
+                    $sql = file_get_contents($path);
+                    if ($sql === false) {
+                        throw new Exception("Unable to read migration file: {$migration}");
+                    }
+                    $trimmedSql = trim($sql);
+                    $hash = hash('sha256', $trimmedSql);
 
-                if ($this->contentHashExists($hash)) {
-                    $this->recordMigration($migration, $trimmedSql, $hash);
-                    $appliedNow[] = $migration;
-                    continue;
-                }
-
-                $statements = $this->splitStatements($trimmedSql);
-                foreach ($statements as $stmtSql) {
-                    if ($stmtSql === '') {
+                    if ($this->contentHashExists($hash)) {
+                        $this->recordMigration($migration, $trimmedSql, $hash);
+                        $appliedNow[] = $migration;
                         continue;
                     }
-                    $this->pdo->exec($stmtSql);
+
+                    $statements = $this->splitStatements($trimmedSql);
+                    foreach ($statements as $stmtSql) {
+                        if ($stmtSql === '') {
+                            continue;
+                        }
+                        $this->pdo->exec($stmtSql);
+                    }
+                    $statementCount = count($statements);
+                    $resultMessage = sprintf('Migration "%s" applied successfully (%d statement%s).', $migration, $statementCount, $statementCount === 1 ? '' : 's');
+                    $this->lastResults[$migration] = [
+                        'content' => $trimmedSql,
+                        'message' => $resultMessage,
+                        'is_test' => $this->isTestMigration($migration)
+                    ];
+                    if ($this->isTestMigration($migration)) {
+                        $appliedNow[] = $migration;
+                        $this->logger->log('info', $resultMessage . ' (test migration)', ['scope' => 'system', 'migration' => $migration]);
+                        $this->cleanupTestMigrationFile($migration);
+                    } else {
+                        $this->recordMigration($migration, $trimmedSql, $hash, $resultMessage);
+                        $appliedNow[] = $migration;
+                        $this->logger->log('info', $resultMessage, ['scope' => 'system', 'migration' => $migration]);
+                    }
+                } catch (Exception $migrationException) {
+                    throw new MigrationException($migration, $migrationException->getMessage(), $migrationException);
                 }
-                $this->recordMigration($migration, $trimmedSql, $hash);
-                $appliedNow[] = $migration;
             }
             $this->pdo->commit();
+        } catch (MigrationException $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            $this->logger->log('error', sprintf('Migration "%s" failed: %s', $e->getMigration(), $e->getMessage()), ['scope' => 'system', 'migration' => $e->getMigration()]);
+            throw $e;
         } catch (Exception $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
+            $this->logger->log('error', 'Migration run failed: ' . $e->getMessage(), ['scope' => 'system']);
             throw $e;
         }
 
@@ -203,15 +249,106 @@ class MigrationRunner
         return (bool)$stmt->fetchColumn();
     }
 
-    private function recordMigration(string $name, string $content, string $hash): void
+    private function recordMigration(string $name, string $content, string $hash, ?string $result = null): void
     {
         $timestampExpr = $this->isSqlite ? "datetime('now')" : 'NOW()';
-        $sql = "INSERT INTO migrations (migration, applied_at, content_hash, content) VALUES (:migration, {$timestampExpr}, :hash, :content)";
+        $sql = "INSERT INTO migrations (migration, applied_at, content_hash, content, result) VALUES (:migration, {$timestampExpr}, :hash, :content, :result)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':migration' => $name,
             ':hash' => $hash,
-                ':content' => $content === '' ? null : $content,
+            ':content' => $content === '' ? null : $content,
+            ':result' => $result,
         ]);
+    }
+
+    private function sortMigrations(array $items): array
+    {
+        usort($items, static function ($a, $b) {
+            $aTest = strpos($a, '_test_migration') !== false;
+            $bTest = strpos($b, '_test_migration') !== false;
+            if ($aTest === $bTest) {
+                return strcmp($a, $b);
+            }
+            return $aTest ? -1 : 1;
+        });
+        return $items;
+    }
+
+    private function isTestMigration(string $migration): bool
+    {
+        return strpos($migration, '_test_migration') !== false;
+    }
+
+    private function cleanupTestMigrationFile(string $migration): void
+    {
+        $path = $this->migrationsDir . '/' . $migration;
+        if (is_file($path)) {
+            @unlink($path);
+        }
+        $stmt = $this->pdo->prepare('DELETE FROM migrations WHERE migration = :migration');
+        $stmt->execute([':migration' => $migration]);
+    }
+
+    public function markMigrationApplied(string $migration, ?string $note = null): bool
+    {
+        $path = $this->migrationsDir . '/' . $migration;
+        $content = '';
+        if (is_file($path)) {
+            $fileContent = file_get_contents($path);
+            if ($fileContent !== false) {
+                $content = trim($fileContent);
+            }
+        }
+        $hash = $content === '' ? '' : hash('sha256', $content);
+        if ($hash !== '' && $this->contentHashExists($hash)) {
+            return true;
+        }
+
+        $result = $note ?? 'Marked as applied manually.';
+        $this->recordMigration($migration, $content, $hash, $result);
+        return true;
+    }
+
+    public function skipMigration(string $migration): bool
+    {
+        $source = $this->migrationsDir . '/' . $migration;
+        if (!is_file($source)) {
+            return false;
+        }
+        $skippedDir = $this->migrationsDir . '/skipped';
+        if (!is_dir($skippedDir)) {
+            if (!mkdir($skippedDir, 0775, true) && !is_dir($skippedDir)) {
+                throw new Exception('Unable to create skipped migrations directory.');
+            }
+        }
+        $destination = $skippedDir . '/' . $migration;
+        if (rename($source, $destination)) {
+            return true;
+        }
+        return false;
+    }
+
+    private function initializeLogger(): void
+    {
+        $logger = $GLOBALS['logObject'] ?? null;
+        if (is_object($logger) && method_exists($logger, 'log')) {
+            $this->logger = $logger;
+        } else {
+            $this->logger = new NullLogger();
+        }
+    }
+
+    public function getMigrationRecord(string $migration): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT migration, applied_at, content, result FROM migrations WHERE migration = :migration LIMIT 1');
+        $stmt->execute([':migration' => $migration]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    public function getLastResults(): array
+    {
+        return $this->lastResults;
     }
 }
