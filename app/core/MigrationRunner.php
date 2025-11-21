@@ -128,15 +128,28 @@ class MigrationRunner
 
     public function applyPendingMigrations(): array
     {
+        return $this->runMigrations($this->listPendingMigrations());
+    }
+
+    public function applyNextMigration(): array
+    {
         $pending = $this->listPendingMigrations();
-        $appliedNow = [];
         if (empty($pending)) {
+            return [];
+        }
+        return $this->runMigrations([reset($pending)]);
+    }
+
+    private function runMigrations(array $migrations): array
+    {
+        $appliedNow = [];
+        if (empty($migrations)) {
             return $appliedNow;
         }
 
         try {
             $this->pdo->beginTransaction();
-            foreach ($pending as $migration) {
+            foreach ($migrations as $migration) {
                 $path = $this->migrationsDir . '/' . $migration;
                 $sql = file_get_contents($path);
                 if ($sql === false) {
