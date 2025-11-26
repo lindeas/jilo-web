@@ -285,6 +285,115 @@ EOT;
 
 
     /**
+     * Get descriptive metadata for a theme.
+     *
+     * @param string $themeId
+     * @return array{name:string,description:string,version:string,author:string,tags:array}
+     */
+    public static function getThemeMetadata(string $themeId): array
+    {
+        static $cache = [];
+        if (isset($cache[$themeId])) {
+            return $cache[$themeId];
+        }
+
+        $config = self::getConfig();
+        $defaults = $config['default_config'] ?? [];
+        $availableEntry = $config['available_themes'][$themeId] ?? null;
+
+        $metadata = [
+            'name' => is_array($availableEntry) ? ($availableEntry['name'] ?? ucfirst($themeId)) : ($availableEntry ?? ucfirst($themeId)),
+            'description' => $defaults['description'] ?? '',
+            'version' => $defaults['version'] ?? '',
+            'author' => $defaults['author'] ?? '',
+            'tags' => [],
+            'type' => $themeId === 'default' ? 'Core built-in' : 'Custom',
+            'path' => $themeId === 'default' ? 'app/templates' : ('themes/' . $themeId),
+            'last_modified' => null,
+            'file_count' => null
+        ];
+
+        if (is_array($availableEntry)) {
+            $metadata = array_merge($metadata, array_intersect_key($availableEntry, array_flip(['name', 'description', 'version', 'author', 'tags'])));
+        }
+
+        if ($themeId !== 'default') {
+            $themesDir = rtrim($config['paths']['themes'] ?? (__DIR__ . '/../../themes'), '/');
+            $themeConfigPath = $themesDir . '/' . $themeId . '/config.php';
+            if (file_exists($themeConfigPath)) {
+                $themeConfig = require $themeConfigPath;
+                if (is_array($themeConfig)) {
+                    $metadata = array_merge($metadata, array_intersect_key($themeConfig, array_flip(['name', 'description', 'version', 'author', 'tags'])));
+                }
+            }
+        }
+
+        if (empty($metadata['description'])) {
+            $metadata['description'] = $defaults['description'] ?? 'A Jilo Web theme';
+        }
+        if (empty($metadata['version'])) {
+            $metadata['version'] = $defaults['version'] ?? '1.0.0';
+        }
+        if (empty($metadata['author'])) {
+            $metadata['author'] = $defaults['author'] ?? 'Lindeas';
+        }
+
+        if (empty($metadata['tags']) || !is_array($metadata['tags'])) {
+            $metadata['tags'] = [];
+        }
+
+        $paths = $config['paths'] ?? [];
+        if ($themeId === 'default') {
+            $absolutePath = realpath($paths['templates'] ?? (__DIR__ . '/../templates')) ?: null;
+        } else {
+            $absolutePath = self::getThemePath($themeId);
+        }
+
+        if ($absolutePath && is_dir($absolutePath)) {
+            [$lastModified, $fileCount] = self::getDirectoryStats($absolutePath);
+            if ($lastModified !== null) {
+                $metadata['last_modified'] = $lastModified;
+            }
+            if ($fileCount > 0) {
+                $metadata['file_count'] = $fileCount;
+            }
+        }
+
+        return $cache[$themeId] = $metadata;
+    }
+
+
+    /**
+     * Calculate directory statistics for a theme folder.
+     */
+    private static function getDirectoryStats(string $path): array
+    {
+        $latest = null;
+        $count = 0;
+
+        try {
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
+            );
+            foreach ($iterator as $fileInfo) {
+                if (!$fileInfo->isFile()) {
+                    continue;
+                }
+                $count++;
+                $mtime = $fileInfo->getMTime();
+                if ($latest === null || $mtime > $latest) {
+                    $latest = $mtime;
+                }
+            }
+        } catch (\Throwable $e) {
+            return [null, 0];
+        }
+
+        return [$latest, $count];
+    }
+
+
+    /**
      * Get the URL for a theme asset
      *
      * @param string $path

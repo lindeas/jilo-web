@@ -51,11 +51,20 @@ if (isset($_GET['switch_to'])) {
 $themes = \App\Helpers\Theme::getAvailableThemes();
 $currentTheme = \App\Helpers\Theme::getCurrentThemeName();
 
-// Prepare theme data with screenshot URLs for the view
+// Prepare theme data with screenshot URLs and metadata for the view
 $themeData = [];
 foreach ($themes as $id => $name) {
+    $meta = \App\Helpers\Theme::getThemeMetadata($id);
     $themeData[$id] = [
-        'name' => $name,
+        'name' => $meta['name'] ?? $name,
+        'description' => $meta['description'] ?? '',
+        'version' => $meta['version'] ?? '',
+        'author' => $meta['author'] ?? '',
+        'tags' => $meta['tags'] ?? [],
+        'type' => $meta['type'] ?? '',
+        'path' => $meta['path'] ?? '',
+        'last_modified' => $meta['last_modified'] ?? null,
+        'file_count' => $meta['file_count'] ?? null,
         'screenshotUrl' => \App\Helpers\Theme::getAssetUrl($id, 'screenshot.png'),
         'isActive' => $id === $currentTheme
     ];
