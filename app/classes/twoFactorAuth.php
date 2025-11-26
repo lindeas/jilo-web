@@ -12,7 +12,7 @@ class TwoFactorAuthentication {
     private $period = 30;       // Time step in seconds (T0)
     private $digits = 6;        // Number of digits in TOTP code
     private $algorithm = 'sha1'; // HMAC algorithm
-    private $issuer = 'TotalMeet';
+    private $issuer = 'Jilo';
     private $window = 1;        // Time window of 1 step before/after
 
     /**
