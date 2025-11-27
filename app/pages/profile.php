@@ -14,19 +14,20 @@
 
 $action = $_REQUEST['action'] ?? '';
 $item = $_REQUEST['item'] ?? '';
-$subscription = null;
+// pass the user details to the profile hooks
+$profileHooksContext = [
+    'userId' => $userId ?? null,
+    'db' => $db ?? null,
+    'app_root' => $app_root ?? '/',
+    'user' => $userDetails[0] ?? null,
+];
 
-if (defined('PLUGIN_BILLING_PATH') && file_exists(PLUGIN_BILLING_PATH . 'models/billing.php')) {
-    require_once PLUGIN_BILLING_PATH . 'models/billing.php';
-    if (class_exists('Billing')) {
-        try {
-            $billingModel = new Billing($db);
-            $subscription = $billingModel->getUserSubscription($userId);
-        } catch (Throwable $e) {
-            error_log('Failed to load billing subscription: ' . $e->getMessage());
-        }
-    }
+if (class_exists('\\App\\Core\\HookDispatcher')) {
+    $profileHooksContext = \App\Core\HookDispatcher::applyFilters('profile.context', $profileHooksContext);
 }
+
+// plugins can add additional panels to the profile page
+$profilePanelsContext = $profileHooksContext;
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
