@@ -57,6 +57,7 @@
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=credentials">
                                 <i class="fas fa-shield-alt"></i>Login credentials
                             </a>
+<?php do_hook('account_menu', ['app_root' => $app_root]); ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=logout">
                                 <i class="fas fa-sign-out-alt"></i>Logout
