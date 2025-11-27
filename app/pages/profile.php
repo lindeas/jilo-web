@@ -14,6 +14,19 @@
 
 $action = $_REQUEST['action'] ?? '';
 $item = $_REQUEST['item'] ?? '';
+$subscription = null;
+
+if (defined('PLUGIN_BILLING_PATH') && file_exists(PLUGIN_BILLING_PATH . 'models/billing.php')) {
+    require_once PLUGIN_BILLING_PATH . 'models/billing.php';
+    if (class_exists('Billing')) {
+        try {
+            $billingModel = new Billing($db);
+            $subscription = $billingModel->getUserSubscription($userId);
+        } catch (Throwable $e) {
+            error_log('Failed to load billing subscription: ' . $e->getMessage());
+        }
+    }
+}
 
 // if a form is submitted, it's from the edit page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

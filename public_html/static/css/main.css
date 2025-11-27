@@ -1,5 +1,194 @@
+.tm-profile-view {
+    display: flex;
+    flex-direction: column;
+/*    gap: 2rem;*/
+    margin-bottom: 3rem;
+}
+
+.tm-profile-hero {
+    padding: 2rem;
+}
+
+.tm-profile-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.tm-profile-avatar-frame {
+    width: 140px;
+    height: 140px;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(14, 165, 233, 0.15));
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.45);
+}
+
+.tm-profile-avatar-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1.2rem;
+}
+
+.tm-profile-hero-body {
+    flex: 1;
+    min-width: 240px;
+}
+
+.tm-profile-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.tm-profile-hero-actions {
+    margin-left: auto;
+}
+
+.tm-profile-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.tm-profile-panel {
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    box-shadow: 0 20px 35px rgba(15, 23, 42, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tm-profile-panel h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.25rem;
+}
+
+.tm-profile-detail-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+}
+
+.tm-profile-detail-item dt {
+    margin: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #94a3b8;
+}
+
+.tm-profile-detail-item dd {
+    margin: 0.35rem 0 0;
+    font-size: 1rem;
+    color: #0f172a;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.tm-profile-bio {
+    margin: 0;
+    color: #475569;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.tm-profile-rights {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.tm-profile-rights li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.tm-profile-rights i {
+    color: #22c55e;
+}
+
+.tm-profile-placeholder {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.tm-profile-billing header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.tm-profile-plan-pill {
+    padding: 0.2rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(37, 99, 235, 0.35);
+    color: #1d4ed8;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.tm-profile-plan-desc {
+    margin: 0;
+    color: #475569;
+}
+
+.tm-profile-plan-meta {
+    margin: 1rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.tm-profile-plan-meta dt {
+    margin: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #94a3b8;
+}
+
+.tm-profile-plan-meta dd {
+    margin: 0.35rem 0 0;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+@media (max-width: 768px) {
+    .tm-profile-hero-actions {
+        width: 100%;
+    }
+
+    .tm-profile-hero-body {
+        order: 2;
+    }
+
+    .tm-profile-avatar-frame {
+        order: 1;
+    }
+}
+
 .tm-theme-gallery {
-    padding: 2rem 0;
+    padding: 0;
 }
 
 .tm-theme-header {
@@ -226,7 +415,7 @@ html, body {
 .tm-hero {
 /*    max-width: 1650px;*/
     width: 100%;
-    margin: 0 auto 2.5rem;
+/*    margin: 0 auto 2.5rem;*/
 /*    padding: 0 1rem;*/
 }
 
@@ -3181,6 +3370,7 @@ body {
     transition: width 0.5s ease;
 /*    margin-bottom: 50px;*/
     padding: 2rem;
+    padding-left: 0.5rem;
 /*    width: 80%;*/
 }
 .main-content.expanded {
@@ -3188,6 +3378,7 @@ body {
 }
 .sidebar-collapsed .main-content {
     width: calc(70% + 3em);
+    padding-left: 1rem;
 }
 
 .sidebar-content a {
