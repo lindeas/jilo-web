@@ -108,7 +108,7 @@ if (!isset($page)) {
 }
 
 // List of pages that don't require authentication
-$public_pages = ['login', 'help', 'about'];
+$public_pages = ['login', 'help', 'about', 'theme-asset', 'plugin-asset'];
 
 // Let plugins filter/extend public_pages
 $public_pages = filter_public_pages($public_pages);

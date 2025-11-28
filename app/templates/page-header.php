@@ -53,6 +53,10 @@
         });
     </script>
 <?php } ?>
+<?php
+// hook for loading plugin assets (css, images, etc.)
+do_hook('page_head_assets', ['page' => $page ?? null, 'action' => $_GET['action'] ?? null, 'app_root' => $app_root ?? '']);
+?>
     <title><?= htmlspecialchars($config['site_name']) ?></title>
     <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars($app_root) ?>static/favicon.ico">
 </head>
