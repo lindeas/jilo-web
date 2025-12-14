@@ -67,28 +67,23 @@ class PasswordReset {
 
         // Send email with reset link
         $to = $user['email'];
-        $subject = "{$config['site_name']} - Password reset request";
-        $message = "Dear user,\n\n";
-        $message .= "We received a request to reset your password for your {$config['site_name']} account.\n\n";
-        $message .= "To set a new password, please click the link below:\n\n";
-        $message .= $resetLink . "\n\n";
-        $message .= "This link will expire in 1 hour for security reasons.\n\n";
-        $message .= "If you did not request this password reset, please ignore this email. Your account remains secure.\n\n";
-        if (!empty($config['site_name'])) {
-            $message .= "Best regards,\n";
-            $message .= "The {$config['site_name']} team\n";
-            if (!empty($config['site_slogan'])) {
-                $message .= ":: {$config['site_slogan']} ::";
-            }
-        }
+        // Load email helper
+        require_once __DIR__ . '/../helpers/email_helper.php';
 
-        $headers = [
-            'From' => "noreply@{$config['domain']}",
-            'Reply-To' => "noreply@{$config['domain']}",
-            'X-Mailer' => 'PHP/' . phpversion()
+        $subject = "{$config['site_name']} - Password reset request";
+
+        $variables = [
+            'site_name' => $config['site_name'],
+            'reset_link' => $resetLink,
+            'site_slogan' => $config['site_slogan'] ?? ''
         ];
 
-        if (!mail($to, $subject, $message, $headers)) {
+        $additionalHeaders = [
+            'From' => "noreply@{$config['domain']}",
+            'Reply-To' => "noreply@{$config['domain']}"
+        ];
+
+        if (!sendTemplateEmail($to, $subject, 'password_reset', $variables, $config, $additionalHeaders)) {
             return ['success' => false, 'message' => 'Failed to send reset email'];
         }
 
