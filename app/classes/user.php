@@ -473,6 +473,20 @@ class User {
                     $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
                     $dest_path = $avatars_path . $newFileName;
 
+                    // ensure avatars directory exists
+                    if (!is_dir($avatars_path)) {
+                        if (!mkdir($avatars_path, 0755, true)) {
+                            $_SESSION['error'] .= 'Unable to create avatars directory. ';
+                            return false;
+                        }
+                    }
+
+                    // check if directory is writable
+                    if (!is_writable($avatars_path)) {
+                        $_SESSION['error'] .= 'Avatars directory is not writable. ';
+                        return false;
+                    }
+
                     // move the file to avatars folder
                     if (move_uploaded_file($fileTmpPath, $dest_path)) {
                         try {
@@ -486,24 +500,50 @@ class User {
                                 ':user_id' => $userId
                             ]);
                             // all went OK
-                            $_SESSION['notice'] .= 'Avatar updated successfully. ';
+                            $_SESSION['notice'] = 'Avatar updated successfully. ';
                             return true;
                         } catch (Exception $e) {
+                            $_SESSION['error'] .= 'Database error updating avatar. ';
                             return $e->getMessage();
                         }
                     } else {
-                        $_SESSION['error'] .= 'Error moving the uploaded file. ';
+                        $_SESSION['error'] = 'Error moving the uploaded file. Please check directory permissions. ';
                     }
                 } else {
-                    $_SESSION['error'] .= 'Invalid avatar file type. ';
+                    $_SESSION['error'] = 'Invalid avatar file type. Only JPG, PNG, and JPEG are allowed. ';
                 }
             } else {
-                $_SESSION['error'] .= 'Error uploading the avatar file. ';
+                // Handle different upload errors
+                switch ($avatar_file['error']) {
+                    case UPLOAD_ERR_INI_SIZE:
+                    case UPLOAD_ERR_FORM_SIZE:
+                        $_SESSION['error'] = 'Avatar file is too large. Maximum size is 500KB. ';
+                        break;
+                    case UPLOAD_ERR_PARTIAL:
+                        $_SESSION['error'] = 'Avatar file was only partially uploaded. ';
+                        break;
+                    case UPLOAD_ERR_NO_FILE:
+                        $_SESSION['error'] = 'No avatar file was uploaded. ';
+                        break;
+                    case UPLOAD_ERR_NO_TMP_DIR:
+                        $_SESSION['error'] = 'Missing temporary folder for file upload. ';
+                        break;
+                    case UPLOAD_ERR_CANT_WRITE:
+                        $_SESSION['error'] = 'Failed to write avatar file to disk. ';
+                        break;
+                    case UPLOAD_ERR_EXTENSION:
+                        $_SESSION['error'] = 'File upload stopped by extension. ';
+                        break;
+                    default:
+                        $_SESSION['error'] = 'Unknown upload error occurred. ';
+                        break;
+                }
             }
-
         } catch (Exception $e) {
+            $_SESSION['error'] = 'An error occurred while processing the avatar: ' . $e->getMessage();
             return $e->getMessage();
         }
+        return false;
     }
 
     /**

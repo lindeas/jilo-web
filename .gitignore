@@ -4,3 +4,4 @@ jilo.db
 jilo-web.db
 packaging/deb-package/
 packaging/rpm-package/
+/public_html/uploads/avatars/
