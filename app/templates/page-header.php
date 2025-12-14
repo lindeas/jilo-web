@@ -62,7 +62,7 @@ do_hook('page_head_assets', ['page' => $page ?? null, 'action' => $_GET['action'
 </head>
 
 <body>
-    <div id="messages-container" class="container-fluid mt-2"></div>
+    <div id="messages-container" class="container-fluid"></div>
     <div class="container-fluid">
         <div class="row">
             <div class="col">

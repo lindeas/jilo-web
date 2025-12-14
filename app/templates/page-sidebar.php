@@ -1,16 +1,16 @@
-        <div class="row">
+        <div class="row" style="padding-right: 0.75rem;">
 
             <!-- Sidebar -->
             <div class="col-md-3 sidebar-wrapper" id="sidebar">
-                <div class="text-center" style="border: 1px solid #0dcaf0; height: 22px;" id="time_now">
+                <div class="text-center" id="time_now">
 <?php
 $timeNow = new DateTime('now', new DateTimeZone($userTimezone));
 ?>
-                    <span style="vertical-align: top; font-size: 12px;"><?= htmlspecialchars($timeNow->format('H:i')) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
+                    <span><?= htmlspecialchars($timeNow->format('H:i')) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
                 </div>
 
                 <div class="col-4"><button class="btn btn-sm btn-info toggle-sidebar-button" type="button" id="toggleSidebarButton" value=">>"></button></div>
-                <div class="sidebar-content card ml-3 mt-0">
+                <div class="sidebar-content card mt-0">
                     <ul class="list-group">
 
                         <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>&page=dashboard">
