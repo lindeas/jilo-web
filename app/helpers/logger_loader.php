@@ -13,3 +13,25 @@ function getLoggerInstance($database) {
     require_once __DIR__ . '/../core/NullLogger.php';
     return new \App\Core\NullLogger();
 }
+
+if (!function_exists('app_log')) {
+    /**
+     * Lightweight logging helper that prefers the plugin logger but falls back to NullLogger.
+     */
+    function app_log(string $level, string $message, array $context = []): void {
+        global $logObject;
+
+        if (isset($logObject) && is_object($logObject) && method_exists($logObject, 'log')) {
+            $logObject->log($level, $message, $context);
+            return;
+        }
+
+        static $fallbackLogger = null;
+        if ($fallbackLogger === null) {
+            require_once __DIR__ . '/../core/NullLogger.php';
+            $fallbackLogger = new \App\Core\NullLogger();
+        }
+
+        $fallbackLogger->log($level, $message, $context);
+    }
+}
