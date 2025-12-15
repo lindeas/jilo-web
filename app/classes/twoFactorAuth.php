@@ -1,5 +1,9 @@
 <?php
 
+// Already required in index.php, but we require it here,
+// because this class could be used standalone
+require_once __DIR__ . '/../helpers/logger_loader.php';
+
 /**
  * Class TwoFactorAuthentication
  *
@@ -98,7 +102,10 @@ class TwoFactorAuthentication {
             if ($code !== null) {
                 // Verify the setup code
                 if (!$this->verify($userId, $code)) {
-                    error_log("Code verification failed");
+                    app_log('warning', '2FA setup code verification failed', [
+                        'scope' => 'security',
+                        'user_id' => $userId,
+                    ]);
                     return false;
                 }
 
@@ -117,7 +124,10 @@ class TwoFactorAuthentication {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
-            error_log('2FA enable error: ' . $e->getMessage());
+            app_log('error', '2FA enable error: ' . $e->getMessage(), [
+                'scope' => 'security',
+                'user_id' => $userId,
+            ]);
             return false;
         }
     }
@@ -157,7 +167,10 @@ class TwoFactorAuthentication {
             return false;
 
         } catch (Exception $e) {
-            error_log('2FA verification error: ' . $e->getMessage());
+            app_log('error', '2FA verification error: ' . $e->getMessage(), [
+                'scope' => 'security',
+                'user_id' => $userId,
+            ]);
             return false;
         }
     }
@@ -351,7 +364,10 @@ class TwoFactorAuthentication {
             return false;
 
         } catch (Exception $e) {
-            error_log('Backup code verification error: ' . $e->getMessage());
+            app_log('error', 'Backup code verification error: ' . $e->getMessage(), [
+                'scope' => 'security',
+                'user_id' => $userId,
+            ]);
             return false;
         }
     }
@@ -378,7 +394,10 @@ class TwoFactorAuthentication {
             return $stmt->execute([$userId]);
 
         } catch (Exception $e) {
-            error_log('2FA disable error: ' . $e->getMessage());
+            app_log('error', '2FA disable error: ' . $e->getMessage(), [
+                'scope' => 'security',
+                'user_id' => $userId,
+            ]);
             return false;
         }
     }
@@ -397,7 +416,10 @@ class TwoFactorAuthentication {
             return $result && $result['enabled'];
 
         } catch (Exception $e) {
-            error_log('2FA status check error: ' . $e->getMessage());
+            app_log('error', '2FA status check error: ' . $e->getMessage(), [
+                'scope' => 'security',
+                'user_id' => $userId,
+            ]);
             return false;
         }
     }
@@ -413,7 +435,10 @@ class TwoFactorAuthentication {
             return $stmt->fetch(PDO::FETCH_ASSOC);
 
         } catch (Exception $e) {
-            error_log('Failed to get user 2FA settings: ' . $e->getMessage());
+            app_log('error', 'Failed to get user 2FA settings: ' . $e->getMessage(), [
+                'scope' => 'security',
+                'user_id' => $userId,
+            ]);
             return null;
         }
     }
