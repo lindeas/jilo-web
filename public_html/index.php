@@ -176,6 +176,8 @@ use App\Core\LogThrottler;
 require_once __DIR__ . '/../app/core/NullLogger.php';
 use App\Core\NullLogger;
 $logObject = new NullLogger();
+
+require_once __DIR__ . '/../app/helpers/logger_loader.php';
 // Get the user IP
 require_once __DIR__ . '/../app/helpers/ip_helper.php';
 $user_IP = '';
@@ -220,7 +222,9 @@ try {
     }
 } catch (\Throwable $e) {
     // Do not break the app; log only
-    error_log('Migration check failed: ' . $e->getMessage());
+    app_log('error', 'Migration check failed: ' . $e->getMessage(), [
+        'scope' => 'system',
+    ]);
 }
 
 // CSRF middleware and run pipeline
