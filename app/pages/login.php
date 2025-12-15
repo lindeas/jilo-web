@@ -300,6 +300,6 @@ function handleSuccessfulLogin($userId, $username, $rememberMe, $config, $app_ro
     ) {
         $redirect = $candidate;
     }
-    header('Location: ' . htmlspecialchars($redirect));
+    header('Location: ' . $redirect);
     exit();
 }

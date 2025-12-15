@@ -43,8 +43,10 @@
                             <i class="fas fa-sign-in-alt me-2"></i>Sign in
                         </button>
                     </div>
-<?php if (isset($_GET['redirect'])): ?>
-                    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_GET['redirect']); ?>">
+<?php if (isset($_GET['redirect'])):
+    $loginRawRedirect = $_GET['redirect'];
+?>
+                    <input type="hidden" name="redirect" value="<?= htmlspecialchars($loginRawRedirect, ENT_QUOTES, 'UTF-8'); ?>">
 <?php endif; ?>
                 </form>
             </div>
