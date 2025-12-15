@@ -122,18 +122,10 @@ $pipeline->add(function() {
     return true;
 });
 
-// For public pages, we don't need to validate the session
-// The Router will handle authentication for protected pages
-$validSession = false;
-$userId = null;
-
-// Only check session for non-public pages
-if (!in_array($page, $public_pages)) {
-    $validSession = Session::isValidSession(true);
-    if ($validSession) {
-        $userId = Session::getUserId();
-    }
-}
+// Always detect authenticated session so templates shared
+// between public and private pages behave consistently.
+$validSession = Session::isValidSession(true);
+$userId = $validSession ? Session::getUserId() : null;
 
 // Initialize feedback message system
 require_once '../app/classes/feedback.php';
@@ -162,6 +154,9 @@ $allowed_urls = filter_allowed_urls($allowed_urls);
 require_once __DIR__ . '/../app/core/Router.php';
 use App\Core\Router;
 $currentUser = Router::checkAuth($config, $app_root, $public_pages, $page);
+if ($currentUser === null && $validSession) {
+    $currentUser = Session::getUsername();
+}
 
 // Connect to DB via DatabaseConnector
 require_once __DIR__ . '/../app/core/DatabaseConnector.php';
