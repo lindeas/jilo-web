@@ -74,6 +74,9 @@
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=admin-tools">
                                 <i class="fas fa-toolbox"></i>Admin tools
                             </a>
+                            <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=admin">
+                                <i class="fas fa-toolbox"></i>Admin
+                            </a>
 <?php } ?>
 <?php if ($userObject->hasRight($userId, 'superuser') ||
           $userObject->hasRight($userId, 'view config file')) {?>
