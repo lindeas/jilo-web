@@ -9,6 +9,7 @@
 
 require_once __DIR__ . '/../core/Maintenance.php';
 require_once __DIR__ . '/../core/MigrationRunner.php';
+require_once __DIR__ . '/../core/PluginManager.php';
 require_once '../app/helpers/security.php';
 include_once '../app/helpers/feedback.php';
 
@@ -19,11 +20,11 @@ if (!Session::isValidSession()) {
     exit;
 }
 
+// Check if the user has admin permissions
 $canAdmin = false;
 if (isset($userId) && isset($userObject) && method_exists($userObject, 'hasRight')) {
     $canAdmin = ($userId === 1) || (bool)$userObject->hasRight($userId, 'superuser');
 }
-
 if (!$canAdmin) {
     Feedback::flash('SECURITY', 'PERMISSION_DENIED');
     header('Location: ' . $app_root);
@@ -38,8 +39,10 @@ $sectionRegistry = [
     'overview' => ['label' => 'Overview', 'position' => 100, 'hook' => null, 'type' => 'core'],
     'maintenance' => ['label' => 'Maintenance', 'position' => 200, 'hook' => null, 'type' => 'core'],
     'migrations' => ['label' => 'Migrations', 'position' => 300, 'hook' => null, 'type' => 'core'],
+    'plugins' => ['label' => 'Plugins', 'position' => 400, 'hook' => null, 'type' => 'core'],
 ];
 
+// Register sections for plugins
 $registerSection = static function(array $section) use (&$sectionRegistry): void {
     $key = strtolower(trim($section['key'] ?? ''));
     $label = trim((string)($section['label'] ?? ''));
@@ -108,7 +111,6 @@ foreach ($sectionRegistry as $key => $meta) {
     ];
 }
 
-// Hooks section for plugins
 $sectionStatePayload = \App\Core\HookDispatcher::applyFilters('admin.sections.state', [
     'sections' => $sectionRegistry,
     'state' => [],
@@ -121,6 +123,76 @@ if (is_array($sectionStatePayload)) {
     $sectionState = $sectionStatePayload['state'] ?? (is_array($sectionStatePayload) ? $sectionStatePayload : []);
 }
 
+// Get plugin catalog and list of loaded plugins
+// with their dependencies
+$pluginCatalog = \App\Core\PluginManager::getCatalog();
+$pluginLoadedMap = \App\Core\PluginManager::getLoaded();
+$pluginDependencyErrors = \App\Core\PluginManager::getDependencyErrors();
+
+$normalizeDependencies = static function ($meta): array {
+    $deps = $meta['dependencies'] ?? [];
+    if (!is_array($deps)) {
+        $deps = $deps === null || $deps === '' ? [] : [$deps];
+    }
+    $deps = array_map('trim', $deps);
+    $deps = array_filter($deps, static function($dep) {
+        return $dep !== '';
+    });
+    return array_values(array_unique($deps));
+};
+
+$pluginDependentsIndex = [];
+foreach ($pluginCatalog as $slug => $info) {
+    $deps = $normalizeDependencies($info['meta'] ?? []);
+    foreach ($deps as $dep) {
+        $pluginDependentsIndex[$dep][] = $slug;
+    }
+}
+
+// Build plugin admin map with details, state and dependencies
+$pluginAdminMap = [];
+foreach ($pluginCatalog as $slug => $info) {
+    $meta = $info['meta'] ?? [];
+    $name = trim((string)($meta['name'] ?? $slug));
+    $enabled = !empty($meta['enabled']);
+    $dependencies = $normalizeDependencies($meta);
+    $dependents = array_values($pluginDependentsIndex[$slug] ?? []);
+    $enabledDependents = array_values(array_filter($dependents, static function($depSlug) use ($pluginCatalog) {
+        return !empty($pluginCatalog[$depSlug]['meta']['enabled']);
+    }));
+    $missingDependencies = array_values(array_filter($dependencies, static function($depSlug) use ($pluginCatalog) {
+        return !isset($pluginCatalog[$depSlug]) || empty($pluginCatalog[$depSlug]['meta']['enabled']);
+    }));
+
+    $pluginAdminMap[$slug] = [
+        'slug' => $slug,
+        'name' => $name,
+        'version' => (string)($meta['version'] ?? ''),
+        'description' => (string)($meta['description'] ?? ''),
+        'enabled' => $enabled,
+        'loaded' => isset($pluginLoadedMap[$slug]),
+        'dependencies' => $dependencies,
+        'dependents' => $dependents,
+        'enabled_dependents' => $enabledDependents,
+        'missing_dependencies' => $missingDependencies,
+        'dependency_errors' => $pluginDependencyErrors[$slug] ?? [],
+        'can_enable' => !$enabled && empty($missingDependencies),
+        'can_disable' => $enabled && empty($enabledDependents),
+    ];
+}
+
+$pluginAdminList = array_values($pluginAdminMap);
+usort($pluginAdminList, static function(array $a, array $b): int {
+    return strcmp(strtolower($a['name']), strtolower($b['name']));
+});
+
+$sectionState['plugins'] = [
+    'plugins' => $pluginAdminList,
+    'dependency_errors' => $pluginDependencyErrors,
+    'plugin_index' => $pluginAdminMap,
+];
+
+// Prepare the DB migrations details
 $migrationsDir = __DIR__ . '/../../doc/database/migrations';
 
 if ($postAction === 'read_migration') {
@@ -193,6 +265,7 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
     }
 
     try {
+        // Maintenance actions
         if ($postAction === 'maintenance_on') {
             $msg = trim($_POST['maintenance_message'] ?? '');
             \App\Core\Maintenance::enable($msg);
@@ -200,6 +273,7 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
         } elseif ($postAction === 'maintenance_off') {
             \App\Core\Maintenance::disable();
             Feedback::flash('NOTICE', 'DEFAULT', 'Maintenance mode disabled.', true);
+        // DB migrations actions
         } elseif ($postAction === 'migrate_up') {
             $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
             $applied = $runner->applyPendingMigrations();
@@ -227,6 +301,37 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
                 ];
                 $_SESSION['migration_modal_open'] = $applied[0];
             }
+        // Plugin actions
+        } elseif ($postAction === 'plugin_enable' || $postAction === 'plugin_disable') {
+            $slug = strtolower(trim($_POST['plugin'] ?? ''));
+            if ($slug === '' || !isset($pluginAdminMap[$slug])) {
+                Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
+            } else {
+                $pluginMeta = $pluginAdminMap[$slug];
+                if ($postAction === 'plugin_enable') {
+                    if (!$pluginMeta['can_enable']) {
+                        $reason = 'Resolve missing dependencies before enabling this plugin.';
+                        if (!empty($pluginMeta['missing_dependencies'])) {
+                            $reason = 'Enable required plugins first: ' . implode(', ', $pluginMeta['missing_dependencies']);
+                        }
+                        Feedback::flash('ERROR', 'DEFAULT', $reason, false);
+                    } elseif (!\App\Core\PluginManager::setEnabled($slug, true)) {
+                        Feedback::flash('ERROR', 'DEFAULT', 'Failed to enable plugin. Check file permissions on plugin.json.', false);
+                    } else {
+                        Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" enabled. Reload admin to finish loading it.', $pluginMeta['name']), true);
+                    }
+                } else {
+                    if (!$pluginMeta['can_disable']) {
+                        $reason = 'Disable dependent plugins first: ' . implode(', ', $pluginMeta['enabled_dependents']);
+                        Feedback::flash('ERROR', 'DEFAULT', $reason, false);
+                    } elseif (!\App\Core\PluginManager::setEnabled($slug, false)) {
+                        Feedback::flash('ERROR', 'DEFAULT', 'Failed to disable plugin. Check file permissions on plugin.json.', false);
+                    } else {
+                        Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" disabled.', $pluginMeta['name']), true);
+                    }
+                }
+            }
+        // Test migrations actions
         } elseif ($postAction === 'create_test_migration') {
             $timestamp = date('Ymd_His');
             $filename = $timestamp . '_test_migration.sql';

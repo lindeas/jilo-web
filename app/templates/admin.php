@@ -343,6 +343,143 @@ if (!empty($adminOverviewStatuses) && is_array($adminOverviewStatuses)) {
                 </form>
             </article>
         </div>
+<?php elseif (($tabMeta['type'] ?? 'core') === 'core' && $sectionKey === 'plugins'): ?>
+        <?php
+            $pluginsState = $sectionState['plugins'] ?? [];
+            $pluginsList = $pluginsState['plugins'] ?? [];
+            $dependencyErrors = $pluginsState['dependency_errors'] ?? [];
+            $totalPlugins = count($pluginsList);
+            $enabledPlugins = count(array_filter($pluginsList, static function($plugin) {
+                return !empty($plugin['enabled']);
+            }));
+            $issuesPlugins = count(array_filter($pluginsList, static function($plugin) {
+                return !empty($plugin['dependency_errors']) || !$plugin['loaded'];
+            }));
+        ?>
+        <div class="tm-admin-grid">
+            <article class="tm-admin-card">
+                <header>
+                    <div>
+                        <h2 class="tm-admin-card-title">Plugin overview</h2>
+                        <p class="tm-admin-card-subtitle">Enable or disable functionality and review dependency health.</p>
+                    </div>
+                    <div class="tm-hero-pill pill-primary">
+                        <?= htmlspecialchars($enabledPlugins) ?> / <?= htmlspecialchars($totalPlugins) ?> enabled
+                    </div>
+                </header>
+                <?php if (!empty($dependencyErrors)): ?>
+                    <div class="alert alert-warning">
+                        <strong>Dependency issues detected.</strong> Resolve the following before enabling affected plugins:
+                        <ul class="mb-0 mt-2">
+                        <?php foreach ($dependencyErrors as $slug => $errors):
+                            if (empty($errors)) {
+                                continue;
+                            }
+                        ?>
+                            <li><strong><?= htmlspecialchars($slug) ?>:</strong> <?= htmlspecialchars(implode('; ', $errors)) ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+                <?php if (empty($pluginsList)): ?>
+                    <p class="tm-admin-empty mb-0">No plugins detected in the plugins directory.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover tm-admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Plugin</th>
+                                    <th>Status</th>
+                                    <th>Depends on</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $pluginIndex = $pluginsState['plugin_index'] ?? [];
+                            foreach ($pluginsList as $plugin):
+                                $missingDeps = $plugin['missing_dependencies'] ?? [];
+                                $depErrors = $plugin['dependency_errors'] ?? [];
+                                $dependents = $plugin['dependents'] ?? [];
+                                $enabledDependents = $plugin['enabled_dependents'] ?? [];
+                                $statusBadges = [];
+                                $statusBadges[] = $plugin['enabled']
+                                    ? '<span class="badge text-uppercase" style="background-color:#198754;color:#fff;">Enabled</span>'
+                                    : '<span class="badge text-uppercase" style="background-color:#6c757d;color:#fff;">Disabled</span>';
+                                if ($plugin['enabled'] && empty($depErrors) && $plugin['loaded']) {
+                                    $statusBadges[] = '<span class="badge text-uppercase" style="background-color:#0dcaf0;color:#052c65;">Loaded</span>';
+                                }
+                                if (!empty($missingDeps) || !empty($depErrors)) {
+                                    $statusBadges[] = '<span class="badge text-uppercase" style="background-color:#ffc107;color:#212529;">Issues</span>';
+                                }
+                            ?>
+                                <tr>
+                                    <td>
+                                        <strong><?= htmlspecialchars($plugin['name']) ?></strong>
+                                        <?php if (!empty($plugin['version'])): ?>
+                                            <span class="text-muted">v<?= htmlspecialchars($plugin['version']) ?></span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($plugin['description'])): ?>
+                                            <p class="tm-admin-muted mb-0"><?= htmlspecialchars($plugin['description']) ?></p>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?= implode(' ', $statusBadges) ?>
+                                        <?php if (!empty($depErrors)): ?>
+                                            <p class="tm-admin-muted text-warning mb-0"><?= htmlspecialchars(implode(' ', $depErrors)) ?></p>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($plugin['dependencies'])): ?>
+                                            <ul class="tm-admin-inline-list">
+                                            <?php foreach ($plugin['dependencies'] as $dep):
+                                                $depMeta = $pluginIndex[$dep] ?? null;
+                                                $depStatusBadge = '';
+                                                if ($depMeta) {
+                                                    $depStatusBadge = $depMeta['enabled']
+                                                        ? '<span class="badge" style="background-color:#198754;color:#fff;">OK</span>'
+                                                        : '<span class="badge" style="background-color:#ffc107;color:#212529;">Off</span>';
+                                                    if (!empty($depMeta['dependency_errors'])) {
+                                                        $depStatusBadge = '<span class="badge" style="background-color:#dc3545;color:#fff;">Error</span>';
+                                                    }
+                                                } elseif (in_array($dep, $missingDeps, true)) {
+                                                    $depStatusBadge = '<span class="badge" style="background-color:#dc3545;color:#fff;">Missing</span>';
+                                                }
+                                            ?>
+                                                <li>
+                                                    <?= htmlspecialchars($dep) ?>
+                                                    <?php if ($depStatusBadge !== ''): ?>
+                                                        <span class="tm-admin-dep-status">(<?= $depStatusBadge ?>)</span>
+                                                    <?php endif; ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                            </ul>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-right">
+                                        <form method="post" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                            <input type="hidden" name="section" value="plugins">
+                                            <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                                            <?php if ($plugin['enabled']): ?>
+                                            <input type="hidden" name="action" value="plugin_disable">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" <?= $plugin['can_disable'] ? '' : 'disabled' ?>>Disable</button>
+                                            <?php else: ?>
+                                            <input type="hidden" name="action" value="plugin_enable">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" <?= $plugin['can_enable'] ? '' : 'disabled' ?>>Enable</button>
+                                            <?php endif; ?>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </article>
+        </div>
 <?php elseif (!empty($tabMeta['hook'])): ?>
         <?php
             do_hook($tabMeta['hook'], [
