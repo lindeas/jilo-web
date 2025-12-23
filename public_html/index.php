@@ -16,13 +16,16 @@
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
+// Define main app path
+define('APP_PATH', __DIR__ . '/../app/');
+
 // Prepare config loader
-require_once __DIR__ . '/../app/core/ConfigLoader.php';
+require_once APP_PATH . 'core/ConfigLoader.php';
 use App\Core\ConfigLoader;
 
 // Load configuration
 $config = ConfigLoader::loadConfig([
-    __DIR__ . '/../app/config/jilo-web.conf.php',
+    APP_PATH . 'config/jilo-web.conf.php',
     __DIR__ . '/../jilo-web.conf.php',
     '/srv/jilo-web/jilo-web.conf.php',
     '/opt/jilo-web/jilo-web.conf.php',
@@ -40,8 +43,8 @@ $app_root = $config['folder'] ?? '/';
 
 // Preparing plugins and hooks
 // Initialize HookDispatcher and plugin system
-require_once __DIR__ . '/../app/core/HookDispatcher.php';
-require_once __DIR__ . '/../app/core/PluginManager.php';
+require_once APP_PATH . 'core/HookDispatcher.php';
+require_once APP_PATH . 'core/PluginManager.php';
 use App\Core\HookDispatcher;
 use App\Core\PluginManager;
 
@@ -78,30 +81,27 @@ $GLOBALS['enabled_plugins'] = $enabled_plugins;
 
 // Define CSRF token include path globally
 if (!defined('CSRF_TOKEN_INCLUDE')) {
-    define('CSRF_TOKEN_INCLUDE', dirname(__DIR__) . '/app/includes/csrf_token.php');
+    define('CSRF_TOKEN_INCLUDE', APP_PATH . 'includes/csrf_token.php');
 }
 
 // Global cnstants
-require_once '../app/includes/constants.php';
+require_once APP_PATH . 'includes/constants.php';
 
 // we start output buffering and
 // flush it later only when there is no redirect
 ob_start();
 
 // Start session before any session-dependent code
-require_once '../app/classes/session.php';
+require_once APP_PATH . 'classes/session.php';
 
 // Initialize themes system after session is started
-require_once __DIR__ . '/../app/helpers/theme.php';
+require_once APP_PATH . 'helpers/theme.php';
 use app\Helpers\Theme;
 
 Session::startSession();
 
-// Reset flash messages display flag for new page load
-$_SESSION['flash_messages_displayed'] = false;
-
 // Define page variable early via sanitize
-require_once __DIR__ . '/../app/includes/sanitize.php';
+require_once APP_PATH . 'includes/sanitize.php';
 // Ensure $page is defined to avoid undefined variable
 if (!isset($page)) {
     $page = 'dashboard';
@@ -114,11 +114,11 @@ $public_pages = ['login', 'help', 'about', 'theme-asset', 'plugin-asset'];
 $public_pages = filter_public_pages($public_pages);
 
 // Middleware pipeline for security, sanitization & CSRF
-require_once __DIR__ . '/../app/core/MiddlewarePipeline.php';
+require_once APP_PATH . 'core/MiddlewarePipeline.php';
 $pipeline = new \App\Core\MiddlewarePipeline();
 $pipeline->add(function() {
     // Apply security headers
-    require_once __DIR__ . '/../app/includes/security_headers_middleware.php';
+    require_once APP_PATH . 'includes/security_headers_middleware.php';
     return true;
 });
 
@@ -128,10 +128,10 @@ $validSession = Session::isValidSession(true);
 $userId = $validSession ? Session::getUserId() : null;
 
 // Initialize feedback message system
-require_once '../app/classes/feedback.php';
+require_once APP_PATH . 'classes/feedback.php';
 $system_messages = [];
 
-require '../app/includes/errors.php';
+require APP_PATH . 'includes/errors.php';
 
 // list of available pages
 // edit accordingly, add 'pages/PAGE.php'
@@ -140,9 +140,8 @@ $allowed_urls = [
     'conferences','participants','components',
     'graphs','latest','livejs','agents',
     'profile','credentials','config','security',
-    'settings','theme','theme-asset',
-    'admin', 'admin-tools',
-    'status',
+    'settings','theme','theme-asset','plugin-asset',
+    'admin','admin-tools','status',
     'help','about',
     'login','logout',
 ];
@@ -151,7 +150,7 @@ $allowed_urls = [
 $allowed_urls = filter_allowed_urls($allowed_urls);
 
 // Dispatch routing and auth
-require_once __DIR__ . '/../app/core/Router.php';
+require_once APP_PATH . 'core/Router.php';
 use App\Core\Router;
 $currentUser = Router::checkAuth($config, $app_root, $public_pages, $page);
 if ($currentUser === null && $validSession) {
@@ -159,22 +158,22 @@ if ($currentUser === null && $validSession) {
 }
 
 // Connect to DB via DatabaseConnector
-require_once __DIR__ . '/../app/core/DatabaseConnector.php';
+require_once APP_PATH . 'core/DatabaseConnector.php';
 use App\Core\DatabaseConnector;
 $db = DatabaseConnector::connect($config);
 
 // Initialize Log throttler
-require_once __DIR__ . '/../app/core/LogThrottler.php';
+require_once APP_PATH . 'core/LogThrottler.php';
 use App\Core\LogThrottler;
 
 // Logging: default to NullLogger, plugin can override
-require_once __DIR__ . '/../app/core/NullLogger.php';
+require_once APP_PATH . 'core/NullLogger.php';
 use App\Core\NullLogger;
 $logObject = new NullLogger();
 
-require_once __DIR__ . '/../app/helpers/logger_loader.php';
+require_once APP_PATH . 'helpers/logger_loader.php';
 // Get the user IP
-require_once __DIR__ . '/../app/helpers/ip_helper.php';
+require_once APP_PATH . 'helpers/ip_helper.php';
 $user_IP = '';
 
 // Plugin: initialize logging system plugin if available
@@ -191,9 +190,9 @@ if (isset($GLOBALS['user_IP'])) {
 // Check for pending DB migrations (non-intrusive: warn only)
 // Only show for authenticated users and not on login page
 try {
-    $migrationsDir = __DIR__ . '/../doc/database/migrations';
+    $migrationsDir = APP_PATH . '../doc/database/migrations';
     if (is_dir($migrationsDir) && $userId !== null && $page !== 'login') {
-        require_once __DIR__ . '/../app/core/MigrationRunner.php';
+        require_once APP_PATH . 'core/MigrationRunner.php';
         $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
         if ($runner->hasPendingMigrations()) {
             $pending = $runner->listPendingMigrations();
@@ -225,8 +224,8 @@ try {
 // CSRF middleware and run pipeline
 $pipeline->add(function() {
     // Initialize security middleware
-    require_once __DIR__ . '/../app/includes/csrf_middleware.php';
-    require_once __DIR__ . '/../app/helpers/security.php';
+    require_once APP_PATH . 'includes/csrf_middleware.php';
+    require_once APP_PATH . 'helpers/security.php';
     $security = SecurityHelper::getInstance();
     // Verify CSRF token for POST requests
     return applyCsrfMiddleware();
@@ -234,14 +233,14 @@ $pipeline->add(function() {
 $pipeline->add(function() {
     // Init rate limiter
     global $db, $page, $userId;
-    require_once __DIR__ . '/../app/includes/rate_limit_middleware.php';
+    require_once APP_PATH . 'includes/rate_limit_middleware.php';
     return checkRateLimit($db, $page, $userId);
 });
 $pipeline->add(function() {
     // Init user functions
     global $db, $userObject;
-    require_once __DIR__ . '/../app/classes/user.php';
-    include __DIR__ . '/../app/helpers/profile.php';
+    require_once APP_PATH . 'classes/user.php';
+    include APP_PATH . 'helpers/profile.php';
     $userObject = new User($db);
     return true;
 });
@@ -251,7 +250,7 @@ if (!$pipeline->run()) {
 
 // Maintenance mode: show maintenance page to non-superusers
 try {
-    require_once __DIR__ . '/../app/core/Maintenance.php';
+    require_once APP_PATH . 'core/Maintenance.php';
     if (\App\Core\Maintenance::isEnabled()) {
         $isSuperuser = false;
         if ($validSession && isset($userId) && isset($userObject) && method_exists($userObject, 'hasRight')) {
@@ -265,7 +264,7 @@ try {
             // Show themed maintenance page
             \App\Helpers\Theme::include('page-header');
             \App\Helpers\Theme::include('page-menu');
-            include __DIR__ . '/../app/templates/maintenance.php';
+            include APP_PATH . 'templates/maintenance.php';
             \App\Helpers\Theme::include('page-footer');
             ob_end_flush();
             exit;
@@ -298,7 +297,7 @@ if ($validSession && isset($userId) && isset($userObject) && is_object($userObje
 }
 
 // get platforms details
-require '../app/classes/platform.php';
+require APP_PATH . 'classes/platform.php';
 $platformObject = new Platform($db);
 $platformsAll = $platformObject->getPlatformDetails();
 
@@ -335,7 +334,7 @@ if ($page == 'logout') {
     // Use theme helper to include templates
     \App\Helpers\Theme::include('page-header');
     \App\Helpers\Theme::include('page-menu');
-    include '../app/pages/login.php';
+    include APP_PATH . 'pages/login.php';
     \App\Helpers\Theme::include('page-footer');
 
 } else {
@@ -351,7 +350,7 @@ if ($page == 'logout') {
         $userTimezone = (!empty($userDetails[0]['timezone'])) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set (or is missing)
 
         // check if the Jilo Server is running
-        require '../app/classes/server.php';
+        require APP_PATH . 'classes/server.php';
         $serverObject = new Server($db);
 
         $server_host = '127.0.0.1';
@@ -410,10 +409,10 @@ if ($page == 'logout') {
             if ($validSession) {
                 \App\Helpers\Theme::include('page-sidebar');
             }
-            if (file_exists("../app/pages/{$page}.php")) {
-                include "../app/pages/{$page}.php";
+            if (file_exists(APP_PATH . "pages/{$page}.php")) {
+                include APP_PATH . "pages/{$page}.php";
             } else {
-                include '../app/templates/error-notfound.php';
+                include APP_PATH . 'templates/error-notfound.php';
             }
             \App\Helpers\Theme::include('page-footer');
         }
@@ -424,7 +423,7 @@ if ($page == 'logout') {
         if ($validSession) {
             \App\Helpers\Theme::include('page-sidebar');
         }
-        include '../app/templates/error-notfound.php';
+        include APP_PATH . 'templates/error-notfound.php';
         \App\Helpers\Theme::include('page-footer');
     }
 }
