@@ -13,35 +13,37 @@ All notable changes to this project will be documented in this file.
 - gitlab: https://gitlab.com/lindeas/jilo-web/-/compare/v0.4.1...HEAD
 
 ### Added
-- Admin page and admin dashboard for all administrative tasks
-- Email helper and email templates, including password reset email
-- Plugin hooks for profile page, account menu, and asset loading
-- Plugin asset page
-- Logger helper with fallback when no log plugin is available
-- Log Throttler to prevent log flooding
-- Option to run database migrations one by one
-- Tracking of applied database migrations in the database
-- Monthly dashboard statistics redesign
 - CSS for dashboard widgets
+- Monthly dashboard statistics redesign
+- Tracking of applied database migrations in the database
+- Option to run database migrations one by one
+- Log Throttler to prevent log flooding
+- Logger helper with fallback when no log plugin is available
+- Plugin asset page
+- Plugin hooks for profile page, account menu, and asset loading
+- Email helper and email templates, including password reset email
+- Admin page and admin dashboard for all administrative tasks
+- Plugin namagement section for the admin dashboard
 
 ### Changed
-- Refactored database migration system and Admin Tools functionality
-- Updated index bootstrap to use global "APP_PATH"
-- Replaced "error_log" with "app_log" in 2FA
-- Switched profile edit and action pages to uniform action-card design
-- Reorganized dashboard layout
-- Updated pagination styling
-- Redesigned sidebar, main elements, menus, and overall CSS
-- Redesigned admin tools, themes, profile, credentials/2FA, and authentication pages
 - Updated credentials pages and removed unused "credentials.php"
+- Updated credentials pages and removed unused "credentials.php"
+- Redesigned admin tools, themes, profile, credentials/2FA, and authentication pages
+- Redesigned sidebar, main elements, menus, and overall CSS
+- Updated pagination styling
+- Reorganized dashboard layout
+- Switched profile edit and action pages to uniform action-card design
+- Replaced "error_log" with "app_log" in 2FA
+- Updated index bootstrap to use global "APP_PATH"
+- Refactored database migration system and Admin Tools functionality
 
 ### Fixed
-- Correct encoding of login redirect URL parameters
-- Public pages incorrectly requiring authentication
-- Profile avatar upload issues
-- Collapsing sidebar layout issues
-- Validator rejecting "0" as a valid value
 - Database migration reliability issues
+- Validator rejecting "0" as a valid value
+- Collapsing sidebar layout issues
+- Profile avatar upload issues
+- Public pages incorrectly requiring authentication
+- Correct encoding of login redirect URL parameters
 
 ---
 
