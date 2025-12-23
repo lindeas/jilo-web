@@ -36,7 +36,7 @@
     <script src="<?= htmlspecialchars($app_root) ?>static/libs/chartjs/chartjs-adapter-moment.min.js"></script>
     <script src="<?= htmlspecialchars($app_root) ?>static/libs/chartjs/chartjs-plugin-zoom.min.js"></script>
 <?php } ?>
-<?php if ($page === 'admin-tools') {
+<?php if ($page === 'admin') {
     // Use local highlight.js assets if available
     $hlBaseFs  = __DIR__ . '/../../public_html/static/libs/highlightjs';
     $hlBaseUrl = htmlspecialchars($app_root) . 'static/libs/highlightjs/';
