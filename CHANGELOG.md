@@ -27,7 +27,6 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Updated credentials pages and removed unused "credentials.php"
-- Updated credentials pages and removed unused "credentials.php"
 - Redesigned admin tools, themes, profile, credentials/2FA, and authentication pages
 - Redesigned sidebar, main elements, menus, and overall CSS
 - Updated pagination styling
@@ -36,6 +35,7 @@ All notable changes to this project will be documented in this file.
 - Replaced "error_log" with "app_log" in 2FA
 - Updated index bootstrap to use global "APP_PATH"
 - Refactored database migration system and Admin Tools functionality
+- Removed "admin-tools" page, all functionality is now in "admin" page
 
 ### Fixed
 - Database migration reliability issues
@@ -243,8 +243,6 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Changed the layout with bootstrap CSS classes
-
-### Fixed
 
 ---
 

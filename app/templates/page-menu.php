@@ -71,9 +71,6 @@
                         <div class="dropdown-menu dropdown-menu-right modern-dropdown">
                             <h6 class="dropdown-header modern-dropdown-header">settings</h6>
 <?php if ($userObject->hasRight($userId, 'superuser')) {?>
-                            <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=admin-tools">
-                                <i class="fas fa-toolbox"></i>Admin tools
-                            </a>
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=admin">
                                 <i class="fas fa-toolbox"></i>Admin
                             </a>
