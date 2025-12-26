@@ -120,8 +120,12 @@ class LogTest extends TestCase
             'password' => $password
         ]);
 
+        $connection = $this->db->getConnection();
+        $connection->exec("DROP TABLE IF EXISTS log");
+        $connection->exec("DROP TABLE IF EXISTS user");
+
         // Create user table
-        $this->db->getConnection()->exec("
+        $connection->exec("
             CREATE TABLE IF NOT EXISTS user (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 username VARCHAR(255) NOT NULL,
@@ -132,7 +136,7 @@ class LogTest extends TestCase
         ");
 
         // Create log table with the expected schema from Log class
-        $this->db->getConnection()->exec("
+        $connection->exec("
             CREATE TABLE IF NOT EXISTS log (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT,
@@ -144,7 +148,7 @@ class LogTest extends TestCase
         ");
 
         // Create test users with all required fields
-        $this->db->getConnection()->exec("
+        $connection->exec("
             INSERT INTO user (username, password, email) 
             VALUES 
                 ('testuser', 'password123', 'testuser@example.com'),
