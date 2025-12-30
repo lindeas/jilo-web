@@ -32,7 +32,7 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div class="form-check">
-                            <input type="checkbox" id="remember" name="remember" class="form-check-input" <?= isset($_POST['remember']) ? 'checked' : '' ?>>
+                            <input type="checkbox" id="remember" name="remember_me" class="form-check-input" <?= isset($_POST['remember_me']) ? 'checked' : '' ?>>
                             <label for="remember" class="form-check-label">Remember me</label>
                         </div>
                         <a href="<?= htmlspecialchars($app_root) ?>?page=login&action=forgot" class="text-decoration-none">Forgot password?</a>
