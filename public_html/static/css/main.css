@@ -1,3 +1,13 @@
+.tm-session-debug {
+    display: inline-block;
+    margin-left: 1rem;
+    background: #fff3cd;
+    color: #533f03;
+    border: 1px solid #ffe69c;
+    border-radius: 0.4rem;
+    font-size: 0.75rem;
+}
+
 .tm-profile-view {
     display: flex;
     flex-direction: column;
