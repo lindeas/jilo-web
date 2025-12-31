@@ -275,7 +275,7 @@ try {
             if (!empty($maintMsg)) {
                 $custom .= ' <em>' . htmlspecialchars($maintMsg) . '</em>';
             }
-            $custom .= ' Control it in <a href="' . htmlspecialchars($app_root) . '?page=admin">Admin center</a>';
+            $custom .= ' Control it from the <a href="' . htmlspecialchars($app_root) . '?page=admin">Admin center</a>';
             // Non-dismissible and small, do not sanitize to allow link and <em>
             Feedback::flash('SYSTEM', 'MAINTENANCE_ON', $custom, false, true, false);
         }

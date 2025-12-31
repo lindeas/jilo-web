@@ -449,7 +449,7 @@ if (!empty($adminOverviewStatuses) && is_array($adminOverviewStatuses)) {
                                                 <li>
                                                     <?= htmlspecialchars($dep) ?>
                                                     <?php if ($depStatusBadge !== ''): ?>
-                                                        <span class="tm-admin-dep-status">(<?= $depStatusBadge ?>)</span>
+                                                        <span class="tm-admin-dep-status"><?= $depStatusBadge ?></span>
                                                     <?php endif; ?>
                                                 </li>
                                             <?php endforeach; ?>
