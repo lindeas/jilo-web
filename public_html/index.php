@@ -348,6 +348,7 @@ if ($page == 'logout') {
         $userDetails = $userObject->getUserDetails($userId);
         $userRights = $userObject->getUserRights($userId);
         $userTimezone = (!empty($userDetails[0]['timezone'])) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set (or is missing)
+        $timeNow = new DateTime('now', new DateTimeZone($userTimezone)); // We init local viewer's time as early as possible
 
         // check if the Jilo Server is running
         require APP_PATH . 'classes/server.php';

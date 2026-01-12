@@ -3,9 +3,6 @@
             <!-- Sidebar -->
             <div class="col-md-3 sidebar-wrapper" id="sidebar">
                 <div class="text-center" id="time_now">
-<?php
-$timeNow = new DateTime('now', new DateTimeZone($userTimezone));
-?>
                     <span><?= htmlspecialchars($timeNow->format('H:i')) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
                 </div>
 
