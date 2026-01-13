@@ -22,8 +22,10 @@ define('APP_PATH', __DIR__ . '/../app/');
 // Prepare config loader
 require_once APP_PATH . 'core/ConfigLoader.php';
 require_once APP_PATH . 'core/App.php';
+require_once APP_PATH . 'core/PluginRouteRegistry.php';
 use App\Core\ConfigLoader;
 use App\App;
+use App\Core\PluginRouteRegistry;
 
 // Load configuration
 $config = ConfigLoader::loadConfig([
@@ -78,6 +80,9 @@ function filter_public_pages(array $pages): array {
 function filter_allowed_urls(array $urls): array {
     return HookDispatcher::applyFilters('filter_allowed_urls', $urls);
 }
+function register_plugin_route_prefix(string $prefix, array $definition = []): void {
+    PluginRouteRegistry::registerPrefix($prefix, $definition);
+}
 
 // Load enabled plugins
 $plugins_dir = dirname(__DIR__) . '/plugins/';
@@ -117,6 +122,7 @@ $public_pages = ['login', 'help', 'about', 'theme-asset', 'plugin-asset'];
 
 // Let plugins filter/extend public_pages
 $public_pages = filter_public_pages($public_pages);
+$public_pages = PluginRouteRegistry::injectPublicPages($public_pages);
 
 // Middleware pipeline for security, sanitization & CSRF
 require_once APP_PATH . 'core/MiddlewarePipeline.php';
@@ -154,6 +160,7 @@ $allowed_urls = [
 
 // Let plugins filter/extend allowed_urls
 $allowed_urls = filter_allowed_urls($allowed_urls);
+$allowed_urls = PluginRouteRegistry::injectAllowedPages($allowed_urls);
 
 // Dispatch routing and auth
 require_once APP_PATH . 'core/Router.php';
@@ -391,6 +398,32 @@ if ($page == 'logout') {
                     $mapped_plugin_controllers[$plugin_page] = $controller_path;
                 }
             }
+        }
+    }
+    if (!empty($mapped_plugin_controllers)) {
+        $allowed_urls = array_unique(array_merge($allowed_urls, array_keys($mapped_plugin_controllers)));
+    }
+
+    // Check if the requested page is handled by a plugin route dispatcher.
+    $routeContext = [
+        'page' => $page,
+        'request' => $_REQUEST,
+        'get' => $_GET,
+        'post' => $_POST,
+        'user_id' => $userId,
+        'user_object' => $userObject ?? null,
+        'valid_session' => $validSession,
+        'app_root' => $app_root,
+        'db' => $db,
+        'config' => $config,
+        'logger' => $logObject,
+        'time_now' => $timeNow ?? null,
+    ];
+    if (PluginRouteRegistry::match($page)) {
+        $handled = PluginRouteRegistry::dispatch($page, $routeContext);
+        if ($handled !== false) {
+            ob_end_flush();
+            exit;
         }
     }
 
