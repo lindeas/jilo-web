@@ -21,7 +21,9 @@ define('APP_PATH', __DIR__ . '/../app/');
 
 // Prepare config loader
 require_once APP_PATH . 'core/ConfigLoader.php';
+require_once APP_PATH . 'core/App.php';
 use App\Core\ConfigLoader;
+use App\App;
 
 // Load configuration
 $config = ConfigLoader::loadConfig([
@@ -32,14 +34,17 @@ $config = ConfigLoader::loadConfig([
 ]);
 
 // Make config available globally
-$GLOBALS['config'] = $config;
+$GLOBALS['config'] = $config; // FIXME we use old globals and includes before migrating fully to App\App
+App::set('config', $config);
 
 // Expose config file path for pages
 $config_file = ConfigLoader::getConfigPath();
 $localConfigPath = str_replace(__DIR__ . '/..', '', $config_file);
+App::set('config_path', $config_file);
 
 // Set app root with default
 $app_root = $config['folder'] ?? '/';
+App::set('app_root', $app_root);
 
 // Preparing plugins and hooks
 // Initialize HookDispatcher and plugin system
@@ -130,6 +135,7 @@ $userId = $validSession ? Session::getUserId() : null;
 // Initialize feedback message system
 require_once APP_PATH . 'classes/feedback.php';
 $system_messages = [];
+App::set('feedback', $system_messages);
 
 require APP_PATH . 'includes/errors.php';
 
@@ -161,6 +167,7 @@ if ($currentUser === null && $validSession) {
 require_once APP_PATH . 'core/DatabaseConnector.php';
 use App\Core\DatabaseConnector;
 $db = DatabaseConnector::connect($config);
+App::set('db', $db);
 
 // Initialize Log throttler
 require_once APP_PATH . 'core/LogThrottler.php';
@@ -170,6 +177,7 @@ use App\Core\LogThrottler;
 require_once APP_PATH . 'core/NullLogger.php';
 use App\Core\NullLogger;
 $logObject = new NullLogger();
+App::set('logger', $logObject);
 
 require_once APP_PATH . 'helpers/logger_loader.php';
 // Get the user IP
@@ -182,10 +190,12 @@ do_hook('logger.system_init', ['db' => $db]);
 // Override defaults if plugin provided real logger
 if (isset($GLOBALS['logObject'])) {
     $logObject = $GLOBALS['logObject'];
+    App::set('logger', $logObject);
 }
 if (isset($GLOBALS['user_IP'])) {
     $user_IP = $GLOBALS['user_IP'];
 }
+App::set('user_ip', $user_IP);
 
 // Check for pending DB migrations (non-intrusive: warn only)
 // Only show for authenticated users and not on login page
