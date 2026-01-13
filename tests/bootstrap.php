@@ -12,6 +12,9 @@ if (!headers_sent()) {
     ini_set('session.gc_maxlifetime', 1440); // 24 minutes
 }
 
+// load the main App registry
+require_once __DIR__ . '/../app/core/App.php';
+
 // Load plugin Log model and IP helper early so fallback wrapper is bypassed
 require_once __DIR__ . '/../app/helpers/ip_helper.php';
 

@@ -20,6 +20,20 @@ final class App
     }
 
     /**
+     * Clear one or all registered services.
+     *
+     * Primarily used by unit tests to avoid cross-test pollution.
+     */
+    public static function reset(?string $key = null): void
+    {
+        if ($key === null) {
+            self::$services = [];
+            return;
+        }
+        unset(self::$services[$key]);
+    }
+
+    /**
      * Determine whether a value is registered.
      */
     public static function has(string $key): bool
