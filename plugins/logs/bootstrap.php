@@ -1,7 +1,12 @@
 <?php
 
 // Logs plugin bootstrap
-// (here we add any plugin autoloader, if needed)
+if (!defined('PLUGIN_LOGS_PATH')) {
+    define('PLUGIN_LOGS_PATH', __DIR__ . '/');
+}
+
+// We add the plugin helpers wrapper
+require_once PLUGIN_LOGS_PATH . 'helpers.php';
 
 // List here all the controllers in "/controllers/" that we need as pages
 $GLOBALS['plugin_controllers']['logs'] = [
