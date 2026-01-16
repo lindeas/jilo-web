@@ -137,6 +137,8 @@ $pipeline->add(function() {
 // between public and private pages behave consistently.
 $validSession = Session::isValidSession(true);
 $userId = $validSession ? Session::getUserId() : null;
+App::set('valid_session', $validSession);
+App::set('user_id', $userId);
 
 // Initialize feedback message system
 require_once APP_PATH . 'classes/feedback.php';
@@ -366,6 +368,10 @@ if ($page == 'logout') {
         $userRights = $userObject->getUserRights($userId);
         $userTimezone = (!empty($userDetails[0]['timezone'])) ? $userDetails[0]['timezone'] : 'UTC'; // Default to UTC if no timezone is set (or is missing)
         $timeNow = new DateTime('now', new DateTimeZone($userTimezone)); // We init local viewer's time as early as possible
+        App::set('user_details', $userDetails);
+        App::set('user_timezone', $userTimezone);
+        App::set('time_now', $timeNow);
+        App::set('user_object', $userObject);
 
         // check if the Jilo Server is running
         require APP_PATH . 'classes/server.php';
