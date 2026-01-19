@@ -1,110 +1,189 @@
 <?php
 
 /**
- * User registration
+ * User Registration API Controller
  *
- * This page ("register") handles user registration if the feature is enabled in the configuration.
- * It accepts a POST request with a username and password, attempts to register the user,
- * and redirects to the login page on success or displays an error message on failure.
+ * Provides RESTful endpoints for user registration.
+ * Follows the API pattern used by other plugins.
  */
 
-// Define plugin base path if not already defined
-if (!defined('PLUGIN_REGISTER_PATH')) {
-    define('PLUGIN_REGISTER_PATH', dirname(__FILE__, 2) . '/');
-}
+namespace Plugins\Register\Controllers;
+
+use App\App;
+use App\Helpers\Theme;
+use Exception;
+use PDO;
+
+require_once APP_PATH . 'classes/feedback.php';
+require_once APP_PATH . 'classes/user.php';
+require_once APP_PATH . 'classes/validator.php';
+require_once APP_PATH . 'helpers/security.php';
+require_once APP_PATH . 'helpers/theme.php';
+require_once APP_PATH . 'includes/rate_limit_middleware.php';
 require_once PLUGIN_REGISTER_PATH . 'models/register.php';
-require_once dirname(__FILE__, 4) . '/app/classes/user.php';
-require_once dirname(__FILE__, 4) . '/app/classes/validator.php';
-require_once dirname(__FILE__, 4) . '/app/helpers/security.php';
 
-// registration is allowed, go on
-if ($config['registration_enabled'] == true) {
+class RegisterController
+{
+    /** @var \Database|\PDO|null */
+    private $db;
+    private array $config;
+    private string $appRoot;
+    private $logger;
 
-    try {
-        global $db, $logObject, $userObject;
-
-        if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
-
-            // Apply rate limiting
-            require_once dirname(__FILE__, 4) . '/app/includes/rate_limit_middleware.php';
-            checkRateLimit($db, 'register');
-
-            $security = SecurityHelper::getInstance();
-
-            // Sanitize input
-            $formData = $security->sanitizeArray($_POST, ['username', 'password', 'confirm_password', 'csrf_token', 'terms']);
-
-            // Validate CSRF token
-            if (!$security->verifyCsrfToken($formData['csrf_token'] ?? '')) {
-                throw new Exception(Feedback::get('ERROR', 'CSRF_INVALID')['message']);
-            }
-
-            $validator = new Validator($formData);
-            $rules = [
-                'username' => [
-                    'required' => true,
-                    'min' => 3,
-                    'max' => 20
-                ],
-                'password' => [
-                    'required' => true,
-                    'min' => 8,
-                    'max' => 100
-                ],
-                'confirm_password' => [
-                    'required' => true,
-                    'matches' => 'password'
-                ],
-                'terms' => [
-                    'required' => true,
-                    'equals' => 'on'
-                ]
-            ];
-
-            $username = $formData['username'] ?? 'unknown';
-
-            if ($validator->validate($rules)) {
-                $password = $formData['password'];
-
-                // registering
-                $register = new Register($db);
-                $result = $register->register($username, $password);
-
-                // redirect to login
-                if ($result === true) {
-                    // Get the new user's ID for logging
-                    $userId = $userObject->getUserId($username)[0]['id'];
-                    $logObject->log('info', "Registration: New user \"$username\" registered successfully. IP: $user_IP", ['user_id' => $userId, 'scope' => 'user']);
-                    Feedback::flash('NOTICE', 'DEFAULT', "Registration successful. You can log in now.");
-                    header('Location: ' . htmlspecialchars($app_root . '?page=login'));
-                    exit();
-                // registration fail, redirect to login
-                } else {
-                    $logObject->log('error', "Registration: Failed registration attempt for user \"$username\". IP: $user_IP. Reason: $result", ['user_id' => null, 'scope' => 'system']);
-                    Feedback::flash('ERROR', 'DEFAULT', "Registration failed. $result");
-                    header('Location: ' . htmlspecialchars($app_root . '?page=register'));
-                    exit();
-                }
-            } else {
-                $error = $validator->getFirstError();
-                $logObject->log('error', "Registration: Failed validation for user \"" . ($username ?? 'unknown') . "\". IP: $user_IP. Reason: $error", ['user_id' => null, 'scope' => 'system']);
-                Feedback::flash('ERROR', 'DEFAULT', $error);
-                header('Location: ' . htmlspecialchars($app_root . '?page=register'));
-                exit();
-            }
-        }
-    } catch (Exception $e) {
-        $logObject->log('error', "Registration: System error. IP: $user_IP. Error: " . $e->getMessage(), ['user_id' => null, 'scope' => 'system']);
-        Feedback::flash('ERROR', 'DEFAULT', $e->getMessage());
+    public function __construct()
+    {
+        $this->db = App::db();
+        $this->config = App::config();
+        $this->appRoot = App::get('app_root') ?? '/';
+        $this->logger = App::get('logObject');
     }
 
-    // Get any new feedback messages
-    include_once dirname(__FILE__, 4) . '/app/helpers/feedback.php';
+    public function handle(string $action, array $context = []): bool
+    {
+        $validSession = (bool)($context['valid_session'] ?? false);
+        $app_root = $context['app_root'] ?? $this->appRoot;
 
-    // Load the template
-    include PLUGIN_REGISTER_PATH . 'views/form-register.php';
+        if (!$this->db) {
+            \Feedback::flash('ERROR', 'DEFAULT', 'Registration service unavailable. Please try again later.');
+            $this->renderForm($validSession, $app_root, ['registrationEnabled' => false]);
+            return true;
+        }
 
-// registration disabled
-} else {
-    echo Feedback::render('NOTICE', 'DEFAULT', 'Registration is disabled', false);
+        if (!$this->isRegistrationEnabled()) {
+            \Feedback::flash('NOTICE', 'DEFAULT', 'Registration is currently disabled.');
+            $this->renderForm($validSession, $app_root, ['registrationEnabled' => false]);
+            return true;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->handleSubmission($validSession, $app_root);
+            return true;
+        }
+
+        $this->renderForm($validSession, $app_root);
+        return true;
+    }
+
+    private function isRegistrationEnabled(): bool
+    {
+        return (bool)($this->config['registration_enabled'] ?? false);
+    }
+
+    private function handleSubmission(bool $validSession, string $app_root): void
+    {
+        checkRateLimit($this->db, 'register');
+
+        $security = \SecurityHelper::getInstance();
+        $formData = $security->sanitizeArray(
+            $_POST,
+            ['username', 'password', 'confirm_password', 'csrf_token', 'terms']
+        );
+
+        if (!$security->verifyCsrfToken($formData['csrf_token'] ?? '')) {
+            \Feedback::flash('ERROR', 'DEFAULT', 'Invalid security token. Please try again.');
+            $this->renderForm($validSession, $app_root, [
+                'values' => ['username' => $formData['username'] ?? ''],
+            ]);
+            return;
+        }
+
+        $validator = new \Validator($formData);
+        $rules = [
+            'username' => [
+                'required' => true,
+                'min' => 3,
+                'max' => 20,
+            ],
+            'password' => [
+                'required' => true,
+                'min' => 8,
+                'max' => 255,
+            ],
+            'confirm_password' => [
+                'required' => true,
+                'matches' => 'password',
+            ],
+            'terms' => [
+                'required' => true,
+                'accepted' => true,
+            ],
+        ];
+
+        if (!$validator->validate($rules)) {
+            \Feedback::flash('ERROR', 'DEFAULT', $validator->getFirstError());
+            $this->renderForm($validSession, $app_root, [
+                'values' => ['username' => $formData['username'] ?? ''],
+            ]);
+            return;
+        }
+
+        $username = trim($formData['username']);
+        $password = $formData['password'];
+
+        try {
+            $register = new \Register($this->db);
+            $result = $register->register($username, $password);
+
+            if ($result === true) {
+                $this->logSuccessfulRegistration($username);
+                \Feedback::flash('NOTICE', 'DEFAULT', 'Registration successful. You can log in now.');
+                header('Location: ' . $app_root . '?page=login');
+                exit;
+            }
+
+            \Feedback::flash('ERROR', 'DEFAULT', 'Registration failed: ' . $result);
+            $this->renderForm($validSession, $app_root, [
+                'values' => ['username' => $username],
+            ]);
+        } catch (Exception $e) {
+            \Feedback::flash('ERROR', 'DEFAULT', 'Registration failed: ' . $e->getMessage());
+            $this->renderForm($validSession, $app_root, [
+                'values' => ['username' => $username],
+            ]);
+        }
+    }
+
+    private function logSuccessfulRegistration(string $username): void
+    {
+        if (!$this->logger) {
+            return;
+        }
+
+        try {
+            $userModel = new \User($this->db);
+            $userRecord = $userModel->getUserId($username);
+            $userId = $userRecord[0]['id'] ?? null;
+            $userIP = $_SERVER['REMOTE_ADDR'] ?? '';
+
+            $this->logger->log(
+                'info',
+                sprintf('Registration: New user "%s" registered successfully. IP: %s', $username, $userIP),
+                ['user_id' => $userId, 'scope' => 'user']
+            );
+        } catch (Exception $e) {
+            app_log('warning', 'RegisterController logging failed: ' . $e->getMessage(), ['scope' => 'plugin']);
+        }
+    }
+
+    private function renderForm(bool $validSession, string $app_root, array $data = []): void
+    {
+        $formValues = $data['values'] ?? ['username' => ''];
+        $registrationEnabled = $data['registrationEnabled'] ?? true;
+
+        Theme::include('page-header');
+        Theme::include('page-menu');
+        if ($validSession) {
+            Theme::include('page-sidebar');
+        }
+
+        include APP_PATH . 'helpers/feedback.php';
+
+        $app_root_value = $app_root; // align variable name for template include
+        $app_root = $app_root_value;
+        $values = $formValues;
+
+        include PLUGIN_REGISTER_PATH . 'views/form-register.php';
+
+        Theme::include('page-footer');
+    }
 }

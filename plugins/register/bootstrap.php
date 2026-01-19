@@ -1,12 +1,26 @@
 <?php
 
-// Register plugin bootstrap
-// (here we add any plugin autoloader, if needed)
+/**
+ * Register Plugin Bootstrap
+ *
+ * Initializes the register plugin using the App API pattern.
+ */
 
-// List here all the controllers in "/controllers/" that we need as pages
-$GLOBALS['plugin_controllers']['register'] = [
-    'register'
-];
+// Define plugin base path if not already defined
+if (!defined('PLUGIN_REGISTER_PATH')) {
+    define('PLUGIN_REGISTER_PATH', __DIR__ . '/');
+}
+
+require_once PLUGIN_REGISTER_PATH . 'helpers.php';
+require_once PLUGIN_REGISTER_PATH . 'controllers/register.php';
+
+// Register route with dispatcher class
+register_plugin_route_prefix('register', [
+    'dispatcher' => \Plugins\Register\Controllers\RegisterController::class,
+    'access' => 'public',
+    'defaults' => ['action' => 'register'],
+    'plugin' => 'register',
+]);
 
 // Add to publicly accessible pages
 register_hook('filter_public_pages', function($pages) {

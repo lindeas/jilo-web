@@ -1,9 +1,11 @@
 <?php
 
+use App\App;
+
 /**
  * class Register
  *
- * Handles user registration.
+ * Handles user registration using the App API pattern.
  */
 class Register {
     /**
@@ -15,21 +17,18 @@ class Register {
 
     /**
      * Register constructor.
-     * Initializes the database connection.
+     * Initializes the database connection using App API.
      *
-     * @param object $database The database object to initialize the connection.
+     * @param PDO|null $database The database connection (optional, will use App::db() if not provided).
      */
-    public function __construct($database) {
-        if ($database instanceof PDO) {
-            $this->db = $database;
-        } else {
-            $this->db = $database->getConnection();
-        }
-        require_once dirname(__FILE__, 4) . '/app/classes/ratelimiter.php';
-        require_once dirname(__FILE__, 4) . '/app/classes/twoFactorAuth.php';
+    public function __construct($database = null) {
+        $this->db = $database instanceof PDO ? $database : App::db();
 
-        $this->rateLimiter = new RateLimiter($database);
-        $this->twoFactorAuth = new TwoFactorAuthentication($database);
+        require_once APP_PATH . 'classes/ratelimiter.php';
+        require_once APP_PATH . 'classes/twoFactorAuth.php';
+
+        $this->rateLimiter = new RateLimiter($this->db);
+        $this->twoFactorAuth = new TwoFactorAuthentication($this->db);
     }
 
 

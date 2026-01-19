@@ -113,7 +113,7 @@ if (!isset($page)) {
 }
 
 // List of pages that don't require authentication
-$public_pages = ['login', 'help', 'about', 'theme-asset', 'plugin-asset'];
+$public_pages = ['login', 'register', 'help', 'about', 'theme-asset', 'plugin-asset'];
 
 // Let plugins filter/extend public_pages
 $public_pages = filter_public_pages($public_pages);
@@ -152,7 +152,7 @@ $allowed_urls = [
     'settings','theme','theme-asset','plugin-asset',
     'admin','status',
     'help','about',
-    'login','logout',
+    'login','register','logout',
 ];
 
 // Let plugins filter/extend allowed_urls

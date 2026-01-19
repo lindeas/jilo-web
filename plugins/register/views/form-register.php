@@ -5,7 +5,7 @@
                 <h2 class="action-title">Register</h2>
                 <p class="action-subtitle">Enter your credentials to create a new account</p>
             </div>
-            
+
             <div class="action-card-body">
                 <form method="POST" action="<?= htmlspecialchars($app_root) ?>?page=register" class="action-form">
 <?php include CSRF_TOKEN_INCLUDE; ?>
@@ -15,21 +15,21 @@
                             pattern="[A-Za-z0-9_\-]{3,20}" title="3-20 characters, letters, numbers, - and _"
                             required />
                     </div>
-                    
+
                     <div class="action-form-group">
                         <label for="password" class="action-form-label">Password</label>
                         <input type="password" class="form-control action-form-control" name="password" placeholder="Password"
                             pattern=".{8,}" title="Eight or more characters"
                             required />
                     </div>
-                    
+
                     <div class="action-form-group">
                         <label for="confirm_password" class="action-form-label">Confirm Password</label>
                         <input type="password" class="form-control action-form-control" name="confirm_password" placeholder="Confirm password"
                             pattern=".{8,}" title="Eight or more characters"
                             required />
                     </div>
-                    
+
                     <div class="action-form-group">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
@@ -41,7 +41,7 @@
                             We use cookies to improve your experience. See our <a href="<?= htmlspecialchars($app_root) ?>?page=cookies" target="_blank">cookies policy</a>
                         </small>
                     </div>
-                    
+
                     <div class="action-actions">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-user-plus me-2"></i>Create account
