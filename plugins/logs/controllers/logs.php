@@ -116,7 +116,7 @@ $username = $userObject->getUserDetails($userId)[0]['username'];
 include_once dirname(__FILE__, 4) . '/app/helpers/feedback.php';
 
 // Load plugin helpers
-include PLUGIN_LOGS_PATH . 'helpers/logs_view_helper.php';
+require_once PLUGIN_LOGS_PATH . 'helpers/logs_view_helper.php';
 
 // Display messages list
 include PLUGIN_LOGS_PATH . 'views/logs.php';
