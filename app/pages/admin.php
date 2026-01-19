@@ -154,21 +154,42 @@ $pluginAdminMap = [];
 foreach ($pluginCatalog as $slug => $info) {
     $meta = $info['meta'] ?? [];
     $name = trim((string)($meta['name'] ?? $slug));
-    $enabled = !empty($meta['enabled']);
+    $enabled = \App\Core\PluginManager::isEnabled($slug); // Use database setting
     $dependencies = $normalizeDependencies($meta);
     $dependents = array_values($pluginDependentsIndex[$slug] ?? []);
-    $enabledDependents = array_values(array_filter($dependents, static function($depSlug) use ($pluginCatalog) {
-        return !empty($pluginCatalog[$depSlug]['meta']['enabled']);
+    $enabledDependents = array_values(array_filter($dependents, static function($depSlug) {
+        return \App\Core\PluginManager::isEnabled($depSlug); // Use database setting
     }));
     $missingDependencies = array_values(array_filter($dependencies, static function($depSlug) use ($pluginCatalog) {
-        return !isset($pluginCatalog[$depSlug]) || empty($pluginCatalog[$depSlug]['meta']['enabled']);
+        return !isset($pluginCatalog[$depSlug]) || !\App\Core\PluginManager::isEnabled($depSlug); // Use database setting
     }));
+
+    // Check for migration files and existing tables
+    $migrationFiles = glob($info['path'] . '/migrations/*.sql');
+    $hasMigration = !empty($migrationFiles);
+    $existingTables = [];
+    
+    if ($hasMigration && isset($db) && $db instanceof PDO) {
+        $stmt = $db->query("SHOW TABLES");
+        $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        
+        foreach ($migrationFiles as $migrationFile) {
+            $migrationContent = file_get_contents($migrationFile);
+            foreach ($allTables as $table) {
+                if (strpos($migrationContent, $table) !== false) {
+                    $existingTables[] = $table;
+                }
+            }
+        }
+        $existingTables = array_unique($existingTables);
+    }
 
     $pluginAdminMap[$slug] = [
         'slug' => $slug,
         'name' => $name,
         'version' => (string)($meta['version'] ?? ''),
         'description' => (string)($meta['description'] ?? ''),
+        'path' => $info['path'],
         'enabled' => $enabled,
         'loaded' => isset($pluginLoadedMap[$slug]),
         'dependencies' => $dependencies,
@@ -178,6 +199,9 @@ foreach ($pluginCatalog as $slug => $info) {
         'dependency_errors' => $pluginDependencyErrors[$slug] ?? [],
         'can_enable' => !$enabled && empty($missingDependencies),
         'can_disable' => $enabled && empty($enabledDependents),
+        'has_migration' => $hasMigration,
+        'existing_tables' => $existingTables,
+        'can_install' => $hasMigration && empty($existingTables),
     ];
 }
 
@@ -316,19 +340,96 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
                         }
                         Feedback::flash('ERROR', 'DEFAULT', $reason, false);
                     } elseif (!\App\Core\PluginManager::setEnabled($slug, true)) {
-                        Feedback::flash('ERROR', 'DEFAULT', 'Failed to enable plugin. Check file permissions on plugin.json.', false);
+                        Feedback::flash('ERROR', 'DEFAULT', 'Failed to enable plugin. Check database connection and error logs.', false);
                     } else {
-                        Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" enabled. Reload admin to finish loading it.', $pluginMeta['name']), true);
+                        // Automatically install plugin tables when enabling
+                        $installResult = \App\Core\PluginManager::install($slug);
+                        if ($installResult) {
+                            Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" enabled and installed successfully.', $pluginMeta['name']), true);
+                        } else {
+                            Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" enabled but installation failed. Check migration files.', $pluginMeta['name']), true);
+                        }
                     }
                 } else {
                     if (!$pluginMeta['can_disable']) {
                         $reason = 'Disable dependent plugins first: ' . implode(', ', $pluginMeta['enabled_dependents']);
                         Feedback::flash('ERROR', 'DEFAULT', $reason, false);
                     } elseif (!\App\Core\PluginManager::setEnabled($slug, false)) {
-                        Feedback::flash('ERROR', 'DEFAULT', 'Failed to disable plugin. Check file permissions on plugin.json.', false);
+                        Feedback::flash('ERROR', 'DEFAULT', 'Failed to disable plugin. Check database connection and error logs.', false);
                     } else {
                         Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" disabled.', $pluginMeta['name']), true);
                     }
+                }
+            }
+        // Plugin install action
+        } elseif ($postAction === 'plugin_install') {
+            $slug = strtolower(trim($_POST['plugin'] ?? ''));
+            if ($slug === '' || !isset($pluginAdminMap[$slug])) {
+                Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
+            } else {
+                if (\App\Core\PluginManager::install($slug)) {
+                    Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" installed successfully.', $pluginAdminMap[$slug]['name']), true);
+                } else {
+                    Feedback::flash('ERROR', 'DEFAULT', 'Plugin installation failed. Check migration files.', false);
+                }
+            }
+        // Plugin purge action
+        } elseif ($postAction === 'plugin_purge') {
+            $slug = strtolower(trim($_POST['plugin'] ?? ''));
+            if ($slug === '' || !isset($pluginAdminMap[$slug])) {
+                Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
+            } else {
+                if (\App\Core\PluginManager::purge($slug)) {
+                    Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" purged successfully. All data and tables removed.', $pluginAdminMap[$slug]['name']), true);
+                } else {
+                    Feedback::flash('ERROR', 'DEFAULT', 'Plugin purge failed. Check database permissions.', false);
+                }
+            }
+        // Plugin check action
+        } elseif ($postAction === 'plugin_check') {
+            $slug = strtolower(trim($_POST['plugin'] ?? ''));
+            if ($slug === '' || !isset($pluginAdminMap[$slug])) {
+                Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
+            } else {
+                // Redirect to plugin check page
+                header('Location: ' . $app_root . '?page=admin&section=plugins&action=plugin_check_page&plugin=' . urlencode($slug));
+                exit;
+            }
+        // Plugin migration test actions
+        } elseif ($postAction === 'test_plugin_migrations') {
+            $slug = strtolower(trim($_POST['plugin'] ?? ''));
+            if ($slug === '' || !isset($pluginAdminMap[$slug])) {
+                Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
+            } else {
+                try {
+                    $pluginPath = $pluginAdminMap[$slug]['path'];
+                    $bootstrapPath = $pluginPath . '/bootstrap.php';
+                    
+                    if (!file_exists($bootstrapPath)) {
+                        Feedback::flash('ERROR', 'DEFAULT', 'Plugin has no bootstrap file.', false);
+                    } else {
+                        // Load plugin bootstrap in isolation to test migrations
+                        $migrationFunctions = [];
+                        $bootstrapContent = file_get_contents($bootstrapPath);
+                        
+                        // Check for migration functions
+                        if (strpos($bootstrapContent, '_ensure_tables') !== false) {
+                            // Temporarily include bootstrap to test migrations
+                            include_once $bootstrapPath;
+                            
+                            $migrationFunctionName = str_replace('-', '_', $slug) . '_ensure_tables';
+                            if (function_exists($migrationFunctionName)) {
+                                $migrationFunctionName();
+                                Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" migrations executed successfully.', $pluginAdminMap[$slug]['name']), true);
+                            } else {
+                                Feedback::flash('ERROR', 'DEFAULT', 'Plugin migration function not found.', false);
+                            }
+                        } else {
+                            Feedback::flash('ERROR', 'DEFAULT', 'Plugin has no migration function.', false);
+                        }
+                    }
+                } catch (Throwable $e) {
+                    Feedback::flash('ERROR', 'DEFAULT', 'Migration test failed: ' . $e->getMessage(), false);
                 }
             }
         // Test migrations actions
@@ -432,6 +533,139 @@ try {
     $migration_error = $e->getMessage();
 }
 
+// Generate CSRF token early for all templates
+$csrf_token = $security->generateCsrfToken();
+
+// Handle plugin check page
+if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
+    // Simple test for JSON response
+    if (isset($_GET['test'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['test' => 'working', 'timestamp' => time()]);
+        exit;
+    }
+    
+    // Debug: Log request details
+    error_log('Plugin check request: ' . print_r([
+        'action' => $queryAction,
+        'plugin' => $_GET['plugin'],
+        'ajax' => isset($_SERVER['HTTP_X_REQUESTED_WITH']),
+        'ajax_header' => $_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'not set',
+        'content_type' => $_SERVER['CONTENT_TYPE'] ?? 'not set',
+        'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'not set'
+    ], true));
+    
+    // Start output buffering to catch any unwanted output
+    ob_start();
+    
+    // Disable error display for JSON responses
+    $originalErrorReporting = error_reporting();
+    $originalDisplayErrors = ini_get('display_errors');
+    
+    $isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
+               isset($_GET['ajax']);
+    
+    if ($isAjax) {
+        error_reporting(0);
+        ini_set('display_errors', 0);
+    }
+    
+    $pluginSlug = strtolower(trim($_GET['plugin']));
+    if (!isset($pluginAdminMap[$pluginSlug])) {
+        if ($isAjax) {
+            ob_end_clean(); // Clear and end output buffer
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Unknown plugin specified.']);
+            exit;
+        }
+        Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
+        header('Location: ' . $app_root . '?page=admin&section=plugins');
+        exit;
+    }
+    
+    $pluginInfo = $pluginAdminMap[$pluginSlug];
+    $checkResults = [];
+    
+    try {
+        // Check plugin files exist
+        $migrationFiles = glob($pluginInfo['path'] . '/migrations/*.sql');
+        $hasMigration = !empty($migrationFiles);
+        
+        $checkResults['files'] = [
+            'manifest' => file_exists($pluginInfo['path'] . '/plugin.json'),
+            'bootstrap' => file_exists($pluginInfo['path'] . '/bootstrap.php'),
+            'migration' => $hasMigration,
+        ];
+        
+        // Check database tables
+        global $db;
+        $pluginTables = [];
+        if ($db instanceof PDO) {
+            $stmt = $db->query("SHOW TABLES");
+            $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+            
+            if ($hasMigration) {
+                // Check each migration file for table references
+                foreach ($migrationFiles as $migrationFile) {
+                    $migrationContent = file_get_contents($migrationFile);
+                    foreach ($allTables as $table) {
+                        if (strpos($migrationContent, $table) !== false) {
+                            $pluginTables[] = $table;
+                        }
+                    }
+                }
+                $pluginTables = array_unique($pluginTables);
+            }
+        }
+        $checkResults['tables'] = $pluginTables;
+        
+        // Check plugin functions
+        $bootstrapPath = $pluginInfo['path'] . '/bootstrap.php';
+        if (file_exists($bootstrapPath)) {
+            include_once $bootstrapPath;
+            $migrationFunction = str_replace('-', '_', $pluginSlug) . '_ensure_tables';
+            $checkResults['functions'] = [
+                'migration' => function_exists($migrationFunction),
+            ];
+        }
+        
+    } catch (Throwable $e) {
+        $checkResults['error'] = $e->getMessage();
+    }
+    
+    // Handle AJAX request
+    if ($isAjax) {
+        // Restore error reporting
+        error_reporting($originalErrorReporting);
+        ini_set('display_errors', $originalDisplayErrors);
+        
+        ob_end_clean(); // Clear and end output buffer
+        header('Content-Type: application/json');
+        header('Cache-Control: no-cache, must-revalidate');
+        
+        $jsonData = json_encode([
+            'success' => true,
+            'pluginInfo' => $pluginInfo,
+            'checkResults' => $checkResults,
+            'csrf_token' => $csrf_token,
+            'app_root' => $app_root
+        ]);
+        
+        error_log('JSON response: ' . $jsonData);
+        echo $jsonData;
+        exit;
+    }
+    
+    // Restore error reporting for non-AJAX requests
+    error_reporting($originalErrorReporting);
+    ini_set('display_errors', $originalDisplayErrors);
+    
+    // Include check page template for non-AJAX requests
+    include '../app/templates/admin_plugin_check.php';
+    exit;
+}
+
 $overviewPillsPayload = \App\Core\HookDispatcher::applyFilters('admin.overview.pills', [
     'pills' => [],
     'sections' => $sectionRegistry,
@@ -456,6 +690,7 @@ if (is_array($overviewStatusesPayload)) {
     $adminOverviewStatuses = $overviewStatusesPayload['statuses'] ?? (is_array($overviewStatusesPayload) ? $overviewStatusesPayload : []);
 }
 
-$csrf_token = $security->generateCsrfToken();
+// Get any new feedback messages
+include_once '../app/helpers/feedback.php';
 
 include '../app/templates/admin.php';

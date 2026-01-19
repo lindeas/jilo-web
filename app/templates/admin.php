@@ -22,6 +22,18 @@ if (!empty($modal_to_open)) {
     $preselectModalId = 'migrationModal' . md5($modal_to_open);
 }
 
+?>
+<style>
+.tooltip {
+    font-size: 0.75rem;
+}
+.tooltip-inner {
+    font-size: 0.75rem;
+    max-width: 300px;
+}
+</style>
+
+<?php
 $tabs = $adminTabs ?? [];
 if (empty($tabs)) {
     $tabs = [
@@ -459,18 +471,87 @@ if (!empty($adminOverviewStatuses) && is_array($adminOverviewStatuses)) {
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-right">
-                                        <form method="post" class="d-inline">
-                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-                                            <input type="hidden" name="section" value="plugins">
-                                            <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                                        <div class="btn-group" role="group">
                                             <?php if ($plugin['enabled']): ?>
-                                            <input type="hidden" name="action" value="plugin_disable">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" <?= $plugin['can_disable'] ? '' : 'disabled' ?>>Disable</button>
+                                                <form method="post" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                                    <input type="hidden" name="section" value="plugins">
+                                                    <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                                                    <input type="hidden" name="action" value="plugin_disable">
+                                                    <?php if ($plugin['can_disable']): ?>
+                                                        <span data-toggle="tooltip" data-placement="top" title="Disable this plugin">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger">Disable</button>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span data-toggle="tooltip" data-placement="top" 
+                                                              title="<?= htmlspecialchars('Cannot disable: ' . (count($plugin['enabled_dependents']) > 0 ? 'Required by: ' . implode(', ', $plugin['enabled_dependents']) : 'Plugin has active dependents')) ?>">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" disabled>Disable</button>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </form>
+                                                <form method="post" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                                    <input type="hidden" name="section" value="plugins">
+                                                    <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                                                    <input type="hidden" name="action" value="plugin_purge">
+                                                    <?php if ($plugin['can_disable']): ?>
+                                                        <span data-toggle="tooltip" data-placement="top" title="Remove all plugin data and tables">
+                                                            <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure? This will permanently delete all plugin data and tables!')">Purge</button>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span data-toggle="tooltip" data-placement="top" 
+                                                              title="<?= htmlspecialchars('Cannot purge: ' . (count($plugin['enabled_dependents']) > 0 ? 'Required by: ' . implode(', ', $plugin['enabled_dependents']) : 'Plugin has active dependents')) ?>">
+                                                            <button type="button" class="btn btn-sm btn-outline-warning" disabled>Purge</button>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </form>
                                             <?php else: ?>
-                                            <input type="hidden" name="action" value="plugin_enable">
-                                            <button type="submit" class="btn btn-sm btn-outline-success" <?= $plugin['can_enable'] ? '' : 'disabled' ?>>Enable</button>
+                                                <form method="post" class="d-inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                                    <input type="hidden" name="section" value="plugins">
+                                                    <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                                                    <input type="hidden" name="action" value="plugin_enable">
+                                                    <?php if ($plugin['can_enable']): ?>
+                                                        <span data-toggle="tooltip" data-placement="top" title="Enable this plugin">
+                                                            <button type="submit" class="btn btn-sm btn-outline-success">Enable</button>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span data-toggle="tooltip" data-placement="top" 
+                                                              title="<?= htmlspecialchars('Cannot enable: ' . (count($plugin['missing_dependencies']) > 0 ? 'Missing dependencies: ' . implode(', ', $plugin['missing_dependencies']) : 'Plugin has dependency issues')) ?>">
+                                                            <button type="button" class="btn btn-sm btn-outline-success" disabled>Enable</button>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </form>
+                                                <?php if (file_exists($pluginAdminMap[$plugin['slug']]['path'] . '/bootstrap.php')): ?>
+                                                <?php if ($plugin['can_install']): ?>
+                                                    <form method="post" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                                        <input type="hidden" name="section" value="plugins">
+                                                        <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                                                        <input type="hidden" name="action" value="plugin_install">
+                                                        <span data-toggle="tooltip" data-placement="top" title="Install plugin database tables">
+                                                            <button type="submit" class="btn btn-sm btn-outline-primary">Install</button>
+                                                        </span>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <?php if ($plugin['has_migration']): ?>
+                                                        <span data-toggle="tooltip" data-placement="top" title="Tables already exist">
+                                                            <button type="button" class="btn btn-sm btn-outline-primary" disabled>Install</button>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span data-toggle="tooltip" data-placement="top" title="No migration files found">
+                                                            <button type="button" class="btn btn-sm btn-outline-primary" disabled>Install</button>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                <?php endif; ?>
                                             <?php endif; ?>
-                                        </form>
+                                            <?php if (file_exists($pluginAdminMap[$plugin['slug']]['path'] . '/bootstrap.php')): ?>
+                                            <span data-toggle="tooltip" data-placement="top" title="Check plugin health and status">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#pluginCheckModal<?= htmlspecialchars($plugin['slug']) ?>">Check</button>
+                                            </span>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -564,8 +645,183 @@ endif; ?>
     <input type="hidden" name="filename" value="">
 </form>
 
+<!-- Plugin Check Modals -->
+<?php foreach ($pluginAdminList as $plugin): ?>
+    <?php if (file_exists($plugin['path'] . '/bootstrap.php')): ?>
+        <?php
+        $modalId = 'pluginCheckModal' . htmlspecialchars($plugin['slug']);
+        $checkResults = [];
+        
+        try {
+            // Check plugin files exist
+            $checkResults['files'] = [
+                'manifest' => file_exists($plugin['path'] . '/plugin.json'),
+                'bootstrap' => file_exists($plugin['path'] . '/bootstrap.php'),
+                'migration' => file_exists($plugin['path'] . '/migrations/create_' . $plugin['slug'] . '_tables.sql'),
+            ];
+            
+            // Check database tables
+            global $db;
+            if ($db instanceof PDO) {
+                $stmt = $db->query("SHOW TABLES LIKE 'user_pro_%'");
+                $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+                
+                $migrationFile = $plugin['path'] . '/migrations/create_' . $plugin['slug'] . '_tables.sql';
+                if (file_exists($migrationFile)) {
+                    $migrationContent = file_get_contents($migrationFile);
+                    $pluginTables = [];
+                    foreach ($allTables as $table) {
+                        if (strpos($migrationContent, $table) !== false) {
+                            $pluginTables[] = $table;
+                        }
+                    }
+                    $checkResults['tables'] = $pluginTables;
+                }
+            }
+            
+            // Check plugin functions
+            $bootstrapPath = $plugin['path'] . '/bootstrap.php';
+            if (file_exists($bootstrapPath)) {
+                include_once $bootstrapPath;
+                $migrationFunction = str_replace('-', '_', $plugin['slug']) . '_ensure_tables';
+                $checkResults['functions'] = [
+                    'migration' => function_exists($migrationFunction),
+                ];
+            }
+            
+        } catch (Throwable $e) {
+            $checkResults['error'] = $e->getMessage();
+        }
+        ?>
+        <div class="modal fade" id="<?= $modalId ?>" tabindex="-1" aria-labelledby="<?= $modalId ?>Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="<?= $modalId ?>Label">Plugin Health Check: <?= htmlspecialchars($plugin['name']) ?></h5>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="card-title mb-0">File System Check</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <?php foreach ($checkResults['files'] ?? [] as $file => $exists): ?>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span><?= htmlspecialchars(ucfirst($file)) ?></span>
+                                                <span class="badge bg-<?= $exists ? 'success' : 'danger' ?>">
+                                                    <?= $exists ? 'Exists' : 'Missing' ?>
+                                                </span>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="card-title mb-0">Database Tables</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <?php if (!empty($checkResults['tables'])): ?>
+                                            <?php foreach ($checkResults['tables'] as $table): ?>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span><?= htmlspecialchars($table) ?></span>
+                                                    <span class="badge bg-success">Present</span>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <p class="text-muted mb-0">No plugin tables found.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="card-title mb-0">Functions Check</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <?php foreach ($checkResults['functions'] ?? [] as $func => $exists): ?>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span><?= htmlspecialchars($func) ?>()</span>
+                                                <span class="badge bg-<?= $exists ? 'success' : 'danger' ?>">
+                                                    <?= $exists ? 'Available' : 'Missing' ?>
+                                                </span>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="card-title mb-0">Plugin Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="small">
+                                            <div class="mb-1"><strong>Name:</strong> <?= htmlspecialchars($plugin['name']) ?></div>
+                                            <div class="mb-1"><strong>Version:</strong> <?= htmlspecialchars($plugin['version'] ?? 'N/A') ?></div>
+                                            <div class="mb-1"><strong>Enabled:</strong> <span class="badge bg-<?= $plugin['enabled'] ? 'success' : 'secondary' ?>"><?= $plugin['enabled'] ? 'Yes' : 'No' ?></span></div>
+                                            <div class="mb-1"><strong>Dependencies:</strong> <?= !empty($plugin['dependencies']) ? htmlspecialchars(implode(', ', $plugin['dependencies'])) : 'None' ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if (isset($checkResults['error'])): ?>
+                            <div class="alert alert-danger mt-3">
+                                <strong>Error:</strong> <?= htmlspecialchars($checkResults['error']) ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="modal-footer">
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="section" value="plugins">
+                            <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                            <input type="hidden" name="action" value="plugin_install">
+                            <button type="submit" class="btn btn-primary">Install Tables</button>
+                        </form>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="section" value="plugins">
+                            <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                            <input type="hidden" name="action" value="test_plugin_migrations">
+                            <button type="submit" class="btn btn-info">Test Migrations</button>
+                        </form>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                            <input type="hidden" name="section" value="plugins">
+                            <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
+                            <input type="hidden" name="action" value="plugin_purge">
+                            <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure? This will permanently delete all plugin data and tables!')">Purge Plugin</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+<?php endforeach; ?>
+
+<form method="post" id="tm-admin-hidden-read-migration" class="d-none">
+    <input type="hidden" name="action" value="read_migration">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+    <input type="hidden" name="filename" value="">
+</form>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Initialize tooltips
+    if (typeof $ !== 'undefined' && $.fn.tooltip) {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    
     document.querySelectorAll('form.tm-confirm').forEach((form) => {
         form.addEventListener('submit', (event) => {
             const message = form.getAttribute('data-confirm') || 'Are you sure?';

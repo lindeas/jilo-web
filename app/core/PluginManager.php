@@ -27,7 +27,7 @@ class PluginManager
         self::$dependencyErrors = [];
 
         foreach (self::$catalog as $name => $info) {
-            if (empty($info['meta']['enabled'])) {
+            if (!self::isEnabled($name)) {
                 continue;
             }
             self::resolve($name);
@@ -83,7 +83,7 @@ class PluginManager
         }
 
         $meta = self::$catalog[$plugin]['meta'];
-        if (empty($meta['enabled'])) {
+        if (!self::isEnabled($plugin)) {
             return false;
         }
 
@@ -102,7 +102,7 @@ class PluginManager
                 self::$dependencyErrors[$plugin][] = sprintf('Missing dependency "%s"', $dependency);
                 continue;
             }
-            if (empty(self::$catalog[$dependency]['meta']['enabled'])) {
+            if (!self::isEnabled($dependency)) {
                 self::$dependencyErrors[$plugin][] = sprintf('Dependency "%s" is disabled', $dependency);
                 continue;
             }
@@ -157,7 +157,8 @@ class PluginManager
     }
 
     /**
-     * Persists a plugin's enabled flag back to its manifest.
+     * Persists a plugin's enabled flag to the database settings table.
+     * Note: This method no longer requires write access to plugin.json files.
      */
     public static function setEnabled(string $plugin, bool $enabled): bool
     {
@@ -165,28 +166,139 @@ class PluginManager
             return false;
         }
 
-        $manifestPath = self::$catalog[$plugin]['path'] . '/plugin.json';
-        if (!is_file($manifestPath) || !is_readable($manifestPath) || !is_writable($manifestPath)) {
+        global $db;
+        if (!$db instanceof PDO) {
             return false;
         }
 
-        $raw = file_get_contents($manifestPath);
-        $data = json_decode($raw ?: '', true);
-        if (!is_array($data)) {
-            $data = self::$catalog[$plugin]['meta'];
-        }
+        try {
+            // Update or insert plugin setting in database
+            $stmt = $db->prepare(
+                'INSERT INTO settings (`key`, `value`, updated_at) 
+                 VALUES (:key, :value, NOW()) 
+                 ON DUPLICATE KEY UPDATE `value` = :value, updated_at = NOW()'
+            );
+            $key = 'plugin_enabled_' . $plugin;
+            $value = $enabled ? '1' : '0';
+            $stmt->execute([':key' => $key, ':value' => $value]);
 
-        $data['enabled'] = $enabled;
-        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL;
-        if (file_put_contents($manifestPath, $json, LOCK_EX) === false) {
+            // Clear loaded cache if disabling
+            if (!$enabled && isset(self::$loaded[$plugin])) {
+                unset(self::$loaded[$plugin]);
+            }
+
+            return true;
+        } catch (PDOException $e) {
+            // Log the actual error for debugging
+            error_log('PluginManager::setEnabled failed for ' . $plugin . ': ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Check if a plugin is enabled from database settings.
+     */
+    public static function isEnabled(string $plugin): bool
+    {
+        if (!isset(self::$catalog[$plugin])) {
             return false;
         }
 
-        self::$catalog[$plugin]['meta'] = $data;
-        if (!$enabled && isset(self::$loaded[$plugin])) {
-            unset(self::$loaded[$plugin]);
+        global $db;
+        if ($db instanceof PDO) {
+            try {
+                $stmt = $db->prepare('SELECT `value` FROM settings WHERE `key` = :key LIMIT 1');
+                $key = 'plugin_enabled_' . $plugin;
+                $stmt->execute([':key' => $key]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($result !== false) {
+                    return $result['value'] === '1';
+                }
+            } catch (PDOException $e) {
+                // Log error but return false
+                error_log('PluginManager::isEnabled database error for ' . $plugin . ': ' . $e->getMessage());
+            }
+        }
+        
+        // Default to disabled if no database entry or database unavailable
+        return false;
+    }
+
+    /**
+     * Install plugin by running its migrations.
+     */
+    public static function install(string $plugin): bool
+    {
+        if (!isset(self::$catalog[$plugin])) {
+            return false;
         }
 
-        return true;
+        $pluginPath = self::$catalog[$plugin]['path'];
+        $bootstrapPath = $pluginPath . '/bootstrap.php';
+        
+        if (!file_exists($bootstrapPath)) {
+            return false;
+        }
+
+        try {
+            // Include bootstrap to run migrations
+            include_once $bootstrapPath;
+            
+            // Look for migration function
+            $migrationFunction = str_replace('-', '_', $plugin) . '_ensure_tables';
+            if (function_exists($migrationFunction)) {
+                $migrationFunction();
+                return true;
+            }
+            
+            return false;
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Purge plugin by dropping its tables and removing settings.
+     */
+    public static function purge(string $plugin): bool
+    {
+        if (!isset(self::$catalog[$plugin])) {
+            return false;
+        }
+
+        global $db;
+        if (!$db instanceof PDO) {
+            return false;
+        }
+
+        try {
+            // First disable the plugin
+            self::setEnabled($plugin, false);
+            
+            // Remove plugin settings
+            $stmt = $db->prepare('DELETE FROM settings WHERE `key` LIKE :pattern');
+            $stmt->execute([':pattern' => 'plugin_enabled_' . $plugin]);
+            
+            // Drop plugin-specific tables (user_pro_* tables for this plugin)
+            $stmt = $db->prepare('SHOW TABLES LIKE "user_pro_%"');
+            $stmt->execute();
+            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+            
+            foreach ($tables as $table) {
+                // Check if this table belongs to the plugin by checking its migration file
+                $migrationFile = self::$catalog[$plugin]['path'] . '/migrations/create_' . $plugin . '_tables.sql';
+                if (file_exists($migrationFile)) {
+                    $migrationContent = file_get_contents($migrationFile);
+                    if (strpos($migrationContent, $table) !== false) {
+                        $db->exec("DROP TABLE IF EXISTS `$table`");
+                    }
+                }
+            }
+            
+            return true;
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 }
