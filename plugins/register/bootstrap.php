@@ -12,11 +12,16 @@ if (!defined('PLUGIN_REGISTER_PATH')) {
 }
 
 require_once PLUGIN_REGISTER_PATH . 'helpers.php';
-require_once PLUGIN_REGISTER_PATH . 'controllers/register.php';
 
-// Register route with dispatcher class
+// Register route with simple callable dispatcher
 register_plugin_route_prefix('register', [
-    'dispatcher' => \Plugins\Register\Controllers\RegisterController::class,
+    'dispatcher' => function($action, array $context = []) {
+        require_once PLUGIN_REGISTER_PATH . 'controllers/register.php';
+        if (function_exists('register_plugin_handle_register')) {
+            return register_plugin_handle_register($action, $context);
+        }
+        return false;
+    },
     'access' => 'public',
     'defaults' => ['action' => 'register'],
     'plugin' => 'register',
