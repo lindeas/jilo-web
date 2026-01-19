@@ -1,6 +1,5 @@
 {
   "name": "Logger Plugin",
   "version": "1.0.1",
-  "enabled": true,
   "description": "Initializes logging system via LoggerFactory"
 }

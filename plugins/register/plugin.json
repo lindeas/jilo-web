@@ -1,6 +1,5 @@
 {
   "name": "Registration Plugin",
   "version": "1.0.1",
-  "enabled": true,
   "description": "Provides registration functionality as a plugin."
 }
