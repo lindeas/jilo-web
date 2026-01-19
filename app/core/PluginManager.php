@@ -163,34 +163,43 @@ class PluginManager
     public static function setEnabled(string $plugin, bool $enabled): bool
     {
         if (!isset(self::$catalog[$plugin])) {
+            app_log('error', 'PluginManager::setEnabled: Plugin ' . $plugin . ' not found in catalog', ['scope' => 'plugin']);
             return false;
         }
 
-        global $db;
-        if (!$db instanceof PDO) {
-            return false;
-        }
+        // Use global DB and get PDO connection
+        $db = $GLOBALS['db'];
+        $pdo = $db->getConnection();
 
         try {
             // Update or insert plugin setting in database
-            $stmt = $db->prepare(
+            $stmt = $pdo->prepare(
                 'INSERT INTO settings (`key`, `value`, updated_at) 
                  VALUES (:key, :value, NOW()) 
                  ON DUPLICATE KEY UPDATE `value` = :value, updated_at = NOW()'
             );
             $key = 'plugin_enabled_' . $plugin;
             $value = $enabled ? '1' : '0';
-            $stmt->execute([':key' => $key, ':value' => $value]);
+
+            app_log('info', 'PluginManager::setEnabled: Setting ' . $key . ' to ' . $value, ['scope' => 'plugin']);
+
+            $result = $stmt->execute([':key' => $key, ':value' => $value]);
+
+            if (!$result) {
+                app_log('error', 'PluginManager::setEnabled: Failed to execute query for ' . $plugin, ['scope' => 'plugin']);
+                return false;
+            }
 
             // Clear loaded cache if disabling
             if (!$enabled && isset(self::$loaded[$plugin])) {
                 unset(self::$loaded[$plugin]);
             }
 
+            app_log('info', 'PluginManager::setEnabled: Successfully set ' . $plugin . ' to ' . ($enabled ? 'enabled' : 'disabled'), ['scope' => 'plugin']);
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             // Log the actual error for debugging
-            error_log('PluginManager::setEnabled failed for ' . $plugin . ': ' . $e->getMessage());
+            app_log('error', 'PluginManager::setEnabled failed for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
             return false;
         }
     }
@@ -204,25 +213,21 @@ class PluginManager
             return false;
         }
 
-        global $db;
-        if ($db instanceof PDO) {
-            try {
-                $stmt = $db->prepare('SELECT `value` FROM settings WHERE `key` = :key LIMIT 1');
-                $key = 'plugin_enabled_' . $plugin;
-                $stmt->execute([':key' => $key]);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($result !== false) {
-                    return $result['value'] === '1';
-                }
-            } catch (PDOException $e) {
-                // Log error but return false
-                error_log('PluginManager::isEnabled database error for ' . $plugin . ': ' . $e->getMessage());
-            }
+        // Use global DB and get PDO connection
+        $db = $GLOBALS['db'];
+        $pdo = $db->getConnection();
+
+        try {
+            $stmt = $pdo->prepare('SELECT `value` FROM settings WHERE `key` = :key LIMIT 1');
+            $key = 'plugin_enabled_' . $plugin;
+            $stmt->execute([':key' => $key]);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            return $result && $result['value'] === '1';
+        } catch (\PDOException $e) {
+            app_log('error', 'PluginManager::isEnabled failed for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
+            return false;
         }
-        
-        // Default to disabled if no database entry or database unavailable
-        return false;
     }
 
     /**
@@ -236,7 +241,7 @@ class PluginManager
 
         $pluginPath = self::$catalog[$plugin]['path'];
         $bootstrapPath = $pluginPath . '/bootstrap.php';
-        
+
         if (!file_exists($bootstrapPath)) {
             return false;
         }
@@ -244,16 +249,20 @@ class PluginManager
         try {
             // Include bootstrap to run migrations
             include_once $bootstrapPath;
-            
+
             // Look for migration function
             $migrationFunction = str_replace('-', '_', $plugin) . '_ensure_tables';
             if (function_exists($migrationFunction)) {
                 $migrationFunction();
+                app_log('info', 'PluginManager::install: Successfully ran migrations for ' . $plugin, ['scope' => 'plugin']);
                 return true;
             }
-            
-            return false;
+
+            // If no migration function exists, that's okay for plugins that don't need tables
+            app_log('info', 'PluginManager::install: No migrations needed for ' . $plugin, ['scope' => 'plugin']);
+            return true;
         } catch (Throwable $e) {
+            app_log('error', 'PluginManager::install failed for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
             return false;
         }
     }
@@ -269,22 +278,23 @@ class PluginManager
 
         global $db;
         if (!$db instanceof PDO) {
+            app_log('error', 'PluginManager::purge: Database connection not available', ['scope' => 'plugin']);
             return false;
         }
 
         try {
             // First disable the plugin
             self::setEnabled($plugin, false);
-            
+
             // Remove plugin settings
             $stmt = $db->prepare('DELETE FROM settings WHERE `key` LIKE :pattern');
             $stmt->execute([':pattern' => 'plugin_enabled_' . $plugin]);
-            
+
             // Drop plugin-specific tables (user_pro_* tables for this plugin)
             $stmt = $db->prepare('SHOW TABLES LIKE "user_pro_%"');
             $stmt->execute();
             $tables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-            
+
             foreach ($tables as $table) {
                 // Check if this table belongs to the plugin by checking its migration file
                 $migrationFile = self::$catalog[$plugin]['path'] . '/migrations/create_' . $plugin . '_tables.sql';
@@ -292,12 +302,15 @@ class PluginManager
                     $migrationContent = file_get_contents($migrationFile);
                     if (strpos($migrationContent, $table) !== false) {
                         $db->exec("DROP TABLE IF EXISTS `$table`");
+                        app_log('info', 'PluginManager::purge: Dropped table ' . $table . ' for plugin ' . $plugin, ['scope' => 'plugin']);
                     }
                 }
             }
-            
+
+            app_log('info', 'PluginManager::purge: Successfully purged plugin ' . $plugin, ['scope' => 'plugin']);
             return true;
         } catch (Throwable $e) {
+            app_log('error', 'PluginManager::purge failed for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
             return false;
         }
     }

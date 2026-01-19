@@ -24,7 +24,6 @@ require_once PLUGIN_REGISTER_PATH . 'models/register.php';
 
 class RegisterController
 {
-    /** @var \Database|\PDO|null */
     private $db;
     private array $config;
     private string $appRoot;
