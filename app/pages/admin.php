@@ -169,19 +169,22 @@ foreach ($pluginCatalog as $slug => $info) {
     $hasMigration = !empty($migrationFiles);
     $existingTables = [];
 
-    if ($hasMigration && isset($db) && $db instanceof PDO) {
-        $stmt = $db->query("SHOW TABLES");
-        $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    if ($hasMigration) {
+        $db = \App\App::db();
+        if ($db instanceof PDO) {
+            $stmt = $db->query("SHOW TABLES");
+            $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
-        foreach ($migrationFiles as $migrationFile) {
-            $migrationContent = file_get_contents($migrationFile);
-            foreach ($allTables as $table) {
-                if (strpos($migrationContent, $table) !== false) {
-                    $existingTables[] = $table;
+            foreach ($migrationFiles as $migrationFile) {
+                $migrationContent = file_get_contents($migrationFile);
+                foreach ($allTables as $table) {
+                    if (strpos($migrationContent, $table) !== false) {
+                        $existingTables[] = $table;
+                    }
                 }
             }
+            $existingTables = array_unique($existingTables);
         }
-        $existingTables = array_unique($existingTables);
     }
 
     $pluginAdminMap[$slug] = [
@@ -599,7 +602,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
         ];
 
         // Check database tables
-        global $db;
+        $db = \App\App::db();
         $pluginTables = [];
         if ($db instanceof PDO) {
             $stmt = $db->query("SHOW TABLES");

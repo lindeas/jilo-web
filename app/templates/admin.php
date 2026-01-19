@@ -664,7 +664,7 @@ endif; ?>
             ];
             
             // Check database tables
-            global $db;
+            $db = \App\App::db();
             $pluginTables = [];
             if ($db instanceof PDO) {
                 $stmt = $db->query("SHOW TABLES");
@@ -690,8 +690,30 @@ endif; ?>
             if (file_exists($bootstrapPath)) {
                 include_once $bootstrapPath;
                 $migrationFunction = str_replace('-', '_', $plugin['slug']) . '_ensure_tables';
+                $migrationTestResult = null;
+                
+                // Test migration function if it exists
+                if (function_exists($migrationFunction)) {
+                    try {
+                        // Check if plugin tables already exist
+                        $tablesExist = !empty($pluginTables);
+                        
+                        if ($tablesExist) {
+                            $migrationTestResult = 'already installed';
+                        } else {
+                            // For plugins without tables, the function exists and is ready
+                            $migrationTestResult = 'function ready (tables not installed)';
+                        }
+                    } catch (Exception $e) {
+                        $migrationTestResult = 'error: ' . $e->getMessage();
+                    }
+                } else {
+                    $migrationTestResult = 'not applicable';
+                }
+                
                 $checkResults['functions'] = [
                     'migration' => function_exists($migrationFunction),
+                    'migration_test' => $migrationTestResult ?: 'not applicable',
                 ];
             }
             
@@ -752,13 +774,33 @@ endif; ?>
                                         <h6 class="card-title mb-0">Functions Check</h6>
                                     </div>
                                     <div class="card-body">
-                                        <?php foreach ($checkResults['functions'] ?? [] as $func => $exists): ?>
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span><?= htmlspecialchars($func) ?>()</span>
-                                                <span class="badge bg-<?= $exists ? 'success' : 'danger' ?>">
-                                                    <?= $exists ? 'Available' : 'Missing' ?>
-                                                </span>
-                                            </div>
+                                        <?php foreach ($checkResults['functions'] ?? [] as $func => $value): ?>
+                                            <?php if ($func === 'migration_test'): ?>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span>Migration Test</span>
+                                                    <?php if ($value === 'not applicable'): ?>
+                                                        <span class="badge bg-secondary">Not Applicable</span>
+                                                    <?php elseif ($value === 'already installed'): ?>
+                                                        <span class="badge bg-info">Already Installed</span>
+                                                    <?php elseif (strpos($value, 'error') === false): ?>
+                                                        <span class="badge bg-success">Passed</span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-danger">Failed</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <?php if ($value === 'already installed'): ?>
+                                                    <div class="text-muted small mb-2">Plugin tables already exist - migration not needed</div>
+                                                <?php elseif (strpos($value, 'error') !== false): ?>
+                                                    <div class="text-muted small mb-2"><?= htmlspecialchars($value) ?></div>
+                                                <?php endif; ?>
+                                            <?php elseif ($func === 'migration'): ?>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span><?= htmlspecialchars($func) ?>()</span>
+                                                    <span class="badge bg-<?= $value ? 'success' : 'danger' ?>">
+                                                        <?= $value ? 'Available' : 'Missing' ?>
+                                                    </span>
+                                                </div>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
@@ -792,13 +834,6 @@ endif; ?>
                             <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
                             <input type="hidden" name="action" value="plugin_install">
                             <button type="submit" class="btn btn-primary">Install Tables</button>
-                        </form>
-                        <form method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-                            <input type="hidden" name="section" value="plugins">
-                            <input type="hidden" name="plugin" value="<?= htmlspecialchars($plugin['slug']) ?>">
-                            <input type="hidden" name="action" value="test_plugin_migrations">
-                            <button type="submit" class="btn btn-info">Test Migrations</button>
                         </form>
                         <form method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
