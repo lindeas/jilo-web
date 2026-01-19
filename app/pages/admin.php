@@ -603,25 +603,41 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
 
         // Check database tables
         $db = \App\App::db();
-        $pluginTables = [];
-        if ($db instanceof PDO) {
-            $stmt = $db->query("SHOW TABLES");
+        $pluginOwnedTables = [];
+        $pluginReferencedTables = [];
+        if ($db && method_exists($db, 'getConnection')) {
+            $pdo = $db->getConnection();
+            $stmt = $pdo->query("SHOW TABLES");
             $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
             if ($hasMigration) {
-                // Check each migration file for table references
                 foreach ($migrationFiles as $migrationFile) {
                     $migrationContent = file_get_contents($migrationFile);
+                    
+                    // Extract tables created by this migration (plugin-owned)
+                    if (preg_match_all('/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-zA-Z0-9_]+)`?/i', $migrationContent, $matches)) {
+                        foreach ($matches[1] as $tableName) {
+                            if (in_array($tableName, $allTables)) {
+                                $pluginOwnedTables[] = $tableName;
+                            }
+                        }
+                    }
+                    
+                    // Find all referenced tables (dependencies)
                     foreach ($allTables as $table) {
-                        if (strpos($migrationContent, $table) !== false) {
-                            $pluginTables[] = $table;
+                        if (strpos($migrationContent, $table) !== false && !in_array($table, $pluginOwnedTables)) {
+                            $pluginReferencedTables[] = $table;
                         }
                     }
                 }
-                $pluginTables = array_unique($pluginTables);
+                $pluginOwnedTables = array_unique($pluginOwnedTables);
+                $pluginReferencedTables = array_unique($pluginReferencedTables);
             }
         }
-        $checkResults['tables'] = $pluginTables;
+        $checkResults['tables'] = [
+            'owned' => $pluginOwnedTables,
+            'referenced' => $pluginReferencedTables,
+        ];
 
         // Check plugin functions
         $bootstrapPath = $pluginInfo['path'] . '/bootstrap.php';

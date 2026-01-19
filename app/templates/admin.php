@@ -628,25 +628,41 @@ endif; ?>
 
             // Check database tables
             $db = \App\App::db();
-            $pluginTables = [];
-            if ($db instanceof PDO) {
-                $stmt = $db->query("SHOW TABLES");
+            $pluginOwnedTables = [];
+            $pluginReferencedTables = [];
+            if ($db && method_exists($db, 'getConnection')) {
+                $pdo = $db->getConnection();
+                $stmt = $pdo->query("SHOW TABLES");
                 $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
                 if ($hasMigration) {
-                    // Check each migration file for table references
                     foreach ($migrationFiles as $migrationFile) {
                         $migrationContent = file_get_contents($migrationFile);
+                        
+                        // Extract tables created by this migration (plugin-owned)
+                        if (preg_match_all('/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-zA-Z0-9_]+)`?/i', $migrationContent, $matches)) {
+                            foreach ($matches[1] as $tableName) {
+                                if (in_array($tableName, $allTables)) {
+                                    $pluginOwnedTables[] = $tableName;
+                                }
+                            }
+                        }
+                        
+                        // Find all referenced tables (dependencies)
                         foreach ($allTables as $table) {
-                            if (strpos($migrationContent, $table) !== false) {
-                                $pluginTables[] = $table;
+                            if (strpos($migrationContent, $table) !== false && !in_array($table, $pluginOwnedTables)) {
+                                $pluginReferencedTables[] = $table;
                             }
                         }
                     }
-                    $pluginTables = array_unique($pluginTables);
+                    $pluginOwnedTables = array_unique($pluginOwnedTables);
+                    $pluginReferencedTables = array_unique($pluginReferencedTables);
                 }
             }
-            $checkResults['tables'] = $pluginTables;
+            $checkResults['tables'] = [
+                'owned' => $pluginOwnedTables,
+                'referenced' => $pluginReferencedTables,
+            ];
 
             // Check plugin functions and integrations
             $bootstrapPath = $plugin['path'] . '/bootstrap.php';
@@ -773,13 +789,29 @@ endif; ?>
                                         <h6 class="card-title mb-0">Database Tables</h6>
                                     </div>
                                     <div class="card-body">
-                                        <?php if (!empty($checkResults['tables'])): ?>
-                                            <?php foreach ($checkResults['tables'] as $table): ?>
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span><?= htmlspecialchars($table) ?></span>
-                                                    <span class="badge bg-success">Present</span>
+                                        <?php if (!empty($checkResults['tables']['owned']) || !empty($checkResults['tables']['referenced'])): ?>
+                                            <?php if (!empty($checkResults['tables']['owned'])): ?>
+                                                <div class="mb-3">
+                                                    <strong class="text-danger">Plugin Tables (removed on purge):</strong>
+                                                    <?php foreach ($checkResults['tables']['owned'] as $table): ?>
+                                                        <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                                                            <span><i class="fas fa-database text-danger"></i> <?= htmlspecialchars($table) ?></span>
+                                                            <span class="badge bg-danger">Owned</span>
+                                                        </div>
+                                                    <?php endforeach; ?>
                                                 </div>
-                                            <?php endforeach; ?>
+                                            <?php endif; ?>
+                                            <?php if (!empty($checkResults['tables']['referenced'])): ?>
+                                                <div>
+                                                    <strong class="text-muted">Referenced Tables (dependencies):</strong>
+                                                    <?php foreach ($checkResults['tables']['referenced'] as $table): ?>
+                                                        <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                                                            <span><i class="fas fa-link text-muted"></i> <?= htmlspecialchars($table) ?></span>
+                                                            <span class="badge bg-secondary">Referenced</span>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
                                         <?php else: ?>
                                             <p class="text-muted mb-0">
                                                 <?php if ($checkResults['files']['migration']): ?>
