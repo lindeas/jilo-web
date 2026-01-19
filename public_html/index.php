@@ -84,11 +84,6 @@ function register_plugin_route_prefix(string $prefix, array $definition = []): v
     PluginRouteRegistry::registerPrefix($prefix, $definition);
 }
 
-// Load enabled plugins
-$plugins_dir = dirname(__DIR__) . '/plugins/';
-$enabled_plugins = PluginManager::load($plugins_dir);
-$GLOBALS['enabled_plugins'] = $enabled_plugins;
-
 // Define CSRF token include path globally
 if (!defined('CSRF_TOKEN_INCLUDE')) {
     define('CSRF_TOKEN_INCLUDE', APP_PATH . 'includes/csrf_token.php');
@@ -177,6 +172,11 @@ require_once APP_PATH . 'core/DatabaseConnector.php';
 use App\Core\DatabaseConnector;
 $db = DatabaseConnector::connect($config);
 App::set('db', $db);
+
+// Load enabled plugins (we need this after DB connection is established)
+$plugins_dir = dirname(__DIR__) . '/plugins/';
+$enabled_plugins = PluginManager::load($plugins_dir);
+$GLOBALS['enabled_plugins'] = $enabled_plugins;
 
 // Initialize Log throttler
 require_once APP_PATH . 'core/LogThrottler.php';
