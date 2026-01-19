@@ -168,11 +168,11 @@ foreach ($pluginCatalog as $slug => $info) {
     $migrationFiles = glob($info['path'] . '/migrations/*.sql');
     $hasMigration = !empty($migrationFiles);
     $existingTables = [];
-    
+
     if ($hasMigration && isset($db) && $db instanceof PDO) {
         $stmt = $db->query("SHOW TABLES");
         $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-        
+
         foreach ($migrationFiles as $migrationFile) {
             $migrationContent = file_get_contents($migrationFile);
             foreach ($allTables as $table) {
@@ -404,19 +404,19 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
                 try {
                     $pluginPath = $pluginAdminMap[$slug]['path'];
                     $bootstrapPath = $pluginPath . '/bootstrap.php';
-                    
+
                     if (!file_exists($bootstrapPath)) {
                         Feedback::flash('ERROR', 'DEFAULT', 'Plugin has no bootstrap file.', false);
                     } else {
                         // Load plugin bootstrap in isolation to test migrations
                         $migrationFunctions = [];
                         $bootstrapContent = file_get_contents($bootstrapPath);
-                        
+
                         // Check for migration functions
                         if (strpos($bootstrapContent, '_ensure_tables') !== false) {
                             // Temporarily include bootstrap to test migrations
                             include_once $bootstrapPath;
-                            
+
                             $migrationFunctionName = str_replace('-', '_', $slug) . '_ensure_tables';
                             if (function_exists($migrationFunctionName)) {
                                 $migrationFunctionName();
@@ -544,7 +544,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
         echo json_encode(['test' => 'working', 'timestamp' => time()]);
         exit;
     }
-    
+
     // Debug: Log request details
     error_log('Plugin check request: ' . print_r([
         'action' => $queryAction,
@@ -554,23 +554,23 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
         'content_type' => $_SERVER['CONTENT_TYPE'] ?? 'not set',
         'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'not set'
     ], true));
-    
+
     // Start output buffering to catch any unwanted output
     ob_start();
-    
+
     // Disable error display for JSON responses
     $originalErrorReporting = error_reporting();
     $originalDisplayErrors = ini_get('display_errors');
-    
+
     $isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
                isset($_GET['ajax']);
-    
+
     if ($isAjax) {
         error_reporting(0);
         ini_set('display_errors', 0);
     }
-    
+
     $pluginSlug = strtolower(trim($_GET['plugin']));
     if (!isset($pluginAdminMap[$pluginSlug])) {
         if ($isAjax) {
@@ -583,28 +583,28 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
         header('Location: ' . $app_root . '?page=admin&section=plugins');
         exit;
     }
-    
+
     $pluginInfo = $pluginAdminMap[$pluginSlug];
     $checkResults = [];
-    
+
     try {
         // Check plugin files exist
         $migrationFiles = glob($pluginInfo['path'] . '/migrations/*.sql');
         $hasMigration = !empty($migrationFiles);
-        
+
         $checkResults['files'] = [
             'manifest' => file_exists($pluginInfo['path'] . '/plugin.json'),
             'bootstrap' => file_exists($pluginInfo['path'] . '/bootstrap.php'),
             'migration' => $hasMigration,
         ];
-        
+
         // Check database tables
         global $db;
         $pluginTables = [];
         if ($db instanceof PDO) {
             $stmt = $db->query("SHOW TABLES");
             $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-            
+
             if ($hasMigration) {
                 // Check each migration file for table references
                 foreach ($migrationFiles as $migrationFile) {
@@ -619,7 +619,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
             }
         }
         $checkResults['tables'] = $pluginTables;
-        
+
         // Check plugin functions
         $bootstrapPath = $pluginInfo['path'] . '/bootstrap.php';
         if (file_exists($bootstrapPath)) {
@@ -629,21 +629,21 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
                 'migration' => function_exists($migrationFunction),
             ];
         }
-        
+
     } catch (Throwable $e) {
         $checkResults['error'] = $e->getMessage();
     }
-    
+
     // Handle AJAX request
     if ($isAjax) {
         // Restore error reporting
         error_reporting($originalErrorReporting);
         ini_set('display_errors', $originalDisplayErrors);
-        
+
         ob_end_clean(); // Clear and end output buffer
         header('Content-Type: application/json');
         header('Cache-Control: no-cache, must-revalidate');
-        
+
         $jsonData = json_encode([
             'success' => true,
             'pluginInfo' => $pluginInfo,
@@ -651,16 +651,16 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
             'csrf_token' => $csrf_token,
             'app_root' => $app_root
         ]);
-        
+
         error_log('JSON response: ' . $jsonData);
         echo $jsonData;
         exit;
     }
-    
+
     // Restore error reporting for non-AJAX requests
     error_reporting($originalErrorReporting);
     ini_set('display_errors', $originalDisplayErrors);
-    
+
     // Include check page template for non-AJAX requests
     include '../app/templates/admin_plugin_check.php';
     exit;

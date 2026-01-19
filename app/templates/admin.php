@@ -654,30 +654,36 @@ endif; ?>
         
         try {
             // Check plugin files exist
+            $migrationFiles = glob($plugin['path'] . '/migrations/*.sql');
+            $hasMigration = !empty($migrationFiles);
+            
             $checkResults['files'] = [
                 'manifest' => file_exists($plugin['path'] . '/plugin.json'),
                 'bootstrap' => file_exists($plugin['path'] . '/bootstrap.php'),
-                'migration' => file_exists($plugin['path'] . '/migrations/create_' . $plugin['slug'] . '_tables.sql'),
+                'migration' => $hasMigration,
             ];
             
             // Check database tables
             global $db;
+            $pluginTables = [];
             if ($db instanceof PDO) {
-                $stmt = $db->query("SHOW TABLES LIKE 'user_pro_%'");
+                $stmt = $db->query("SHOW TABLES");
                 $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
                 
-                $migrationFile = $plugin['path'] . '/migrations/create_' . $plugin['slug'] . '_tables.sql';
-                if (file_exists($migrationFile)) {
-                    $migrationContent = file_get_contents($migrationFile);
-                    $pluginTables = [];
-                    foreach ($allTables as $table) {
-                        if (strpos($migrationContent, $table) !== false) {
-                            $pluginTables[] = $table;
+                if ($hasMigration) {
+                    // Check each migration file for table references
+                    foreach ($migrationFiles as $migrationFile) {
+                        $migrationContent = file_get_contents($migrationFile);
+                        foreach ($allTables as $table) {
+                            if (strpos($migrationContent, $table) !== false) {
+                                $pluginTables[] = $table;
+                            }
                         }
                     }
-                    $checkResults['tables'] = $pluginTables;
+                    $pluginTables = array_unique($pluginTables);
                 }
             }
+            $checkResults['tables'] = $pluginTables;
             
             // Check plugin functions
             $bootstrapPath = $plugin['path'] . '/bootstrap.php';
