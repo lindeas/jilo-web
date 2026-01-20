@@ -425,47 +425,40 @@ if ($page == 'logout') {
         'logger' => $logObject,
         'time_now' => $timeNow ?? null,
     ];
-    if (PluginRouteRegistry::match($page)) {
-        $handled = PluginRouteRegistry::dispatch($page, $routeContext);
-        if ($handled !== false) {
-            ob_end_flush();
-            exit;
-        }
-    }
+    // Check if this is a PluginRouteRegistry route
+    $pluginRouteMatch = PluginRouteRegistry::match($page);
+    $isPluginRoute = $pluginRouteMatch !== null;
 
     // page building
-    if (in_array($page, $allowed_urls)) {
-    // The page is in allowed URLs
-        if (isset($mapped_plugin_controllers[$page]) && file_exists($mapped_plugin_controllers[$page])) {
-        // The page is from a plugin controller
-            if (defined('PLUGIN_PAGE_DIRECT_OUTPUT') && PLUGIN_PAGE_DIRECT_OUTPUT === true) {
-                // Barebone page controller, we don't output anything extra
-                include $mapped_plugin_controllers[$page];
-                ob_end_flush();
-                exit;
-            } else {
-                \App\Helpers\Theme::include('page-header');
-                \App\Helpers\Theme::include('page-menu');
-                if ($validSession) {
-                    \App\Helpers\Theme::include('page-sidebar');
-                }
-                include $mapped_plugin_controllers[$page];
-                \App\Helpers\Theme::include('page-footer');
-            }
+    if ($isPluginRoute) {
+    // The page is from a PluginRouteRegistry route (a plugin's page)
+        if (defined('PLUGIN_PAGE_DIRECT_OUTPUT') && PLUGIN_PAGE_DIRECT_OUTPUT === true) {
+            // Barebone page controller, we don't output anything extra (no common header/footer etc.)
+            PluginRouteRegistry::dispatch($page, $routeContext);
+            ob_end_flush();
+            exit;
         } else {
-        // The page is from a core controller
             \App\Helpers\Theme::include('page-header');
             \App\Helpers\Theme::include('page-menu');
             if ($validSession) {
                 \App\Helpers\Theme::include('page-sidebar');
             }
-            if (file_exists(APP_PATH . "pages/{$page}.php")) {
-                include APP_PATH . "pages/{$page}.php";
-            } else {
-                include APP_PATH . 'templates/error-notfound.php';
-            }
+            PluginRouteRegistry::dispatch($page, $routeContext);
             \App\Helpers\Theme::include('page-footer');
         }
+    } elseif (in_array($page, $allowed_urls)) {
+    // The page is from a core controller
+        \App\Helpers\Theme::include('page-header');
+        \App\Helpers\Theme::include('page-menu');
+        if ($validSession) {
+            \App\Helpers\Theme::include('page-sidebar');
+        }
+        if (file_exists(APP_PATH . "pages/{$page}.php")) {
+            include APP_PATH . "pages/{$page}.php";
+        } else {
+            include APP_PATH . 'templates/error-notfound.php';
+        }
+        \App\Helpers\Theme::include('page-footer');
     } else {
     // The page is not in allowed URLs
         \App\Helpers\Theme::include('page-header');
