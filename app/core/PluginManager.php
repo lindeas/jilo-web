@@ -167,9 +167,9 @@ class PluginManager
             return false;
         }
 
-        // Use global DB and get PDO connection
-        $db = $GLOBALS['db'];
-        $pdo = $db->getConnection();
+        // Use App API to get database connection
+        $db = \App\App::db();
+        $pdo = ($db instanceof \PDO) ? $db : $db->getConnection();
 
         try {
             // Update or insert plugin setting in database
@@ -213,9 +213,15 @@ class PluginManager
             return false;
         }
 
-        // Use global DB and get PDO connection
-        $db = $GLOBALS['db'];
-        $pdo = $db->getConnection();
+        // Use App API to get database connection
+        $db = \App\App::db();
+        
+        // If database unavailable, fallback to manifest
+        if (!$db) {
+            return self::$catalog[$plugin]['meta']['enabled'] ?? false;
+        }
+        
+        $pdo = ($db instanceof \PDO) ? $db : $db->getConnection();
 
         try {
             $stmt = $pdo->prepare('SELECT `value` FROM settings WHERE `key` = :key LIMIT 1');
@@ -226,7 +232,8 @@ class PluginManager
             return $result && $result['value'] === '1';
         } catch (\PDOException $e) {
             app_log('error', 'PluginManager::isEnabled failed for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
-            return false;
+            // Fallback to manifest on database error
+            return self::$catalog[$plugin]['meta']['enabled'] ?? false;
         }
     }
 
@@ -276,36 +283,43 @@ class PluginManager
             return false;
         }
 
-        global $db;
-        if (!$db instanceof PDO) {
+        $db = \App\App::db();
+        if (!$db) {
             app_log('error', 'PluginManager::purge: Database connection not available', ['scope' => 'plugin']);
             return false;
         }
+        $pdo = ($db instanceof \PDO) ? $db : $db->getConnection();
 
         try {
             // First disable the plugin
             self::setEnabled($plugin, false);
 
             // Remove plugin settings
-            $stmt = $db->prepare('DELETE FROM settings WHERE `key` LIKE :pattern');
+            $stmt = $pdo->prepare('DELETE FROM settings WHERE `key` LIKE :pattern');
             $stmt->execute([':pattern' => 'plugin_enabled_' . $plugin]);
 
             // Drop plugin-specific tables (user_pro_* tables for this plugin)
-            $stmt = $db->prepare('SHOW TABLES LIKE "user_pro_%"');
+            $stmt = $pdo->prepare('SHOW TABLES LIKE "user_pro_%"');
             $stmt->execute();
-            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+            $tables = $stmt->fetchAll(\PDO::FETCH_COLUMN, 0);
 
+            // Disable foreign key checks temporarily to allow table drops
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            
             foreach ($tables as $table) {
                 // Check if this table belongs to the plugin by checking its migration file
                 $migrationFile = self::$catalog[$plugin]['path'] . '/migrations/create_' . $plugin . '_tables.sql';
                 if (file_exists($migrationFile)) {
                     $migrationContent = file_get_contents($migrationFile);
                     if (strpos($migrationContent, $table) !== false) {
-                        $db->exec("DROP TABLE IF EXISTS `$table`");
+                        $pdo->exec("DROP TABLE IF EXISTS `$table`");
                         app_log('info', 'PluginManager::purge: Dropped table ' . $table . ' for plugin ' . $plugin, ['scope' => 'plugin']);
                     }
                 }
             }
+            
+            // Re-enable foreign key checks
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
 
             app_log('info', 'PluginManager::purge: Successfully purged plugin ' . $plugin, ['scope' => 'plugin']);
             return true;

@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\App;
+
 class Maintenance
 {
     // Keep it simple: store the flag within the app directory
@@ -13,10 +15,11 @@ class Maintenance
             return true;
         }
         // Prefer DB settings if available in the current request
-        if (isset($GLOBALS['db'])) {
+        $db = App::db();
+        if ($db) {
             try {
                 require_once __DIR__ . '/Settings.php';
-                $settings = new Settings($GLOBALS['db']);
+                $settings = new Settings($db);
                 return $settings->get('maintenance_enabled', '0') === '1';
             } catch (\Throwable $e) {
                 // fall back to file flag
@@ -27,10 +30,11 @@ class Maintenance
 
     public static function enable(string $message = ''): bool
     {
-        if (isset($GLOBALS['db'])) {
+        $db = App::db();
+        if ($db) {
             try {
                 require_once __DIR__ . '/Settings.php';
-                $settings = new Settings($GLOBALS['db']);
+                $settings = new Settings($db);
                 $ok1 = $settings->set('maintenance_enabled', '1');
                 $ok2 = $settings->set('maintenance_message', $message);
                 return $ok1 && $ok2;
@@ -48,10 +52,11 @@ class Maintenance
 
     public static function disable(): bool
     {
-        if (isset($GLOBALS['db'])) {
+        $db = App::db();
+        if ($db) {
             try {
                 require_once __DIR__ . '/Settings.php';
-                $settings = new Settings($GLOBALS['db']);
+                $settings = new Settings($db);
                 $ok1 = $settings->set('maintenance_enabled', '0');
                 // keep last message for reference, optional to clear
                 return $ok1;
@@ -74,10 +79,11 @@ class Maintenance
         if ($envMsg) {
             return trim($envMsg);
         }
-        if (isset($GLOBALS['db'])) {
+        $db = App::db();
+        if ($db) {
             try {
                 require_once __DIR__ . '/Settings.php';
-                $settings = new Settings($GLOBALS['db']);
+                $settings = new Settings($db);
                 return (string)$settings->get('maintenance_message', '');
             } catch (\Throwable $e) {
                 // ignore and fall back to file flag

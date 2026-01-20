@@ -1,10 +1,10 @@
 <?php
 
+use App\App;
 use App\Core\NullLogger;
 
 class RateLimiter {
     public $db;
-    private $database;
     /** @var mixed NullLogger (or PSR-3 logger) or plugin Log */
     private $logger;
     public $maxAttempts = 5;           // Maximum login attempts
@@ -27,12 +27,13 @@ class RateLimiter {
     ];
 
     /**
-     * @param mixed $database Database object
      * @param mixed $logger Optional NullLogger (or PSR-3 logger) or plugin Log
      */
-    public function __construct($database, $logger = null) {
-        $this->database = $database;
-        $this->db = $database->getConnection();
+    public function __construct($logger = null) {
+        $db = App::db();
+        // Extract PDO connection from Database object
+        $this->db = ($db instanceof PDO) ? $db : $db->getConnection();
+
         // Initialize logger (plugin Log if present or NullLogger otherwise)
         if ($logger !== null) {
             $this->logger = $logger;

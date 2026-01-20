@@ -1,5 +1,7 @@
 <?php
 
+use App\App;
+
 /**
  * class User
  *
@@ -33,7 +35,7 @@ class User {
         require_once __DIR__ . '/ratelimiter.php';
         require_once __DIR__ . '/twoFactorAuth.php';
 
-        $this->rateLimiter = new RateLimiter($database);
+        $this->rateLimiter = new RateLimiter();
         $this->twoFactorAuth = new TwoFactorAuthentication($database);
     }
 
