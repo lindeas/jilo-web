@@ -143,15 +143,11 @@ function logs_plugin_render_list($logObject, $db, int $userId, bool $validSessio
     $username = $userObject->getUserDetails($userId)[0]['username'];
     $page = 'logs'; // For pagination template
 
-    \App\Helpers\Theme::include('page-header');
-    \App\Helpers\Theme::include('page-menu');
-    if ($validSession) {
-        \App\Helpers\Theme::include('page-sidebar');
-    }
+    // Get any new feedback messages            
+    include_once APP_PATH . 'helpers/feedback.php';
 
-    include APP_PATH . 'helpers/feedback.php';
     require_once PLUGIN_LOGS_PATH . 'helpers/logs_view_helper.php';
-    include PLUGIN_LOGS_PATH . 'views/logs.php';
 
-    \App\Helpers\Theme::include('page-footer');
+    // Load the view
+    include PLUGIN_LOGS_PATH . 'views/logs.php';
 }

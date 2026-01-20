@@ -417,7 +417,7 @@ if (!empty($adminOverviewStatuses) && is_array($adminOverviewStatuses)) {
                                 $statusBadges = [];
                                 $statusBadges[] = $plugin['enabled']
                                     ? '<span class="badge text-uppercase" style="background-color:#198754;color:#fff;">Enabled</span>'
-                                    : '<span class="badge text-uppercase" style="background-color:#6c757d;color:#fff;">Disabled</span>';
+                                    : '<span class="badge text-uppercase" style="background-color:#c6c6c6;color:#fff;">Disabled</span>';
                                 if ($plugin['enabled'] && empty($depErrors) && $plugin['loaded']) {
                                     $statusBadges[] = '<span class="badge text-uppercase" style="background-color:#0dcaf0;color:#052c65;">Loaded</span>';
                                 }

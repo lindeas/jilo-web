@@ -142,18 +142,12 @@ function register_plugin_render_form(bool $validSession, string $app_root, array
     $formValues = $data['values'] ?? ['username' => ''];
     $registrationEnabled = $data['registrationEnabled'] ?? true;
 
-    \App\Helpers\Theme::include('page-header');
-    \App\Helpers\Theme::include('page-menu');
-    if ($validSession) {
-        \App\Helpers\Theme::include('page-sidebar');
-    }
+    // Get any new feedback messages
+    include_once APP_PATH . 'helpers/feedback.php';
 
-    include APP_PATH . 'helpers/feedback.php';
+    $csrf_token = \SecurityHelper::getInstance()->generateCsrfToken();
+    $registerCsrfToken = $csrf_token;
 
-    $values = $formValues;
-    $app_root = $app_root;
-
+    // Load the view
     include PLUGIN_REGISTER_PATH . 'views/form-register.php';
-
-    \App\Helpers\Theme::include('page-footer');
 }
