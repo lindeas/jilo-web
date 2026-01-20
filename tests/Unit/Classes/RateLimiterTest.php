@@ -1,10 +1,12 @@
 <?php
 
+require_once dirname(__DIR__, 3) . '/app/core/App.php';
 require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
 require_once dirname(__DIR__, 3) . '/app/classes/log.php';
 
 use PHPUnit\Framework\TestCase;
+use App\App;
 
 class RateLimiterTest extends TestCase
 {
@@ -29,8 +31,11 @@ class RateLimiterTest extends TestCase
             'password' => $password
         ]);
 
+        // Set up App::db() for RateLimiter
+        App::set('db', $this->db->getConnection());
+        
         // The RateLimiter constructor will create all necessary tables
-        $this->rateLimiter = new RateLimiter($this->db);
+        $this->rateLimiter = new RateLimiter();
     }
 
     protected function tearDown(): void
@@ -40,6 +45,10 @@ class RateLimiterTest extends TestCase
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->pagesRatelimitTable}");
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->blacklistTable}");
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->whitelistTable}");
+        
+        // Clean up App state
+        App::reset('db');
+        
         parent::tearDown();
     }
 

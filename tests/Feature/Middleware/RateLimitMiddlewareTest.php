@@ -1,11 +1,13 @@
 <?php
 
+require_once dirname(__DIR__, 3) . '/app/core/App.php';
 require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
 require_once dirname(__DIR__, 3) . '/app/classes/log.php';
 require_once dirname(__DIR__, 3) . '/app/includes/rate_limit_middleware.php';
 
 use PHPUnit\Framework\TestCase;
+use App\App;
 
 class RateLimitMiddlewareTest extends TestCase
 {
@@ -34,8 +36,11 @@ class RateLimitMiddlewareTest extends TestCase
             'password' => $password
         ]);
 
+        // Set up App::db() for RateLimiter
+        App::set('db', $this->db->getConnection());
+        
         // Create rate limiter instance
-        $this->rateLimiter = new RateLimiter($this->db);
+        $this->rateLimiter = new RateLimiter();
 
         // Drop tables if they exist
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS security_rate_auth");
@@ -119,6 +124,10 @@ class RateLimitMiddlewareTest extends TestCase
         $this->db->getConnection()->exec("TRUNCATE TABLE security_ip_whitelist");
         $this->db->getConnection()->exec("TRUNCATE TABLE security_rate_auth");
         $this->db->getConnection()->exec("TRUNCATE TABLE log");
+        
+        // Clean up App state
+        App::reset('db');
+        
         parent::tearDown();
     }
 

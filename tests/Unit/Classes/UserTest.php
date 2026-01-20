@@ -1,11 +1,13 @@
 <?php
 
+require_once dirname(__DIR__, 3) . '/app/core/App.php';
 require_once dirname(__DIR__, 3) . '/app/classes/database.php';
 require_once dirname(__DIR__, 3) . '/app/classes/user.php';
 require_once dirname(__DIR__, 3) . '/plugins/register/models/register.php';
 require_once dirname(__DIR__, 3) . '/app/classes/ratelimiter.php';
 
 use PHPUnit\Framework\TestCase;
+use App\App;
 
 class UserTest extends TestCase
 {
@@ -29,6 +31,9 @@ class UserTest extends TestCase
             'user' => 'test_jilo',
             'password' => $password
         ]);
+
+        // Set up App::db() for Register class to use
+        App::set('db', $this->db->getConnection());
 
         // Create user table with MariaDB syntax
         $this->db->getConnection()->exec("
@@ -79,11 +84,14 @@ class UserTest extends TestCase
         ");
 
         $this->user = new User($this->db);
-        $this->register = new Register($this->db);
+        $this->register = new Register();
     }
 
     protected function tearDown(): void
     {
+        // Clean up App state
+        App::reset('db');
+        
         // Drop tables in correct order
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS user_2fa");
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS security_rate_auth");
