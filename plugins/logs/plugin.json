@@ -1,5 +1,5 @@
 {
   "name": "Logger Plugin",
   "version": "1.0.2",
-  "description": "Initializes logging system via LoggerFactory"
+  "description": "Logging system for storing logs in the DB"
 }
