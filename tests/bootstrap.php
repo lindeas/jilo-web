@@ -12,6 +12,11 @@ if (!headers_sent()) {
     ini_set('session.gc_maxlifetime', 1440); // 24 minutes
 }
 
+// Define APP_PATH for components that expect the constant
+if (!defined('APP_PATH')) {
+    define('APP_PATH', dirname(__DIR__) . '/app/');
+}
+
 // load the main App registry and plugin route registry
 require_once __DIR__ . '/../app/core/App.php';
 require_once __DIR__ . '/../app/core/PluginRouteRegistry.php';
