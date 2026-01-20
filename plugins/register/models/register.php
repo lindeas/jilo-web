@@ -9,7 +9,7 @@ use App\App;
  */
 class Register {
     /**
-     * @var PDO|null $db The database connection instance.
+     * @var PDO $db The database connection instance.
      */
     private $db;
     private $rateLimiter;
@@ -18,16 +18,14 @@ class Register {
     /**
      * Register constructor.
      * Initializes the database connection using App API.
-     *
-     * @param PDO|null $database The database connection (optional, will use App::db() if not provided).
      */
-    public function __construct($database = null) {
-        $this->db = $database instanceof PDO ? $database : App::db();
+    public function __construct() {
+        $this->db = App::db();
 
         require_once APP_PATH . 'classes/ratelimiter.php';
         require_once APP_PATH . 'classes/twoFactorAuth.php';
 
-        $this->rateLimiter = new RateLimiter($this->db);
+        $this->rateLimiter = new RateLimiter();
         $this->twoFactorAuth = new TwoFactorAuthentication($this->db);
     }
 
