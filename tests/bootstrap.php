@@ -21,6 +21,13 @@ if (!defined('APP_PATH')) {
 require_once __DIR__ . '/../app/core/App.php';
 require_once __DIR__ . '/../app/core/PluginRouteRegistry.php';
 
+// Define plugin route registration function used by plugin bootstraps
+if (!function_exists('register_plugin_route_prefix')) {
+    function register_plugin_route_prefix(string $prefix, array $definition = []): void {
+        \App\Core\PluginRouteRegistry::registerPrefix($prefix, $definition);
+    }
+}
+
 // Load plugin Log model and IP helper early so fallback wrapper is bypassed
 require_once __DIR__ . '/../app/helpers/ip_helper.php';
 require_once __DIR__ . '/../app/helpers/logger_loader.php';
@@ -72,3 +79,62 @@ $_SERVER['PHP_SELF'] = '/index.php';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_USER_AGENT'] = 'PHPUnit Test Browser';
 $_SERVER['HTTPS'] = 'on';
+
+/**
+ * Setup test database schema by applying main.sql and migrations
+ * 
+ * @param PDO $pdo Database connection
+ * @return void
+ */
+function setupTestDatabaseSchema(PDO $pdo): void
+{
+    // Apply main.sql schema
+    $mainSqlPath = __DIR__ . '/../doc/database/main.sql';
+    if (file_exists($mainSqlPath)) {
+        $sql = file_get_contents($mainSqlPath);
+        // Add IF NOT EXISTS to CREATE TABLE statements
+        $sql = preg_replace('/CREATE TABLE `/', 'CREATE TABLE IF NOT EXISTS `', $sql);
+        $statements = array_filter(array_map('trim', explode(';', $sql)));
+        foreach ($statements as $statement) {
+            if (!empty($statement)) {
+                try {
+                    $pdo->exec($statement);
+                } catch (PDOException $e) {
+                    // Skip errors for INSERT statements on existing data
+                    if (strpos($statement, 'INSERT') === false) {
+                        throw $e;
+                    }
+                }
+            }
+        }
+    }
+
+    // Apply migrations from doc/database/migrations/ (excluding subfolders)
+    $migrationsDir = __DIR__ . '/../doc/database/migrations';
+    if (is_dir($migrationsDir)) {
+        $files = glob($migrationsDir . '/*.sql');
+        sort($files); // Apply in chronological order
+        foreach ($files as $file) {
+            $sql = file_get_contents($file);
+            // Add IF NOT EXISTS to CREATE TABLE statements
+            $sql = preg_replace('/CREATE TABLE `/', 'CREATE TABLE IF NOT EXISTS `', $sql);
+            $statements = array_filter(array_map('trim', explode(';', $sql)));
+            foreach ($statements as $statement) {
+                if (!empty($statement)) {
+                    try {
+                        $pdo->exec($statement);
+                    } catch (PDOException $e) {
+                        // Skip errors for:
+                        // - Duplicate columns (already exists)
+                        // - Table doesn't exist (plugin tables not yet created)
+                        $errorMsg = $e->getMessage();
+                        if (strpos($errorMsg, 'Duplicate column') === false && 
+                            strpos($errorMsg, "doesn't exist") === false) {
+                            throw $e;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

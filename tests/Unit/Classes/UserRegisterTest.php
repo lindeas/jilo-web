@@ -35,53 +35,14 @@ class UserRegisterTest extends TestCase
         // Set up App::db() for Register class to use
         App::set('db', $this->db->getConnection());
 
-        // Create user table with MariaDB syntax
-        $this->db->getConnection()->exec("
-            CREATE TABLE IF NOT EXISTS user (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                username VARCHAR(255) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
+        // Use centralized schema setup
+        setupTestDatabaseSchema($this->db->getConnection());
 
-        // Create user_meta table with MariaDB syntax
-        $this->db->getConnection()->exec("
-            CREATE TABLE IF NOT EXISTS user_meta (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                user_id INT NOT NULL,
-                name VARCHAR(255),
-                email VARCHAR(255),
-                timezone VARCHAR(100),
-                bio TEXT,
-                avatar VARCHAR(255),
-                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-            )
-        ");
-
-        // Create security_rate_auth table for rate limiting
-        $this->db->getConnection()->exec("
-            CREATE TABLE IF NOT EXISTS security_rate_auth (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                ip_address VARCHAR(45) NOT NULL,
-                username VARCHAR(255) NOT NULL,
-                attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                INDEX idx_ip_username (ip_address, username)
-            )
-        ");
-
-        // Create user_2fa table for two-factor authentication
-        $this->db->getConnection()->exec("
-            CREATE TABLE IF NOT EXISTS user_2fa (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                user_id INT NOT NULL,
-                secret_key VARCHAR(255) NOT NULL,
-                backup_codes TEXT,
-                enabled TINYINT(1) NOT NULL DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
-            )
-        ");
+        // Clean up any test users from previous runs
+        $this->db->getConnection()->exec("DELETE FROM user_2fa WHERE user_id >= 1000");
+        $this->db->getConnection()->exec("DELETE FROM security_rate_auth WHERE username LIKE 'testuser%'");
+        $this->db->getConnection()->exec("DELETE FROM user_meta WHERE user_id >= 1000");
+        $this->db->getConnection()->exec("DELETE FROM user WHERE id >= 1000");
 
         $this->register = new Register();
         $this->user = new User($this->db);
@@ -91,19 +52,20 @@ class UserRegisterTest extends TestCase
     {
         // Clean up App state
         App::reset('db');
-        
-        // Drop tables in correct order
-        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user_2fa");
-        $this->db->getConnection()->exec("DROP TABLE IF EXISTS security_rate_auth");
-        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user_meta");
-        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user");
+
+        // Clean up test data
+        $this->db->getConnection()->exec("DELETE FROM user_2fa WHERE user_id >= 1000");
+        $this->db->getConnection()->exec("DELETE FROM security_rate_auth WHERE username LIKE 'testuser%'");
+        $this->db->getConnection()->exec("DELETE FROM user_meta WHERE user_id >= 1000");
+        $this->db->getConnection()->exec("DELETE FROM user WHERE id >= 1000");
+
         parent::tearDown();
     }
 
     public function testRegister()
     {
-        // Register a new user
-        $username = 'testuser';
+        // Register a new user with unique username
+        $username = 'testuser_reg_' . time() . '_' . rand(1000, 9999);
         $password = 'password123';
 
         $result = $this->register->register($username, $password);
@@ -129,8 +91,8 @@ class UserRegisterTest extends TestCase
 
     public function testLogin()
     {
-        // First register a user
-        $username = 'testuser';
+        // First register a user with unique username
+        $username = 'testuser_login_' . time() . '_' . rand(1000, 9999);
         $password = 'password123';
 
         $this->register->register($username, $password);
@@ -163,8 +125,8 @@ class UserRegisterTest extends TestCase
 
     public function testGetUserDetails()
     {
-        // Register a test user first
-        $username = 'testuser';
+        // First register a user with unique username
+        $username = 'testuser_details_' . time() . '_' . rand(1000, 9999);
         $password = 'password123';
         $result = $this->register->register($username, $password);
         $this->assertTrue($result);

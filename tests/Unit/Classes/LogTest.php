@@ -121,44 +121,40 @@ class LogTest extends TestCase
         ]);
 
         $connection = $this->db->getConnection();
+
+        // Ensure fresh log table schema (drop old schema if present)
         $connection->exec("DROP TABLE IF EXISTS log");
-        $connection->exec("DROP TABLE IF EXISTS user");
 
-        // Create user table
-        $connection->exec("
-            CREATE TABLE IF NOT EXISTS user (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                username VARCHAR(255) NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                email VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
+        // Use centralized schema setup
+        setupTestDatabaseSchema($connection);
 
-        // Create log table with the expected schema from Log class
-        $connection->exec("
-            CREATE TABLE IF NOT EXISTS log (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT,
-                scope VARCHAR(50) NOT NULL DEFAULT 'user',
-                message TEXT NOT NULL,
-                time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES user(id)
-            )
-        ");
+        // Load logs plugin migration to create log table
+        $logMigrationPath = __DIR__ . '/../../../plugins/logs/migrations/create_log_table.sql';
+        if (file_exists($logMigrationPath)) {
+            $sql = file_get_contents($logMigrationPath);
+            $statements = array_filter(array_map('trim', explode(';', $sql)));
+            foreach ($statements as $statement) {
+                if (!empty($statement)) {
+                    $connection->exec($statement);
+                }
+            }
+        }
 
-        // Create test users with all required fields
+        // Clean up any existing test data
+        $connection->exec("DELETE FROM log WHERE user_id >= 1000");
+        $connection->exec("DELETE FROM user WHERE id >= 1000");
+
+        // Create test users
+        $timestamp = time();
         $connection->exec("
-            INSERT INTO user (username, password, email) 
+            INSERT INTO user (id, username, password) 
             VALUES 
-                ('testuser', 'password123', 'testuser@example.com'),
-                ('testuser2', 'password123', 'testuser2@example.com')
+                (1000, 'testuser_log_{$timestamp}', 'password123'),
+                (1001, 'testuser2_log_{$timestamp}', 'password123')
         ");
 
         // Store test user ID for later use
-        $stmt = $this->db->getConnection()->query("SELECT id FROM user WHERE username = 'testuser' LIMIT 1");
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        $this->testUserId = $user['id'];
+        $this->testUserId = 1000;
 
         // Create a TestLogger instance that will be used by the app's Log wrapper
         $this->log = new TestLogger($this->db);
@@ -166,15 +162,15 @@ class LogTest extends TestCase
 
     protected function tearDown(): void
     {
-        // Drop tables in correct order (respect foreign key constraints)
-        $this->db->getConnection()->exec("DROP TABLE IF EXISTS log");
-        $this->db->getConnection()->exec("DROP TABLE IF EXISTS user");
+        // Clean up test data
+        $this->db->getConnection()->exec("DELETE FROM log WHERE user_id >= 1000");
+        $this->db->getConnection()->exec("DELETE FROM user WHERE id >= 1000");
         parent::tearDown();
     }
 
     public function testInsertLog()
     {
-        $result = $this->log->insertLog($this->testUserId, 'Test message', 'test');
+        $result = $this->log->insertLog($this->testUserId, 'Test message', 'user');
         $this->assertTrue($result);
 
         // Verify the log was inserted
@@ -182,7 +178,7 @@ class LogTest extends TestCase
         $log = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $this->assertEquals('Test message', $log['message']);
-        $this->assertEquals('test', $log['scope']);
+        $this->assertEquals('user', $log['scope']);
     }
 
     public function testReadLog()

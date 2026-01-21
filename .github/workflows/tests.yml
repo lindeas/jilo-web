@@ -10,6 +10,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      DB_TYPE: mariadb
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: jilo_test
+      DB_USERNAME: test_jilo
+      DB_PASSWORD: test_password
+
     services:
       mariadb:
         image: mariadb:10.6
