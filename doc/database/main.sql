@@ -240,5 +240,20 @@ CREATE TABLE `jilo_agent_check` (
     CONSTRAINT `jilo_agent_check_ibfk_1` FOREIGN KEY (`agent_id`) REFERENCES `jilo_agent` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
+-- --------------------------------------------------------
+CREATE TABLE `settings` (
+  `key` VARCHAR(191) NOT NULL PRIMARY KEY,
+  `value` TEXT NULL,
+  `updated_at` DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+CREATE TABLE `migrations` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `migration` VARCHAR(255) NOT NULL UNIQUE,
+  `applied_at` DATETIME NOT NULL,
+  `batch` INT NOT NULL,
+  `content` TEXT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 COMMIT;
