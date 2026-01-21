@@ -23,6 +23,7 @@ require_once __DIR__ . '/../app/core/PluginRouteRegistry.php';
 
 // Load plugin Log model and IP helper early so fallback wrapper is bypassed
 require_once __DIR__ . '/../app/helpers/ip_helper.php';
+require_once __DIR__ . '/../app/helpers/logger_loader.php';
 
 // Initialize global user_IP for tests
 global $user_IP;
@@ -45,13 +46,13 @@ date_default_timezone_set('UTC');
 // Define global variables needed by the application
 $GLOBALS['app_root'] = '/';
 $GLOBALS['config'] = [
-    'db_type' => 'mariadb',
+    'db_type' => getenv('DB_TYPE') ?: 'mariadb',
     'sql' => [
-        'sql_host' => 'localhost',
-        'sql_port' => '3306',
-        'sql_database' => 'jilo_test',
-        'sql_username' => 'test_jilo',
-        'sql_password' => '',
+        'sql_host' => getenv('DB_HOST') ?: 'localhost',
+        'sql_port' => getenv('DB_PORT') ?: '3306',
+        'sql_database' => getenv('DB_DATABASE') ?: 'jilo_test',
+        'sql_username' => getenv('DB_USERNAME') ?: 'test_jilo',
+        'sql_password' => getenv('DB_PASSWORD') ?: '',
     ],
     'environment' => 'testing'
 ];
