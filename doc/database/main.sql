@@ -17,7 +17,7 @@ CREATE TABLE `user` (
   `password` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `user` (`id`, `username`, `password`) VALUES
 (1,'demo','$2y$12$AtIKs3eVxD4wTT1IWwJujuuHyGhhmfBJYqSfIrPFFPMDfKu3Rcsx6'),
@@ -36,7 +36,7 @@ CREATE TABLE `user_meta` (
   PRIMARY KEY (`id`,`user_id`) USING BTREE,
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_meta_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `user_meta` (`id`, `user_id`, `name`, `email`, `timezone`, `avatar`, `bio`) VALUES
 (1,1,'demo admin user','admin@example.com',NULL,NULL,'This is a demo user of the demo install of Jilo Web'),
@@ -48,7 +48,7 @@ CREATE TABLE `right` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `right` (`id`, `name`) VALUES
 (1, 'superuser'),
@@ -75,7 +75,7 @@ CREATE TABLE `user_right` (
   KEY `fk_right_id` (`right_id`),
   CONSTRAINT `fk_right_id` FOREIGN KEY (`right_id`) REFERENCES `right` (`id`),
   CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `user_2fa` (
@@ -87,7 +87,7 @@ CREATE TABLE `user_2fa` (
   `last_used` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_user_2fa_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `user_2fa_temp` (
@@ -97,7 +97,7 @@ CREATE TABLE `user_2fa_temp` (
   `expires_at` datetime NOT NULL,
   PRIMARY KEY (`user_id`, `code`),
   CONSTRAINT `fk_user_2fa_temp_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `user_password_reset` (
@@ -109,7 +109,7 @@ CREATE TABLE `user_password_reset` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_user_password_reset` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`),
   UNIQUE KEY `token_idx` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Login security
@@ -123,7 +123,7 @@ CREATE TABLE `security_rate_auth` (
   `attempted_at` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_ip_username` (`ip_address`,`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `security_rate_page` (
@@ -134,7 +134,7 @@ CREATE TABLE `security_rate_page` (
   PRIMARY KEY (`id`),
   KEY `idx_ip_endpoint` (`ip_address`,`endpoint`),
   KEY `idx_request_time` (`request_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `security_ip_blacklist` (
@@ -147,7 +147,7 @@ CREATE TABLE `security_ip_blacklist` (
   `created_by` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_ip` (`ip_address`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `security_ip_blacklist` (`id`, `ip_address`, `is_network`, `reason`, `expiry_time`, `created_at`, `created_by`) VALUES
 (1, '0.0.0.0/8', 1, 'Reserved address space - RFC 1122', NULL, '2025-01-03 16:40:15', 'system'),
@@ -166,7 +166,7 @@ CREATE TABLE `security_ip_whitelist` (
   `created_by` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_ip` (`ip_address`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `security_ip_whitelist` (`id`, `ip_address`, `is_network`, `description`, `created_at`, `created_by`) VALUES
 (1, '127.0.0.1', 0, 'localhost IPv4', '2025-01-03 16:40:15', 'system'),
@@ -185,7 +185,7 @@ CREATE TABLE `jilo_agent_type` (
     `description` varchar(255),
     `endpoint` varchar(255),
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO `jilo_agent_type` (`id`, `description`, `endpoint`) VALUES
 (1,'jvb','/jvb'),
 (2,'jicofo','/jicofo'),
@@ -201,7 +201,7 @@ CREATE TABLE `platform` (
     `jilo_database` varchar(255) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO `platform` (`id`, `name`, `jitsi_url`, `jilo_database`) VALUES
 (1,'example.com','https://meet.example.com','../../jilo/jilo.db');
 
@@ -213,7 +213,7 @@ CREATE TABLE `host` (
     `name` varchar(255),
     PRIMARY KEY (`id`),
     CONSTRAINT `host_ibfk_1` FOREIGN KEY (`platform_id`) REFERENCES `platform` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `jilo_agent` (
@@ -226,7 +226,7 @@ CREATE TABLE `jilo_agent` (
     PRIMARY KEY (`id`),
     CONSTRAINT `jilo_agent_ibfk_1` FOREIGN KEY (`agent_type_id`) REFERENCES `jilo_agent_type` (`id`),
     CONSTRAINT `jilo_agent_ibfk_2` FOREIGN KEY (`host_id`) REFERENCES `host` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `jilo_agent_check` (
@@ -238,14 +238,14 @@ CREATE TABLE `jilo_agent_check` (
     `response_content` varchar(255),
     PRIMARY KEY (`id`),
     CONSTRAINT `jilo_agent_check_ibfk_1` FOREIGN KEY (`agent_id`) REFERENCES `jilo_agent` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `settings` (
   `key` VARCHAR(191) NOT NULL PRIMARY KEY,
   `value` TEXT NULL,
   `updated_at` DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 CREATE TABLE `migrations` (
@@ -254,6 +254,6 @@ CREATE TABLE `migrations` (
   `applied_at` DATETIME NOT NULL,
   `batch` INT NOT NULL,
   `content` TEXT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 COMMIT;

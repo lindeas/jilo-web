@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `key` VARCHAR(191) NOT NULL PRIMARY KEY,
   `value` TEXT NULL,
   `updated_at` DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,4 +14,4 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `applied_at` DATETIME NOT NULL,
   `batch` INT NOT NULL,
   `content` TEXT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
