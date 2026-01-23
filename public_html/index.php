@@ -112,13 +112,6 @@ if (!isset($page)) {
     $page = 'dashboard';
 }
 
-// List of pages that don't require authentication
-$public_pages = ['login', 'register', 'help', 'about', 'theme-asset', 'plugin-asset'];
-
-// Let plugins filter/extend public_pages
-$public_pages = filter_public_pages($public_pages);
-$public_pages = PluginRouteRegistry::injectPublicPages($public_pages);
-
 // Middleware pipeline for security, sanitization & CSRF
 require_once APP_PATH . 'core/MiddlewarePipeline.php';
 $pipeline = new \App\Core\MiddlewarePipeline();
@@ -142,6 +135,24 @@ App::set('feedback', $system_messages);
 
 require APP_PATH . 'includes/errors.php';
 
+// Connect to DB via DatabaseConnector (before loading plugins so their hooks are available)
+require_once APP_PATH . 'core/DatabaseConnector.php';
+use App\Core\DatabaseConnector;
+$db = DatabaseConnector::connect($config);
+App::set('db', $db);
+
+// Load enabled plugins (register routes/hooks) before applying public/allowed filters
+$plugins_dir = dirname(__DIR__) . '/plugins/';
+$enabled_plugins = PluginManager::load($plugins_dir);
+$GLOBALS['enabled_plugins'] = $enabled_plugins;
+
+// List of pages that don't require authentication
+$public_pages = ['login', 'register', 'help', 'about', 'theme-asset', 'plugin-asset'];
+
+// Let plugins filter/extend public_pages
+$public_pages = filter_public_pages($public_pages);
+$public_pages = PluginRouteRegistry::injectPublicPages($public_pages);
+
 // list of available pages
 // edit accordingly, add 'pages/PAGE.php'
 $allowed_urls = [
@@ -159,24 +170,13 @@ $allowed_urls = [
 $allowed_urls = filter_allowed_urls($allowed_urls);
 $allowed_urls = PluginRouteRegistry::injectAllowedPages($allowed_urls);
 
-// Dispatch routing and auth
+// Dispatch routing and auth (after plugins added public/allowed entries)
 require_once APP_PATH . 'core/Router.php';
 use App\Core\Router;
 $currentUser = Router::checkAuth($config, $app_root, $public_pages, $page);
 if ($currentUser === null && $validSession) {
     $currentUser = Session::getUsername();
 }
-
-// Connect to DB via DatabaseConnector
-require_once APP_PATH . 'core/DatabaseConnector.php';
-use App\Core\DatabaseConnector;
-$db = DatabaseConnector::connect($config);
-App::set('db', $db);
-
-// Load enabled plugins (we need this after DB connection is established)
-$plugins_dir = dirname(__DIR__) . '/plugins/';
-$enabled_plugins = PluginManager::load($plugins_dir);
-$GLOBALS['enabled_plugins'] = $enabled_plugins;
 
 // Initialize Log throttler
 require_once APP_PATH . 'core/LogThrottler.php';
