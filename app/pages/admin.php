@@ -7,11 +7,12 @@
  * so plugins can contribute additional sections, actions, and metrics.
  */
 
-require_once __DIR__ . '/../core/Maintenance.php';
-require_once __DIR__ . '/../core/MigrationRunner.php';
-require_once __DIR__ . '/../core/PluginManager.php';
-require_once '../app/helpers/security.php';
-include_once '../app/helpers/feedback.php';
+require_once APP_PATH . 'core/Maintenance.php';
+require_once APP_PATH . 'core/MigrationRunner.php';
+require_once APP_PATH . 'core/PluginManager.php';
+require_once APP_PATH . 'helpers/feedback.php';
+require_once APP_PATH . 'helpers/security.php';
+require_once APP_PATH . 'helpers/datetime.php';
 
 $security = SecurityHelper::getInstance();
 
@@ -712,4 +713,5 @@ if (is_array($overviewStatusesPayload)) {
 // Get any new feedback messages
 include_once '../app/helpers/feedback.php';
 
+// Load the view
 include '../app/templates/admin.php';

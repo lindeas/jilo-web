@@ -552,8 +552,7 @@ if (!empty($adminOverviewStatuses) && is_array($adminOverviewStatuses)) {
         $appliedAtRaw = $record['applied_at'] ?? null;
         $appliedAtFormatted = null;
         if (!empty($appliedAtRaw)) {
-            $timestamp = strtotime($appliedAtRaw);
-            $appliedAtFormatted = $timestamp ? date('M d, Y H:i', $timestamp) : $appliedAtRaw;
+            $appliedAtFormatted = app_format_local_datetime($appliedAtRaw, 'M d, Y H:i', $userTimezone) ?: $appliedAtRaw;
         }
         $isModalNext = (!empty($next_pending) && $next_pending === $name);
         $modalResult = (!empty($migration_modal_result) && ($migration_modal_result['name'] ?? '') === $name) ? $migration_modal_result : null;
