@@ -143,7 +143,7 @@ function logs_plugin_render_list($logObject, $db, int $userId, bool $validSessio
     $username = $userObject->getUserDetails($userId)[0]['username'];
     $page = 'logs'; // For pagination template
 
-    // Get any new feedback messages            
+    // Get any new feedback messages
     include_once APP_PATH . 'helpers/feedback.php';
 
     require_once PLUGIN_LOGS_PATH . 'helpers/logs_view_helper.php';

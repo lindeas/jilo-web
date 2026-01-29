@@ -1,4 +1,7 @@
 
+<?php
+$userTimezone = \App\App::get('user_timezone') ?: 'UTC';
+?>
         <!-- log events -->
         <div class="container-fluid mt-4">
             <div class="row mb-4">
@@ -92,7 +95,7 @@
 <?php         if ($scope === 'system') { ?>
                                 <td style="white-space: nowrap;"><?= $row['userID'] ? '<strong>' . htmlspecialchars($row['username'] . " ({$row['userID']})") . '</strong>' : '<span class="text-muted font-weight-normal small">SYSTEM</span>' ?></td>
 <?php         } ?>
-                                <td style="white-space: nowrap;"><span class="text-muted"><?= date('d M Y H:i', strtotime($row['time'])) ?></span></td>
+                                <td style="white-space: nowrap;"><span class="text-muted"><?= app_format_local_datetime($row['time'] ?? null, 'd M Y H:i', $userTimezone) ?: '—' ?></span></td>
                                 <td style="white-space: nowrap;"><span class="<?= getLogLevelClass($row['log level']) ?>"><?= htmlspecialchars($row['log level']) ?></span></td>
                                 <td style="width: 100%; word-break: break-word;"><?= htmlspecialchars($row['log message']) ?></td>
                             </tr>

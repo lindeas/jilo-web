@@ -3,7 +3,10 @@
             <!-- Sidebar -->
             <div class="col-md-3 sidebar-wrapper" id="sidebar">
                 <div class="text-center" id="time_now">
-                    <span><?= htmlspecialchars($timeNow->format('H:i')) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
+<?php
+$timeNowLabel = app_format_local_datetime(gmdate('Y-m-d H:i:s'), 'H:i', $userTimezone) ?: '--:--';
+?>
+                    <span><?= htmlspecialchars($timeNowLabel) ?>&nbsp;&nbsp;<?= htmlspecialchars($userTimezone) ?></span>
                 </div>
 
                 <div class="col-4"><button class="btn btn-sm btn-info toggle-sidebar-button" type="button" id="toggleSidebarButton" value=">>"></button></div>

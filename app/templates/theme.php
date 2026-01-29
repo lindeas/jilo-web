@@ -18,6 +18,7 @@ foreach ($themes as $themeData) {
         break;
     }
 }
+$userTimezone = \App\App::get('user_timezone') ?: 'UTC';
 $totalThemes = count($themes);
 ?>
 
@@ -106,7 +107,10 @@ $totalThemes = count($themes);
                         </div>
 <?php endif; ?>
 <?php if (!empty($theme['last_modified'])):
-    $lastEdited = is_numeric($theme['last_modified']) ? date('M j, Y', (int)$theme['last_modified']) : $theme['last_modified'];
+    $lastEditedRaw = is_numeric($theme['last_modified'])
+        ? gmdate('Y-m-d H:i:s', (int)$theme['last_modified'])
+        : $theme['last_modified'];
+    $lastEdited = app_format_local_datetime($lastEditedRaw, 'M j, Y', $userTimezone) ?: $lastEditedRaw;
 ?>
                         <div class="tm-theme-stat">
                             <dt>Last edit</dt>
