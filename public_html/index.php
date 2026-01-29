@@ -27,6 +27,9 @@ use App\Core\ConfigLoader;
 use App\App;
 use App\Core\PluginRouteRegistry;
 
+// Load the core datetime helper for all user-facing dates/times
+require_once APP_PATH . 'helpers/datetime.php';
+
 // Load configuration
 $config = ConfigLoader::loadConfig([
     APP_PATH . 'config/jilo-web.conf.php',
