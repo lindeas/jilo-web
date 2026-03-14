@@ -29,6 +29,8 @@ use App\Core\PluginRouteRegistry;
 
 // Load the core datetime helper for all user-facing dates/times
 require_once APP_PATH . 'helpers/datetime.php';
+// Load shared upload utilities for any feature needing filesystem storage
+require_once APP_PATH . 'helpers/uploads.php';
 
 // Load configuration
 $config = ConfigLoader::loadConfig([
