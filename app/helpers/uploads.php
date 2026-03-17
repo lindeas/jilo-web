@@ -18,7 +18,7 @@ if (!function_exists('core_public_root')) {
         if (defined('APP_ROOT')) {
             $projectRoot = rtrim(APP_ROOT, DIRECTORY_SEPARATOR);
         } else {
-            $projectRoot = dirname(__DIR__, 1);
+            $projectRoot = dirname(__DIR__, 2);
         }
         return $projectRoot . DIRECTORY_SEPARATOR . 'public_html';
     }
