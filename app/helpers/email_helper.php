@@ -78,7 +78,7 @@ function sendTemplateEmail($to, $subject, $templateName, $variables, $config, $a
     try {
         $message = renderEmailTemplate($templateName, $variables, $options);
 
-        $fromDomain = $config['domain'] ?? ($_SERVER['HTTP_HOST'] ?? 'totalmeet.local');
+        $fromDomain = $config['domain'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
         $headers = array_merge([
             'From: noreply@' . $fromDomain,
             'X-Mailer: PHP/' . phpversion(),

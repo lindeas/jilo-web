@@ -15,6 +15,7 @@ $rightsNames = array_filter($rightsNames, function ($label) {
 });
 $rightsCount = count($rightsNames);
 $displayName = $name ?: $username ?: 'User profile';
+$profileUserIdForHooks = (int)($user['user_id'] ?? ($userId ?? 0));
 $timezoneDisplay = '';
 if ($timezoneName) {
     if ($timezoneOffset !== '') {
@@ -35,7 +36,7 @@ if ($timezoneName) {
                             </div>
                             <div class="tm-profile-hero-body">
                                 <h1 class="tm-profile-title"><?= htmlspecialchars($displayName) ?></h1>
-                                <p class="tm-profile-subtitle">Personal details and access summary for this TotalMeet account.</p>
+                                <p class="tm-profile-subtitle">Personal details and access summary for your <?= htmlspecialchars($config['site_name']); ?> account.</p>
                                 <div class="tm-profile-hero-meta">
 <?php if ($username): ?>
                                     <span class="tm-hero-pill pill-neutral">
@@ -59,6 +60,15 @@ if ($timezoneName) {
                                 <a class="btn btn-primary" href="<?= htmlspecialchars($app_root) ?>?page=profile&amp;action=edit">
                                     <i class="fas fa-edit"></i> Edit profile
                                 </a>
+<?php
+// Allow plugins to append additional hero buttons for the currently viewed account.
+do_hook('profile.hero_actions', [
+    'app_root' => $app_root,
+    'user' => $user,
+    'profile_user_id' => $profileUserIdForHooks,
+    'session_user_id' => class_exists('Session') && Session::isValidSession() ? (int)Session::getUserId() : 0,
+]);
+?>
                             </div>
                         </div>
                     </div>
@@ -117,10 +127,13 @@ if ($timezoneName) {
 <?php endif; ?>
                         </article>
 
-<?php do_hook('profile.additional_panels', [
+<?php
+// Surface extra panels contributed by plugins.
+do_hook('profile.additional_panels', [
     'subscription' => $subscription ?? null,
     'app_root' => $app_root,
-    'userId' => $user['id'] ?? null,
+    'userId' => $profileUserIdForHooks,
+    'profile_user_id' => $profileUserIdForHooks,
 ]); ?>
                     </div>
                 </section>

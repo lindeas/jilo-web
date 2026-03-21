@@ -30,7 +30,7 @@ Check if registration is enabled.
 
 ## Configuration
 
-Enable/disable registration in `totalmeet.conf.php`:
+Enable/disable registration in `<sitename>.conf.php`:
 ```php
 'registration_enabled' => true,
 ```
