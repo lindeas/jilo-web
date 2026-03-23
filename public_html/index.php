@@ -40,6 +40,13 @@ $config = ConfigLoader::loadConfig([
     '/opt/jilo-web/jilo-web.conf.php',
 ]);
 
+// Ensure we have value for site name
+$siteName = trim((string)($config['site_name'] ?? ''));
+if ($siteName === '') {
+    $siteName = 'Website';
+}
+$config['site_name'] = $siteName;
+
 // Make config available globally
 $GLOBALS['config'] = $config; // FIXME we use old globals and includes before migrating fully to App\App
 App::set('config', $config);
