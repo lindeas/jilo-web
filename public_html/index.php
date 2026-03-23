@@ -220,7 +220,7 @@ try {
         $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
         if ($runner->hasPendingMigrations()) {
             $pending = $runner->listPendingMigrations();
-            $msg = 'Database schema is out of date. There are pending migrations. Run "<code>php scripts/migrate.php up</code>" or use the <a href="?page=admin">Admin center</a>';
+            $msg = 'Database schema is out of date. There are pending migrations. Run "<code>php scripts/migrate.php up</code>" or use the <a href="?page=admin&section=migrations">Admin center</a>';
             // Check if migration message already exists to prevent duplicates
             $hasMigrationMessage = false;
             if (isset($_SESSION['flash_messages'])) {
@@ -299,7 +299,7 @@ try {
             if (!empty($maintMsg)) {
                 $custom .= ' <em>' . htmlspecialchars($maintMsg) . '</em>';
             }
-            $custom .= ' Control it from the <a href="' . htmlspecialchars($app_root) . '?page=admin">Admin center</a>';
+            $custom .= ' Control it from the <a href="' . htmlspecialchars($app_root) . '?page=admin&section=maintenance">Admin center</a>';
             // Non-dismissible and small, do not sanitize to allow link and <em>
             Feedback::flash('SYSTEM', 'MAINTENANCE_ON', $custom, false, true, false);
         }
