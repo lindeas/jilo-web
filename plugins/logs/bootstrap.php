@@ -57,7 +57,7 @@ if (!function_exists('logs_ensure_tables')) {
 register_hook('logger.system_init', function(array $context) {
     // Ensure tables exist
     logs_ensure_tables();
-    
+
     // Load plugin-specific LoggerFactory class
     require_once __DIR__ . '/models/LoggerFactory.php';
     [$logger, $userIP] = LoggerFactory::create($context['db']);

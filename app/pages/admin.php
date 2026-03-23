@@ -613,7 +613,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
             if ($hasMigration) {
                 foreach ($migrationFiles as $migrationFile) {
                     $migrationContent = file_get_contents($migrationFile);
-                    
+
                     // Extract tables created by this migration (plugin-owned)
                     if (preg_match_all('/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-zA-Z0-9_]+)`?/i', $migrationContent, $matches)) {
                         foreach ($matches[1] as $tableName) {
@@ -622,7 +622,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
                             }
                         }
                     }
-                    
+
                     // Find all referenced tables (dependencies)
                     foreach ($allTables as $table) {
                         if (strpos($migrationContent, $table) !== false && !in_array($table, $pluginOwnedTables)) {
@@ -707,6 +707,18 @@ $overviewStatusesPayload = \App\Core\HookDispatcher::applyFilters('admin.overvie
 $adminOverviewStatuses = [];
 if (is_array($overviewStatusesPayload)) {
     $adminOverviewStatuses = $overviewStatusesPayload['statuses'] ?? (is_array($overviewStatusesPayload) ? $overviewStatusesPayload : []);
+}
+
+$adminTabDotsPayload = \App\Core\HookDispatcher::applyFilters('admin.tabs.dot_indicators', [
+    'dots' => [],
+    'sections' => $sectionRegistry,
+    'section_state' => $sectionState,
+    'app_root' => $app_root,
+    'user_id' => $userId,
+]);
+$adminTabDots = [];
+if (is_array($adminTabDotsPayload)) {
+    $adminTabDots = $adminTabDotsPayload['dots'] ?? (is_array($adminTabDotsPayload) ? $adminTabDotsPayload : []);
 }
 
 // Get any new feedback messages

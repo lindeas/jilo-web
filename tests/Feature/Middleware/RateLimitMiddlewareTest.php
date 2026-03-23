@@ -38,7 +38,7 @@ class RateLimitMiddlewareTest extends TestCase
 
         // Set up App::db() for RateLimiter
         App::set('db', $this->db->getConnection());
-        
+
         // Create rate limiter instance
         $this->rateLimiter = new RateLimiter();
 
@@ -124,10 +124,10 @@ class RateLimitMiddlewareTest extends TestCase
         $this->db->getConnection()->exec("TRUNCATE TABLE security_ip_whitelist");
         $this->db->getConnection()->exec("TRUNCATE TABLE security_rate_auth");
         $this->db->getConnection()->exec("TRUNCATE TABLE log");
-        
+
         // Clean up App state
         App::reset('db');
-        
+
         parent::tearDown();
     }
 

@@ -33,7 +33,7 @@ class RateLimiterTest extends TestCase
 
         // Set up App::db() for RateLimiter
         App::set('db', $this->db->getConnection());
-        
+
         // The RateLimiter constructor will create all necessary tables
         $this->rateLimiter = new RateLimiter();
     }
@@ -45,10 +45,10 @@ class RateLimiterTest extends TestCase
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->pagesRatelimitTable}");
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->blacklistTable}");
         $this->db->getConnection()->exec("DROP TABLE IF EXISTS {$this->rateLimiter->whitelistTable}");
-        
+
         // Clean up App state
         App::reset('db');
-        
+
         parent::tearDown();
     }
 

@@ -42,7 +42,7 @@ function logs_plugin_handle(string $action, array $context = []): bool {
 function logs_plugin_render_list($logObject, $db, int $userId, bool $validSession, string $app_root): void {
     // Load User class for permissions check
     $userObject = new \User($db);
-    
+
     // Check for rights; user or system
     $has_system_access = ($userObject->hasRight($userId, 'superuser') ||
                          $userObject->hasRight($userId, 'view app logs'));

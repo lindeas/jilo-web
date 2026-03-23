@@ -31,6 +31,17 @@ if (!empty($modal_to_open)) {
     font-size: 0.75rem;
     max-width: 300px;
 }
+.tm-admin-tab-label,
+.tm-admin-subnav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.tm-admin-tab-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
 </style>
 
 <?php
@@ -145,7 +156,12 @@ if (!empty($adminOverviewStatuses) && is_array($adminOverviewStatuses)) {
            role="tab"
            aria-selected="<?= $isActive ? 'true' : 'false' ?>"
            aria-controls="tm-admin-tab-<?= htmlspecialchars($sectionKey) ?>">
-            <?= htmlspecialchars($tabMeta['label'] ?? ucfirst($sectionKey)) ?>
+            <span class="tm-admin-tab-label">
+                <?= htmlspecialchars($tabMeta['label'] ?? ucfirst($sectionKey)) ?>
+<?php if (!empty($adminTabDots[$sectionKey])): ?>
+                <span class="tm-admin-tab-dot" aria-hidden="true"></span>
+<?php endif; ?>
+            </span>
         </a>
 <?php endforeach; ?>
     </div>
@@ -637,7 +653,7 @@ endif; ?>
                 if ($hasMigration) {
                     foreach ($migrationFiles as $migrationFile) {
                         $migrationContent = file_get_contents($migrationFile);
-                        
+
                         // Extract tables created by this migration (plugin-owned)
                         if (preg_match_all('/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-zA-Z0-9_]+)`?/i', $migrationContent, $matches)) {
                             foreach ($matches[1] as $tableName) {
@@ -646,7 +662,7 @@ endif; ?>
                                 }
                             }
                         }
-                        
+
                         // Find all referenced tables (dependencies)
                         foreach ($allTables as $table) {
                             if (strpos($migrationContent, $table) !== false && !in_array($table, $pluginOwnedTables)) {

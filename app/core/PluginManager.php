@@ -215,12 +215,12 @@ class PluginManager
 
         // Use App API to get database connection
         $db = \App\App::db();
-        
+
         // If database unavailable, fallback to manifest
         if (!$db) {
             return self::$catalog[$plugin]['meta']['enabled'] ?? false;
         }
-        
+
         $pdo = ($db instanceof \PDO) ? $db : $db->getConnection();
 
         try {
@@ -305,7 +305,7 @@ class PluginManager
 
             // Disable foreign key checks temporarily to allow table drops
             $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
-            
+
             foreach ($tables as $table) {
                 // Check if this table belongs to the plugin by checking its migration file
                 $migrationFile = self::$catalog[$plugin]['path'] . '/migrations/create_' . $plugin . '_tables.sql';
@@ -317,7 +317,7 @@ class PluginManager
                     }
                 }
             }
-            
+
             // Re-enable foreign key checks
             $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
 
