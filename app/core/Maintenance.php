@@ -11,7 +11,7 @@ class Maintenance
 
     public static function isEnabled(): bool
     {
-        if (getenv('JILO_MAINTENANCE') === '1') {
+        if (getenv('APP_MAINTENANCE') === '1') {
             return true;
         }
         // Prefer DB settings if available in the current request
@@ -75,7 +75,7 @@ class Maintenance
         if (!self::isEnabled()) {
             return '';
         }
-        $envMsg = getenv('JILO_MAINTENANCE_MESSAGE');
+        $envMsg = getenv('APP_MAINTENANCE_MESSAGE');
         if ($envMsg) {
             return trim($envMsg);
         }

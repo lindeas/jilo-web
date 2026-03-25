@@ -53,8 +53,8 @@ Notes:
 
 - The maintenance flag is stored at `app/.maintenance.flag`.
 - You can also control maintenance via environment variables (useful when the filesystem is read-only):
-  - `JILO_MAINTENANCE=1` enables maintenance mode
-  - `JILO_MAINTENANCE_MESSAGE="Your message"` sets the banner message
+  - `APP_MAINTENANCE=1` enables maintenance mode
+  - `APP_MAINTENANCE_MESSAGE="Your message"` sets the banner message
 
 ## Authoring new migrations
 

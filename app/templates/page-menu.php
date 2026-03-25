@@ -36,7 +36,7 @@ if (is_array($navSettingsDotsPayload)) {
                 <div class="logo-section">
                     <a href="<?= htmlspecialchars($app_root) ?>?platform=<?= htmlspecialchars($platform_id) ?>" class="modern-logo-link">
                         <div class="modern-logo">
-                            <img src="<?= htmlspecialchars($app_root) ?>static/jilo-logo.png" alt="<?= htmlspecialchars($config['site_name']); ?>"/>
+                            <img src="<?= htmlspecialchars($app_root) ?>static/logo.png" alt="<?= htmlspecialchars($config['site_name']); ?>"/>
                         </div>
                         <div class="brand-info">
                             <h1 class="brand-name"><?= htmlspecialchars($config['site_name']); ?></h1>
