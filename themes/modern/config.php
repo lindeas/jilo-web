@@ -1,8 +1,11 @@
 <?php
 
+global $config;
+$siteName = (string)$config['site_name'];
+
 return [
     'name' => 'Modern theme',
-    'description' => 'Example theme. A modern, clean theme for Jilo Web.',
+    'description' => sprintf('Example theme. A modern, clean theme for %s.', $siteName),
     'version' => '1.0.0',
     'author' => 'Lindeas Inc.',
     'screenshot' => 'screenshot.png',

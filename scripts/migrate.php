@@ -11,9 +11,9 @@ use App\Core\ConfigLoader;
 use App\Core\DatabaseConnector;
 use App\Core\MigrationRunner;
 
-function printUsage()
+function printUsage(string $siteName)
 {
-    echo "\nJilo Web - Database Migrations\n";
+    echo "\n{$siteName} - Database Migrations\n";
     echo "Usage:\n";
     echo "  php scripts/migrate.php status     # Show pending and applied migrations\n";
     echo "  php scripts/migrate.php up         # Apply all pending migrations\n";
@@ -81,7 +81,7 @@ try {
         }
         exit(0);
     } else {
-        printUsage();
+        printUsage((string)$config['site_name']);
         exit(1);
     }
 } catch (Throwable $e) {

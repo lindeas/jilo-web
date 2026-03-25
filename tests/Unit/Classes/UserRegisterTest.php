@@ -19,18 +19,10 @@ class UserRegisterTest extends TestCase
     {
         parent::setUp();
 
-        // Prepare DB for Github CI
-        $host = defined('CI_DB_HOST') ? CI_DB_HOST : '127.0.0.1';
-        $password = defined('CI_DB_PASSWORD') ? CI_DB_PASSWORD : '';
+        test_set_app_config();
 
-        $this->db = new Database([
-            'type' => 'mariadb',
-            'host' => $host,
-            'port' => '3306',
-            'dbname' => 'jilo_test',
-            'user' => 'test_jilo',
-            'password' => $password
-        ]);
+        $dbConfig = test_db_config();
+        $this->db = new Database($dbConfig);
 
         // Set up App::db() for Register class to use
         App::set('db', $this->db->getConnection());

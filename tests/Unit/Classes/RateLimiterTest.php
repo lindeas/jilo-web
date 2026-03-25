@@ -17,19 +17,10 @@ class RateLimiterTest extends TestCase
     {
         parent::setUp();
 
-        // Prepare DB for Github CI
-        $host = defined('CI_DB_HOST') ? CI_DB_HOST : '127.0.0.1';
-        $password = defined('CI_DB_PASSWORD') ? CI_DB_PASSWORD : '';
+        $dbConfig = test_db_config();
 
         // Set up test database
-        $this->db = new Database([
-            'type' => 'mariadb',
-            'host' => $host,
-            'port' => '3306',
-            'dbname' => 'jilo_test',
-            'user' => 'test_jilo',
-            'password' => $password
-        ]);
+        $this->db = new Database($dbConfig);
 
         // Set up App::db() for RateLimiter
         App::set('db', $this->db->getConnection());

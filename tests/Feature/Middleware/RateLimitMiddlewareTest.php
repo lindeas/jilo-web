@@ -22,19 +22,12 @@ class RateLimitMiddlewareTest extends TestCase
         global $user_IP;
         $user_IP = '8.8.8.8';
 
-        // Prepare DB for Github CI
-        $host = defined('CI_DB_HOST') ? CI_DB_HOST : '127.0.0.1';
-        $password = defined('CI_DB_PASSWORD') ? CI_DB_PASSWORD : '';
+        // Normalize server context for middleware checks
+        seed_test_server_context(['REMOTE_ADDR' => $user_IP]);
 
-        // Set up test database
-        $this->db = new Database([
-            'type' => 'mariadb',
-            'host' => $host,
-            'port' => '3306',
-            'dbname' => 'jilo_test',
-            'user' => 'test_jilo',
-            'password' => $password
-        ]);
+        // Set up test database from centralized config
+        $dbConfig = test_db_config();
+        $this->db = new Database($dbConfig);
 
         // Set up App::db() for RateLimiter
         App::set('db', $this->db->getConnection());

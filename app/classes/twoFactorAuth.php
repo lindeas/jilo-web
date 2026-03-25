@@ -1,5 +1,7 @@
 <?php
 
+use App\App;
+
 // Already required in index.php, but we require it here,
 // because this class could be used standalone
 require_once __DIR__ . '/../helpers/logger_loader.php';
@@ -16,7 +18,8 @@ class TwoFactorAuthentication {
     private $period = 30;       // Time step in seconds (T0)
     private $digits = 6;        // Number of digits in TOTP code
     private $algorithm = 'sha1'; // HMAC algorithm
-    private $issuer = 'Jilo';
+    // Branding: populated from config so authenticator apps show the configured site name.
+    private $issuer = 'Website';
     private $window = 1;        // Time window of 1 step before/after
 
     /**
@@ -30,6 +33,9 @@ class TwoFactorAuthentication {
         } else {
             $this->db = $database->getConnection();
         }
+
+        $config = App::config();
+        $this->issuer = (string)$config['site_name'];
     }
 
     /**

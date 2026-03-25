@@ -10,6 +10,7 @@
 
 namespace App\Helpers;
 
+use App\App;
 use Exception;
 
 // Include Session class
@@ -44,6 +45,9 @@ class Theme
             $configContent = <<<'EOT'
 <?php
 
+global $config;
+$siteName = (string)$config['site_name'];
+
 /**
  * Theme Configuration
  *
@@ -77,7 +81,7 @@ return [
     // Theme configuration defaults
     'default_config' => [
         'name' => 'Unnamed Theme',
-        'description' => 'A Jilo Web theme',
+        'description' => sprintf('A %s theme', $siteName),
         'version' => '1.0.0',
         'author' => 'Lindeas Inc.',
         'screenshot' => 'screenshot.png',
@@ -297,9 +301,9 @@ EOT;
             return $cache[$themeId];
         }
 
-        $config = self::getConfig();
-        $defaults = $config['default_config'] ?? [];
-        $availableEntry = $config['available_themes'][$themeId] ?? null;
+        $themeConfig = self::getConfig();
+        $defaults = $themeConfig['default_config'] ?? [];
+        $availableEntry = $themeConfig['available_themes'][$themeId] ?? null;
 
         $metadata = [
             'name' => is_array($availableEntry) ? ($availableEntry['name'] ?? ucfirst($themeId)) : ($availableEntry ?? ucfirst($themeId)),
@@ -318,7 +322,7 @@ EOT;
         }
 
         if ($themeId !== 'default') {
-            $themesDir = rtrim($config['paths']['themes'] ?? (__DIR__ . '/../../themes'), '/');
+            $themesDir = rtrim($themeConfig['paths']['themes'] ?? (__DIR__ . '/../../themes'), '/');
             $themeConfigPath = $themesDir . '/' . $themeId . '/config.php';
             if (file_exists($themeConfigPath)) {
                 $themeConfig = require $themeConfigPath;
@@ -328,21 +332,24 @@ EOT;
             }
         }
 
+        $appConfig = App::config();
+        $siteName = (string)$appConfig['site_name'];
+
         if (empty($metadata['description'])) {
-            $metadata['description'] = $defaults['description'] ?? 'A Jilo Web theme';
+            $metadata['description'] = $defaults['description'] ?? ('A ' . $siteName . ' theme');
         }
         if (empty($metadata['version'])) {
             $metadata['version'] = $defaults['version'] ?? '1.0.0';
         }
         if (empty($metadata['author'])) {
-            $metadata['author'] = $defaults['author'] ?? 'Lindeas';
+            $metadata['author'] = $defaults['author'] ?? $siteName;
         }
 
         if (empty($metadata['tags']) || !is_array($metadata['tags'])) {
             $metadata['tags'] = [];
         }
 
-        $paths = $config['paths'] ?? [];
+        $paths = $themeConfig['paths'] ?? [];
         if ($themeId === 'default') {
             $absolutePath = realpath($paths['templates'] ?? (__DIR__ . '/../templates')) ?: null;
         } else {

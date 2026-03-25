@@ -51,10 +51,10 @@ php scripts/maintenance.php status
 
 Notes:
 
-- The maintenance flag is stored at `app/.maintenance.flag`.
-- You can also control maintenance via environment variables (useful when the filesystem is read-only):
-  - `APP_MAINTENANCE=1` enables maintenance mode
-  - `APP_MAINTENANCE_MESSAGE="Your message"` sets the banner message
+- The CLI script ultimately calls `App\Core\Maintenance`, which persists the flag in the database when a connection is available and falls back to a file flag at `app/.maintenance.flag` when not.
+- Runtime checks also honor environment overrides:
+  - `APP_MAINTENANCE=1` forces maintenance mode on
+  - `APP_MAINTENANCE_MESSAGE="Your message"` sets/overrides the banner message
 
 ## Authoring new migrations
 

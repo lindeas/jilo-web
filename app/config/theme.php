@@ -1,5 +1,8 @@
 <?php
 
+global $config;
+$siteName = (string)$config['site_name'];
+
 /**
  * Theme Configuration
  *
@@ -33,7 +36,7 @@ return [
     // Theme configuration defaults
     'default_config' => [
         'name' => 'Unnamed Theme',
-        'description' => 'A Jilo Web theme',
+        'description' => sprintf('A %s theme', $siteName),
         'version' => '1.0.0',
         'author' => 'Lindeas Inc.',
         'screenshot' => 'screenshot.png',

@@ -106,19 +106,12 @@ class LogTest extends TestCase
     {
         parent::setUp();
 
-        // Prepare DB for Github CI
-        $host = defined('CI_DB_HOST') ? CI_DB_HOST : '127.0.0.1';
-        $password = defined('CI_DB_PASSWORD') ? CI_DB_PASSWORD : '';
+        // Ensure consistent server context for log metadata
+        seed_test_server_context();
 
         // Set up test database
-        $this->db = new Database([
-            'type' => 'mariadb',
-            'host' => $host,
-            'port' => '3306',
-            'dbname' => 'jilo_test',
-            'user' => 'test_jilo',
-            'password' => $password
-        ]);
+        $dbConfig = test_db_config();
+        $this->db = new Database($dbConfig);
 
         $connection = $this->db->getConnection();
 
