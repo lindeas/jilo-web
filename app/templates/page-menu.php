@@ -27,6 +27,23 @@ $navSettingsDots = [];
 if (is_array($navSettingsDotsPayload)) {
     $navSettingsDots = $navSettingsDotsPayload['dots'] ?? (is_array($navSettingsDotsPayload) ? $navSettingsDotsPayload : []);
 }
+
+$navAccountDotsPayload = \App\Core\HookDispatcher::applyFilters('nav.account.dot_indicators', [
+    'dots' => [],
+    'app_root' => $app_root,
+    'user_id' => $userId ?? 0,
+    'db' => $db ?? null,
+]);
+$navAccountDots = [];
+if (is_array($navAccountDotsPayload)) {
+    $navAccountDots = $navAccountDotsPayload['dots'] ?? (is_array($navAccountDotsPayload) ? $navAccountDotsPayload : []);
+}
+$navAccountHasDot = false;
+if (!empty($navAccountDots) && is_array($navAccountDots)) {
+    $navAccountHasDot = (bool)array_filter($navAccountDots, static function($value) {
+        return (bool)$value;
+    });
+}
 ?>
     <div class="container-fluid p-0">
 
@@ -71,8 +88,11 @@ if (is_array($navSettingsDotsPayload)) {
                 <div class="header-actions">
 <?php if (Session::isValidSession()) { ?>
                     <div class="dropdown">
-                        <button class="btn modern-header-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        <button class="btn modern-header-btn dropdown-toggle position-relative" type="button" data-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-2"></i><?= htmlspecialchars($currentUser) ?>
+<?php if ($navAccountHasDot): ?>
+                            <span class="modern-notification-dot" aria-hidden="true"></span>
+<?php endif; ?>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right modern-dropdown">
                             <h6 class="dropdown-header modern-dropdown-header"><?= htmlspecialchars($currentUser) ?></h6>
@@ -86,7 +106,11 @@ if (is_array($navSettingsDotsPayload)) {
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=credentials">
                                 <i class="fas fa-shield-alt"></i>Login credentials
                             </a>
-<?php do_hook('account_menu', ['app_root' => $app_root]); ?>
+<?php do_hook('account_menu', [
+    'app_root' => $app_root,
+    'dots' => $navAccountDots,
+    'user_id' => $userId ?? 0,
+]); ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=logout">
                                 <i class="fas fa-sign-out-alt"></i>Logout
@@ -127,7 +151,12 @@ if (is_array($navSettingsDotsPayload)) {
                             <a class="dropdown-item modern-dropdown-item" href="<?= htmlspecialchars($app_root) ?>?page=security">
                                 <i class="fas fa-shield-alt"></i>Security
                             </a>
-<?php do_hook('main_menu', ['app_root' => $app_root, 'section' => 'main', 'position' => 100]); ?>
+<?php do_hook('main_menu', [
+    'app_root' => $app_root,
+    'section' => 'main',
+    'position' => 100,
+    'dots' => $navMainDots,
+]); ?>
                         </div>
                     </div>
 <?php } ?>
