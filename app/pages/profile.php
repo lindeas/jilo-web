@@ -12,8 +12,29 @@
  * - `edit`: Edit user profile details, rights, or avatar.
  */
 
+require_once '../app/helpers/url_canonicalizer.php';
+
 $action = $_REQUEST['action'] ?? '';
 $item = $_REQUEST['item'] ?? '';
+
+$isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+if ($isGetRequest) {
+    $canonicalPolicy = [
+        'page' => [
+            'type' => 'literal',
+            'value' => 'profile',
+        ],
+        'action' => [
+            'type' => 'enum',
+            'allowed' => ['edit'],
+        ],
+    ];
+    $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+    // Keep profile URLs constrained to supported view states only.
+    app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
+}
+
 // pass the user details to the profile hooks
 $profileHooksContext = [
     'userId' => $userId ?? null,

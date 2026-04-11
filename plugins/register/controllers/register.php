@@ -11,6 +11,7 @@ require_once APP_PATH . 'classes/user.php';
 require_once APP_PATH . 'classes/validator.php';
 require_once APP_PATH . 'helpers/security.php';
 require_once APP_PATH . 'helpers/theme.php';
+require_once APP_PATH . 'helpers/url_canonicalizer.php';
 require_once APP_PATH . 'includes/rate_limit_middleware.php';
 require_once PLUGIN_REGISTER_PATH . 'models/register.php';
 
@@ -31,6 +32,20 @@ function register_plugin_handle_register(string $action, array $context = []): b
         \Feedback::flash('NOTICE', 'DEFAULT', 'Registration is currently disabled.');
         register_plugin_render_form($validSession, $app_root, ['registrationEnabled' => false]);
         return true;
+    }
+
+    $isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+    if ($isGetRequest) {
+        $canonicalPolicy = [
+            'page' => [
+                'type' => 'literal',
+                'value' => 'register',
+            ],
+        ];
+        $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+        // Keep register URLs constrained to the canonical public registration route.
+        app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

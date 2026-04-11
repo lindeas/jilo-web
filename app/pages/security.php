@@ -1,5 +1,7 @@
 <?php
 
+require_once APP_PATH . 'helpers/url_canonicalizer.php';
+
 // Check if user has any of the required rights
 if (!($userObject->hasRight($userId, 'superuser') ||
       $userObject->hasRight($userId, 'edit whitelist') ||
@@ -11,6 +13,29 @@ if (!($userObject->hasRight($userId, 'superuser') ||
 
 // Get current section
 $section = isset($_POST['section']) ? $_POST['section'] : (isset($_GET['section']) ? $_GET['section'] : 'whitelist');
+$allowedSections = ['whitelist', 'blacklist', 'ratelimit'];
+if (!in_array($section, $allowedSections, true)) {
+    $section = 'whitelist';
+}
+
+$isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+if ($isGetRequest) {
+    $canonicalPolicy = [
+        'page' => [
+            'type' => 'literal',
+            'value' => 'security',
+        ],
+        'section' => [
+            'type' => 'literal',
+            'value' => $section,
+            'omit_if' => 'whitelist',
+        ],
+    ];
+    $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+    // Keep security page URLs stable by removing unknown GET parameters.
+    app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
+}
 
 // Initialize RateLimiter
 require_once '../app/classes/ratelimiter.php';
@@ -153,8 +178,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         Feedback::flash('ERROR', $e->getMessage());
     }
 
-    // Redirect back to the appropriate section
-    header("Location: $app_root?page=security&section=" . urlencode($section));
+    // Redirect back to the appropriate section using canonical query formatting.
+    $redirectPolicy = [
+        'page' => [
+            'type' => 'literal',
+            'value' => 'security',
+        ],
+        'section' => [
+            'type' => 'literal',
+            'value' => $section,
+            'omit_if' => 'whitelist',
+        ],
+    ];
+    $redirectQuery = app_url_build_query_from_policy([], $redirectPolicy);
+    header('Location: ' . app_url_build_internal((string)$app_root, $redirectQuery));
     exit;
 }
 

@@ -17,6 +17,8 @@
 // clear the global error var before login
 unset($error);
 
+require_once '../app/helpers/url_canonicalizer.php';
+
 try {
     // connect to database
     $db = connectDB($config);
@@ -30,6 +32,39 @@ try {
     $user_IP = getUserIP();
 
     $action = $_REQUEST['action'] ?? '';
+
+    $isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+    if ($isGetRequest) {
+        $canonicalPolicy = [
+            'page' => [
+                'type' => 'literal',
+                'value' => 'login',
+            ],
+            'action' => [
+                'type' => 'enum',
+                'allowed' => ['verify', 'forgot', 'reset'],
+            ],
+            'token' => [
+                'type' => 'string',
+                'validator' => static function ($value): bool {
+                    return $value !== '';
+                },
+                'include_if' => static function (array $sourceQuery): bool {
+                    return (($sourceQuery['action'] ?? '') === 'reset');
+                },
+            ],
+            'redirect' => [
+                'type' => 'string',
+                'validator' => static function ($value): bool {
+                    return (strpos($value, '/') === 0 || strpos($value, '?') === 0);
+                },
+            ],
+        ];
+        $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+        // Keep login URLs constrained to supported route states and safe redirect inputs.
+        app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
+    }
 
     if ($action === 'verify' && isset($_SESSION['2fa_pending_user_id'])) {
         // Handle 2FA verification

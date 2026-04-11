@@ -14,12 +14,32 @@
  * - `password`: Change password
  */
 
+require_once '../app/helpers/url_canonicalizer.php';
+
 // Initialize user object
 $userObject = new User($db);
 
 // Get action and item from request
 $action = $_REQUEST['action'] ?? '';
 $item = $_REQUEST['item'] ?? '';
+
+$isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+if ($isGetRequest) {
+    $canonicalPolicy = [
+        'page' => [
+            'type' => 'literal',
+            'value' => 'credentials',
+        ],
+        'action' => [
+            'type' => 'enum',
+            'allowed' => ['setup', 'verify'],
+        ],
+    ];
+    $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+    // Restrict credentials URLs to valid setup/verify screen states.
+    app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
+}
 
 // if a form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

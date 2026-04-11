@@ -10,6 +10,7 @@ require_once PLUGIN_LOGS_PATH . 'models/Log.php';
 require_once PLUGIN_LOGS_PATH . 'models/LoggerFactory.php';
 require_once APP_PATH . 'classes/user.php';
 require_once APP_PATH . 'helpers/theme.php';
+require_once APP_PATH . 'helpers/url_canonicalizer.php';
 
 function logs_plugin_handle(string $action, array $context = []): bool {
     $validSession = (bool)($context['valid_session'] ?? false);
@@ -29,6 +30,60 @@ function logs_plugin_handle(string $action, array $context = []): bool {
         \Feedback::flash('ERROR', 'DEFAULT', 'Logger not initialized.');
         header('Location: ' . $app_root);
         exit;
+    }
+
+    $isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+    if ($isGetRequest) {
+        $canonicalPolicy = [
+            'page' => [
+                'type' => 'literal',
+                'value' => 'logs',
+            ],
+            'action' => [
+                'type' => 'enum',
+                'allowed' => ['list'],
+                'omit_if' => 'list',
+            ],
+            'tab' => [
+                'type' => 'enum',
+                'allowed' => ['user', 'system'],
+                'omit_if' => 'user',
+            ],
+            'page_num' => [
+                'type' => 'int',
+                'min' => 1,
+                'omit_if' => 1,
+            ],
+            'from_time' => [
+                'type' => 'string',
+                'validator' => static function ($value): bool {
+                    return trim((string)$value) !== '';
+                },
+            ],
+            'until_time' => [
+                'type' => 'string',
+                'validator' => static function ($value): bool {
+                    return trim((string)$value) !== '';
+                },
+            ],
+            'message' => [
+                'type' => 'string',
+                'validator' => static function ($value): bool {
+                    return trim((string)$value) !== '';
+                },
+            ],
+            'id' => [
+                'type' => 'int',
+                'min' => 1,
+                'include_if' => static function (array $sourceQuery): bool {
+                    return (($sourceQuery['tab'] ?? '') === 'system');
+                },
+            ],
+        ];
+        $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+        // Keep logs URLs constrained to supported list filters and pagination state.
+        app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
     }
 
     switch ($action) {

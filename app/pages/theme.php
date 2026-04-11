@@ -11,6 +11,7 @@
 
 // Initialize security
 require_once '../app/helpers/security.php';
+require_once '../app/helpers/url_canonicalizer.php';
 $security = SecurityHelper::getInstance();
 
 // Only allow access to logged-in users
@@ -21,6 +22,29 @@ if (!Session::isValidSession()) {
 
 // Get any old feedback messages
 include_once '../app/helpers/feedback.php';
+
+$isGetRequest = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'GET';
+if ($isGetRequest) {
+    $canonicalPolicy = [
+        'page' => [
+            'type' => 'literal',
+            'value' => 'theme',
+        ],
+        'switch_to' => [
+            'type' => 'string',
+        ],
+        'csrf_token' => [
+            'type' => 'string',
+            'include_if' => static function (array $sourceQuery): bool {
+                return trim((string)($sourceQuery['switch_to'] ?? '')) !== '';
+            },
+        ],
+    ];
+    $canonicalQuery = app_url_build_query_from_policy($_GET, $canonicalPolicy);
+
+    // Keep theme page URLs deterministic while preserving switch action inputs.
+    app_url_redirect_to_canonical_query((string)$app_root, $_GET, $canonicalQuery);
+}
 
 // Handle theme switching
 if (isset($_GET['switch_to'])) {
