@@ -39,6 +39,9 @@ class ApiResponse {
      * @param int $status HTTP status code
      */
     private static function send($data, $status) {
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
         http_response_code($status);
         header('Content-Type: application/json');
         echo json_encode($data);

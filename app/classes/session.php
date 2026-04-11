@@ -17,8 +17,8 @@ class Session {
     }
     private static $sessionOptions = [
         'cookie_httponly' => 1,
-        'cookie_secure' => 1,
-        'cookie_samesite' => 'Strict',
+        'cookie_secure' => 0,
+        'cookie_samesite' => 'Lax',
         'gc_maxlifetime' => 7200 // 2 hours
     ];
 
@@ -52,13 +52,13 @@ class Session {
                 'domain' => $thisDomain,
                 'secure' => $isSecure,
                 'httponly' => true,
-                'samesite' => 'Strict'
+                'samesite' => 'Lax'
             ]);
         }
 
         // Align session start options dynamically with current transport
         self::$sessionOptions['cookie_secure'] = $isSecure ? 1 : 0;
-        self::$sessionOptions['cookie_samesite'] = 'Strict';
+        self::$sessionOptions['cookie_samesite'] = 'Lax';
 
         self::$initialized = true;
     }
@@ -181,7 +181,7 @@ class Session {
                 'domain' => $config['domain'],
                 'secure' => isset($_SERVER['HTTPS']),
                 'httponly' => true,
-                'samesite' => 'Strict'
+                'samesite' => 'Lax'
             ]);
         }
 
@@ -219,7 +219,7 @@ class Session {
                     'domain' => $config['domain'] ?? '',
                     'secure' => isset($_SERVER['HTTPS']),
                     'httponly' => true,
-                    'samesite' => 'Strict'
+                    'samesite' => 'Lax'
                 ]
             );
 
@@ -230,7 +230,7 @@ class Session {
                 'domain' => $config['domain'] ?? '',
                 'secure' => isset($_SERVER['HTTPS']),
                 'httponly' => true,
-                'samesite' => 'Strict'
+                'samesite' => 'Lax'
             ]);
         }
 

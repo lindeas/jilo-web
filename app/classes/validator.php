@@ -63,7 +63,7 @@ class Validator {
                 }
                 break;
             case 'phone':
-                if (!empty($value) && !preg_match('/^[+]?[\d\s-()]{7,}$/', $value)) {
+                if (!empty($value) && !preg_match('/^(\+?\d{1,4})?\s?(\d[\d\s]{6,})$/', $value)) {
                     $this->addError($field, "Invalid phone number format");
                 }
                 break;
