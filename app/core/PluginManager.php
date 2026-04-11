@@ -332,6 +332,12 @@ class PluginManager
             $foreignKeyChecksDisabled = true;
 
             foreach ($tables as $table) {
+                // Defensive validation: only allow plain SQL identifiers for drop targets.
+                if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+                    app_log('warning', 'PluginManager::purge: Skipped unsafe table identifier "' . (string)$table . '" for plugin ' . $plugin, ['scope' => 'plugin']);
+                    continue;
+                }
+
                 $pdo->exec("DROP TABLE IF EXISTS `$table`");
                 app_log('info', 'PluginManager::purge: Dropped table ' . $table . ' for plugin ' . $plugin, ['scope' => 'plugin']);
             }
