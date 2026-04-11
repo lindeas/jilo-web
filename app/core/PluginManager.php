@@ -275,7 +275,7 @@ class PluginManager
     }
 
     /**
-     * Purge plugin by dropping its tables and removing settings.
+     * Purge plugin by dropping its migration-defined tables and removing settings.
      */
     public static function purge(string $plugin): bool
     {
@@ -290,6 +290,8 @@ class PluginManager
         }
         $pdo = ($db instanceof \PDO) ? $db : $db->getConnection();
 
+        $foreignKeyChecksDisabled = false;
+
         try {
             // First disable the plugin
             self::setEnabled($plugin, false);
@@ -298,34 +300,55 @@ class PluginManager
             $stmt = $pdo->prepare('DELETE FROM settings WHERE `key` LIKE :pattern');
             $stmt->execute([':pattern' => 'plugin_enabled_' . $plugin]);
 
-            // Drop plugin-specific tables (user_pro_* tables for this plugin)
-            $stmt = $pdo->prepare('SHOW TABLES LIKE "user_pro_%"');
-            $stmt->execute();
-            $tables = $stmt->fetchAll(\PDO::FETCH_COLUMN, 0);
+            $migrationDir = self::$catalog[$plugin]['path'] . '/migrations';
+            $migrationFiles = glob($migrationDir . '/*.sql') ?: [];
+            $tables = [];
 
-            // Disable foreign key checks temporarily to allow table drops
-            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            foreach ($migrationFiles as $migrationFile) {
+                if (!is_string($migrationFile) || !file_exists($migrationFile)) {
+                    continue;
+                }
 
-            foreach ($tables as $table) {
-                // Check if this table belongs to the plugin by checking its migration file
-                $migrationFile = self::$catalog[$plugin]['path'] . '/migrations/create_' . $plugin . '_tables.sql';
-                if (file_exists($migrationFile)) {
-                    $migrationContent = file_get_contents($migrationFile);
-                    if (strpos($migrationContent, $table) !== false) {
-                        $pdo->exec("DROP TABLE IF EXISTS `$table`");
-                        app_log('info', 'PluginManager::purge: Dropped table ' . $table . ' for plugin ' . $plugin, ['scope' => 'plugin']);
+                $migrationContent = file_get_contents($migrationFile);
+                if (!is_string($migrationContent) || $migrationContent === '') {
+                    continue;
+                }
+
+                // Derive table ownership from CREATE TABLE statements in plugin migrations.
+                preg_match_all('/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?([a-zA-Z0-9_]+)`?/i', $migrationContent, $matches);
+                $discoveredTables = $matches[1] ?? [];
+                foreach ($discoveredTables as $tableName) {
+                    if (!is_string($tableName) || $tableName === '') {
+                        continue;
                     }
+                    $tables[] = $tableName;
                 }
             }
 
-            // Re-enable foreign key checks
-            $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+            $tables = array_values(array_unique($tables));
+
+            // Disable foreign key checks temporarily to allow table drops
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            $foreignKeyChecksDisabled = true;
+
+            foreach ($tables as $table) {
+                $pdo->exec("DROP TABLE IF EXISTS `$table`");
+                app_log('info', 'PluginManager::purge: Dropped table ' . $table . ' for plugin ' . $plugin, ['scope' => 'plugin']);
+            }
 
             app_log('info', 'PluginManager::purge: Successfully purged plugin ' . $plugin, ['scope' => 'plugin']);
             return true;
         } catch (Throwable $e) {
             app_log('error', 'PluginManager::purge failed for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
             return false;
+        } finally {
+            if ($foreignKeyChecksDisabled) {
+                try {
+                    $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+                } catch (Throwable $e) {
+                    app_log('error', 'PluginManager::purge: Failed to restore FOREIGN_KEY_CHECKS for ' . $plugin . ': ' . $e->getMessage(), ['scope' => 'plugin']);
+                }
+            }
         }
     }
 }
