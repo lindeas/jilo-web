@@ -42,11 +42,29 @@ if (!function_exists('logs_ensure_tables')) {
         if (!$pdo instanceof \PDO) {
             return;
         }
+        $tableExists = false;
+        try {
+            $check = $pdo->query("SHOW TABLES LIKE 'log'");
+            $tableExists = $check && $check->fetch(\PDO::FETCH_NUM);
+        } catch (\PDOException $e) {
+            if (defined('APP_ENV') && APP_ENV === 'development') {
+                error_log('Logs plugin table check failed: ' . $e->getMessage());
+            }
+        }
+
+        if ($tableExists) {
+            $ensured = true;
+            return;
+        }
+
         $migrationFile = __DIR__ . '/migrations/create_log_table.sql';
         if (is_readable($migrationFile)) {
             $sql = file_get_contents($migrationFile);
             if ($sql !== false && trim($sql) !== '') {
                 $pdo->exec($sql);
+            } else {
+                $ensured = true;
+                return;
             }
         }
         $ensured = true;
