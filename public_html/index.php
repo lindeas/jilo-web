@@ -120,6 +120,7 @@ if (!isset($page)) {
 // Middleware pipeline for security, sanitization & CSRF
 require_once APP_PATH . 'core/MiddlewarePipeline.php';
 $pipeline = new \App\Core\MiddlewarePipeline();
+App::set('middleware.pipeline', $pipeline);
 $pipeline->add(function() {
     // Apply security headers
     require_once APP_PATH . 'includes/security_headers_middleware.php';
