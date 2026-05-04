@@ -12,6 +12,8 @@
  * - `edit`: Edit user profile details, rights, or avatar.
  */
 
+use App\Core\HookDispatcher;
+
 require_once '../app/helpers/url_canonicalizer.php';
 
 $action = $_REQUEST['action'] ?? '';
@@ -43,8 +45,8 @@ $profileHooksContext = [
     'user' => $userDetails[0] ?? null,
 ];
 
-if (class_exists('\\App\\Core\\HookDispatcher')) {
-    $profileHooksContext = \App\Core\HookDispatcher::applyFilters('profile.context', $profileHooksContext);
+if (class_exists(HookDispatcher::class)) {
+    $profileHooksContext = HookDispatcher::applyFilters('profile.context', $profileHooksContext);
 }
 
 // plugins can add additional panels to the profile page

@@ -1,4 +1,7 @@
 <?php
+
+use App\Helpers\Theme;
+
 /**
  * Theme Management Controller
  *
@@ -57,7 +60,7 @@ if (isset($_GET['switch_to'])) {
         exit();
     }
 
-    if (\App\Helpers\Theme::setCurrentTheme($themeName)) {
+    if (Theme::setCurrentTheme($themeName)) {
         // Set success message
         Feedback::flash('THEME', 'THEME_CHANGED');
     } else {
@@ -72,13 +75,13 @@ if (isset($_GET['switch_to'])) {
 }
 
 // Get available themes and current theme for the view
-$themes = \App\Helpers\Theme::getAvailableThemes();
-$currentTheme = \App\Helpers\Theme::getCurrentThemeName();
+$themes = Theme::getAvailableThemes();
+$currentTheme = Theme::getCurrentThemeName();
 
 // Prepare theme data with screenshot URLs and metadata for the view
 $themeData = [];
 foreach ($themes as $id => $name) {
-    $meta = \App\Helpers\Theme::getThemeMetadata($id);
+    $meta = Theme::getThemeMetadata($id);
     $themeData[$id] = [
         'name' => $meta['name'] ?? $name,
         'description' => $meta['description'] ?? '',
@@ -89,7 +92,7 @@ foreach ($themes as $id => $name) {
         'path' => $meta['path'] ?? '',
         'last_modified' => $meta['last_modified'] ?? null,
         'file_count' => $meta['file_count'] ?? null,
-        'screenshotUrl' => \App\Helpers\Theme::getAssetUrl($id, 'screenshot.png'),
+        'screenshotUrl' => Theme::getAssetUrl($id, 'screenshot.png'),
         'isActive' => $id === $currentTheme
     ];
 }

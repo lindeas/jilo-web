@@ -5,6 +5,8 @@
  * Used when code does require_once '../app/classes/log.php'.
  */
 
+use App\Core\NullLogger;
+
 // If there is already a Log plugin loaded
 if (class_exists('Log')) {
     return;
@@ -24,7 +26,7 @@ class Log {
         if (isset($logObject) && method_exists($logObject, 'insertLog')) {
             $this->logger = $logObject;
         } else {
-            $this->logger = new \App\Core\NullLogger();
+            $this->logger = new NullLogger();
         }
     }
 

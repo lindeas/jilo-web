@@ -1,5 +1,11 @@
 <?php
 
+use App\App;
+use App\Core\HookDispatcher;
+use App\Core\Maintenance;
+use App\Core\MigrationRunner;
+use App\Core\PluginManager;
+
 /*
  * Admin control center
  *
@@ -111,7 +117,7 @@ foreach ($sectionRegistry as $key => $meta) {
     ];
 }
 
-$sectionStatePayload = \App\Core\HookDispatcher::applyFilters('admin.sections.state', [
+$sectionStatePayload = HookDispatcher::applyFilters('admin.sections.state', [
     'sections' => $sectionRegistry,
     'state' => [],
     'db' => $db ?? null,
@@ -125,9 +131,9 @@ if (is_array($sectionStatePayload)) {
 
 // Get plugin catalog and list of loaded plugins
 // with their dependencies
-$pluginCatalog = \App\Core\PluginManager::getCatalog();
-$pluginLoadedMap = \App\Core\PluginManager::getLoaded();
-$pluginDependencyErrors = \App\Core\PluginManager::getDependencyErrors();
+$pluginCatalog = PluginManager::getCatalog();
+$pluginLoadedMap = PluginManager::getLoaded();
+$pluginDependencyErrors = PluginManager::getDependencyErrors();
 
 $normalizeDependencies = static function ($meta): array {
     $deps = $meta['dependencies'] ?? [];
@@ -154,14 +160,14 @@ $pluginAdminMap = [];
 foreach ($pluginCatalog as $slug => $info) {
     $meta = $info['meta'] ?? [];
     $name = trim((string)($meta['name'] ?? $slug));
-    $enabled = \App\Core\PluginManager::isEnabled($slug); // Use database setting
+    $enabled = PluginManager::isEnabled($slug); // Use database setting
     $dependencies = $normalizeDependencies($meta);
     $dependents = array_values($pluginDependentsIndex[$slug] ?? []);
     $enabledDependents = array_values(array_filter($dependents, static function($depSlug) {
-        return \App\Core\PluginManager::isEnabled($depSlug); // Use database setting
+        return PluginManager::isEnabled($depSlug); // Use database setting
     }));
     $missingDependencies = array_values(array_filter($dependencies, static function($depSlug) use ($pluginCatalog) {
-        return !isset($pluginCatalog[$depSlug]) || !\App\Core\PluginManager::isEnabled($depSlug); // Use database setting
+        return !isset($pluginCatalog[$depSlug]) || !PluginManager::isEnabled($depSlug); // Use database setting
     }));
 
     // Check for migration files and existing tables
@@ -170,7 +176,7 @@ foreach ($pluginCatalog as $slug => $info) {
     $existingTables = [];
 
     if ($hasMigration) {
-        $db = \App\App::db();
+        $db = App::db();
         if ($db instanceof PDO) {
             $stmt = $db->query("SHOW TABLES");
             $allTables = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -260,7 +266,7 @@ if ($postAction === 'read_migration') {
 
 // Hooks actions for plugins
 if ($action !== '' && $action !== 'read_migration') {
-    $customActionPayload = \App\Core\HookDispatcher::applyFilters('admin.actions.handle', [
+    $customActionPayload = HookDispatcher::applyFilters('admin.actions.handle', [
         'handled' => false,
         'action' => $action,
         'request_method' => $_SERVER['REQUEST_METHOD'] ?? 'GET',
@@ -295,18 +301,18 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
         // Maintenance actions
         if ($postAction === 'maintenance_on') {
             $msg = trim($_POST['maintenance_message'] ?? '');
-            \App\Core\Maintenance::enable($msg);
+            Maintenance::enable($msg);
             Feedback::flash('NOTICE', 'DEFAULT', 'Maintenance mode enabled.', true);
         } elseif ($postAction === 'maintenance_off') {
-            \App\Core\Maintenance::disable();
+            Maintenance::disable();
             Feedback::flash('NOTICE', 'DEFAULT', 'Maintenance mode disabled.', true);
         // DB migrations actions
         } elseif ($postAction === 'migrate_up') {
-            $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
+            $runner = new MigrationRunner($db, $migrationsDir);
             $applied = $runner->applyPendingMigrations();
             Feedback::flash('NOTICE', 'DEFAULT', empty($applied) ? 'No pending migrations.' : 'Applied migrations: ' . implode(', ', $applied), true);
         } elseif ($postAction === 'migrate_apply_one') {
-            $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
+            $runner = new MigrationRunner($db, $migrationsDir);
             $migrationName = trim($_POST['migration_name'] ?? '');
             $applied = $migrationName !== '' ? $runner->applyMigrationByName($migrationName) : [];
             if (empty($applied)) {
@@ -342,11 +348,11 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
                             $reason = 'Enable required plugins first: ' . implode(', ', $pluginMeta['missing_dependencies']);
                         }
                         Feedback::flash('ERROR', 'DEFAULT', $reason, false);
-                    } elseif (!\App\Core\PluginManager::setEnabled($slug, true)) {
+                    } elseif (!PluginManager::setEnabled($slug, true)) {
                         Feedback::flash('ERROR', 'DEFAULT', 'Failed to enable plugin. Check database connection and error logs.', false);
                     } else {
                         // Automatically install plugin tables when enabling
-                        $installResult = \App\Core\PluginManager::install($slug);
+                        $installResult = PluginManager::install($slug);
                         if ($installResult) {
                             Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" enabled and installed successfully.', $pluginMeta['name']), true);
                         } else {
@@ -357,7 +363,7 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
                     if (!$pluginMeta['can_disable']) {
                         $reason = 'Disable dependent plugins first: ' . implode(', ', $pluginMeta['enabled_dependents']);
                         Feedback::flash('ERROR', 'DEFAULT', $reason, false);
-                    } elseif (!\App\Core\PluginManager::setEnabled($slug, false)) {
+                    } elseif (!PluginManager::setEnabled($slug, false)) {
                         Feedback::flash('ERROR', 'DEFAULT', 'Failed to disable plugin. Check database connection and error logs.', false);
                     } else {
                         Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" disabled.', $pluginMeta['name']), true);
@@ -370,7 +376,7 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
             if ($slug === '' || !isset($pluginAdminMap[$slug])) {
                 Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
             } else {
-                if (\App\Core\PluginManager::install($slug)) {
+                if (PluginManager::install($slug)) {
                     Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" installed successfully.', $pluginAdminMap[$slug]['name']), true);
                 } else {
                     Feedback::flash('ERROR', 'DEFAULT', 'Plugin installation failed. Check migration files.', false);
@@ -382,7 +388,7 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
             if ($slug === '' || !isset($pluginAdminMap[$slug])) {
                 Feedback::flash('ERROR', 'DEFAULT', 'Unknown plugin specified.', false);
             } else {
-                if (\App\Core\PluginManager::purge($slug)) {
+                if (PluginManager::purge($slug)) {
                     Feedback::flash('NOTICE', 'DEFAULT', sprintf('Plugin "%s" purged successfully. All data and tables removed.', $pluginAdminMap[$slug]['name']), true);
                 } else {
                     Feedback::flash('ERROR', 'DEFAULT', 'Plugin purge failed. Check database permissions.', false);
@@ -471,8 +477,8 @@ if ($postAction !== '' && $postAction !== 'read_migration') {
     exit;
 }
 
-$maintenance_enabled = \App\Core\Maintenance::isEnabled();
-$maintenance_message = \App\Core\Maintenance::getMessage();
+$maintenance_enabled = Maintenance::isEnabled();
+$maintenance_message = Maintenance::getMessage();
 
 $pending = [];
 $applied = [];
@@ -492,7 +498,7 @@ if (isset($_SESSION['migration_modal_open'])) {
 }
 
 try {
-    $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
+    $runner = new MigrationRunner($db, $migrationsDir);
     $pending = $runner->listPendingMigrations();
     $applied = $runner->listAppliedMigrations();
 
@@ -602,7 +608,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
         ];
 
         // Check database tables
-        $db = \App\App::db();
+        $db = App::db();
         $pluginOwnedTables = [];
         $pluginReferencedTables = [];
         if ($db && method_exists($db, 'getConnection')) {
@@ -685,7 +691,7 @@ if ($queryAction === 'plugin_check_page' && isset($_GET['plugin'])) {
     exit;
 }
 
-$overviewPillsPayload = \App\Core\HookDispatcher::applyFilters('admin.overview.pills', [
+$overviewPillsPayload = HookDispatcher::applyFilters('admin.overview.pills', [
     'pills' => [],
     'sections' => $sectionRegistry,
     'section_state' => $sectionState,
@@ -697,7 +703,7 @@ if (is_array($overviewPillsPayload)) {
     $adminOverviewPills = $overviewPillsPayload['pills'] ?? (is_array($overviewPillsPayload) ? $overviewPillsPayload : []);
 }
 
-$overviewStatusesPayload = \App\Core\HookDispatcher::applyFilters('admin.overview.statuses', [
+$overviewStatusesPayload = HookDispatcher::applyFilters('admin.overview.statuses', [
     'statuses' => [],
     'sections' => $sectionRegistry,
     'section_state' => $sectionState,
@@ -709,7 +715,7 @@ if (is_array($overviewStatusesPayload)) {
     $adminOverviewStatuses = $overviewStatusesPayload['statuses'] ?? (is_array($overviewStatusesPayload) ? $overviewStatusesPayload : []);
 }
 
-$adminTabDotsPayload = \App\Core\HookDispatcher::applyFilters('admin.tabs.dot_indicators', [
+$adminTabDotsPayload = HookDispatcher::applyFilters('admin.tabs.dot_indicators', [
     'dots' => [],
     'sections' => $sectionRegistry,
     'section_state' => $sectionState,

@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\App;
+
 class PluginManager
 {
     /** @var array<string, array{path: string, meta: array}> */
@@ -168,7 +170,7 @@ class PluginManager
         }
 
         // Use App API to get database connection
-        $db = \App\App::db();
+        $db = App::db();
         $pdo = ($db instanceof \PDO) ? $db : $db->getConnection();
 
         try {
@@ -214,7 +216,7 @@ class PluginManager
         }
 
         // Use App API to get database connection
-        $db = \App\App::db();
+        $db = App::db();
 
         // If database unavailable, fallback to manifest
         if (!$db) {
@@ -283,7 +285,7 @@ class PluginManager
             return false;
         }
 
-        $db = \App\App::db();
+        $db = App::db();
         if (!$db) {
             app_log('error', 'PluginManager::purge: Database connection not available', ['scope' => 'plugin']);
             return false;

@@ -1,5 +1,8 @@
 <?php
-$navMainDotsPayload = \App\Core\HookDispatcher::applyFilters('nav.main.dot_indicators', [
+
+use App\Core\HookDispatcher;
+
+$navMainDotsPayload = HookDispatcher::applyFilters('nav.main.dot_indicators', [
     'dots' => [],
     'app_root' => $app_root,
     'user_id' => $userId ?? 0,
@@ -17,7 +20,7 @@ if (!empty($navMainDots) && is_array($navMainDots)) {
     });
 }
 
-$navSettingsDotsPayload = \App\Core\HookDispatcher::applyFilters('nav.settings.dot_indicators', [
+$navSettingsDotsPayload = HookDispatcher::applyFilters('nav.settings.dot_indicators', [
     'dots' => [],
     'app_root' => $app_root,
     'user_id' => $userId ?? 0,
@@ -28,7 +31,7 @@ if (is_array($navSettingsDotsPayload)) {
     $navSettingsDots = $navSettingsDotsPayload['dots'] ?? (is_array($navSettingsDotsPayload) ? $navSettingsDotsPayload : []);
 }
 
-$navAccountDotsPayload = \App\Core\HookDispatcher::applyFilters('nav.account.dot_indicators', [
+$navAccountDotsPayload = HookDispatcher::applyFilters('nav.account.dot_indicators', [
     'dots' => [],
     'app_root' => $app_root,
     'user_id' => $userId ?? 0,

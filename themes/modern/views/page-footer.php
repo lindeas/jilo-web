@@ -1,3 +1,7 @@
+<?php
+
+use App\Helpers\Theme;
+?>
     <!-- Modern Theme Footer -->
     <footer class="footer mt-5 py-3 bg-light">
         <div class="container">
@@ -17,7 +21,7 @@
     </footer>
 
     <!-- Theme-specific JavaScript -->
-    <script src="<?= \App\Helpers\Theme::asset('js/theme.js') ?>"></script>
+    <script src="<?= Theme::asset('js/theme.js') ?>"></script>
 
     <!-- Global site scripts -->
     <script src="<?= htmlspecialchars($app_root) ?>static/js/messages.js"></script>

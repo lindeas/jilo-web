@@ -11,6 +11,21 @@
  * Version: 0.4.1
  */
 
+// Load application classes
+use App\App;
+use App\Core\ConfigLoader;
+use App\Core\DatabaseConnector;
+use App\Core\HookDispatcher;
+use App\Core\LogThrottler;
+use App\Core\Maintenance;
+use App\Core\MiddlewarePipeline;
+use App\Core\MigrationRunner;
+use App\Core\NullLogger;
+use App\Core\PluginManager;
+use App\Core\PluginRouteRegistry;
+use App\Core\Router;
+use App\Helpers\Theme;
+
 // error reporting, comment out in production
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
@@ -23,9 +38,6 @@ define('APP_PATH', __DIR__ . '/../app/');
 require_once APP_PATH . 'core/ConfigLoader.php';
 require_once APP_PATH . 'core/App.php';
 require_once APP_PATH . 'core/PluginRouteRegistry.php';
-use App\Core\ConfigLoader;
-use App\App;
-use App\Core\PluginRouteRegistry;
 
 // Load the core datetime helper for all user-facing dates/times
 require_once APP_PATH . 'helpers/datetime.php';
@@ -57,8 +69,6 @@ App::set('app_root', $app_root);
 // Initialize HookDispatcher and plugin system
 require_once APP_PATH . 'core/HookDispatcher.php';
 require_once APP_PATH . 'core/PluginManager.php';
-use App\Core\HookDispatcher;
-use App\Core\PluginManager;
 
 // Global allowed URLs registration
 register_hook('filter_allowed_urls', function($urls) {
@@ -106,7 +116,6 @@ require_once APP_PATH . 'classes/session.php';
 
 // Initialize themes system after session is started
 require_once APP_PATH . 'helpers/theme.php';
-use app\Helpers\Theme;
 
 Session::startSession();
 
@@ -119,7 +128,7 @@ if (!isset($page)) {
 
 // Middleware pipeline for security, sanitization & CSRF
 require_once APP_PATH . 'core/MiddlewarePipeline.php';
-$pipeline = new \App\Core\MiddlewarePipeline();
+$pipeline = new MiddlewarePipeline();
 App::set('middleware.pipeline', $pipeline);
 $pipeline->add(function() {
     // Apply security headers
@@ -143,7 +152,6 @@ require APP_PATH . 'includes/errors.php';
 
 // Connect to DB via DatabaseConnector (before loading plugins so their hooks are available)
 require_once APP_PATH . 'core/DatabaseConnector.php';
-use App\Core\DatabaseConnector;
 $db = DatabaseConnector::connect($config);
 App::set('db', $db);
 
@@ -178,7 +186,6 @@ $allowed_urls = PluginRouteRegistry::injectAllowedPages($allowed_urls);
 
 // Dispatch routing and auth (after plugins added public/allowed entries)
 require_once APP_PATH . 'core/Router.php';
-use App\Core\Router;
 $currentUser = Router::checkAuth($config, $app_root, $public_pages, $page);
 if ($currentUser === null && $validSession) {
     $currentUser = Session::getUsername();
@@ -186,11 +193,9 @@ if ($currentUser === null && $validSession) {
 
 // Initialize Log throttler
 require_once APP_PATH . 'core/LogThrottler.php';
-use App\Core\LogThrottler;
 
 // Logging: default to NullLogger, plugin can override
 require_once APP_PATH . 'core/NullLogger.php';
-use App\Core\NullLogger;
 $logObject = new NullLogger();
 App::set('logger', $logObject);
 
@@ -218,7 +223,7 @@ try {
     $migrationsDir = APP_PATH . '../doc/database/migrations';
     if (is_dir($migrationsDir) && $userId !== null && $page !== 'login') {
         require_once APP_PATH . 'core/MigrationRunner.php';
-        $runner = new \App\Core\MigrationRunner($db, $migrationsDir);
+        $runner = new MigrationRunner($db, $migrationsDir);
         if ($runner->hasPendingMigrations()) {
             $pending = $runner->listPendingMigrations();
             $msg = 'Database schema is out of date. There are pending migrations. Run "<code>php scripts/migrate.php up</code>" or use the <a href="?page=admin&section=migrations">Admin center</a>';
@@ -276,7 +281,7 @@ if (!$pipeline->run()) {
 // Maintenance mode: show maintenance page to non-superusers
 try {
     require_once APP_PATH . 'core/Maintenance.php';
-    if (\App\Core\Maintenance::isEnabled()) {
+    if (Maintenance::isEnabled()) {
         $isSuperuser = false;
         if ($validSession && isset($userId) && isset($userObject) && method_exists($userObject, 'hasRight')) {
             // user 1 is always superuser per implementation, but also check explicit right
@@ -287,15 +292,15 @@ try {
             // Advise clients to retry after 10 minutes (600 seconds; configure here)
             header('Retry-After: 600');
             // Show themed maintenance page
-            \App\Helpers\Theme::include('page-header');
-            \App\Helpers\Theme::include('page-menu');
+            Theme::include('page-header');
+            Theme::include('page-menu');
             include APP_PATH . 'templates/maintenance.php';
-            \App\Helpers\Theme::include('page-footer');
+            Theme::include('page-footer');
             ob_end_flush();
             exit;
         } else {
             // Superusers bypass maintenance; show a small banner
-            $maintMsg = \App\Core\Maintenance::getMessage();
+            $maintMsg = Maintenance::getMessage();
             $custom = 'Maintenance mode is enabled.';
             if (!empty($maintMsg)) {
                 $custom .= ' <em>' . htmlspecialchars($maintMsg) . '</em>';
@@ -314,7 +319,7 @@ if ($validSession && isset($userId) && isset($userObject) && is_object($userObje
     try {
         $dbTheme = $userObject->getUserTheme((int)$userId);
         if ($dbTheme) {
-            \App\Helpers\Theme::setCurrentTheme($dbTheme, false);
+            Theme::setCurrentTheme($dbTheme, false);
         }
     } catch (\Throwable $e) {
         // Non-fatal if theme load fails
@@ -357,10 +362,10 @@ if ($page == 'logout') {
     Feedback::flash('LOGIN', 'LOGOUT_SUCCESS');
 
     // Use theme helper to include templates
-    \App\Helpers\Theme::include('page-header');
-    \App\Helpers\Theme::include('page-menu');
+    Theme::include('page-header');
+    Theme::include('page-menu');
     include APP_PATH . 'pages/login.php';
-    \App\Helpers\Theme::include('page-footer');
+    Theme::include('page-footer');
 
 } else {
     // if user is logged in, we need user details and rights
@@ -444,36 +449,36 @@ if ($page == 'logout') {
             ob_end_flush();
             exit;
         } else {
-            \App\Helpers\Theme::include('page-header');
-            \App\Helpers\Theme::include('page-menu');
+            Theme::include('page-header');
+            Theme::include('page-menu');
             if ($validSession) {
-                \App\Helpers\Theme::include('page-sidebar');
+                Theme::include('page-sidebar');
             }
             PluginRouteRegistry::dispatch($page, $routeContext);
-            \App\Helpers\Theme::include('page-footer');
+            Theme::include('page-footer');
         }
     } elseif (in_array($page, $allowed_urls)) {
     // The page is from a core controller
-        \App\Helpers\Theme::include('page-header');
-        \App\Helpers\Theme::include('page-menu');
+        Theme::include('page-header');
+        Theme::include('page-menu');
         if ($validSession) {
-            \App\Helpers\Theme::include('page-sidebar');
+            Theme::include('page-sidebar');
         }
         if (file_exists(APP_PATH . "pages/{$page}.php")) {
             include APP_PATH . "pages/{$page}.php";
         } else {
             include APP_PATH . 'templates/error-notfound.php';
         }
-        \App\Helpers\Theme::include('page-footer');
+        Theme::include('page-footer');
     } else {
     // The page is not in allowed URLs
-        \App\Helpers\Theme::include('page-header');
-        \App\Helpers\Theme::include('page-menu');
+        Theme::include('page-header');
+        Theme::include('page-menu');
         if ($validSession) {
-            \App\Helpers\Theme::include('page-sidebar');
+            Theme::include('page-sidebar');
         }
         include APP_PATH . 'templates/error-notfound.php';
-        \App\Helpers\Theme::include('page-footer');
+        Theme::include('page-footer');
     }
 }
 

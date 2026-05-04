@@ -1,5 +1,7 @@
 <?php
 
+use App\Core\NullLogger;
+
 /**
  * Returns a logger instance: plugin Log if available, otherwise NullLogger.
  *
@@ -11,7 +13,7 @@ function getLoggerInstance($database) {
         return new Log($database);
     }
     require_once __DIR__ . '/../core/NullLogger.php';
-    return new \App\Core\NullLogger();
+    return new NullLogger();
 }
 
 if (!function_exists('app_log')) {
@@ -29,7 +31,7 @@ if (!function_exists('app_log')) {
         static $fallbackLogger = null;
         if ($fallbackLogger === null) {
             require_once __DIR__ . '/../core/NullLogger.php';
-            $fallbackLogger = new \App\Core\NullLogger();
+            $fallbackLogger = new NullLogger();
         }
 
         $fallbackLogger->log($level, $message, $context);

@@ -1,3 +1,7 @@
+<?php
+
+use App\Helpers\Theme;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($app_root) ?>static/css/main.css">
 
     <!-- Theme-specific CSS -->
-    <link rel="stylesheet" type="text/css" href="<?= \App\Helpers\Theme::asset('css/theme.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= Theme::asset('css/theme.css') ?>">
 
     <!-- jQuery -->
     <script src="<?= htmlspecialchars($app_root) ?>static/libs/jquery/jquery.min.js"></script>

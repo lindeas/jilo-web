@@ -9,8 +9,9 @@
  *   - screenshotUrl: URL to the screenshot (or null if not available)
  *   - isActive: Whether this is the current theme
  */
-?>
-<?php
+
+use App\App;
+
 $activeThemeName = 'Default';
 foreach ($themes as $themeData) {
     if (!empty($themeData['isActive'])) {
@@ -18,7 +19,7 @@ foreach ($themes as $themeData) {
         break;
     }
 }
-$userTimezone = \App\App::get('user_timezone') ?: 'UTC';
+$userTimezone = App::get('user_timezone') ?: 'UTC';
 $totalThemes = count($themes);
 ?>
 

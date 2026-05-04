@@ -14,9 +14,9 @@
 /** @var array $adminOverviewPills */
 /** @var array $adminOverviewStatuses */
 /** @var array $sectionState */
-?>
 
-<?php
+use App\App;
+
 $preselectModalId = null;
 if (!empty($modal_to_open)) {
     $preselectModalId = 'migrationModal' . md5($modal_to_open);
@@ -642,7 +642,7 @@ endif; ?>
             ];
 
             // Check database tables
-            $db = \App\App::db();
+            $db = App::db();
             $pluginOwnedTables = [];
             $pluginReferencedTables = [];
             if ($db && method_exists($db, 'getConnection')) {
