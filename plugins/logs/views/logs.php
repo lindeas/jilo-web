@@ -1,6 +1,8 @@
 
 <?php
-$userTimezone = \App\App::get('user_timezone') ?: 'UTC';
+use App\App;
+
+$userTimezone = App::get('user_timezone') ?: 'UTC';
 ?>
         <!-- log events -->
         <div class="container-fluid mt-4">

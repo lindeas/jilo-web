@@ -1,5 +1,7 @@
 <?php
 
+use App\App;
+
 /**
  * Logs Plugin Controller
  *
@@ -14,8 +16,8 @@ require_once APP_PATH . 'helpers/url_canonicalizer.php';
 
 function logs_plugin_handle(string $action, array $context = []): bool {
     $validSession = (bool)($context['valid_session'] ?? false);
-    $app_root = $context['app_root'] ?? (\App\App::get('app_root') ?? '/');
-    $db = $context['db'] ?? \App\App::db();
+    $app_root = $context['app_root'] ?? (App::get('app_root') ?? '/');
+    $db = $context['db'] ?? App::db();
     $userId = $context['user_id'] ?? null;
 
     if (!$db || !$userId) {

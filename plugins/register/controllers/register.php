@@ -1,5 +1,7 @@
 <?php
 
+use App\App;
+
 /**
  * Register Plugin Controller
  *
@@ -17,10 +19,10 @@ require_once PLUGIN_REGISTER_PATH . 'models/register.php';
 
 function register_plugin_handle_register(string $action, array $context = []): bool {
     $validSession = (bool)($context['valid_session'] ?? false);
-    $app_root = $context['app_root'] ?? (\App\App::get('app_root') ?? '/');
-    $config = $context['config'] ?? \App\App::config();
-    $db = $context['db'] ?? \App\App::db();
-    $logger = $context['logger'] ?? \App\App::get('logger');
+    $app_root = $context['app_root'] ?? (App::get('app_root') ?? '/');
+    $config = $context['config'] ?? App::config();
+    $db = $context['db'] ?? App::db();
+    $logger = $context['logger'] ?? App::get('logger');
 
     if (!$db) {
         \Feedback::flash('ERROR', 'DEFAULT', 'Registration service unavailable. Please try again later.');

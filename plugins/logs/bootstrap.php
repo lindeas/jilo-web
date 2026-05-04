@@ -1,5 +1,8 @@
 <?php
 
+use App\App;
+use App\Core\PluginManager;
+
 /**
  * Logs Plugin Bootstrap
  *
@@ -12,6 +15,24 @@ if (!defined('PLUGIN_LOGS_PATH')) {
 
 // Load plugin helpers
 require_once PLUGIN_LOGS_PATH . 'helpers.php';
+
+if (!function_exists('logs_plugin_is_enabled')) {
+    /**
+     * Determine whether the logs plugin is enabled before running migrations or hooks.
+     */
+    function logs_plugin_is_enabled(): bool
+    {
+        if (class_exists(PluginManager::class)) {
+            try {
+                return PluginManager::isEnabled('logs');
+            } catch (\Throwable $e) {
+                return true;
+            }
+        }
+
+        return true;
+    }
+}
 
 // Register route with callable dispatcher
 register_plugin_route_prefix('logs', [
@@ -34,7 +55,7 @@ if (!function_exists('logs_ensure_tables')) {
         if ($ensured) {
             return;
         }
-        $db = \App\App::db();
+        $db = App::db();
         if (!$db || !method_exists($db, 'getConnection')) {
             return;
         }
@@ -73,6 +94,10 @@ if (!function_exists('logs_ensure_tables')) {
 
 // Logger plugin bootstrap
 register_hook('logger.system_init', function(array $context) {
+    if (!logs_plugin_is_enabled()) {
+        return;
+    }
+
     // Ensure tables exist
     logs_ensure_tables();
 
